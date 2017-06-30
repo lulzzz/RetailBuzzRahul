@@ -1796,7 +1796,7 @@
 <section>
     <div class="mainwrapper">
         @Html.Partial("../Shared/LeftMenu")
-        @using (Html.BeginForm("Quotation", "ProcessingQuotation", FormMethod.Post))
+        @using (Html.BeginForm("Quotation", "ProcessingQuotation", FormMethod.Post,new { enctype = "multipart/form-data" }))
         {
             <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="1" />
             <input type="hidden" id="discountType" value="percent" />
@@ -1825,7 +1825,7 @@
             @Html.HiddenFor(model => model.QuotationDetails.SalesPersonEmail)
             @Html.HiddenFor(model => model.QuotationDetails.SalesPersonDesignation)
             @Html.HiddenFor(model => model.QuotationDetails.PreparedBy)
-            @Html.HiddenFor(model=>model.QuotationDetails.Attachment)
+            @*@Html.HiddenFor(model=>model.QuotationDetails.Attachment)*@
     
             <input type="hidden" id="preparedby" value="@HttpContext.Current.Session["UserEmail"]"/>
             <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">

@@ -9,6 +9,8 @@ using CodeFirstServices.Interfaces;
 using System.Data.SqlClient;
 using System.Web.Routing;
 using MvcRetailApp.Filters;
+using System.IO;
+using System.Configuration;
 
 namespace MvcRetailApp.Controllers
 {
@@ -482,12 +484,32 @@ namespace MvcRetailApp.Controllers
         }
 
         [HttpPost]
-        public ActionResult Quotation(MainApplication model, FormCollection frm)
+        public ActionResult Quotation(MainApplication model, FormCollection frm, HttpPostedFileBase file)
         {
             MainApplication mainapp = new MainApplication()
             {
                 QuotationItemDetails = new QuotationItem(),
             };
+
+            //if(Request!=null)
+            //{
+            //    HttpPostedFileBase file = Request.Files["Attachment"];
+            //    if ((file != null) &&!string.IsNullOrEmpty(file.FileName))
+            //    {
+            //        string fileName = file.FileName;
+            //        string fileContentType = file.ContentType;
+            //        byte[] fileBytes = new byte[file.ContentLength];
+            //        var data = file.InputStream.Read(fileBytes, 0, Convert.ToInt32(file.ContentLength));
+            //    }
+            //}
+            if (file != null)
+            {
+                var fileName = Path.GetFileName(file.FileName);
+                var path = ConfigurationManager.AppSettings["Attachment"].ToString() + "/" + fileName;
+                file.SaveAs(path);
+
+                model.QuotationDetails.Attachment = fileName;
+            }
 
             string shopcode = Session["LOGINSHOPGODOWNCODE"].ToString();
             string shopname = Session["SHOPGODOWNNAME"].ToString();

@@ -31,3 +31,14 @@ D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstData\bin\Release\EntityFramework.
 D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstData\obj\Release\CodeFirstData.csprojResolveAssemblyReference.cache
 D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstData\obj\Release\CodeFirstData.dll
 D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstData\obj\Release\CodeFirstData.pdb
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\CodeFirstData.dll.config
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\CodeFirstData.dll
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\CodeFirstData.pdb
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\CodeFirstEntities.dll
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\EntityFramework.dll
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\System.Web.dll
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\CodeFirstEntities.pdb
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\bin\Release\EntityFramework.xml
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\obj\Release\CodeFirstData.csprojResolveAssemblyReference.cache
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\obj\Release\CodeFirstData.dll
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstData\obj\Release\CodeFirstData.pdb

@@ -2,3 +2,7 @@ D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\bin\Debug\CodeFirstEntities.dll
 D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\bin\Debug\CodeFirstEntities.pdb
 D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\obj\Debug\CodeFirstEntities.dll
 D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\obj\Debug\CodeFirstEntities.pdb
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstEntities\bin\Debug\CodeFirstEntities.dll
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstEntities\bin\Debug\CodeFirstEntities.pdb
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstEntities\obj\Debug\CodeFirstEntities.dll
+C:\Users\developer\Source\Repos\RetailBuzzRahul\CodeFirstEntities\obj\Debug\CodeFirstEntities.pdb

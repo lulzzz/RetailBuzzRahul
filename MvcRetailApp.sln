@@ -1,7 +1,12 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 2012
+# Visual Studio 14
+VisualStudioVersion = 14.0.25420.1
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcRetailApp", "MvcRetailApp\MvcRetailApp.csproj", "{26648E80-CF26-4CE8-8074-8D17117513F8}"
+	ProjectSection(ProjectDependencies) = postProject
+		{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B} = {BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeFirstServices", "CodeFirstServices\CodeFirstServices.csproj", "{8106270C-E812-44BD-85A3-F2549404591A}"
 EndProject
@@ -10,24 +15,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeFirstData", "CodeFirstData\CodeFirstData.csproj", "{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}"
 EndProject
 Global
-	GlobalSection(TeamFoundationVersionControl) = preSolution
-		SccNumberOfProjects = 5
-		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
-		SccTeamFoundationServer = http://180.149.243.22:8080/tfs/defaultcollection
-		SccProjectUniqueName0 = CodeFirstEntities\\CodeFirstEntities.csproj
-		SccProjectName0 = CodeFirstEntities
-		SccLocalPath0 = CodeFirstEntities
-		SccProjectUniqueName1 = CodeFirstServices\\CodeFirstServices.csproj
-		SccProjectName1 = CodeFirstServices
-		SccLocalPath1 = CodeFirstServices
-		SccProjectUniqueName2 = MvcRetailApp\\MvcRetailApp.csproj
-		SccProjectName2 = MvcRetailApp
-		SccLocalPath2 = MvcRetailApp
-		SccProjectUniqueName3 = CodeFirstData\\CodeFirstData.csproj
-		SccProjectName3 = CodeFirstData
-		SccLocalPath3 = CodeFirstData
-		SccLocalPath4 = .
-	EndGlobalSection
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
 		Release|Any CPU = Release|Any CPU
