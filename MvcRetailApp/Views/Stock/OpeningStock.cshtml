@@ -1,0 +1,715 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "OpeningStock";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    //GET GODOWN ADDRESS DDL
+    $("#ddlgodownnames").change(function () {
+        var data = $(this).val();
+        if (data != "") {
+            $.getJSON("/Stock/GetGodownAddresses", { code: data },
+            function (data) {
+                document.getElementById("ddlgodownaddresses").disabled = false;
+                var select = $("#ddlgodownaddresses");
+                select.empty();
+                select.append($('<option/>', {
+                    text: "Addresses",
+                    value: "",
+                }));
+                $.each(data, function (index, itemdata) {
+                    select.append($('<option/>', {
+                        text: itemdata.Text,
+                        value: itemdata.Value,
+                    }));
+                });
+            });
+        }
+    });
+
+    //GET GODOWN ADDRESS DETAILS
+    $("#ddlgodownaddresses").change(function () {
+        var data = $(this).val();
+        if (data != "") {
+            $.getJSON("/Stock/GetGodownDetails", { area: data },
+                function (data) {
+                    document.getElementById("godownaddress").style.display = "inline";
+                    document.getElementById("Godown_Address").innerHTML = data.Address;
+                });
+        }
+    });
+</script>
+
+@*GET SUBCATEGORY BY CATEGORY*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLCategory").change(function () {
+
+            if ($("#DDLCategory").val() != "") {
+                document.getElementById("DDLSubCategory").disabled = false;
+                var Category = $(this).val();
+                $.getJSON("/Stock/LoadSubCategoryByCategory", { cat: Category },
+                function (stateData) {
+                    var select = $("#DDLSubCategory");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "Select SubCategory"
+                    }));
+                    $.each(stateData, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                });
+            }
+            else {
+                document.getElementById("AddingRows").innerHTML = "";
+                document.getElementById("Submit").style.display = "none";
+                var select = $("#DDLSubCategory");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select SubCategory"
+                }));
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $("#Submit").click(function () {
+
+        var rowId = document.getElementById("hdnRowCount").value;
+        var lastitem = "itemCode" + rowId;
+        var lastdescription = "Description" + rowId;
+        var lastquantity = "ItemQuantity" + rowId;
+        var lastrate = "Rate" + rowId;
+        var lastsellingprice = "SellingPrice" + rowId;
+
+        if (document.getElementById(lastitem) != null) {
+            //VALIDATIONS ON IF LAST ROW DATA IS EMPTY AND CLICK ON SAVE BUTTON..
+            if ($("#" + lastitem).val() == "" || $("#" + lastquantity).val() == "" || $("#" + lastrate).val() == "" || $("#" + lastsellingprice).val() == "") {
+                alertbox("Please Fill All The Required Details Or Delete The Row..");
+                return false;
+            }
+                // IF ALL DATA IS FILLED PROPERLY THEN SAVE ROWS..
+            else {
+                for (var i = 1; i <= rowId; i++) {
+                    var itemCode = "itemCode" + i;
+                    var description = "Description" + i;
+                    var itemquantity = "ItemQuantity" + i;
+                    var rate = "Rate" + i;
+                    var sellingprice = "SellingPrice" + i;
+                    if (document.getElementById(itemCode) != null) {
+                        document.getElementById(description).disabled = false;
+                        document.getElementById(itemCode).disabled = false;
+                        document.getElementById(itemquantity).disabled = false;
+                        document.getElementById(rate).disabled = false;
+                        document.getElementById(sellingprice).disabled = false;
+                    }
+                }
+            }
+        }
+
+        // IF LAST ROW IS DELETED THEN SAVE ROWS AS IT IS..
+        for (var i = 1; i <= rowId; i++) {
+            var lastitem = "itemCode" + i;
+            var lastdescription = "Description" + i;
+            var lastquantity = "ItemQuantity" + i;
+            var lastrate = "Rate" + i;
+            var lastsellingprice = "SellingPrice" + i;
+            if (document.getElementById(lastitem) != null) {
+                document.getElementById(lastdescription).disabled = false;
+                document.getElementById(lastitem).disabled = false;
+                document.getElementById(lastquantity).disabled = false;
+                document.getElementById(lastrate).disabled = false;
+                document.getElementById(lastsellingprice).disabled = false;
+            }
+        }
+        document.getElementById("DDLCategory").disabled = false;
+        document.getElementById("DDLSubCategory").disabled = false;
+
+    });
+</script>
+
+@*TO DELETE ROW*@
+<script type="text/javascript">
+    function DeleteRow(id) {
+        var row = "row" + id;
+        var agree = confirm("Are you sure you wish to delete this row?");
+        if (agree) {
+            $("#" + row).remove();
+        }
+    }
+</script>
+
+@*DYNAMIC ROW ON DDL CHANGE EVENT*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLSubCategory").change(function () {
+
+            document.getElementById("newitem").style.display = "inline";
+            if ($("#DDLSubCategory").val() != "") {
+
+                document.getElementById("DDLCategory").disabled = true;
+                document.getElementById("DDLSubCategory").disabled = true;
+                document.getElementById("Submit").style.display = "inline";
+                var unorderedlist = $("#AddingRows");
+                var rowId = document.getElementById("hdnRowCount").value
+                var row = "row" + rowId;
+                var itemCode = document.createElement("SELECT");
+                var select = "itemlist" + rowId;
+
+                var description = "Description" + rowId;
+                var itemquantity = "ItemQuantity" + rowId;
+                var color = "Color" + rowId;
+                var costprice = "CostPrice" + rowId;
+                var sellingprice = "SellingPrice" + rowId;
+                var unit = "Unit" + rowId;
+                var rate = "Rate" + rowId;
+                var size = "Size" + rowId;
+                var design = "Design" + rowId;
+
+                var itemName = "itemName" + rowId;
+                var itemdesignname = "ItemDesignName" + rowId;
+                var itemdesigncode = "ItemDesignCode" + rowId;
+                var itemsize = "ItemSize" + rowId;
+                var itemcolor = "ItemColor" + rowId;
+                var itemunit = "ItemUnit" + rowId;
+                var itemcostprice = "ItemCostPrice" + rowId;
+                var itembrand = "ItemBrand" + rowId;
+                var itemmaterial = "ItemMaterial" + rowId;
+                var itemnumbertype = "ItemNumberType" + rowId;
+
+                var idModel = $(this).val();
+
+                //GET ITEM BY SUBCATEGORY
+                $.getJSON("/Stock/LoadItemBySubCategory", { subcat: idModel },
+                function (stateData) {
+                    itemCode.className = "form-control";
+                    itemCode.id = "itemCode" + rowId;
+                    itemCode.name = "itemCode" + rowId;
+                    var myoption1 = document.createElement("option");
+                    myoption1.text = "Select Item";
+                    myoption1.value = "";
+                    itemCode.appendChild(myoption1);
+                    $.each(stateData, function (index, itemData) {
+                        var myoption = document.createElement("option");
+                        myoption.text = itemData.Value + " " + itemData.Text;
+                        myoption.value = itemData.Value;
+                        itemCode.appendChild(myoption);
+                    });
+                });
+
+                unorderedlist.append(
+
+                   "<div class='row'>" +
+                   "<div class='panel' id='" + row + "'> " +
+                   "<div class='form-group'></div><div class='row'>" +
+                   "<div class='col-md-12 col-lg-12'>" +
+                   "<div class='form-group col-md-3 col-lg-3'><label>Item Name<i style='color:red'>*</i></label><input type='hidden' id='" + itemName + "' name='" + itemName + "' /><div id='" + select + "' name='" + select + "'></div></div>" +
+                   "<div class='form-group col-md-3 col-lg-3'><label>Description</label><br><input type='text' class='form-control' id='" + description + "' name='" + description + "' placeholder='Description' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Design</label><br><label style='font-weight:normal' id='" + design + "'></label></div><input type='hidden' id='" + itemdesignname + "' name='" + itemdesignname + "' /><input type='hidden' id='" + itemdesigncode + "' name='" + itemdesigncode + "' />" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Size</label><br><label style='font-weight:normal' id='" + size + "'></label></div><input type='hidden' id='" + itemsize + "' name='" + itemsize + "' />" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Color</label><br><label style='font-weight:normal' id='" + color + "'></label></div><input type='hidden' id='" + itemcolor + "' name='" + itemcolor + "' /><input type='hidden' id='" + itemmaterial + "' name='" + itemmaterial + "' /><input type='hidden' id='" + itembrand + "' name='" + itembrand + "' />" +
+                   "</div>" +
+
+                   "<div class='row'>" +
+                   "<div class='col-md-12 col-lg-12'><div class='col-md-12 col-lg-12'>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Item Quantity<i style='color:red'>*</i></label><input type='text' placeholder='Item Quantity' class='form-control' name='ItemQuantity" + rowId + "' id='ItemQuantity" + rowId + "' autocomplete='off' onkeypress='return AllowNumbers(event)' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Unit</label><br><label style='font-weight:normal' id='" + unit + "'><label></div><input type='hidden' id='" + itemunit + "' name='" + itemunit + "' /><input type='hidden' id='" + itemnumbertype + "' name='" + itemnumbertype + "' />" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Cost Price</label><br><label style='font-weight:normal' id='" + costprice + "'><label></div><input type='hidden' id='" + itemcostprice + "' name='" + itemcostprice + "' />" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Selling Price<i style='color:red'>*</i></label><br><input type='text' class='form-control' id='" + sellingprice + "' name='" + sellingprice + "' placeholder='Selling Price' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>M.R.P.<i style='color:red'>*</i></label><input type='text' placeholder='Rate' class='form-control' name='" + rate + "' id='" + rate + "'  autocomplete='off' onkeypress='return AllowNumbers(event)' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><div style='height:15px;'></div><div style='text-align:center'></div><label id='barcode" + rowId + "'></label></div><input type='hidden' id='BarcodeAlreadyGenerated" + rowId + "' value='No'/><input type='hidden' id='barcodeNo" + rowId + "' name='barcodeNo" + rowId + "' /></div>" +
+                   "</div></div>" +
+                   "</div></div>"
+
+                 );
+
+                var FinalItemList = document.getElementById(select);
+                FinalItemList.appendChild(itemCode);
+
+                //GET DETAILS FROM ITEMNAME
+                setTimeout(function () {
+                    $("#" + itemCode.id).change(function () {
+
+                        //ENABLED COLUMNS ON ITEM DDL CHANGE EVENT
+                        document.getElementById(description).disabled = false;
+                        document.getElementById(itemquantity).disabled = false;
+                        document.getElementById(sellingprice).disabled = false;
+                        document.getElementById(rate).disabled = false;
+
+                        //WHEN WE CHANGE ITEM DDL QUANTITY SELLINGPRICE & RATE VALUE IS EMPTY
+                        document.getElementById(itemquantity).value = "";
+                        document.getElementById(sellingprice).value = "";
+                        document.getElementById(rate).value = "";
+
+                        var name = document.getElementById(itemCode.id).value;
+                        $.getJSON("/Stock/GetItemDetails", { code: name },
+                            function (data) {
+                                if (data != "Fail") {
+                                    $("#" + description).val(data.description);
+                                    $("#" + color).text(data.colorCode);
+                                    $("#" + design).text(data.designName);
+                                    $("#" + size).text(data.size);
+                                    $("#" + unit).text(data.unit);
+                                    $("#" + costprice).text(data.costprice);
+                                    $("#" + sellingprice).val(data.sellingprice);
+                                    $("#" + rate).val(data.mrp);
+
+                                    $("#" + itemcolor).val(data.colorCode);
+                                    $("#" + itemdesignname).val(data.designName);
+                                    $("#" + itemdesigncode).val(data.designCode);
+                                    $("#" + itemsize).val(data.size);
+                                    $("#" + itemunit).val(data.unit);
+                                    $("#" + itemnumbertype).val(data.NumberType);
+                                    $("#" + itemcostprice).val(data.costprice);
+                                    $("#" + itemName).val(data.itemName);
+                                    $("#" + itemmaterial).val(data.typeOfMaterial);
+                                    $("#" + itembrand).val(data.brandName);
+                                    // ONLY ONE BARCODE IS GENERATED EVEN IF WE SELECT MULTIPLE ITEMS FOR EACH ROW
+                                    if (document.getElementById("BarcodeAlreadyGenerated" + rowId).value == "No") {
+                                        GenerateBarcode(rowId);
+                                        document.getElementById("BarcodeAlreadyGenerated" + rowId).value = "Yes";
+                                    }
+                                }
+                                else {
+                                    alertbox("Barcode Is Already Created For This Item..");
+                                }
+                            });
+                    });
+                }, 1000);
+
+                $("#hdnRowCount").val(rowId);
+            }
+            else {
+                document.getElementById("AddingRows").innerHTML = "";
+                document.getElementById("Submit").style.display = "none";
+            }
+
+        });
+
+    });
+</script>
+
+
+@*DYNAMIC ROW CREATION ON ENTER BUTTON*@
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+
+            if ($("#DDLSubCategory").val() != "") {
+
+                var rowId = document.getElementById("hdnRowCount").value;
+
+                //VALIDATIONS ON IF ANY ONE COLUMN IS EMPTY
+                var preitem = "itemCode" + rowId;
+                var prequantity = "ItemQuantity" + rowId;
+                var presellingprice = "SellingPrice" + rowId;
+                var prerate = "Rate" + rowId;
+                var ITEM = $("#" + preitem).val();
+                var QUANTITY = $("#" + prequantity).val();
+                var SELLINGPRICE = $("#" + presellingprice).val();
+                var RATE = $("#" + prerate).val();
+
+                if (ITEM == "" || QUANTITY == "" || SELLINGPRICE == "" || RATE == "") {
+                    alertbox("Please Fill All Required Details..");
+                    return false;
+                }
+
+                //DISABLED THE PREVIOUS ROW
+                var itemCode = "itemCode" + rowId;
+                var description = "Description" + rowId;
+                var itemquantity = "ItemQuantity" + rowId;
+                var rate = "Rate" + rowId;
+                var sellingprice = "SellingPrice" + rowId;
+                if (document.getElementById(itemCode) != null) {
+                    document.getElementById(itemCode).disabled = true;
+                    document.getElementById(description).disabled = true;
+                    document.getElementById(itemquantity).disabled = true;
+                    document.getElementById(rate).disabled = true;
+                    document.getElementById(sellingprice).disabled = true;
+                }
+
+                var unorderedlist = $("#AddingRows");
+                rowId = +rowId + 1;
+                var row = "row" + rowId;
+
+                var itemCode = document.createElement("SELECT");
+                var select = "itemlist" + rowId;
+                var description = "Description" + rowId;
+                var design = "Design" + rowId;
+                var itemquantity = "ItemQuantity" + rowId;
+                var color = "Color" + rowId;
+                var costprice = "CostPrice" + rowId;
+                var sellingprice = "SellingPrice" + rowId;
+                var unit = "Unit" + rowId;
+                var rate = "Rate" + rowId;
+                var size = "Size" + rowId;
+
+                var itemName = "itemName" + rowId;
+                var itemdesignname = "ItemDesignName" + rowId;
+                var itemdesigncode = "ItemDesignCode" + rowId;
+                var itemsize = "ItemSize" + rowId;
+                var itemcolor = "ItemColor" + rowId;
+                var itemunit = "ItemUnit" + rowId;
+                var itemcostprice = "ItemCostPrice" + rowId;
+                var itembrand = "ItemBrand" + rowId;
+                var itemmaterial = "ItemMaterial" + rowId;
+                var itemnumbertype = "ItemNumberType" + rowId;
+
+                var idModel = $("#DDLSubCategory").val();
+
+                $.getJSON("/Stock/LoadItemBySubCategory", { subcat: idModel },
+               function (stateData) {
+                   itemCode.className = "form-control";
+                   itemCode.id = "itemCode" + rowId;
+                   itemCode.name = "itemCode" + rowId;
+                   var myoption1 = document.createElement("option");
+                   myoption1.text = "Select Item";
+                   myoption1.value = "";
+                   itemCode.appendChild(myoption1);
+                   $.each(stateData, function (index, itemData) {
+                       var myoption = document.createElement("option");
+                       myoption.text = itemData.Value + " " + itemData.Text;
+                       myoption.value = itemData.Value;
+                       itemCode.appendChild(myoption);
+                   });
+               });
+
+                unorderedlist.append(
+
+                   "<div class='row'>" +
+                   "<div class='panel' id='" + row + "'> " +
+
+                   "<div class='form-group'></div><div class='row'>" +
+                   "<div class='col-md-12 col-lg-12'>" +
+                   "<div class='form-group col-md-3 col-lg-3'><label>Item Name<i style='color:red'>*</i></label><input type='hidden' id='" + itemName + "' name='" + itemName + "' /><div id='" + select + "' name='" + select + "'></div></div>" +
+                   "<div class='form-group col-md-3 col-lg-3'><label>Description</label><br><input type='text' class='form-control' id='" + description + "' name='" + description + "' placeholder='Description' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Design</label><br><label style='font-weight:normal' id='" + design + "'></label><input type='hidden' id='" + itemdesignname + "' name='" + itemdesignname + "' /><input type='hidden' id='" + itemdesigncode + "' name='" + itemdesigncode + "' /></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Size</label><br><label style='font-weight:normal' id='" + size + "'></label><input type='hidden' id='" + itemsize + "' name='" + itemsize + "' /></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Color</label><br><label style='font-weight:normal' id='" + color + "'></label><input type='hidden' id='" + itemcolor + "' name='" + itemcolor + "' /><input type='hidden' id='" + itemmaterial + "' name='" + itemmaterial + "' /><input type='hidden' id='" + itembrand + "' name='" + itembrand + "' /></div>" +
+                   "</div></div>" +
+
+                   "<div class='row'><div class='row'>" +
+                   "<div class='col-md-12 col-lg-12'><div class='col-md-12 col-lg-12'>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Item Quantity<i style='color:red'>*</i></label><input type='text' placeholder='Item Quantity' class='form-control' name='ItemQuantity" + rowId + "' id='ItemQuantity" + rowId + "' autocomplete='off' onkeypress='return AllowNumbers(event)' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Unit</label><br><label style='font-weight:normal' id='" + unit + "'><label></div><input type='hidden' id='" + itemunit + "' name='" + itemunit + "' /><input type='hidden' id='" + itemnumbertype + "' name='" + itemnumbertype + "' />" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Cost Price</label><br><label style='font-weight:normal' id='" + costprice + "'><label></div><input type='hidden' id='" + itemcostprice + "' name='" + itemcostprice + "' />" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>Selling Price<i style='color:red'>*</i></label><br><input type='text' class='form-control' id='" + sellingprice + "' name='" + sellingprice + "' placeholder='Selling Price' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><label>M.R.P.<i style='color:red'>*</i></label><input type='text' placeholder='Rate' class='form-control' name='" + rate + "' id='" + rate + "'  autocomplete='off' onkeypress='return AllowNumbers(event)' disabled='disabled'/></div>" +
+                   "<div class='form-group col-md-2 col-lg-2'><div style='height:15px;'></div><div style='text-align:center'><label id='barcode" + rowId + "'></label></div><input type='hidden' id='BarcodeAlreadyGenerated" + rowId + "' value='No'/><input type='hidden' id='barcodeNo" + rowId + "' name='barcodeNo" + rowId + "' /></div>" +
+                   "</div></div></div></div>" +
+
+                   "<div class='row'>" +
+                   "<div class='col-md-12 col-lg-12'>" +
+                   "<a href='#' onclick='DeleteRow(" + rowId + ")' class='fa fa-trash fa-lg' style='color:red; float:right'></a>" +
+                   "</div></div>" +
+
+                   "</div></div>"
+
+                 );
+
+                var FinalItemList = document.getElementById(select);
+                FinalItemList.appendChild(itemCode);
+
+
+                //GET DETAILS FROM ITEMNAME
+                setTimeout(function () {
+                    $("#" + itemCode.id).change(function () {
+                        //ENABLED COLUMNS ON ITEM DDL CHANGE EVENT
+                        document.getElementById(description).disabled = false;
+                        document.getElementById("ItemQuantity" + rowId).disabled = false;
+                        document.getElementById(sellingprice).disabled = false;
+                        document.getElementById(rate).disabled = false;
+
+                        //WHEN WE CHANGE ITEM DDL QUANTITY SELLINGPRICE & RATE VALUE IS EMPTY
+                        document.getElementById(itemquantity).value = "";
+                        document.getElementById(sellingprice).value = "";
+                        document.getElementById(rate).value = "";
+                        document.getElementById(description).value = "";
+                        document.getElementById(design).innerHTML = "";
+                        document.getElementById(size).innerHTML = "";
+                        document.getElementById(color).innerHTML = "";
+                        document.getElementById(unit).innerHTML = "";
+                        document.getElementById(costprice).innerHTML = "";
+
+                        var name = document.getElementById(itemCode.id).value;
+
+                        //CHECK IF SAME ITEM IS ALREADY SELECTED THEN ENABLES PREVIOUS ROW
+                        var rowcount = document.getElementById("hdnRowCount").value;
+                        var counter = 0;
+                        for (i = 1; i < rowcount; i++) {
+                            var ITEM = "itemCode" + i;
+                            var QUANTITY = "ItemQuantity" + i;
+                            var DESCRIPTION = "Description" + i;
+                            var SELLINGPRICE = "SellingPrice" + i;
+                            var RATE = "Rate" + i;
+                            //IF ROW IS DELETED THEN CURRENT ITEM WON'T GET COMPARED
+                            if (document.getElementById(ITEM) != null) {
+                                if ($("#" + ITEM).val() == name) {
+                                    alertbox("The Item Is Already Selected Please Change The Details..");
+                                    document.getElementById(QUANTITY).disabled = false;
+                                    document.getElementById(DESCRIPTION).disabled = false;
+                                    document.getElementById(SELLINGPRICE).disabled = false;
+                                    document.getElementById(RATE).disabled = false;
+                                    counter = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //IF COUNTER IS 0 THAT MEANS CURRENT ITEM IS NOT SELECED IN PREVIOUS ROWS
+                        if (counter == 0) {
+                            //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+                            for (i = 1; i < rowcount; i++) {
+                                var QUANTITY = "ItemQuantity" + i;
+                                var DESCRIPTION = "Description" + i;
+                                var SELLINGPRICE = "SellingPrice" + i;
+                                var RATE = "Rate" + i;
+                                var UNIT = "Unit" + i;
+                                //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                                if (document.getElementById(QUANTITY) != null || document.getElementById(UNIT) != null) {
+                                    document.getElementById(QUANTITY).disabled = true;
+                                    document.getElementById(DESCRIPTION).disabled = true;
+                                    document.getElementById(SELLINGPRICE).disabled = true;
+                                    document.getElementById(RATE).disabled = true;
+                                }
+                            }
+                            $.getJSON("/Stock/GetItemDetails", { code: name },
+                           function (data) {
+                               if (data != "Fail") {
+                                   $("#" + description).val(data.description);
+                                   $("#" + color).text(data.colorCode);
+                                   $("#" + design).text(data.designName);
+                                   $("#" + size).text(data.size);
+                                   $("#" + unit).text(data.unit);
+                                   $("#" + costprice).text(data.costprice);
+                                   $("#" + sellingprice).val(data.sellingprice);
+                                   $("#" + rate).val(data.mrp);
+
+                                   $("#" + itemcolor).val(data.colorCode);
+                                   $("#" + itemdesignname).val(data.designName);
+                                   $("#" + itemdesigncode).val(data.designCode);
+                                   $("#" + itemsize).val(data.size);
+                                   $("#" + itemunit).val(data.unit);
+                                   $("#" + itemnumbertype).val(data.NumberType);
+                                   $("#" + itemcostprice).val(data.costprice);
+                                   $("#" + itemName).val(data.itemName);
+                                   $("#" + itemmaterial).val(data.typeOfMaterial);
+                                   $("#" + itembrand).val(data.brandName);
+                                   // ONLY ONE BARCODE IS GENERATED EVEN IF WE SELECT MULTIPLE ITEMS FOR EACH ROW
+                                   if (document.getElementById("BarcodeAlreadyGenerated" + rowId).value == "No") {
+                                       GenerateBarcode(rowId);
+                                       document.getElementById("BarcodeAlreadyGenerated" + rowId).value = "Yes";
+                                   }
+                               }
+                               else {
+                                   alertbox("Barcode Is Already Created For This Item..");
+                               }
+                           });
+                        }
+
+                    });
+                }, 1000);
+
+                $("#hdnRowCount").val(rowId);
+            }
+            else {
+                if (document.getElementById("DDLCategory").value == "") {
+                    alertbox("Please Select Category and SubCategory First");
+                }
+                else {
+                    alertbox("Please Select SubCategory First");
+                }
+            }
+
+        }
+    });
+
+    //DELETE CHARACTERS IN TEXTBOX
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    @*FOR GENERATE BARCODE*@
+    function GenerateBarcode(rowId) {
+        var barcode = "barcode" + rowId;
+        var itemname = "itemName" + rowId;
+        var itemDetail = document.getElementById(itemname).value;
+        $.getJSON("/Stock/CreateBarcode", { itemData: itemDetail },
+            function (stateData) {
+                //var img = stateData.imageUrl;
+                var barcodeNo = stateData.barcodeNo;
+                var barid = "barcode" + rowId;
+                document.getElementById(barid).innerHTML = barcodeNo;
+                document.getElementById("barcodeNo" + rowId).value = barcodeNo;
+            
+
+                /*var input = document.createElement("input");
+                input.setAttribute("type", "hidden");
+                input.setAttribute("id", barid);
+                input.setAttribute("name", barid);
+                input.setAttribute("value", barcodeNo);*/
+
+                setTimeout(function () {
+                    //var barcodeImage = document.createElement("img");
+                    //barcodeImage.src = img;
+                    //barcodeImage.style.height = "40px";
+                    //barcodeImage.style.width = "150px";
+                    //barcodeImage.id = "barcodeImage" + rowId;
+                    
+                    //barcodeImage.name = "barcodeImage" + rowId;
+                    //var FinalBarcode = document.getElementById(barcode);
+                    //FinalBarcode.appendChild(input);
+                    //FinalBarcode.appendChild(barcodeImage);
+                }, 900);
+            });
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#Shoplist").change(function () {
+            $("#Godownlist").attr("disabled", true);
+        });
+        $("#Godownlist").change(function () {
+            $("#Shoplist").attr("disabled", true);
+        });
+    });
+</script>
+
+@using (Html.BeginForm("OpeningStock", "Stock", FormMethod.Post))
+{
+    <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="1" />  
+    @*@Html.HiddenFor(model => model.OpeningStockDetails.OpeningStockCode);*@
+        
+    <div class="table table-bordered">
+        <div class="row">
+            <div style="height: 10px"></div>
+            <div class="col-md-12 col-lg-12">
+                <div class="col-md-3 col-lg-3">
+                    <label>Shop Name<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.ShopDetails.ShopName, new SelectList(Model.ShopList, "ShopCode", "ShopName"), "Select Shop", new { id = "Shoplist", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ShopDetails.ShopName, null, new { style = "color:red" })
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Godown Name<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.GodownDetails.GodownName, new SelectList(Model.GodownMasterList, "GdCode", "GodownName"), "Select Godown", new { id = "Godownlist", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.GodownDetails.GodownName, null, new { style = "color:red" })
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Item Category<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.OpeningStockDetails.Category, new SelectList(Model.ItemCategoryList, "CategoryName", "ItemCategoryCode"), "Select Category", new { id = "DDLCategory", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.OpeningStockDetails.Category, null, new { style = "color:red" })
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Item SubCategory<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.OpeningStockDetails.SubCategory, Enumerable.Empty<SelectListItem>(), "Select SubCategory", new { id = "DDLSubCategory", @class = "form-control", @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.OpeningStockDetails.Category, null, new { style = "color:red" })
+                </div>
+            </div>
+            <div style="height: 55px"></div>
+            <div class="form-group"></div>
+        </div>
+    </div>
+    <div style="height: 15px"></div>
+     
+    <div class="col-md-12 col-lg-12">
+        <div id="AddingRows"></div>
+    </div>
+     
+    <div class="col-md-12 col-lg-12" style="text-align: right; width: 100%">
+        <a href="/Item/CreateItem" style="font-weight: bold; display: none" id="newitem">Create New Item</a>
+    </div>
+     
+    <div class="col-md-12 col-lg-12" style="text-align: center">
+        <button type="submit" id="Submit" class="btn btn-success" style="display: none">Save</button>
+    </div>
+}
+
+
+@*GENERATE BARCODE ON CLICK EVENT*@
+@*<script type="text/javascript">
+    function CreateAllBarcode() {
+
+        
+        var rows = +document.getElementById("hdnRowCount").value
+        
+        for (var i = 1; i <= rows; i++)
+        {
+
+            var barcode = "barcode" + i;
+            var item = "item" + i;
+            var itemDetail = document.getElementById(item).value; 
+            $.getJSON("/Stock/CreateBarcode", { itemData: itemDetail },
+                function (stateData) {
+                    var img = stateData.imageUrl;
+                    var barcodeNo = stateData.barcodeNo;
+                    var barid = "barcodeNo" + i;
+                    var input = document.createElement("input");
+                    input.setAttribute("type", "hidden");
+                    input.setAttribute("id", barid);
+                    input.setAttribute("name", barid);
+                    input.setAttribute("value", barcodeNo);
+
+                    setTimeout(function () {
+                        var barcodeImage = document.createElement("img");
+                        barcodeImage.src = img;
+                        barcodeImage.id = "barcodeImage" + i;
+                        barcodeImage.name = "barcodeImage" + i;
+                        var FinalBarcode = document.getElementById(barcode);
+                        FinalBarcode.appendChild(input);
+                        FinalBarcode.appendChild(barcodeImage);
+                    }, 600);
+                });
+        }
+    }
+
+</script>*@
+
+
+
+
+
+
+
+
+
+
+

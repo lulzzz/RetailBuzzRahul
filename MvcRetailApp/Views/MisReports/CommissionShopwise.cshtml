@@ -1,0 +1,286 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "CommissionShopwise";
+}
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "fromdate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data.addOnSelectedDelegate(function () {
+
+            document.getElementById("empname").disabled = 'true';
+
+            var selectedValues = $('#ddlshopname').val();
+            $('input[id=ShopName]').val(selectedValues);
+
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+            var employeename = document.getElementById("EmpName").value;
+            var unitname = document.getElementById("UnitName").value;
+
+            if (todate != "") {
+                $.ajax({
+                    url: '/MisReports/GetRetailBillDetailsByShop',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate, Emp: employeename, Unit: unitname },
+                    success: function (data) {
+                        document.getElementById("fromdate").disabled = 'true';
+                        document.getElementById("todate").disabled = 'true';
+                        $("#ItemPartialView").html(data);
+                    }
+                })
+            }
+        });
+    });
+    jQuery(document).ready(function () {
+        var data1 = new JsDatePick({
+            useMode: 2,
+            target: "todate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data1.addOnSelectedDelegate(function () {
+
+            document.getElementById("empname").disabled = 'true';
+
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+            var empname = document.getElementById("EmpName").value;
+            var unitname = document.getElementById("UnitName").value;
+
+            if (fromdate != "") {
+                $.ajax({
+                    url: '/MisReports/GetRetailBillDetailsByShop',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate, Emp: empname, Unit: unitname },
+                    success: function (data) {
+                        document.getElementById("fromdate").disabled = 'true';
+                        document.getElementById("todate").disabled = 'true';
+
+                        $("#ItemPartialView").html(data);
+                    }
+                });
+            }
+            else { alert("Please Enter From Date"); }
+        });
+    });
+</script>
+
+@*OPEN PRINT PAGE ON PRINT CLICK BUTTON*@
+<script type="text/javascript">
+    function PrintDetails() {
+        window.open("/MisReports/PrintCommissionReport", "_target", "width=900,height=830,top=50px,left=300px");
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlshopname").change(function () {
+
+            var selectedValues = $('#ddlshopname').val();
+            $('input[id=ShopName]').val(selectedValues);
+
+            var name = document.getElementById("ShopName").value;
+
+            $.getJSON("/MisReports/GetEmployees", { ShopName: name }, function (data) {
+                if (data != null) {
+                    var select = $("#empname");
+                    select.empty();
+                    $.each(data, function (i, item) {
+                        select.append($('<option>', {
+                            value: item.value,
+                            text: item.Text
+                        }));
+                    });
+                }
+            });
+            document.getElementById("unitfield").style.display = 'inline';
+        });
+
+        $("#ddlunitname").change(function () {
+            document.getElementById("empfield").style.display = "inline";
+            document.getElementById("ddlshopname").disabled = true;
+
+            var selectedValues = $('#ddlunitname').val();
+            $('input[id=UnitName]').val(selectedValues);
+        });
+
+        $("#empname").change(function () {
+
+            document.getElementById("frmdatefield").style.display = "inline";
+            document.getElementById("todatefield").style.display = "inline";
+            document.getElementById("ddlunitname").disabled = true;
+
+            var selectedValues = $('#empname').val();
+            $('input[id=EmpName]').val(selectedValues);
+        });
+
+    });
+</script>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+
+        <!-- Start: Sidebar -->
+        <!-- End: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- Start: Content -->
+        <div class="mainpanel">
+            <div class="col-lg-12 col-md-12">
+
+                <label style="font-size:18px">Commission Report</label>
+
+                <div class="col-md-12 col-lg-12">
+
+                    <div class="col-md-3 col-lg-3">
+                        <label>Shop Name<i style="color: red">*</i></label>
+                        @Html.DropDownListFor(model => model.ShopDetails.ShopName, new SelectList(Model.ShopList, "ShopName", "ShopName"), new { id = "ddlshopname", @class = "form-control", multiple = "multiple", style = "height:85px" })
+                    </div>
+
+                    <div id="unitfield" style="display: none">
+                        <div class="col-lg-2 col-md-2">
+                            <label>Target In Units<i style="color: red">*</i></label>
+                            @Html.DropDownListFor(model => model.UnitDetails.UnitName, new SelectList(Model.UnitList, "UnitName", "UnitName"), new { id = "ddlunitname", @class = "form-control", multiple = "multiple", style = "height:85px" })
+                        </div>
+                        <input type="hidden" id="ShopName" name="ShopName" />
+                        <input type="hidden" id="EmpName" name="EmpName" value="" />
+                        <input type="hidden" id="UnitName" name="UnitName" value="" />
+                    </div>
+
+                    <div class="col-lg-3 col-md-3" id="empfield" style="display: none">
+                        <label>Employee Name<i style="color: red">*</i></label>
+                        @Html.DropDownListFor(model => model.EmployeeDetails.Name, Enumerable.Empty<SelectListItem>(), new { id = "empname", @class = "form-control", multiple = "multiple", style = "height:85px" })
+                    </div>
+
+                    <div class="col-lg-2 col-md-2" id="frmdatefield" style="display: none">
+                        <label>From Date<i style="color: red">*</i></label><br />
+                        @Html.TextBoxFor(model => model.RetailBillDetails.ModifiedOn, new { id = "fromdate", @class = "form-control", @placeholder = "From Date" })
+                    </div>
+                    <div class="col-lg-2 col-md-2" id="todatefield" style="display: none">
+                        <label>To Date<i style="color: red">*</i></label><br />
+                        @Html.TextBoxFor(model => model.RetailBillDetails.ModifiedOn, new { id = "todate", @class = "form-control", @placeholder = "To Date" })
+                    </div>
+
+                </div>
+
+                <div class="col-md-12 col-lg-12">
+                    <div id="ItemPartialView"></div>
+                </div>
+
+                <div class="col-md-12 col-lg-12">
+                    <div style="height: 10px"></div>
+                </div>
+
+                <div class="col-lg-12 col-md-12">
+                    <div class="col-lg-12 col-md-12">
+                        <div class="col-lg-offset-6 col-md-offset-6" style="display: none" id="printbtn">
+                            <button type="button" class="btn btn-primary" onclick="PrintDetails()">Print</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

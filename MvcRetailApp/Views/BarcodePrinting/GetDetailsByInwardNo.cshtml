@@ -1,0 +1,81 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetDetailsByInwardNo";
+}
+
+@*OPEN POPUP ON PRINT CLICK BUTTON*@
+<script type="text/javascript">
+    function OpenBarcodePopUp(itemcode) {
+        window.open("/BarcodePrinting/PrintBarcode?code=" + itemcode, "_target", "width=190,height=188,top=300px,left=600px");
+    }
+</script>
+
+<div class="col-md-12 col-lg-12">
+    <table class="table" style="border-color: #d2d2d2; border: outset">
+        <thead>
+            <tr>
+                <th style="text-align: center">
+                    <label>Name</label>
+                </th>
+               @* <th style="text-align: center">
+                    <label>Description</label>
+                </th>*@
+                <th style="text-align: center">
+                    <label>Qty</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Design</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Size</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Cost<br />
+                        Price</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Selling<br />
+                        Price</label>
+                </th>
+                <th style="text-align: center">
+                    <label>M.R.P.</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Color</label>
+                </th>
+                <th style="text-align: center">
+                    <label>Barcode</label>
+                </th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                foreach (var item in Model.InwardItemsFromSupplierList)
+                {
+                    var cp = Convert.ToDouble(item.CostPrice);
+                    var costprice = cp.ToString("#,###.00##");
+                    var sp = Convert.ToDouble(item.SellingPrice);
+                    var sellingprice = sp.ToString("#,###.00##");
+                    var mrp = Convert.ToDouble(item.MRP);
+                    var MRP = mrp.ToString("#,###.00##");
+                    var barcodeno = item.Barcode.Remove(item.Barcode.Length - 4, 4);
+                <tr>
+                    <td style="text-align: left">@item.Item</td>
+                    @*<td style="text-align: left">@item.Description</td>*@
+                    <td style="text-align: left">@item.ReceivedQuantity</td>
+                    <td style="text-align: left">@item.DesignName</td>
+                    <td style="text-align: left">@item.Size</td>
+                    <td style="text-align: right">@costprice</td>
+                    <td style="text-align: right">@sellingprice</td>
+                    <td style="text-align: right">@MRP</td>
+                    <td style="text-align: left">@item.Color</td>
+                    <td style="text-align: center">@barcodeno</td>
+                    <td style="text-align: center">
+                        <button type="button" id="printbtn" class="fa fa-xs btn btn-success" onclick="OpenBarcodePopUp('@item.itemCode')">Print</button></td>
+                </tr>
+                }
+            }
+        </tbody>
+    </table>
+</div>

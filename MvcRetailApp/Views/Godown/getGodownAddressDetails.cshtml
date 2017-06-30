@@ -1,0 +1,41 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "getGodownAddressDetails";
+}
+
+<script>
+$("#GodownAddressDetails_AreaName").change(function () {
+            var txt = document.getElementById("GodownAddressDetails_AreaName").value;
+            txt = txt.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            document.getElementById("GodownAddressDetails_AreaName").value = txt;
+        });
+
+        $("#GodownAddressDetails_Address").change(function () {
+            var txt = document.getElementById("GodownAddressDetails_Address").value;
+            txt = txt.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            document.getElementById("GodownAddressDetails_Address").value = txt;
+        });
+</script>
+
+             <label>Address<i style="color:red">*</i></label>
+            @Html.TextAreaFor(model => model.GodownAddressDetails.Address, new  {@class="form-control", @placeholder="Address" })
+            @Html.ValidationMessageFor(model=>model.GodownAddressDetails.Address, null, new {style="color:red"})
+
+            <label>Area Name<i style="color:red">*</i></label>
+            @Html.TextBoxFor(model => model.GodownAddressDetails.AreaName, new  {@class="form-control" , @placeholder="Area Name"})
+            @Html.ValidationMessageFor(model=>model.GodownAddressDetails.AreaName, null, new {style="color:red"})
+
+            <label>Location</label>
+            @Html.DropDownListFor(model=>model.GodownAddressDetails.Location,new SelectList(Model.CityList,"cityName","cityName"),"Select", new{@class="form-control"})
+            @Html.ValidationMessageFor(model=>model.GodownAddressDetails.Location, null, new {style="color:red"})
+
+            
+       
+           
+
+
+

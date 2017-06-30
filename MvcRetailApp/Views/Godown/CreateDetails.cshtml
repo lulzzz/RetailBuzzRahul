@@ -1,0 +1,444 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CreateDetails";
+}
+
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, obj) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         window.location.assign("/Godown/Create");
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#exit").click(function () {
+            confirmbox("Are you sure you want to Exit?")
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $.ajax({
+            url: '/GodownMaster/getGodownAddressDetails',
+            type: "GET",
+            success: function (data) {
+                if (data != null) {
+                    $("#sortable").html(data);
+                }
+            },
+            error: function () {
+            }
+        });
+
+    });
+
+    function SaveAddress() {
+        var gdcode = document.getElementById("GodownDetails_GdCode").value;
+        var godownLoc = document.getElementById("GodownAddressDetails_Location").value;
+        var godownAddr = document.getElementById("GodownAddressDetails_Address").value;
+        $.ajax({
+            url: '/GodownMaster/SaveGodownMaster',
+            type: "POST",
+            data: { gdcode: gdcode, godownLoc: godownLoc, godownAddr: godownAddr },
+            success: function (data) {
+                if (data != null) {
+                    $("#sortable").html(data);
+                }
+            },
+            error: function () {
+            }
+        });
+    }
+
+
+</script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#itemShortName").change(function () {
+            var idModel1 = $(this).val();
+            var category = document.getElementById("ItemDetails_itemCategory").value;
+            $.ajax({
+                url: '/GodownMaster/getGodownAddressDetails',
+                type: "GET",
+                success: function (data) {
+                    if (data != null) {
+                        $("#sortable").html(data);
+                    }
+                },
+                error: function () {
+                }
+            });
+
+            $.getJSON("/Item/createBarcode", {},
+    function (stateData) {
+        var barcodeNo = stateData.barcodeNo;
+        var img = stateData.imageUrl;
+        var rowId = 1;
+        //var img=stateData.imageUrl;
+
+        var unorderedList = $("#sortable1");
+        //document.getElementById("headerTag").style.display = "block";
+        unorderedList.append(
+        "<div class='row'> " +
+           "<div class='form-group col-md-1 col-lg-1'><input type='hidden' name='barcodeNo" + rowId + "' id='barcodeNo" + rowId + "' value='" + barcodeNo + "' /><img id='barcode" + rowId + "'  name='barcode" + rowId + "' src=" + img + " /><input type='hidden' name='hiddenImg" + rowId + "' id='hiddenImg" + rowId + "' value=" + img + "/></div>" +
+           "<div class='form-group col-md-3 col-lg-3'><input type='text' placeholder='Item Name' class='form-control' name='item" + rowId + "' id='item" + rowId + "'/></div>" +
+           "<div class='form-group col-md-2 col-lg-2'><input type='text' placeholder='Item Rate' class='form-control' name='itemRate" + rowId + "' id='itemRate" + rowId + "'/></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><textarea rows='4' placeholder='Item Description' class='form-control' name='itemDescription" + rowId + "' id='itemDescription" + rowId + "'/></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><a href='#' class='deleteclass' onclick='DeleteRow(this)'>Delete</a></div></div>"
+
+        );
+
+        $("#hdnRowCount").val(rowId);
+        rowId++;
+        return true;
+
+    });
+            document.getElementById("Save").style.display = "inline";
+            document.getElementById("Print").style.display = "inline";
+        });
+    });
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+            $.getJSON("/Item/createBarcode", {},
+    function (stateData) {
+        var img = stateData.imageUrl;
+        var barcodeNo = stateData.barcodeNo;
+        var rowId = document.getElementById("hdnRowCount").value;
+        rowId = +rowId + 1;
+        var unorderedList = $("#sortable1");
+
+        unorderedList.append(
+           "<div class='row'> " +
+           "<div class='form-group col-md-1 col-lg-1'><input type='hidden' name='barcodeNo" + rowId + "' id='barcodeNo" + rowId + "' value='" + barcodeNo + "' /><img id='barcode" + rowId + "'  name='barcode" + rowId + "' src=" + img + " /><input type='hidden' name='hiddenImg" + rowId + "' id='hiddenImg" + rowId + "' value=" + img + "/></div>" +
+           "<div class='form-group col-md-3 col-lg-3'><input type='text' placeholder='Item Name' class='form-control' name='item" + rowId + "' id='item" + rowId + "'/></div>" +
+           "<div class='form-group col-md-2 col-lg-2'><input type='text' placeholder='Item Rate' class='form-control' name='itemRate" + rowId + "' id='itemRate" + rowId + "'/></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><textarea rows='4' placeholder='Item Description' class='form-control' name='itemDescription" + rowId + "' id='itemDescription" + rowId + "'/></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><a href='#' class='deleteclass' onclick='DeleteRow(this)'>Delete</a></div></div>"
+       );
+
+
+        document.getElementById("hdnRowCount").value = rowId;
+        return true;
+
+    });
+        }
+    });
+
+    function DeleteRow(obj) {
+        confirmbox("Are you sure you wish to delete this row?", obj);
+    }
+</script>
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlEmployee").change(function () {
+            var modeldata = $(this).val();
+            $.ajax({
+                url: '/GodownMaster/GetDetailsByEmpname',
+                type: "GET",
+                data: { EmpId: modeldata },
+                success: function (data) {
+                    if (data != null) {
+                        document.getElementById("detaildiv").style.display = "inline";
+                        document.getElementById("GodownDetails.Designation").innerHTML = data.Designation;
+                        document.getElementById("GodownDetails_Designation").value = data.Designation;
+                        //OR USE THIS
+                        document.getElementById("GodownDetails.EmpEmail").innerHTML = data.Email;
+                        $("#GodownDetails_EmpEmail").val(data.Email)
+                    }
+                }
+            });
+        });
+    });
+
+</script>
+
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+<!-- Start: Main -->
+
+<!-- Start: Sidebar -->
+<section>
+    <div class="mainwrapper">
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+
+
+        <!-- Start: Content -->
+        @using (Html.BeginForm())
+        {
+            @Html.HiddenFor(model => model.GodownDetails.Designation)
+            @Html.HiddenFor(model => model.GodownDetails.EmpEmail)
+            <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                <source src="" type="audio/ogg" />
+            </audio>
+            <div class="mainpanel">
+                <div class="col-md-12 col-lg-12">
+                    <form action="Create" method="post">
+
+                        @Html.ValidationSummary(true)
+                        <input type="hidden" id="hdnRowCount" name="hdnRowCount" />
+
+                        <br />
+
+                        <div class="panel panel-default">
+                            <div class="panel-heading" style="vertical-align: central; height: 50%">
+                                <h2><strong>Godown Details</strong></h2>
+                            </div>
+                            <div class="panel-body">
+
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label>GdCode</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.GdCode)
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label>Company Name</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.ComponyName)
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label>Godown Name</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.GodownName)
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label>Contact No. 1</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.ContactNo1)
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label>Contact No. 2</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.ContactNo2)
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label>Contact No. 3</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.ContactNo3)
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label>Godown Email</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.GodownEmail)
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label>Employee Name</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.EmpName)
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label>Designation</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.Designation)
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label>Employee Email</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.EmpEmail)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>@*End of row*@
+
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label>Short Code</label><br />
+                                                    @Html.DisplayFor(model => model.GodownDetails.ShortCode)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>@*End of row*@
+
+                            </div>
+                        </div>
+
+                        <div class="row form-group">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="col-md-6 col-lg-6">
+                                    <div class="panel panel-default">
+                                        <div class="panel-heading" style="vertical-align: central; height: 50%">
+                                            <h2><strong>Godown Addresses</strong></h2>
+                                        </div>
+                                        <div class="panel-body">
+
+                                            <div class="row">
+                                                <div class="col-md-12 col-lg-12">
+
+                                                    <table class="table-bordered " style="border-width: medium; border-color: gray;">
+                                                        <tr>
+                                                            <th class="col-md-4 col-lg-4">Location
+                                                            </th>
+                                                            <th class="col-md-4 col-lg-4">AreaName
+                                                            </th>
+                                                            <th class="col-md-4 col-lg-4">Address
+                                                            </th>
+                                                        </tr>
+
+                                                        @{
+            if (Model.GodownAddressList != null)
+            {
+                foreach (var data in Model.GodownAddressList)
+                {
+                                                            <tr>
+                                                                <td class="col-md-4 col-lg-4">
+                                                                    @Html.DisplayFor(modeldata => data.Location)
+                                                                </td>
+                                                                <td class="col-md-4 col-lg-4">
+                                                                    @Html.DisplayFor(modeldata => data.AreaName)
+                                                                </td>
+                                                                <td class="col-md-4 col-lg-4">
+                                                                    @Html.DisplayFor(modeldata => data.Address)
+                                                                </td>
+                                                            </tr>
+                }
+            }
+                                                        }
+
+                                                    </table>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </form>
+                </div>
+
+                <div style="text-align: center">
+                    <button type="button" class="btn btn-success" id="exit">Exit</button>
+                </div>
+            </div>
+        }
+    </div>
+</section>

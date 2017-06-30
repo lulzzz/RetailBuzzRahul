@@ -1,0 +1,90 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PopUpPage";
+}
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<!-- Plugins - Via CDN -->
+<script type ="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Button").click(function () {
+            window.close();
+        });
+    });
+</script>
+<div class="col-md-12 col-lg-12">
+    <div class="row form-group">
+        <div class="form-group"></div>
+        <div class="form-group"></div>
+        <div class="col-md-3 col-lg-3">
+            <label>Design Code</label><br />
+            @Html.DisplayFor(model => model.DesignDetails.DesignCode)
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <label>Design Name</label><br />
+            @Html.DisplayFor(model => model.DesignDetails.DesignName)
+            <input type="hidden" id="designName" value="@Model.DesignDetails.DesignName" />
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <label>Description</label><br />
+            @Html.DisplayFor(model => model.DesignDetails.DesignDescription)
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <label>Size</label><br />
+            @Html.DisplayFor(model => model.DesignDetails.DesignSize)
+        </div>
+    </div>
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-4 col-md-4">
+            <div class="row">
+                <div class="row">
+                    @{
+                        if (Model.ItemDetails != null)
+                        {
+                        <label>Item Color</label><br />
+                        @Html.DisplayFor(model => model.ItemDetails.colorCode);
+                        }
+                        else
+                        {
+                        <label>Item Color</label><br />
+                        @Html.DisplayFor(model => model.NonInventoryItemDetails.colorCode);
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-4 col-md-4">
+            <div class="row">
+                <div class="row">
+                    <div class="row">
+                        <div class="row">
+                            <div class="row">
+                                <div class="row">
+                                    <label>Brand</label><br />
+                                    @{
+                                        if (Model.ItemDetails != null)
+                                        {
+                                        @Html.DisplayFor(model => model.ItemDetails.brandName);
+                                        }
+                                        else
+                                        {
+                                        @Html.DisplayFor(model => model.NonInventoryItemDetails.brandName);
+                                        }
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-offset-5 col-md-offset-5">
+        <input type="button" class="btn btn-primary " id="Button" value="Close" />
+    </div>

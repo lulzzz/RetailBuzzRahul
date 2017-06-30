@@ -1,0 +1,51 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GodownShopReturns";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+@using (Html.BeginForm("GodownShopReturns", "PurchaseReturn", FormMethod.Post))
+{ 
+    @Html.HiddenFor(model => model.PurchaseReturnNo)
+    @Html.HiddenFor(model => model.PurchaseReturnDetails.SupplierName)
+    @Html.HiddenFor(model => model.PurchaseReturnDetails.SupplierContact)
+    @Html.HiddenFor(model => model.PurchaseReturnDetails.PoNo)
+    <table style="border: 1px double; width: 100%">
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-md-8 col-lg-8">
+                    </div>
+                    <div class="col-md-4 col-lg-4">
+                        @{
+    string date = DateTime.Now.ToString("dd/MM/yyyy");
+    string billno = Model.PurchaseReturnNo;
+                        }
+                        <div class="col-md-12 col-lg-12">
+                            <div style="height: 10px"></div>
+                            <table>
+                                <tr style="float: right">
+                                    <td>
+                                        <label style="font-size: 14px;">Date:&nbsp;&nbsp;</label></td>
+                                    <td>
+                                        <label style="font-size: 16px;">@date</label></td>
+                                </tr>
+                                <tr style="float: right">
+                                    <td>
+                                        <label style="font-size: 14px; text-align: right">Purchase Return No:&nbsp;&nbsp;</label></td>
+                                    <td>
+                                        <label style="font-size: 16px; text-align: right">@billno</label></td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="LoadItemList"></div>
+                </div>
+            </td>
+        </tr>
+    </table>
+}

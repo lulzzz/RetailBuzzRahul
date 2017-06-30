@@ -1,0 +1,66 @@
+﻿@model CodeFirstEntities.User
+@{
+    ViewBag.Title = "CreateUserHeader";
+}
+<header class="navbar navbar-fixed-top" style="float: left">
+
+    <div class="headerwrapper">
+        <div class="header-left">
+            <a href='@Url.Content("~/Dashboard/Dashboard")'>
+                <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 105px; margin-left: 65px;" />
+            </a>
+        </div>
+        <!-- header-left -->
+        
+        <div class="header-right">
+
+            <div class="pull-right header-btns">
+                <div class="btn-group user-menu">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicons glyphicons-user"></span><b>@HttpContext.Current.Session["UserName"]</b> </button>
+                    <button type="button" class="btn btn-sm dropdown-toggle padding-none" data-toggle="dropdown">
+                        <img src="/Images/avatars/header/header-login.png" alt="user avatar" width="28" height="28">
+                    </button>
+                    <ul class="dropdown-menu checkbox-persist" role="menu">
+                        <li class="menu-arrow">
+                            <div class="menu-arrow-up"></div>
+                        </li>
+                        <li class="dropdown-header">Your Account <span class="pull-right glyphicons glyphicons-user"></span></li>
+                        <li>
+                            <ul class="dropdown-items">
+                                <li>
+                                    <div class="item-icon"><i class="fa fa-envelope-o"></i></div>
+                                    <a class="item-message" href="#">Messages</a> </li>
+                                <li>
+                                    <div class="item-icon"><i class="fa fa-calendar"></i></div>
+                                    <a class="item-message" href="calendar.html">Calendar</a> </li>
+                                <li class="border-bottom-none">
+                                    <div class="item-icon"><i class="fa fa-cog"></i></div>
+                                    <a class="item-message" href="customizer.html">Settings</a> </li>
+                                <li class="padding-none">
+                                    <div class="dropdown-lockout"><i class="fa fa-lock"></i><a href="screen-lock.html">Screen Lock</a></div>
+                                    <div class="dropdown-signout"><i class="fa fa-sign-out"></i><a href="/User/Login">Sign Out</a></div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="alerts-menu">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicons glyphicons-bell"></span><b>8-May-2014</b> </button>
+
+                </div>
+                <div class="tasks-menu">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicons glyphicons-tag"></span><b>7</b> </button>
+                    <ul class="dropdown-menu dropdown-checklist checkbox-persist" role="menu">
+                        <li class="menu-arrow"></li>
+                    </ul>
+                </div>
+
+            </div>
+            <!-- btn-group -->
+        </div>
+        <!-- pull-right -->
+
+    </div>
+
+    <!-- headerwrapper -->
+</header>

@@ -1,0 +1,45 @@
+﻿@model CodeFirstEntities.Item
+@{
+    ViewBag.Title = "PopUpPage";
+}
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<!-- Plugins - Via CDN -->
+<script type ="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Button").click(function () {
+            window.close();
+        });
+    });
+</script>
+<div class="col-md-12 col-lg-12">
+    <div class="row form-group">
+        <div class="form-group"></div>
+        <div class="form-group"></div>
+        <div class="col-md-3 col-lg-3">
+            <label>Design Code</label><br />
+            @Html.DisplayFor(model => model.designCode)
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <label>Design Name</label><br />
+            @Html.DisplayFor(model => model.designName)
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <label>Material</label><br />
+            @Html.DisplayFor(model => model.typeOfMaterial)
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <label>Size</label><br />
+            @Html.DisplayFor(model => model.size)
+        </div>
+    </div>
+    <div class="col-lg-offset-5 col-md-offset-5">
+        <input type="button" class="btn btn-primary " id="Button" value="Close" />
+    </div>
+</div>

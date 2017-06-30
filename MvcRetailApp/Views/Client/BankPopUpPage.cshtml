@@ -1,0 +1,285 @@
+﻿@model CodeFirstEntities.ClientBankDetail
+@{
+    ViewBag.Title = "BankPopUpPage";
+}
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<!-- Plugins - Via CDN -->
+<script type ="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("textarea").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlBankNames").change(function () {
+            var modeldata = $(this).val();
+            $.getJSON("/Client/GetBranch", { BankName: modeldata },
+            function (Data) {
+                var select = $("#ddlBankbranches");
+                select.empty();
+                select.append($('<option/>', {
+                    value: 0,
+                    text: "Select Branch"
+                }));
+                $.each(Data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+                document.getElementById("DisplayBranch").style.display = "inline";
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlBankbranches").change(function () {
+            var idmodel = $(this).val();
+            $.ajax({
+                url: '/Client/GetIFSCNoAndAddress',
+                type: "GET",
+                data: { branch: idmodel },
+                success: function (data) {
+                    document.getElementById("DisplayAllValues").style.display = "inline";
+                    document.getElementById("Display").style.display = "inline";
+                    document.getElementById("DisplayMICR").style.display = "inline";
+                    $("#BankAddress").val(data.BankAddress);
+                    $("#BankIFSCNo").val(data.IFSCNo)
+                    document.getElementById("ClientBankDetails.BankAddress").innerHTML = data.BankAddress;
+                    document.getElementById("ClientBankDetails.BankIfscno").innerHTML = data.IFSCNo;
+                    $("#MICRCode").val(data.Micr);
+                    document.getElementById("Add New Bank").style.display = "inline";
+                    document.getElementById("Add Final Bank").style.display = "inline";
+                }
+            });
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    function check(value) {
+
+        if ($("#ddlBankNames").val() != "") {
+            if ($("#AccountNo").val() == "" || $("#AccountType").val() == "" ||
+                $("#ddlBankbranches").val() == "") {
+                alertbox("Branch,Account No and Account Type fields are required");
+                return false;
+            } else if ($("#AccountNo").val().length > 25 || $("#AccountNo").val().length < 10) {
+                alertbox("Account No should be between 10 and 25");
+                return false;
+            }
+            else if ($("#MICRCode").val() != "") {
+                if ($("#MICRCode").val().length != 9) {
+                    alertbox("MICR Code Length Must Be 9");
+                    return false;
+                }
+            }
+        }
+
+        $.ajax({
+            url: '/Client/BankPopUpPage',
+            type: "POST",
+            data: {
+                branch: document.getElementById("ddlBankbranches").value,
+                bankname: document.getElementById("ddlBankNames").value,
+                clientcode: document.getElementById("ClientCode").value,
+                bankifscno: document.getElementById("BankIFSCNo").value,
+                bankaddress: document.getElementById("BankAddress").value,
+                accountno: document.getElementById("AccountNo").value,
+                accounttype: document.getElementById("AccountType").value,
+                micr: document.getElementById("MICRCode").value,
+            },
+            success: function (data) {
+                if (value == "New Bank") {
+                    window.location.reload();
+                }
+                else {
+                    $.getJSON("/Client/UpdatedBankDetails", { clientcode: document.getElementById("ClientCode").value },
+                            function (data) {
+                                var select = window.parent.opener.document.getElementById("ddlclientbanknames");
+                                select.options.length = 0;
+                                var option = document.createElement("option");
+                                option.value = "";
+                                option.text = "Select Bank";
+                                select.appendChild(option);
+                                $.each(data, function (index, itemData) {
+                                    var option1 = document.createElement("option");
+                                    option1.value = itemData.Value;
+                                    option1.text = itemData.Text;
+                                    select.appendChild(option1);
+
+                                });
+                                window.close();
+                            });
+                }
+            }
+        });
+    }
+</script>
+
+@Html.HiddenFor(model => model.ClientCode)
+@Html.HiddenFor(model => model.BankAddress)
+@Html.HiddenFor(model => model.BankIFSCNo)
+@Html.ValidationSummary(true)
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+    <source src="" type="audio/ogg" />
+</audio>
+<div class="container">
+    <div class="form-group"></div>
+    <div class="col-sm-12">
+        <div class="row">
+            <div class="form-group"></div>
+            <div class="col-xs-4">
+                <div class="col-xs-12">
+                    <div class="form-group row">
+                        <label for="exampleInputBankName">Bank Name</label>
+                        @Html.DropDownListFor(model => model.BankName, new SelectList(Model.BankNameList, "bankName", "bankName"), "Select Bank", new { id = "ddlBankNames", @placeholder = "BankName", @class = "form-control" })
+                        @Html.ValidationMessageFor(model => model.BankName, null, new { style = "color:red" })
+                    </div>
+                    <div class="form-group row">
+                        <div style="display: none" id="DisplayBranch">
+                            <label for="exampleInputBranch">Branch<i style="color: red">*</i></label>
+                            @Html.DropDownListFor(model => model.Branch, Enumerable.Empty<SelectListItem>(), "Select Branch", new { id = "ddlBankbranches", @placeholder = "Branch", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.Branch, null, new { style = "color:red" })
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-xs-4">
+                <div class="col-xs-12">
+                    <div id="DisplayAllValues" style="display: none">
+                        <div class="col-xs-12">
+                            <div class="form-group row">
+                                <div class="form-group">
+                                    <label>Bank IFSCNo</label><br />
+                                    <label id="ClientBankDetails.BankIfscno" style="font-weight: normal"></label>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputBankLocation">Bank Location</label><br />
+                                <label id="ClientBankDetails.BankAddress" style="font-weight: normal"></label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xs-4">
+                <div class="col-xs-12">
+                    <div id="Display" style="display: none">
+                        <div class="form-group row">
+                            <label for="exampleInputAccountType">Account Type<i style="color: red">*</i></label>
+                            @Html.DropDownListFor(model => model.AccountType, new List<SelectListItem> { new SelectListItem { Text = "Current" }, new SelectListItem { Text = "Savings" } }, "Account Type", new { @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.AccountType, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputAccountNo">Account Number<i style="color: red">*</i></label>
+                            @Html.TextBoxFor(model => model.AccountNo, new { @placeholder = "Account Number", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.AccountNo, null, new { style = "color:red" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-xs-4">
+                <div class="col-xs-12">
+                    <div id="DisplayMICR" style="display: none">
+                        <div class="form-group row">
+                            <label for="exampleInputAccountNo">MICR Code</label>
+                            @Html.TextBoxFor(model => model.MICRCode, new { @placeholder = "MICR Code", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.MICRCode, null, new { style = "color:red" })
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-xs-8"></div>
+        </div>
+
+
+        <div class="row">
+            <div class="col-xs-3"></div>
+            <div class="col-xs-1">
+                <button type="submit" id="Add New Bank" name="Submit" style="display: none" onclick="check('New Bank')" class=" btn btn-info">Add New Bank</button>
+            </div>
+            <div class="col-xs-2"></div>
+            <div class="col-xs-1">
+                <button type="submit" id="Add Final Bank" name="Submit" style="display: none" onclick="check('Final Bank')" class=" btn btn-info">Add Final Bank</button>
+            </div>
+        </div>
+    </div>
+
+</div>
+

@@ -1,0 +1,87 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetGodownStockTillDate";
+}
+<html>
+<head>
+    <title>Godown Stock Details</title>
+    <meta name="keywords" content="Retail Software" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+    <!-- Font CSS  -->
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+    <!-- Core CSS  -->
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+    <link href="//cdn.datatables.net/responsive/1.0.1/css/dataTables.responsive.css" rel="stylesheet" />
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+    <script src="@Url.Content("~/Scripts/dataTables.bootstrap.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery.dataTables.min.js")"></script>
+    <link href="http://cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
+    <script src="http://cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+    <script src="http://cdn.datatables.net/responsive/1.0.1/js/dataTables.responsive.js"></script>
+    <script type="text/javascript">
+        jQuery(document).ready(function () {
+            jQuery('#basicTable').DataTable({
+                responsive: true,
+            });
+            console.clear();
+        });
+    </script>
+</head>
+<body>
+    <section>
+        <div style="height: 30PX;"></div>
+        <div class="col-lg-12 col-md-12 col-sd-12 col-xs-12">
+            <div class="col-lg-2 col-md-2"></div>
+            <table id="basicTable" class="table table-striped table-hover table-condensed col-lg-8 col-md-8 col-sm-8">
+                <thead>
+                    <tr>
+                        <th class="col-lg-2 col-md-2">Godown Code</th>
+                        <th class="col-lg-2 col-md-2">Godown Name</th>
+                        <th class="col-lg-2 col-md-2">Item Code</th>
+                        <th class="col-lg-2 col-md-2">Item Name</th>
+                        <th class="col-lg-2 col-md-2">Item Quantity</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin")
+                        {
+                            Model.GodownStockList = Model.GodownStockList;
+                        }
+                        else
+                        {
+                            Model.GodownStockList = Model.GodownStockList.Where(m => m.GodownCode == Session["LOGINSHOPGODOWNCODE"].ToString());
+                        }
+                        if (Model.GodownStockList != null && Model.GodownStockList.Any())
+                        {
+                            foreach (var data in Model.GodownStockList)
+                            {
+                        <tr>
+                            <td>@Html.DisplayFor(Modeldata => data.GodownCode)</td>
+                            <td>@Html.DisplayFor(Modeldata => data.GodownName)</td>
+                            <td>@Html.DisplayFor(Modeldata => data.ItemCode)</td>
+                            <td>@Html.DisplayFor(Modeldata => data.ItemName)</td>
+                            <td>@Html.DisplayFor(Modeldata => data.Quantity)</td>
+                        </tr>
+                            }
+                        }
+                    }
+
+                </tbody>
+            </table>
+        </div>
+        <div class="col-lg-2 col-md-2"></div>
+    </section>
+</body>
+</html>
+
+

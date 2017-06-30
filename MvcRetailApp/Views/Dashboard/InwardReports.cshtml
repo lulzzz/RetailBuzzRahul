@@ -1,0 +1,276 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "InwardReports";
+}
+@{
+    string EmpDesignation = (string)TempData["EmployeeDesignation"];
+    TempData["EmployeeDesignation"] = EmpDesignation;
+    string EmpDepartment = (string)TempData["EmployeeDepartment"];
+    TempData["EmployeeDepartment"] = EmpDepartment;
+
+    string PendingPOCard = "No";
+    string ExpectedInwardCard = "No";
+    string WithoutPOCard = "No";
+    string GodownToShopCard = "No";
+    string ShopToGodownCard = "No";
+    string InterGodownCard = "No";
+    string InterShopCard = "No";
+
+    if (Model.userCredentialList != null && Model.userCredentialList.Any())
+    {
+        foreach (var data in Model.userCredentialList)
+        {
+            if (data.AssignDashboardId == "D27")
+            {
+                PendingPOCard = "Yes";
+            }
+            if (data.AssignDashboardId == "D33")
+            {
+                ExpectedInwardCard = "Yes";
+            }
+            
+            if (data.AssignDashboardId == "D33")
+            {
+                WithoutPOCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D35")
+            {
+                GodownToShopCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D36")
+            {
+                ShopToGodownCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D38")
+            {
+                InterGodownCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D37")
+            {
+                InterShopCard = "Yes";
+            }
+        }
+    }
+    
+    //List Of All Pending Poes
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || EmpDesignation == "PurchaseManager" || PendingPOCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lightorange">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-refresh fa-spin fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var pendingpoes = (IEnumerable<CodeFirstEntities.PurchaseOrderDetail>)TempData["PendingPoes"];
+        TempData["PendingPoes"] = pendingpoes;
+        <div class="huge">@pendingpoes.Count()</div>
+                        }
+                        <div>Pending Poes</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="pendingPoList()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //List Of All Current Date Expected Inwards
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || ExpectedInwardCard == "Yes" || EmpDesignation == "GodownKeeper" || EmpDesignation == "ShopKeeper")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lightorange">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-file-text-o fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var inwarddetails = (IEnumerable<CodeFirstEntities.PurchaseOrderDetail>)TempData["Inward"];
+        TempData["Inward"] = inwarddetails;
+        <div class="huge">@inwarddetails.Count()</div>
+                        }
+                        <div>Expected Inwards</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="InwardDetailsByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+
+    //Inward WithoutPo In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || WithoutPOCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lightorange">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-right fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var inwardwithoutpo = (IEnumerable<CodeFirstEntities.InwardFromSupplier>)TempData["InwardWithoutPO"];
+        TempData["InwardWithoutPO"] = inwardwithoutpo;
+        <div class="huge">@inwardwithoutpo.Count()</div>
+                        }
+                        <div>Without PO</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="InwardWithoutPoByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Inward Created For Shop In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || GodownToShopCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lightorange">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-right fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var inwardfromgodown = (IEnumerable<CodeFirstEntities.InwardFromGodown>)TempData["InwardFromGodown"];
+        TempData["InwardFromGodown"] = inwardfromgodown;
+        <div class="huge">@inwardfromgodown.Count()</div>
+                        }
+                        <div>Godown To Shop</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="InwardFromGodownByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Inward Created For Godown In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || ShopToGodownCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lightorange">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-right fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var inwardshoptogodown = (IEnumerable<CodeFirstEntities.InwardFromShopToGodown>)TempData["InwardShopToGodown"];
+        TempData["InwardShopToGodown"] = inwardshoptogodown;
+        <div class="huge">@inwardshoptogodown.Count()</div>
+                        }
+                        <div>Shop To Godown</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="InwardShopToGodownByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Inward Created Inter Godown In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || InterGodownCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lightorange">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-right fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var inwardintergodown = (IEnumerable<CodeFirstEntities.InwardInterGodown>)TempData["InwardInterGodown"];
+        TempData["InwardInterGodown"] = inwardintergodown;
+        <div class="huge">@inwardintergodown.Count()</div>
+                        }
+                        <div>Inter Godown</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="InwardInterGodownByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Inward Created Inter Shop In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || InterShopCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lightorange">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-right fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var inwardintershop = (IEnumerable<CodeFirstEntities.InwardInterShop>)TempData["InwardInterShop"];
+        TempData["InwardInterShop"] = inwardintershop;
+        <div class="huge">@inwardintershop.Count()</div>
+                        }
+                        <div>Inter Shop</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="InwardInterShopByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+}

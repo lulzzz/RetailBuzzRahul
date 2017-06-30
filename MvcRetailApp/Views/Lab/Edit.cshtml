@@ -1,0 +1,412 @@
+﻿@model CodeFirstEntities.LabMaster
+
+@{
+    ViewBag.Title = "Edit";
+}
+<style type="text/css">
+body{
+	background:#474F57;  
+	margin:0; 
+}
+a:link{
+	 		 font-family: 'Open Sans', sans-serif;
+			 font-size: 13px;
+			  color: #888;
+			  text-decoration:none;
+			  
+}
+a:hover.set1{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color:#FFF;
+			text-decoration:none;
+			 
+}
+a:hover.set2{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color:#000;
+			text-decoration:none;
+			 
+}
+a:active{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color:#fff;
+			text-decoration:none;	 
+}
+a:visited{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color: #888;
+			text-decoration:none;
+			 
+}
+	
+#header{
+		position:absolute;
+		border-top: 1px solid #ccc;
+		padding: 0px;
+		margin-top:0px;
+		
+		background:#474F57; 
+		height:50px;
+		width:100%;
+	   border-bottom: 0px solid #ddd;
+		-webkit-box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+		box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+		
+	}
+	.HeaderTab{
+				float:right;
+				font-family: 'Open Sans', sans-serif;
+				font-size: 13px;
+				color:#fff;
+				padding:20px 20px 20px 20px; 
+	}
+	.content{
+				position:absolute;
+				margin:50px 0 0 0;
+			 -webkit-font-smoothing: antialiased;
+			  box-sizing: border-box;
+			 color: rgb(102, 102, 102);
+			 display: block;
+		     font-family: 'Open Sans', sans-serif;
+			 font-size: 13px;
+             height: 100%;
+			 line-height: 22px;
+			 width: 1585px;
+			 
+			
+		}
+	.sidebar {
+				width: 230px;
+				float: left;
+				display: block;
+				color: #777;
+				position: relative;
+			}
+	.sidebar #nav {
+					display: block;
+					width: 100%;
+					margin: 0 auto;
+					position: relative;
+					z-index: 60;
+					}
+		.sidebar ul {
+						padding: 0px;
+						
+					}
+		.sidebar li {
+					
+						background:#474f57;
+						border-bottom: 1px solid #3C434A;
+						border-top: 1px solid #4F5861;
+						height:35px;
+						padding-top:5px;
+						padding-left:5px;	
+						text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.6);
+						color:#b7bebe;
+					}
+	   .mainbar {
+					position: relative;
+					margin-left: 230px;
+					margin-right: 0px;
+					width: auto;
+					overflow: hidden;
+					background: #EEEFF2;
+					border-left: 1px solid #ccc;
+					z-index: 50;
+					min-height: 800px;
+				}
+				.mainbar .matter {
+									border-top: 1px solid #ddd;
+									padding: 15px 15px 15px 15px;
+								 }
+				.mainbar .container {
+										max-width: 100% !important;
+										width: 100% !important;
+									}
+				.mainbar .page-head {
+									padding: 8px 20px;
+									background: #f3f3f3;
+									border-bottom: 1px solid #fff;
+									-webkit-box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+									box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+									font-family: 'Open Sans', sans-serif;
+									font-size:16px;
+									}
+				.mainbar .bread-crumb {
+										padding-top: 3px;
+										border-top: 1px solid #ddd;
+										font-size: 12px;
+										margin-top: 10px;
+										color: #aaa;
+										}
+				.FormDetails {
+							border: 1px solid #c9c9c9;
+							position: relative;
+							border-radius: 3px;
+							margin-top: 10px;
+							margin-bottom: 20px;
+							min-height: 50px;
+							box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+							background: #F4F2F5;
+						}
+				.FormDetails .FormDetails-head {
+background-color: #f8f8f8;
+background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f2f2f2));
+background: -webkit-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: -moz-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: -ms-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: -o-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: linear-gradient(top, #f8f8f8, #f2f2f2);
+border-top-right-radius: 3px;
+border-top-left-radius: 3px;
+text-shadow: 0px 1px #fff;
+border-bottom: 1px solid #ccc;
+border-top: 1px solid #fff;
+color: #2B3856;
+font-size: 14px;
+font-weight: bold;
+padding: 8px 15px;
+}
+*, *:before, *:after {
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+
+label { display: inline-block;; width: 150px; padding-left:-3px;font-weight:bold;		 }
+
+.textbox_style{
+background-color: #fff;
+color: #555;
+border: 1px solid #ccc;
+border-radius: 2px;
+-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+-webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+.btn {
+display: inline-block;
+padding: 6px 12px;
+margin-bottom: 0;
+font-size: 14px;
+font-weight: normal;
+line-height: 1.428571429;
+text-align: center;
+white-space: nowrap;
+vertical-align: middle;
+cursor: pointer;
+border: 1px solid transparent;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default {
+color: #fff;
+background-color: #000000;
+border-color: #adadad;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+footer{
+  background-color: #333;
+	padding:10px 0px;
+	color: #777;
+	font-size: 12px;
+	border-top: 1px solid #333;
+}
+</style>
+
+ <script type="text/javascript">
+     $(document).ready(function () {
+         $('#fileField').change(function () {
+             var imgpath = document.getElementById("fileField").value;
+             // alert(imgpath);
+             if (imgpath != "") {
+                 // code to get File Extension..
+                 var arr1 = new Array;
+                 arr1 = imgpath.split("\\");
+                 var len = arr1.length;
+                 var img1 = arr1[len - 1];
+                 var filext = img1.substring(img1.lastIndexOf(".") + 1);
+
+                 // Checking Extension
+                 if (filext == "jpg" || filext == "jpeg") {
+                     //document.getElementById('imgUser').src = imgpath;
+                 }
+                 else {
+                     alert("Please, Select .jpg format");
+                     document.getElementById('fileField').value = "";
+                     return false;
+                 }
+             }
+         });
+     });
+</script>
+       
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#list").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel == "") {
+                document.getElementById('right_form').style.display = "none";
+            }
+
+            else {
+                document.getElementById('right_form').style.display = "inline";
+                $.ajax({
+                    url: '/Lab/GetLabDetails',
+                    type: "GET",
+                    data: { labCode: idmodel },
+                    success: function (data) {
+                        if (data != null) {
+                            alert(data.labdescription);
+                            $("#labName").val(data.Name);
+                            $("#labId").val(data.Id);
+                            $("#labDescription").val(data.labdescription);
+                            document.getElementById("photo").innerHTML = data.logo;
+                            $("#fileField").val(data.logo);
+                        }
+                    },
+                    error: function () {
+                    }
+
+                });
+
+
+            }
+        });
+    });
+
+</script>
+
+            @using (Html.BeginForm("Edit", "Lab", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmCreate" }))
+
+                {
+    @Html.ValidationSummary(true)     
+                @Html.HiddenFor(model=>model.labId)
+           <div class="content">
+ 
+
+ <div id="leftb_menu">
+                @Html.Partial("MastersLeftMenu");
+            </div>
+ <div class="mainbar">
+            		 <div class="page-head"><b>Item Details</b>
+                     		<div class="bread-crumb">
+                            </div>
+                            <a href="#" class="set2"><i class="fa fa-plus fa-lg"></i></a>&nbsp; |&nbsp;
+                            <a href="#" class="set2"><i class="fa fa-floppy-o fa-lg"></i></a>&nbsp; | &nbsp;
+                            <a href="#" class="set2"><i class="fa fa-refresh fa-lg"></i></a>&nbsp; | &nbsp;
+                            <a href="#" class="set2"><i class="fa fa-check-square-o fa-lg"></i></a>&nbsp; | &nbsp;
+                            <a href="#" class="set2"><i class="fa fa-trash-o fa-lg"></i></a>
+              </div>
+                      
+                      <div class="matter">
+                      		 <div class="container">
+                           <div class="FormDetails">
+                      		<div class="FormDetails-head">Item's Details</div>
+                               <ul style="border:1px solid #c2bdbd;">
+                                                                      <br/>
+
+    
+   
+@*    @Html.ValidationSummary(true)
+                @Html.HiddenFor(model=>model.labId)
+        <legend>LabMaster</legend>
+        <div id="container">
+<div id="right_menu"> 
+                        		      <div id="right_header"> &nbsp;Lab Details:</div>
+                                    <div id="right_button_panel"> &nbsp;
+										<a href="#"><span title="Add"><img src="@Url.Content("~/Images/add_button.jpg")" alt="Add" width="31" height="29" /></span></a>
+										|<a href="#"><span title="Refresh"><img src="@Url.Content("~/Images/refresh_button.jpg")" width="33" height="30" /></span></a>
+										|<a href="#"><span title="Save"><img src="@Url.Content("~/Images/save_button.jpg")" width="28" height="27" /></span></a>
+										|<a href="#"><span title="Update"><img src="@Url.Content("~/Images/update_button.jpg")" width="34" height="33" /></span></a>
+										|<a href="#"><span title="Delete"><img src="@Url.Content("~/Images/delete_button.jpg")" width="33" height="33" /></span></a>
+                                         
+									  </div>                    
+            </div>*@
+                                      <div id="category_ID" >
+                                            Enter Lab Code : 
+                                          
+                                          @Html.DropDownListFor(model=>model.labCode,new SelectList(Model.lablists,"labCode","labCode",Model.lablists),"Select labcode",new{id="list"})
+                                          <br /><br /><br />
+                                      </div>
+                                      <div id="right_form" style="display:none;"> <br /><br />
+                                      						Lab Details:
+														      <ul style="border:1px solid gray;">
+                                                          		
+  																	<li style="list-style:none">
+      																Lab Certification Name
+                                                                      <span style="margin-left:5px">&nbsp;</span>
+                                                                    @*  <input id="ItemNm" />*@
+                                                                          @Html.TextBoxFor(model=>model.labName)
+  																	</li>
+                                                                  <li style="list-style:none" ><span style="margin-left:120px">&nbsp;</span>
+                                                                   <font color="red">  @Html.ValidationMessageFor(model=>model.labName)</font> <br />
+                                                                     </li>   
+                                                                  
+                                                                  
+                                                                  <li style="list-style:none">
+      																Lab Description
+                                                                      <span style="margin-left:40px">&nbsp;</span>
+                                                                    @*  <input id="ItemNm" />*@
+                                                                          @Html.TextBoxFor(model=>model.labDescription)
+                                                                      <br /><br />
+  																	</li>     
+                                                                  
+                                                                   <li style="list-style:none" ><span style="margin-left:120px">&nbsp;</span>
+                                                                   <font color="red">  @Html.ValidationMessageFor(model=>model.labDescription)</font> <br /><br /> 
+                                                                    
+
+                                                                     </li>     
+                                     							<li style="list-style:none; vertical-align:top;">
+                                                                Logo Certificate
+                                                                <span style="margin-left:39px">&nbsp;</span>
+                                                                    
+                                                                <label for="fileField"></label>
+                                                                <input type="file" name="fileField" id="fileField" class="singletextbox" />
+                                                                     <label id="photo"></label>
+<br />
+                                                                <br />
+                                     							</li>                                                                 
+                                                            </ul>
+                                              </div><!--matter-->
+          
+      	    <li style="list-style:none">
+                                                                     <span style="margin-left:400px;">&nbsp;</span> 
+                                                                     <button type="submit" id="submit" class="btn btn-default" >Submit</button>
+                                                                     </li>
+	</div>
+	
+       
+     </div>
+                                     </div>  
+         
+    </div>
+               <div class="footer"> <font face="calibri" color="#FFFFFF"> Powered By Maria Infotech Pvt.Ltd</font>
+            </div>	
+               </div>
+               
+        }                  
+                
+        @*                                         
+                                                                   <button type="submit" id="submit" class="button_example1">
+                    <font color="#000000">Submit</font>
+                </button>   
+                                                                  
+                                                </div>
+
+            <div id="left_menu">
+                @Html.Partial("MastersLeftMenu");
+            </div>
+       </div>
+            }
+    </fieldset>*@
+           
+
+

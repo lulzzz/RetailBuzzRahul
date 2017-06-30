@@ -1,0 +1,974 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PrintPurchaseOrder";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.17.custom.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jspdf.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jspdf.plugin.autotable.js")"></script>
+
+<script type="text/javascript">
+    $(function () {
+        NumberToWords();
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var temp = $("#PurchaseOrderData_DelDate").val();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('DelDate').innerHTML = data;
+
+        var temp = $("#PurchaseOrderData_PoDate").val();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+
+        var packforwd = document.getElementById("PurchaseOrderData_PackAndForwd").value;
+        if (packforwd != "") {
+            document.getElementById("PackingForwardingValue").innerHTML = "<i class='fa fa-inr'></i> " + packforwd;
+        }
+        else {
+            document.getElementById("PackingForwardingValue").innerHTML = "<i class='fa fa-inr'></i> " + 0;
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function NumberToWords() {
+        var junkVal = (+removeCommas(document.getElementById('PurchaseOrderData_GrandTotal').value));
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+            //do nothing
+        }
+        else if (Number(junkVal) == 0) {
+            return 'Rupees Zero Only';
+        }
+        else {
+            alert('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alert('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        document.getElementById("In_Words").innerHTML = finalWord;
+    }
+</script>
+
+<script>
+    function ConvertToPdf() {
+        var doc = new jsPDF('p', 'pt', 'a4', true);
+
+        doc.setProperties({
+            title: 'Purchase Order',
+            subject: 'This is the subject',
+            author: 'author',
+            keywords: 'generated, javascript, web 2.0, ajax',
+            creator: 'author'
+        });
+
+        doc.cellInitialize();
+
+
+        var imageName = "D:\Work\TFS Projects\RetailApp\ATOZ\MvcRetailApp\Images\retail-logo.png";/* document.getElementById("Logo").src*/;
+
+        ////////////////////Heading /////////////////////////////////////////////////////////
+        var imgData = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAKUAAACnCAYAAABw45zRAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAyBpVFh0WE1MOmNvbS5hZG9iZS54bXAAAAAAADw/eHBhY2tldCBiZWdpbj0i77u/IiBpZD0iVzVNME1wQ2VoaUh6cmVTek5UY3prYzlkIj8+IDx4OnhtcG1ldGEgeG1sbnM6eD0iYWRvYmU6bnM6bWV0YS8iIHg6eG1wdGs9IkFkb2JlIFhNUCBDb3JlIDUuMC1jMDYwIDYxLjEzNDc3NywgMjAxMC8wMi8xMi0xNzozMjowMCAgICAgICAgIj4gPHJkZjpSREYgeG1sbnM6cmRmPSJodHRwOi8vd3d3LnczLm9yZy8xOTk5LzAyLzIyLXJkZi1zeW50YXgtbnMjIj4gPHJkZjpEZXNjcmlwdGlvbiByZGY6YWJvdXQ9IiIgeG1sbnM6eG1wPSJodHRwOi8vbnMuYWRvYmUuY29tL3hhcC8xLjAvIiB4bWxuczp4bXBNTT0iaHR0cDovL25zLmFkb2JlLmNvbS94YXAvMS4wL21tLyIgeG1sbnM6c3RSZWY9Imh0dHA6Ly9ucy5hZG9iZS5jb20veGFwLzEuMC9zVHlwZS9SZXNvdXJjZVJlZiMiIHhtcDpDcmVhdG9yVG9vbD0iQWRvYmUgUGhvdG9zaG9wIENTNSBXaW5kb3dzIiB4bXBNTTpJbnN0YW5jZUlEPSJ4bXAuaWlkOjVDOTc3M0UxMTMyMzExRTRCNjdCODgyODM2QThEMzdGIiB4bXBNTTpEb2N1bWVudElEPSJ4bXAuZGlkOjVDOTc3M0UyMTMyMzExRTRCNjdCODgyODM2QThEMzdGIj4gPHhtcE1NOkRlcml2ZWRGcm9tIHN0UmVmOmluc3RhbmNlSUQ9InhtcC5paWQ6NUM5NzczREYxMzIzMTFFNEI2N0I4ODI4MzZBOEQzN0YiIHN0UmVmOmRvY3VtZW50SUQ9InhtcC5kaWQ6NUM5NzczRTAxMzIzMTFFNEI2N0I4ODI4MzZBOEQzN0YiLz4gPC9yZGY6RGVzY3JpcHRpb24+IDwvcmRmOlJERj4gPC94OnhtcG1ldGE+IDw/eHBhY2tldCBlbmQ9InIiPz7/CxLDAAAKIUlEQVR42uydP4/bNhjG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';
+
+        /*console.log(imgData);*/
+        var headerLeftMargin = 250;
+        var headerTopMargin = 10;
+
+        doc.addImage(imgData, 'PNG', headerLeftMargin, headerTopMargin, 120, 120);
+        doc.setFontSize(12);
+        doc.text('A To Z DADAR T.T.', headerLeftMargin, headerTopMargin + 120, '');
+        doc.setFontSize(8);
+        doc.text('Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014', headerLeftMargin - 50, headerTopMargin + 130, '');
+
+        doc.setFontSize(20);
+        doc.text('Purchase Order', headerLeftMargin - 20, headerTopMargin + 160, '');
+
+        doc.setFontSize(12);
+        doc.text('(P.O. No. :', headerLeftMargin, headerTopMargin + 180, '');
+        doc.setFontSize(10);
+        doc.text(document.getElementById("POSPONo").value + ')', headerLeftMargin + 60, headerTopMargin + 180, '');
+        /////////////////////////////////OrderDetails////////////////////////////////////////
+        // rect(x, y, w, h, style)
+        //text(text, x, y, flags)
+        doc.rect(10, headerTopMargin + 190, 575, 170, '');
+        /**************************************************************************************************/
+        var headingTextSize = 10;
+        var dataTextSize = 9;
+        /******************************************* first *********************************************/
+        var leftMarginHeading1 = 15;
+        var leftMarginData1 = 100;
+        var topMargin1 = headerTopMargin + 210;
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Name', leftMarginHeading1, topMargin1, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSName").value, leftMarginData1, topMargin1, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Address', leftMarginHeading1, topMargin1 + 20, '');
+        doc.setFontSize(dataTextSize);
+        var addressValue = document.getElementById("POSAddress").value;
+
+        var addressArray = addressValue.split(' ');
+        var addressLine1 = '', addressLine2 = '';
+        for (var i = 0; i < 6; i++) {
+            addressLine1 += addressArray[i];
+        }
+        for (var i = 6; i < addressArray.length; i++) {
+            addressLine2 += addressArray[i];
+        }
+
+        doc.text(addressLine1, leftMarginData1, topMargin1 + 20, '');
+        doc.text(addressLine2, leftMarginData1, topMargin1 + 40, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('State', leftMarginHeading1, topMargin1 + 60, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSState").value, leftMarginData1, topMargin1 + 60, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Contact Number', leftMarginHeading1, topMargin1 + 80, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSContactNumber").value, leftMarginData1, topMargin1 + 80, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Email', leftMarginHeading1, topMargin1 + 100, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSEmail").value, leftMarginData1, topMargin1 + 100, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Date', leftMarginHeading1, topMargin1 + 120, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("date").innerHTML, leftMarginData1, topMargin1 + 120, '');
+
+        /*******************************middle ********************************/
+        var leftMarginHeading2 = 300;
+        var leftMarginData2 = 450;
+        doc.setFontSize(headingTextSize);
+        doc.text('Delivery At', leftMarginHeading2, topMargin1, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSDeliveryAt").value, leftMarginData2, topMargin1, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Contact Person', leftMarginHeading2, topMargin1 + 20, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSContactPerson").value, leftMarginData2, topMargin1 + 20, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Contact Number', leftMarginHeading2, topMargin1 + 40, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSContactPersonNumber").value, leftMarginData2, topMargin1 + 40, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Email', leftMarginHeading2, topMargin1 + 60, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSDeliveryEmail").value, leftMarginData2, topMargin1 + 60, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Transport Mode', leftMarginHeading2, topMargin1 + 80, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSTransportMode").value, leftMarginData2, topMargin1 + 80, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Transport Name', leftMarginHeading2, topMargin1 + 100, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSTransportName").value, leftMarginData2, topMargin1 + 100, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Transport Contact Number', leftMarginHeading2, topMargin1 + 120, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("POSTransportContactNumber").value, leftMarginData2, topMargin1 + 120, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.text('Delivery Date', leftMarginHeading2, topMargin1 + 140, '');
+        doc.setFontSize(dataTextSize);
+        doc.text(document.getElementById("DelDate").innerHTML, leftMarginData2, topMargin1 + 140, '');
+
+        ////////////////////////Table of Orderes Items///////////////////////////////////////
+        //doc.cell(left margin, top margin,cell width, Row height, cell, i);
+        var marginTop = topMargin1 + 160;
+        marginTopBelow = marginTop;
+
+        var res = doc.autoTableHtmlToJson(document.getElementById("basic-table"));
+        doc.autoTable(getColumns(), getData(res.data.length), {
+            left: 10,
+            right: 10,
+            startX: 0,
+            startY: marginTop,
+            styles: {
+                /*font: 'courier',
+                fillStyle: 'DF',
+                lineColor: [44, 62, 80],
+                lineWidth: 2,*/
+                overflow: 'linebreak',
+            },
+            headerStyles: {
+                fillColor: [148, 148, 148],
+                fontSize: 10,
+                rowHeight: 30
+            },
+            bodyStyles: {
+                fillColor: [255, 255, 255],
+                textColor: [0, 0, 0]
+            },
+            alternateRowStyles: {
+                fillColor: [250, 250, 250]
+            },
+            columnStyles: {
+                email: {
+                    fontStyle: 'bold'
+                }
+            },
+            createdCell: function (cell, data) {
+                if (data.column.dataKey === 'item') {
+                    cell.styles.overflow = 'linebreak';
+                }
+                if (data.column.dataKey === 'description') {
+                    cell.styles.overflow = 'linebreak';
+                }
+                if (data.column.dataKey === 'amount') {
+                    cell.styles.halign = 'right';
+                }
+                else if (data.column.dataKey === 'disc') {
+                    cell.styles.halign = 'right';
+                }
+                else if (data.column.dataKey === 'discR') {
+                    cell.styles.halign = 'right';
+                }
+                else if (data.column.dataKey === 'rate') {
+                    cell.styles.halign = 'right';
+                }
+                else if (data.column.dataKey === 'quantity') {
+                    cell.styles.halign = 'right';
+                }
+            }
+        });
+
+        function getColumns() {
+            return [
+                { title: "SNo", dataKey: "sno" },
+                { title: "Item", dataKey: "item" },
+                { title: "Description", dataKey: "description" },
+                { title: "Material", dataKey: "material" },
+                { title: "Colour", dataKey: "colour" },
+                { title: "Design", dataKey: "design" },
+                { title: "Quantity", dataKey: "quantity" },
+                { title: "Unit", dataKey: "unit" },
+                { title: "Rate  (Rs.)", dataKey: "rate" },
+                { title: "Disc  (%)", dataKey: "disc" },
+                { title: "Disc  (Rs.)", dataKey: "discR" },
+                { title: "Amount  (Rs.)", dataKey: "amount" },
+            ];
+        };
+
+        // Uses the faker.js library to get random data.
+        function getData(rowCount) {
+            rowCount = rowCount;
+            var res = doc.autoTableHtmlToJson(document.getElementById("basic-table"));
+            var data = [];
+
+            for (var j = 0; j < rowCount; j++) {
+                var dataArr = res.data[j];
+                data.push({
+                    sno: dataArr[0].trim(),
+                    item: dataArr[1].trim(),
+                    description: dataArr[2].trim(),
+                    material: dataArr[3].trim(),
+                    colour: dataArr[4].trim(),
+                    design: dataArr[5].trim(),
+                    quantity: dataArr[6].trim(),
+                    unit: dataArr[7].trim(),
+                    rate: dataArr[8].trim(),
+                    disc: dataArr[9].trim(),
+                    discR: dataArr[10].trim(),
+                    amount: dataArr[11].trim(),
+                });
+            }
+            return data;
+        }
+        //calculate table height	
+        marginTopBelow = marginTopBelow + (40 * (res.data.length + 1));
+
+        marginTopBelow = marginTopBelow + 20;
+        doc.setFontSize(headingTextSize);
+        doc.setTextColor(0, 0, 0);
+        doc.text('Amount In Words:', 10, marginTopBelow, '');
+        doc.setFontSize(dataTextSize);
+        doc.setTextColor(90, 90, 90);
+        doc.text(document.getElementById("In_Words").innerHTML, 100, marginTopBelow, '');
+
+        doc.setFontSize(headingTextSize);
+        doc.setTextColor(90, 90, 90);
+        doc.text('Remarks:', 10, marginTopBelow + 40, '');
+
+        headingTextSizeBelow = 10;
+        dataTextSizeBelow = 8;
+
+        doc.setFontSize(headingTextSizeBelow);
+        doc.text('Company\'s CST No.:', 10, marginTopBelow + 60, '');
+        doc.setFontSize(dataTextSizeBelow);
+        doc.text('27170291194C w.e.f 1.04.2006', 180, marginTopBelow + 60, '');
+        doc.setFontSize(headingTextSizeBelow);
+        doc.text('Company\'s Service Tax No.:', 10, marginTopBelow + 80, '');
+        doc.setFontSize(dataTextSizeBelow);
+        doc.text('AAACO4131DST001', 180, marginTopBelow + 80, '');
+        doc.setFontSize(headingTextSizeBelow);
+        doc.text('Company\'s PAN:', 10, marginTopBelow + 100, '');
+        doc.setFontSize(dataTextSizeBelow);
+        doc.text('AAACO4131D', 180, marginTopBelow + 100, '');
+
+        var marginTableBottom = marginTopBelow + 120;
+
+        var bottom = doc.autoTableHtmlToJson(document.getElementById("bottom-table"));
+        doc.autoTable(bottom.columns, bottom.data,
+        {
+            startX: 0,
+            startY: marginTableBottom,
+            styles: { overflow: 'linebreak' },
+            bodyStyles: {
+                fillColor: [255, 255, 255],
+                textColor: [0, 0, 0]
+            },
+            headerStyles: {
+                textColor: 0,
+                fillColor: [255, 255, 255],
+                align: bottom
+            }
+        });
+
+        /*doc.setFontSize(headingTextSize);
+        doc.text('Declaration:',10,marginTopBelow+120,'');							
+        doc.setFontSize(dataTextSizeBelow);
+        doc.text('This PO is made in response to a written proposal or other form of offer from Seller, and if Seller\'s proposal or other form of offer contains terms additional to or different from this PO,',10,marginTopBelow+140,'');
+        doc.text('then BUYER\'S ACCEPTANCE OF SELLER\'S PROPOSAL OR OFFER IS HEREBY EXPRESSLY CONDITIONED UPON SELLER\'S ASSENT TO ALL THE TERMS AND CONDITIONS CONTAINED IN THIS PO.',10,marginTopBelow+160,'');
+                                    
+        // rect(x, y, w, h, style)
+        doc.rect(670,marginTopBelow+100, 150,50, '');
+        doc.setFontSize(dataTextSizeBelow);
+        doc.text('Authorised Signatory',680,marginTopBelow+110,'');	
+        */
+        doc.save(document.getElementById("POSPONo").value + '.pdf');
+    };
+</script>
+
+@Html.HiddenFor(model => model.PurchaseOrderData.DelDate)
+@Html.HiddenFor(model => model.PurchaseOrderData.TotalAmount)
+@Html.HiddenFor(model => model.PurchaseOrderData.GrandTotal)
+@Html.HiddenFor(model => model.PurchaseOrderData.PoDate)
+@Html.HiddenFor(model => model.PurchaseOrderData.PackAndForwd)
+<input type="hidden" id="POSName" value="@Model.PurchaseOrderData.SupplierName"/>
+<input type="hidden" id="POSAddress" value="@Model.PurchaseOrderData.SupplierAddress"/>
+<input type="hidden" id="POSState" value="@Model.PurchaseOrderData.SupplierState"/>
+<input type="hidden" id="POSContactNumber" value="@Model.PurchaseOrderData.SupplierContactNo"/>
+<input type="hidden" id="POSEmail" value=" @Model.PurchaseOrderData.SupplierEmail"/>
+<input type="hidden" id="POSDeliveryAt" value="@Model.PurchaseOrderData.DelAt"/>
+<input type="hidden" id="POSContactPerson" value=" @Model.PurchaseOrderData.GodownContactPerson"/>
+<input type="hidden" id="POSContactPersonNumber" value="@Model.PurchaseOrderData.GodownContactNo"/>
+<input type="hidden" id="POSDeliveryEmail" value="@Model.PurchaseOrderData.GodownEmail"/>
+<input type="hidden" id="POSTransportMode" value="@Model.PurchaseOrderData.ModeOfTransport"/>
+<input type="hidden" id="POSTransportName" value="@Model.PurchaseOrderData.TransportName"/>
+<input type="hidden" id="POSTransportContactNumber" value="@Model.PurchaseOrderData.TransportContactNo"/>
+<input type="hidden" id="POSPONo" value="@Model.PurchaseOrderData.PoNo"/>
+<div>
+    <div>
+        <table style="border: 1px double;">
+            <tbody>
+                <tr>
+                    <td>
+                        <table style="width: 100%">
+                            <tbody>
+                                <tr>
+                                    <td colspan="8" style="text-align: center;">
+                                        <img id="Logo" src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px;" />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="8" style="text-align: center;">
+                                        <label><b>A To Z DADAR T.T.</b></label><br />
+                                        <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td colspan="8" style="text-align: center">
+                                        <label style="font-size: x-large;"><b>Purchase Order</b></label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <table border="1" cellpadding="0" cellspacing="0" style="width: 100%">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 34%">
+                                        <table cellpadding="2" cellspacing="0">
+                                            <tr style="height: 8px"></tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Name: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.SupplierName)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Address: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.SupplierAddress)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 15px"></div>
+                                                    <label><b>State: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.SupplierState)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Contact Number: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.SupplierContactNo)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Email: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.SupplierEmail)
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <td style="width: 32%">
+                                        <table cellpadding="2" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <label><b>Del At: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.DelAt)
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Contact Person: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @if (Model.PurchaseOrderData.GodownContactPerson != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.PurchaseOrderData.GodownContactPerson)
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DisplayFor(model => model.PurchaseOrderData.ShopContactPerson)
+                                                    }
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Contact Number: &nbsp</b></label></td>
+                                                <td>
+                                                    @if (Model.PurchaseOrderData.GodownContactNo != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.PurchaseOrderData.GodownContactNo)
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DisplayFor(model => model.PurchaseOrderData.ShopContactNo)
+                                                    }
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Email: &nbsp</b></label>
+                                                </td>
+                                                <td>
+                                                    @if (Model.PurchaseOrderData.GodownEmail != null)
+                                                    {
+                                                        @Html.DisplayFor(model => model.PurchaseOrderData.GodownEmail)
+                                                    }
+                                                    else
+                                                    {
+                                                        @Html.DisplayFor(model => model.PurchaseOrderData.ShopEmail)  
+                                                    }
+                                                </td>
+                                            </tr>
+
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Transport Mode: &nbsp</b></label></td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.ModeOfTransport)
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Transport Name: &nbsp</b></label></td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.TransportName)
+
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Transport Contact No: &nbsp</b></label></td>
+                                                <td>
+                                                    @Html.DisplayFor(model => model.PurchaseOrderData.TransportContactNo)
+
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+
+                                    <td>
+                                        <table cellpadding="2" cellspacing="0">
+                                            <tr>
+                                                <td>
+                                                    <label><b>Date</b></label>
+                                                </td>
+                                                <td>
+                                                    <label id="date" style="font-weight: normal"></label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 18px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>P.O. No.</b></label>
+                                                </td>
+                                                <td>
+                                                    <label>@Html.DisplayFor(model => model.PurchaseOrderData.PoNo)</label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 18px"></div>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <label><b>Del Date</b></label>
+                                                </td>
+                                                <td>
+                                                    <label id="DelDate" style="font-weight: normal"></label>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 70px"></tr>
+                                        </table>
+                                    </td>
+
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br />
+
+                        <table border="2" style="border-collapse: collapse; width: 100%" cellpadding="2" cellspacing="0" id="basic-table">
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center">
+                                        <label>Sno.</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>Item</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>Description</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>Material</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>Colour</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>Design</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>Quantity</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>Unit</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>
+                                            Rate<br />
+                                            (<i class="fa fa-inr"></i>)</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>
+                                            Disc<br />
+                                            (%)</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>
+                                            Disc<br />
+                                            (<i class="fa fa-inr"></i>)</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>
+                                            Tax<br />
+                                            (%)</label>
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>
+                                            Amount<br />
+                                            (<i class="fa fa-rupee"></i>)</label>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if (Model.PurchaseItemList != null && Model.PurchaseItemList.Any())
+                                    {
+                                        int count = 1;
+                                        foreach (var data in Model.PurchaseItemList)
+                                        {                                                                        
+                                    <tr>
+                                        @{
+                                            var discountrps = Convert.ToDouble(@data.DiscountRPS).ToString("#,###.00##");
+                                            double Rate = Convert.ToDouble(@data.CostPrice);
+                                            var rate = Rate.ToString("#,###.00##");
+                                            double Amt = Convert.ToDouble(@data.Amount);
+                                            var amount = Amt.ToString("#,###.00##");
+                                        }
+                                        <td style="text-align: center">@count</td>
+                                        <td style="text-align: left">
+                                            <label style="font-weight: normal">&nbsp;@data.Item</label>
+                                        </td>
+                                        <td style="text-align: left">
+                                            <label style="font-weight: normal">&nbsp;@data.Description</label>
+                                        </td>
+                                        <td style="text-align: left">
+                                            <label style="font-weight: normal">&nbsp;@data.Material</label>
+                                        </td>
+                                        <td style="text-align: left">
+                                            <label style="font-weight: normal">&nbsp;@data.Color</label>
+                                        </td>
+                                        <td style="text-align: left">
+                                            <label style="font-weight: normal">&nbsp;@data.DesignName</label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            <label style="font-weight: normal">@data.Quantity&nbsp;</label>
+                                        </td>
+                                        <td style="text-align: left">
+                                            <label style="font-weight: normal">&nbsp;@data.Unit</label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            <label style="font-weight: normal">&nbsp;@rate</label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            <label style="font-weight: normal">@data.DiscountPercent&nbsp;</label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            <label style="font-weight: normal">@discountrps&nbsp;</label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            <label style="font-weight: normal">@data.ItemTax&nbsp;</label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            <label style="font-weight: normal">@amount&nbsp;</label>
+                                        </td>
+                                    </tr>
+                                            count += 1;
+                                        }
+                                    }
+                                }
+
+                                <tr style="height: 40px">
+                                    <td style="border-right: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td colspan="2" style="text-align: right; border-left: none">
+                                        <label style="font-size: large"><b>Total Amount</b></label>
+                                    </td>
+                                    <td colspan="2" style="text-align: right">
+                                        @{string totalamount = Convert.ToDouble(Model.PurchaseOrderData.TotalAmount).ToString("#,###.00##");}
+                                        <label style="font-size: large"><b><i class="fa fa-inr"></i>@totalamount</b></label>
+                                    </td>
+                                </tr>
+
+                                <tr style="text-align: right">
+                                    <td style="border-right: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td colspan="2" style="text-align: right; border-left: none">
+                                        <label><b>Packing And Forwarding</b></label>
+                                    </td>
+                                    <td colspan="2" style="text-align: right">
+                                        @{string packforwd = Convert.ToDouble(Model.PurchaseOrderData.PackAndForwd).ToString("#,###.00##");}
+                                        <label style="font-size: large"><b><i class="fa fa-inr"></i>@packforwd</b></label>
+                                    </td>
+                                </tr>
+
+                                <tr style="height: 40px">
+                                    <td style="border-right: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td style="border-right: none; border-left: none"></td>
+                                    <td colspan="2" style="text-align: right; border-left: none">
+                                        <label style="font-size: large"><b>Grand Total</b></label>
+                                    </td>
+                                    <td colspan="2" style="text-align: right">
+                                        @{string grandtotal = Convert.ToDouble(Model.PurchaseOrderData.GrandTotal).ToString("#,###.00##");}
+                                        <label style="font-size: large"><b><i class="fa fa-inr"></i>@grandtotal</b></label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+
+                        <label style="font-size: medium"><b>Amount In Words:</b></label>
+                        &nbsp;&nbsp;<label id="In_Words"></label>
+                        <br />
+                        <div style="height: 11px"></div>
+
+                        <label style="font-size: large"><b>Remarks:</b></label><br />
+                        <table>
+                            <tr>
+                                <td><b>Company's CST No.&nbsp;:</b></td>
+                                <td>27170291194C w.e.f 1.04.2006</td>
+                            </tr>
+                            <tr>
+                                <td><b>Company's Service Tax No.&nbsp;:</b></td>
+                                <td>AAACO4131DST001</td>
+                            </tr>
+                            <tr>
+                                <td><b>Company's PAN&nbsp;:</b></td>
+                                <td>AAACO4131D</td>
+                            </tr>
+                        </table>
+
+                        <div style="height: 9px"></div>
+                        <table style="width: 100%" id="bottom-table">
+                            <tbody>
+                                <tr>
+                                    <td style="width: 70%">
+                                        <label style="font-weight: normal"><b>Declaration:</b></label><br />
+                                        <label style="font-size: small">This PO is made in response to a written proposal or other form of offer from Seller, and if Seller’s proposal or other form of offer contains terms additional to or different from this PO, then BUYER’S ACCEPTANCE OF SELLER’S PROPOSAL OR OFFER IS HEREBY EXPRESSLY CONDITIONED UPON SELLER’S ASSENT TO ALL THE TERMS AND CONDITIONS CONTAINED IN THIS PO.</label>
+                                    </td>
+                                    <td style="width: 30%">
+                                        <table style="border: 1px double; width: 100%; padding-top: 12px">
+                                            <tr style="height: 40px; float: left; font-size: small">
+                                                <td>Authorised Signatory: </td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+@{
+    if (TempData["ConvertToPdf"].ToString() == "Yes")
+    {
+        TempData["ConvertToPdf"] = "Yes";
+    <script type="text/javascript">
+        ConvertToPdf();
+    </script>
+    }
+    else
+    {
+        TempData["ConvertToPdf"] = "No";
+    }
+}

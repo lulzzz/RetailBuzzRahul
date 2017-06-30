@@ -1,0 +1,185 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "PrintStockDistribution";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<table style="border: 1px double; width: 100%">
+    <tr>
+        <td>
+
+            <table style="width: 100%">
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <label><b>A To Z DADAR T.T.</b></label><br />
+                        <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center">
+                        <label style="font-size: x-large;"><b>Stock Distribution</b></label>
+                    </td>
+                </tr>
+            </table>
+
+
+            <table border="1" cellpadding="0" cellspacing="0" style="width: 100%">
+
+                <tr>
+                    <td style="width: 33%; border: none"></td>
+                    <td style="width: 33%; border: none"></td>
+                    <td style="border: none">
+                        <table>
+                            <tr>
+                                <td>
+                                    <label><b>Stock Distribution No : </b></label>
+                                </td>
+                                <td>
+                                    <label>@Html.DisplayFor(model => model.OutwardStkDisDetails.OutwardCode)</label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <label><b>Reference No : </b></label>
+                                </td>
+                                <td>
+                                    <label style="font-weight: bold; font-size: 18px">@Html.DisplayFor(model => model.OutwardStkDisDetails.GatePass)</label>
+                                </td>
+                            </tr>
+
+                            <tr style="height: 10px"></tr>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="3">
+                        <div style="width: 100%; background-color: lightgrey;"></div>
+                    </td>
+                </tr>
+
+                @{
+                    var code = Model.OutwardStkDisDetails.Code;
+                    if (code.Contains("GD"))
+                    {
+                    <tr>
+                        <td style="width: 33%; border: none">
+                            <label style="font-weight: bold">Godown Name</label><br />
+                            @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownName)
+                        </td>
+                        <td style="width: 33%; border: none">
+                            <label style="font-weight: bold">Godown Contact-Person</label><br />
+                            @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownContactPerson)
+                        </td>
+                        <td style="width: 33%; border: none">
+                            <label style="font-weight: bold">Godown Contact No</label><br />
+                            @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownContactNo)
+                        </td>
+                    </tr>
+                    }
+                    else
+                    {
+                    <tr>
+                        <td style="width: 33%; border: none">
+                            <label style="font-weight: bold">Shop Name</label><br />
+                            @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopName)
+                        </td>
+                        <td style="width: 33%; border: none">
+                            <label style="font-weight: bold">Shop Contact-Person</label><br />
+                            @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopContactPerson)
+                        </td>
+                        <td style="width: 33%; border: none">
+                            <label style="font-weight: bold">Shop Contact No</label><br />
+                            @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopContactNo)
+                        </td>
+                    </tr>
+                    }
+                }
+
+            </table>
+
+            <br />
+            <label style="font-size: large; font-weight: bold">Item Details:</label>
+            <table border="1" style="border-collapse: collapse; width: 100%" cellpadding="2" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>
+                            <label>Sno.</label>
+                        </th>
+                        <th>
+                            <label>Item Code</label>
+                        </th>
+                        <th>
+                            <label>Item Name</label>
+                        </th>
+                        <th>
+                            <label>Color</label>
+                        </th>
+                        <th>
+                            <label>Unit</label>
+                        </th>
+                        <th>
+                            <label>Quantity</label>
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.OutwardItemStkDisList != null && Model.OutwardItemStkDisList.Any())
+                        {
+                            int count = 1;
+                            foreach (var data in Model.OutwardItemStkDisList)
+                            {                                                                        
+                        <tr>
+                            @{
+                                var quantity = Convert.ToDouble(@data.ItemQuantity).ToString("#,###.00##");
+                                double Rate = Convert.ToDouble(@data.MRP);
+                                var rate = Rate.ToString("#,###.00##");
+                                //double Amt = Convert.ToDouble(@data.Amount);
+                                //var amount = Amt.ToString("#,###.00##");
+                            }
+                            <td style="text-align: center">@count</td>
+                            <td style="text-align: left">
+                                <label style="font-weight: normal">@data.ItemCode</label>
+                            </td>
+                            <td style="text-align: left">
+                                <label style="font-weight: normal">@data.ItemName</label>
+                            </td>
+                            <td style="text-align: left">
+                                <label style="font-weight: normal">@data.Color</label>
+                            </td>
+                            <td style="text-align: left">
+                                <label style="font-weight: normal">@data.Unit</label>
+                            </td>
+                            <td style="text-align: right">
+                                <label style="font-weight: normal">@quantity</label>
+                            </td>
+                        </tr>
+                                count += 1;
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+
+            @{
+                if (Model.OutwardStkDisDetails.Narration != null)
+                {
+                <div style="height: 30px"></div>
+                <label style="font-size: 19px">Narration : </label>
+                @Html.DisplayFor(model => model.OutwardStkDisDetails.Narration)        
+                }
+            }
+            <div style="height: 20px"></div>
+            <br />
+        </td>
+    </tr>
+</table>

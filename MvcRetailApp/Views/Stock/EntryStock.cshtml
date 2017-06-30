@@ -1,0 +1,187 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EntryStock";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+
+@*ENABLED DYNAMIC ROWS*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#submit").click(function () {
+
+            var count = document.getElementById("hdnRowCount").value;
+            for (i = 1; i <= count; i++) {
+                var mrp = "MRP" + i;
+                var sellingprice = "SellingPrice" + i;
+                var percentage = "Percentage" + i;
+
+                if ($("#" + mrp).val() == "" || $("#" + sellingprice).val() == "" || $("#" + percentage).val() == "") {
+                    alertbox("Please Enter All Required Data..");
+                    return false;
+                }
+                else {
+                    document.getElementById(mrp).disabled = false;
+                    document.getElementById(sellingprice).disabled = false;
+                    document.getElementById(percentage).disabled = false;
+                }
+            }
+        });
+    });
+</script>
+
+@*GET DETAILS BY PERFORMA INVOICE DDL*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLPerformaInvoice").change(function () {
+            var modeldata = $(this).val();
+            $.ajax({
+                url: '/Stock/GetDetailsByPINo',
+                type: "GET",
+                data: { pino: modeldata },
+                success: function (data) {
+                    if (data != null) {
+
+                        document.getElementById("SupplierName").innerHTML = data.SupplierName;
+                        document.getElementById("EntryStockDetails_SupplierName").value = data.SupplierName;
+                        var podate = data.PoDate;
+                        var rcddate = data.ReceivingDate;
+
+                        var dat = new Date(podate);
+                        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+                        document.getElementById('PoDate').innerHTML = data;
+                        document.getElementById("EntryStockDetails_PODate").value = data;
+
+                        var dat1 = new Date(rcddate);
+                        var month1 = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                        var data1 = dat1.getDate() + "/" + month1[dat1.getMonth()] + "/" + dat1.getFullYear();
+                        document.getElementById('ReceivingDate').innerHTML = data1;
+                        document.getElementById("EntryStockDetails_ReceivedDate").value = data1;
+                    }
+                }
+            });
+
+            //GET ITEM LIST FROM PERFORMA INVOICE
+            $.ajax({
+                url: "/Stock/GetItemListFromPerformaInvoice",
+                data: { pino: modeldata },
+                type: "GET",
+                success: function (data) {
+
+                    $("#LoadList").html(data);
+
+                }
+            });
+
+        });
+    });
+</script>
+
+@using (Html.BeginForm("GetItemListFromPerformaInvoice", "Stock", FormMethod.Post))
+{
+     
+    @Html.HiddenFor(model => model.EntryStockDetails.PODate)
+    @Html.HiddenFor(model => model.EntryStockDetails.ReceivedDate)
+    @Html.HiddenFor(model => model.EntryStockDetails.SupplierName)
+    @Html.HiddenFor(model => model.EntryStockDetails.EntryStockCode)
+
+    <table style="border: 1px double; width: 100%">
+        <tr>
+            <td>
+                <div class="col-md-8 col-lg-8">
+                </div>
+                <div class="col-md-4 col-lg-4">
+                    @{
+    string date = DateTime.Now.ToString("dd/MM/yyyy");
+    string EntryStockCode = Model.EntryStockDetails.EntryStockCode;
+                    }
+                    <div style="height: 10px"></div>
+                    <label style="font-size: 14px;">Date:&nbsp;&nbsp;</label>
+                    <label style="font-size: 16px;">@date</label>
+                    <br />
+                    <label style="font-size: 14px;">Entry Stock No:&nbsp;&nbsp;</label>
+                    <label style="font-size: 16px;">@EntryStockCode</label>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 8px"></div>
+                    <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br />
+                <div class="col-md-3 col-lg-3">
+                    <label>Inward No.<i style="color: red">*</i></label><br />
+                    @Html.DropDownListFor(model => model.EntryStockDetails.PINo, new SelectList(Model.InwardFromSupplierList, "InwardNo", "InwardNo"), "Select Inward No.", new { id = "DDLPerformaInvoice", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.EntryStockDetails.PINo, null, new { style = "color:red" })
+                </div>
+                <div class="col-md-1 col-lg-1">
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Supplier Name</label><br />
+                    <label id="SupplierName" style="font-weight: normal"></label>
+                </div>
+                <div class="col-md-2 col-lg-2">
+                    <label>PO Date</label><br />
+                    <label id="PoDate" style="font-weight: normal"></label>
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Receiving Date</label><br />
+                    <label id="ReceivingDate" style="font-weight: normal"></label>
+                    @Html.DisplayFor(model => model.InwardFromSupplierDetails.ReceivingDate)
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <br />
+                <div class="form-group row">
+                    <div id="LoadList"></div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div class="col-md-12 col-lg-12">
+                    <div style="width: 100%; height: 2px; background-color: gray;"></div>
+                </div>
+                <br />
+                <div class="row"></div>
+                <div class="row">
+                    <div class="col-md-5 col-lg-5"></div>
+                    <div class="col-md-4 col-lg-4" id="ttlquan" style="display: none">
+                        <label style="font-size: larger">Total Quantity&nbsp;&nbsp</label>
+                        <label style="font-size: larger" id="TotalQuantity"></label>
+                        <input type="hidden" id="TotalQuantityValue" name="TotalQuantityValue" />
+                    </div>
+                    <div class="col-md-3 col-lg-3" id="ttlbal" style="display: none">
+                        <label style="font-size: larger">Total Amount&nbsp;&nbsp</label>
+                        <label style="font-size: larger"><i class="fa fa-inr"></i></label>
+                        &nbsp;<label style="font-size: larger" id="TotalAmount"></label>
+                        <input type="hidden" id="TotalAmountValue" name="TotalAmountValue" />
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    
+    <div style="text-align: center">
+        <button id="submit" class="btn btn-success">Save</button>
+    </div>
+
+}

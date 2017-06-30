@@ -1,0 +1,275 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EditBrand";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+
+        //this script is used to diaplay category list on onload
+        $.ajax({
+            url: '/Brand/LoadBrands',
+            type: "GET",
+            success: function (data) {
+                $("#BrandListView").html(data);
+            }
+        })
+    });
+</script>
+
+<!--this script is used for display search list-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#searchbutton").click(function () {
+            var idmodel = document.getElementById("searchtext").value;
+            $.ajax({
+                url: '/Brand/BrandList',
+                type: "GET",
+                data: { name: idmodel },
+                success: function (data) {
+
+                    $("#BrandListView").html(data);
+                }
+            });
+        });
+    });
+</script>
+
+<!--this script is used for display EDIT partial view-->
+<script type="text/javascript">
+    function ChangeRow(id, bndry, count) {
+
+        document.getElementById('ShowBrand').style.display = "none";
+        document.getElementById('LoadPartialView').style.display = "inline";
+
+        for (var i = 1; i <= bndry; i++) {
+            editid = "EditId" + i;
+            lableEditid = "LableEditId" + i;
+            rowid = "rowid" + i;
+            if (document.getElementById(editid) != null) {
+                document.getElementById(editid).style.display = "none";
+                document.getElementById(lableEditid).style.display = "inline";
+                document.getElementById(rowid).style.backgroundColor = "#F1DDE7";
+            }
+        }
+        RowId = "rowid" + count;
+        if (document.getElementById(RowId) != null) {
+            document.getElementById(RowId).style.backgroundColor = "lightgreen";
+        }
+        $.ajax({
+            url: '/Brand/BrandEditPartial',
+            type: "GET",
+            data: { id1: id },
+            success: function (data) {
+
+                $("#PartialView").html(data);
+
+            }
+
+        });
+
+        document.getElementById("pager").style.display = "none";
+        document.getElementById('pagertextbox').disabled = true;
+        document.getElementById('pagerdropdown').disabled = true;
+        $("#NumberOfRows").val(bndry);
+        $("#SelectedRowValue").val(count);
+        document.getElementById("searchtext").disabled = true;
+        document.getElementById("searchbutton").disabled = true;
+    }
+</script>
+
+
+<!--this script is used for display DELETE partial view-->
+
+<script type="text/javascript">
+    function UpdateBrandPartial() {
+
+        if ($("#BrandMasterDetails_BrandName").val() == "") {
+            return false;
+        }
+    else {
+
+        //this code is used for show changes in list
+        var count = document.getElementById("SelectedRowValue").value;
+        var brandname = "brandname" + count;
+        document.getElementById(brandname).innerHTML = $("#BrandMasterDetails_BrandName").val();
+
+        //this code is used for to Show first lettr capital
+        var txt = document.getElementById("BrandMasterDetails_BrandName").value;
+        txt = txt.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+        document.getElementById(brandname).innerHTML = txt;
+        document.getElementById("BrandMasterDetails_BrandName").value = txt;
+
+        var brnd = {
+            Id: $("#BrandMasterDetails_Id").val(),
+            BrandName: $("#BrandMasterDetails_BrandName").val(),
+            BrandCode: $("#BrandMasterDetails_BrandCode").val(),
+        };
+
+        $.ajax({
+            url: '/Brand/BrandEditPartial',
+            contentType: "application/json;charset=utf-8",
+            type: "POST",
+            data: JSON.stringify(brnd),
+            datatype: "json",
+            success: function (data) {
+                document.getElementById('LoadPartialView').style.display = "none";
+                document.getElementById('ShowBrand').style.display = "inline";
+                $("#ShowBrand").html(data);
+            }
+        });
+
+        document.getElementById("rowid" + count).style.background = "#F1DDE7";
+        document.getElementById("pager").style.display = "inline";
+        document.getElementById('pagertextbox').disabled = false;
+        document.getElementById('pagerdropdown').disabled = false;
+        document.getElementById("searchtext").disabled = false;
+        document.getElementById("searchbutton").disabled = false;
+    }
+    }
+</script>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- Start: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+
+        <!-- Start: Content -->
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="NumberOfRows" name="NumberOfRows" />
+        <input type="hidden" id="SelectedRowValue" />
+
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+
+                <br />
+
+                <div class="col-md-4 col-lg-4">
+
+                    <div class="row" id="Searchdiv">
+                        <div class="row">
+                            <div class="form-group col-md-12 col-lg-12">
+                                @Html.Label("Search")
+                                <div class="row">
+                                    <div class="form-group col-md-9 col-lg-9">
+                                        @Html.TextBox("search", ViewData.TemplateInfo.FormattedModelValue, new { placeholder = "Search", @class = "form-control", id = "searchtext" })
+                                    </div>
+                                    <button type="submit" id="searchbutton" class="btn btn-primary glyphicon glyphicon-search" style="width: 70px"></button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="BrandListView"></div>
+                </div>
+
+                <div class="form-group col-md-1 col-lg-1">
+                    <div style="float: left; min-height: 650px; width: 1px; background-color: lightgrey;"></div>
+                </div>
+
+                <!--this div is used to display Right hand side partial view-->
+                <div class="form-group col-md-7 col-lg-7" id="LoadPartialView">
+                    <!--this is used o display partial view-->
+                    <div id="PartialView"></div>
+                </div>
+
+                <div class="form-group col-md-7 col-lg-7">
+
+                    <div id="ShowBrand"></div>
+
+                </div>
+                <!--end of right hand side div-->
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End: Main -->
+
+
+
+

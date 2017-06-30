@@ -1,0 +1,32 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "DeletePartial";
+}
+
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.ColorCodeDetails.colorId)
+@Html.HiddenFor(model => model.ColorCodeDetails.colorName)
+@Html.HiddenFor(model => model.ColorCodeDetails.colorCode)
+
+<h2><strong>Brand </strong>Details</h2>
+<br />
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="form-group col-md-4 col-lg-4">
+                <label for="exampleInputname">Color Name</label>
+            </div>
+            <div class="form-group col-md-4 col-lg-4">
+                @Html.DisplayFor(model => model.ColorCodeDetails.colorName, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-offset-2">
+                <button type="submit" class="btn btn-success" onclick="DeleteColorPartial()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

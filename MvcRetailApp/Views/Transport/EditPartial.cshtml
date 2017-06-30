@@ -1,0 +1,361 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EditPartial";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("textarea").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlcountry").change(function () {
+            var idmodel = $(this).val();
+            $.getJSON("/Transport/LoadStateByCountry", { countryname: idmodel },
+            function (Data) {
+                var select = $("#ddlstate");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select State"
+
+                }));
+                $.each(Data, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlstate").change(function () {
+            var idmodel = $(this).val();
+            $.getJSON("/Transport/LoadDistrictByState", { statename: idmodel },
+            function (Data) {
+                var select = $("#ddldistrict");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select District"
+                }));
+
+                $.each(Data, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#ddltransportbanknames").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel != "") {
+                $("#SelectedBankDetails").show();
+                $.ajax({
+                    url: '/Transport/UpdateBankDetail',
+                    type: "Get",
+                    data: { selectedbankname: idmodel },
+                    success: function (data) {
+                        $("#SelectedBankDetails").html(data);
+                        document.getElementById("SelectedBankDetails").style.display = "inline";
+                    }
+                });
+            }
+            else {
+                $("#SelectedBankDetails").hide();
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    function buttonclick(updatetransportdata) {
+
+        var micrcode = $("#TransportBankDetails_MICRCode").val();
+        if (micrcode != "")
+        {
+            if (micrcode.length != 9)
+            {
+                return false;
+            }
+        }
+
+        var accno = $("#TransportBankDetails_AccountNo").val();
+        if (accno == "") {
+            return false;
+        }
+
+        if (accno.length < 10 || accno.length > 25) {
+            return false;
+        }
+
+        var acctype = $("#TransportBankDetails_AccountType").val();
+        if (acctype == "") {
+            return false;
+        }
+
+        $.ajax({
+            url: '/Transport/UpdateBankDetail',
+            type: "POST",
+            data: {
+                bankid: document.getElementById("TransportBankDetails_BankId").value,
+                branch: document.getElementById("ddlBankbranches").value,
+                bankname: document.getElementById("ddlBankNames").value,
+                transportcode: document.getElementById("TransportBankDetails_TransportCode").value,
+                bankifscno: document.getElementById("TransportBankDetails_BankIFSCNo").value,
+                bankaddress: document.getElementById("TransportBankDetails_BankAddress").value,
+                accountno: document.getElementById("TransportBankDetails_AccountNo").value,
+                accounttype: document.getElementById("TransportBankDetails_AccountType").value,
+                micr: document.getElementById("TransportBankDetails_MICRCode").value,
+            },
+            success: function (data) {
+                $("#SelectedBankDetails").html(data);
+            }
+        });
+        $(function () {
+            $.getJSON("/Transport/UpdatedBankDetails", { transportcode: document.getElementById("TransportDetails_TransportCode").value },
+                function (data) {
+                    document.getElementById("SelectedBankDetails").style.display = "none";
+                    var select = $("#ddltransportbanknames");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "Select Bank"
+                    }));
+
+                    $.each(data, function (index, itemData) {
+
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                });
+        });
+        if (updatetransportdata == "Yes") {
+            /*if bank is selected in update page and update button gets clicked then update bankdetails
+            first then transport's personal details if updatebank button gets clicked then update bankdetails only by sending no*/
+            UpdateTransport();
+        }
+    }
+</script>
+<script type="text/javascript">
+    function NewBank() {
+        window.open("/Transport/PopUpPage?transportcode=" + document.getElementById("TransportDetails_TransportCode").value, "_target", "width=600,height=250,top=280px,left=400px");
+    }
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.ValidationSummary(true)
+       
+    @Html.HiddenFor(model => model.TransportDetails.TransportId)
+    @Html.HiddenFor(model => model.TransportDetails.TransportCode)
+
+    
+    
+    <div class="row">
+        <h2>
+            <label for="exampleInputname">Transport Details</label></h2>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-4 col-lg-4">
+            <label>Transport Code</label>
+            @Html.DisplayFor(model => model.TransportDetails.TransportCode)
+        </div>
+    </div>
+          
+    <div class="row">
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputname">Transport Name<i style="color: red">*</i></label>
+                    @Html.TextBoxFor(model => model.TransportDetails.TransportName, new { @placeholder = "Transport Name", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.TransportName, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputTypeofname">Mode Of Transport<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.TransportDetails.ModeOfTransport, new List<SelectListItem> { new SelectListItem { Text = "Road" }, new SelectListItem { Text = "Train" }, new SelectListItem { Text = "Air" } }, "Select Mode", new { id = "ddlmodetype", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.ModeOfTransport, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputCountry">Country<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.TransportDetails.Country, new SelectList(Model.TransportDetails.CountryList, "countryName", "countryName", Model.TransportDetails.Country), "Select Country", new { id = "ddlcountry", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.Country, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputState">State<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.TransportDetails.State, new SelectList(Model.TransportDetails.StateList, "StateName", "StateName", Model.TransportDetails.State), "Select State", new { id = "ddlstate", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.State, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputDistrict">District<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.TransportDetails.District, new SelectList(Model.TransportDetails.DistrictList, "DistrictName", "DistrictName", Model.TransportDetails.District), "Select District", new { id = "ddldistrict", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.District, null, new { style = "color:red" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+
+                <div class="form-group row">
+                    <label for="exampleInputCity">City<i style="color: red">*</i></label>
+                    @Html.TextBoxFor(model => model.TransportDetails.City, new { @placeholder = "City", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.City, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputAddress">Address<i style="color: red">*</i></label>
+                    @Html.TextAreaFor(model => model.TransportDetails.Address, new { @placeholder = "Address", @class = "form-control", @rows = 1 })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.Address, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputPincode">Pincode</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.Pincode, new { @placeholder = "PinCode", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.Pincode, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputContact">Contact No. 1<i style="color: red">*</i></label>
+                    @Html.TextBoxFor(model => model.TransportDetails.ContactNo1, new { @placeholder = "Contact No. 1", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.ContactNo1, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputContact">Contact No. 2</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.ContactNo2, new { @placeholder = "Contact No. 2", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.ContactNo2, null, new { style = "color:red" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputContact">Contact No. 3</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.ContactNo3, new { @placeholder = "Contact No 3", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.ContactNo3, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputEmail">Email</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.Email, new { @placeholder = "Email", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.Email, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputWebsite">Website</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.Website, new { @placeholder = "Website", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.Website, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputSalesTax">Sales Tax No</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.STNo, new { @placeholder = "STNo", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.STNo, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputGST">GST</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.OtherTax, new { @placeholder = "Other Tax", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.OtherTax, null, new { style = "color:red" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputVAT">VAT No</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.VTNo, new { @placeholder = "VTNo", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.VTNo, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputTDS">TDS</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.TDSNo, new { @placeholder = "TDSNo", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.TDSNo, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputPANNo">Pan No</label>
+                    @Html.TextBoxFor(model => model.TransportDetails.Pancard, new { @placeholder = "Pancard", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.TransportDetails.Pancard, null, new { style = "color:red" })
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <hr />
+    
+    
+    <div class="form-group row">
+        <div class="row">
+            <div class="col-md-7 col-lg-7">
+                <label style="font-size: medium">Banks Assosiated With</label>
+                @{
+    string transportname = Model.TransportDetails.TransportName;
+                    <label style="font-size: medium; color: royalblue;">@transportname.ToUpper()</label>
+                }
+            </div>
+            <div class="col-md-5 col-lg-5">
+                @Html.DropDownListFor(model => model.TransportBankDetails.BankName, new SelectList(Model.TransportBankDetailList, "Bankid", "BankName", Model.TransportBankDetails.BankName), "Select Bank", new { id = "ddltransportbanknames", @class = "form-control" })
+            </div>
+        </div>
+    </div>
+    
+    
+    <div id="SelectedBankDetails"></div>
+    <div class="col-lg-offset-4">
+        <input type="button" id="Add New Bank" value="Add New Bank" class="btn btn-link" style="color: dodgerblue; font-weight: bolder;" onclick="NewBank()" />
+    </div>       
+    <div class="col-lg-offset-5">
+        <button type="button" class="btn btn-success" id="Update" onclick="UpdateTransportData()">Update</button>
+    </div> 
+}
+
+

@@ -1,0 +1,198 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CashPaymentUpdateForSB";
+}
+
+@*CALCULATE CASH DETAILS & ITS AMOUNT*@
+<script type="text/javascript">
+    function CalcCheckAmount(no) {
+        var cash = "Cash" + no;
+        var quan = "Quan" + no;
+        var amt = "Amt" + no;
+        var amount = +(document.getElementById(cash).innerHTML) * (+document.getElementById(quan).value);
+        document.getElementById(amt).value = amount;
+        CalTotalAmount();
+    }
+
+    function CalTotalAmount() {
+        var finalamt = 0;
+        var payment = +(document.getElementById("AdvancePayment").innerHTML);
+        if (payment != "") {
+          
+            for (i = 1; i <= 7; i++) {
+                var amt = "Amt" + i;
+                finalamt = finalamt + (+document.getElementById(amt).value);
+                document.getElementById("TotalCash").value = finalamt;
+
+                var refund = finalamt - payment;
+                if (refund >= 0) {
+                    document.getElementById("refund").innerHTML = refund;
+                    document.getElementById("CashierSalesBillDetails_Refund").value = refund;
+                }
+                else {
+                    document.getElementById("refund").innerHTML = 0;
+                    document.getElementById("CashierSalesBillDetails_Refund").value = 0;
+                }
+            }
+        }
+    }
+</script>
+
+@Html.HiddenFor(model => model.CashierSalesBillDetails.Refund)
+
+<div class="col-lg-5 col-md-5"></div>
+<div class="col-lg-7 col-md-7">
+<table style="border:1px double; width:100%">
+    <tr>
+        <td>
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th class="col-lg-6 col-md-6"style="text-align:center; border-right:1px solid #808080; height: 30px;">Cash Details</th>
+                        <th class="col-lg-6 col-md-6" style="text-align:center">Rupees</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="border-right: 1px solid #808080; height: 40px;">
+                            <div class="col-lg-5 col-md-5">
+                                <i class='fa fa-rupee'></i>&nbsp;
+                                <label id="Cash1">1000</label><label>&nbsp;&nbsp;*</label>
+                            </div>
+                            <div class="col-lg-7 col-md-7">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.Cash_1000, new {id="Quan1", @class = "form-control",@placeholder="0", @style="text-align:center; width:100%", @onchange="CalcCheckAmount(1);", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                            </div>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                <label ></label>
+                                <input type="text" id="Amt1" name="Amt1" value="@Model.CashierSalesBillDetails.Cash_1000_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align:center; width:100%" disabled="disabled"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="border-right: 1px solid #808080; height: 40px;">
+                            <div class="col-lg-5 col-md-5">
+                                <i class='fa fa-rupee'></i>&nbsp;
+                                <label id="Cash2">500</label><label>&nbsp;&nbsp;*</label>
+                            </div>
+                            <div class="col-lg-7 col-md-7">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.Cash_500, new {id="Quan2", @class = "form-control",@placeholder="0", @onchange="CalcCheckAmount(2);", @style="text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                            </div>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                <input type="text" id="Amt2" name="Amt2" value="@Model.CashierSalesBillDetails.Cash_500_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align:center; width:100%" disabled="disabled" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="border-right: 1px solid #808080; height: 40px;">
+                            <div class="col-lg-5 col-md-5">
+                                <i class='fa fa-rupee'></i>&nbsp;
+                                <label id="Cash3">100</label><label>&nbsp;&nbsp;*</label>
+                            </div>
+                            <div class="col-lg-7 col-md-7">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.Cash_100, new {id="Quan3", @class = "form-control",@placeholder="0", @onchange="CalcCheckAmount(3);", @style="text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                            </div>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                <input type="text" id="Amt3" name="Amt3" value="@Model.CashierSalesBillDetails.Cash_100_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align:center; width:100%" disabled="disabled" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="border-right: 1px solid #808080; height: 40px;">
+                            <div class="col-lg-5 col-md-5">
+                                <i class='fa fa-rupee'></i>&nbsp;
+                                <label id="Cash4">50</label><label>&nbsp;&nbsp;*</label>
+                            </div>
+                            <div class="col-lg-7 col-md-7">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.Cash_50, new {id="Quan4", @class = "form-control",@placeholder="0", @onchange="CalcCheckAmount(4);", @style="text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                            </div>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                <input type="text" id="Amt4" name="Amt4" value="@Model.CashierSalesBillDetails.Cash_50_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align:center; width:100%" disabled="disabled"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="border-right: 1px solid #808080; height: 40px;">
+                            <div class="col-lg-5 col-md-5">
+                                <i class='fa fa-rupee'></i>&nbsp;
+                                <label id="Cash5">20</label><label>&nbsp;&nbsp;*</label>
+                            </div>
+                            <div class="col-lg-7 col-md-7">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.Cash_20, new {id="Quan5", @class = "form-control",@placeholder="0", @onchange="CalcCheckAmount(5);" , @style="text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                            </div>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                <input type="text" id="Amt5" name="Amt5" value="@Model.CashierSalesBillDetails.Cash_20_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align:center; width:100%" disabled="disabled" />
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="border-right: 1px solid #808080; height: 40px;">
+                            <div class="col-lg-5 col-md-5">
+                                <i class='fa fa-rupee'></i>&nbsp;
+                                <label id="Cash6">10</label><label>&nbsp;&nbsp;*</label>
+                            </div>
+                            <div class="col-lg-7 col-md-7">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.Cash_10, new {id="Quan6", @class = "form-control",@placeholder="0", @onchange="CalcCheckAmount(6);", @style="text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                            </div>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                <input type="text" id="Amt6" name="Amt6" value="@Model.CashierSalesBillDetails.Cash_10_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align:center; width:100%" disabled="disabled"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="border-right: 1px solid #808080; height: 40px;">
+                            <div class="col-lg-5 col-md-5">
+                                <i class='fa fa-rupee'></i>&nbsp;
+                                <label id="Cash7">1</label><label>&nbsp;&nbsp;*</label>
+                            </div>
+                            <div class="col-lg-7 col-md-7">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.Cash_1, new {id="Quan7", @class = "form-control",@placeholder="0", @onchange="CalcCheckAmount(7);", @style="text-align:center; width:100%", @onkeypress="return AllowNumbers(event)" })
+                            </div>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                <input type="text" id="Amt7" name="Amt7" value="@Model.CashierSalesBillDetails.Cash_1_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align:center; width:100%" disabled="disabled"/>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="text-align:center; border-right: 1px solid #808080; height: 40px;">
+                            <label>TOTAL<i style="color:red">*</i></label>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12">
+                                @Html.TextBoxFor(model => model.CashierSalesBillDetails.TotalCash, new {id="TotalCash", @class="form-control" , @style="text-align:center; width:100%", disabled="disabled"})
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="col-lg-6 col-md-6" style="text-align:center; border-right: 1px solid #808080; height: 40px;">
+                            <label style="font-size:14px">Refund</label>
+                        </td>
+                        <td class="col-lg-6 col-md-6">
+                            <div class="col-lg-12 col-md-12" style="text-align:center">
+                                @{
+                                    var refund = Model.CashierSalesBillDetails.Refund;
+                                }
+                                <label style="font-size: 14px; text-align:center" id="refund">@refund</label>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </td>
+    </tr>
+</table>
+</div>
+

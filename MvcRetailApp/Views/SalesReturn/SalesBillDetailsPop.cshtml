@@ -1,0 +1,295 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "SalesBillDetailsPop";
+}
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<!-- Plugins - Via CDN -->
+<script type ="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Close").click(function () {
+            window.close();
+        });
+    });
+</script>
+
+<div style="height: 8px"></div>
+<div class="col-lg-12 col-md-12">
+    <label style="font-weight: bolder; font-size: x-large">Sales Bill Details</label>
+    <table style="border: 1px double; width: 100%">
+        <tr>
+            <td>
+                <div class="col-lg-12 col-md-12">
+                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 220px;">
+                        <div style="height: 10px"></div>
+                        <div class="row">
+                            <label style="font-weight: bolder; font-size: larger">Client Details</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="row">
+                                <label>Name</label>
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientName)
+                            </div>
+                            <div class="row">
+                                <label>Address</label>
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientAddress)
+                            </div>
+                            <div class="row">
+                                <label>Contact No.</label>
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientContactNo)
+                            </div>
+                            <div class="row">
+                                <label>Email</label>
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientEmail)
+                            </div>
+                            <div class="row">
+                                <label>State</label>
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientState)
+                            </div>
+                            <div class="row">
+                                <label>Type</label>
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientType)
+                                <label>&</label>@Html.DisplayFor(model => model.SalesBillDetails.ConsumeResell)
+                            </div>
+                            @{
+                                var formtype = Model.SalesBillDetails.FormType;
+                                if (formtype != null)
+                                {
+                                <div class="row">
+                                    <label>Form-Type</label>
+                                    @Html.DisplayFor(model => model.SalesBillDetails.FormType)
+                                </div>
+                                }
+                            }
+
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 230px;">
+                        <div style="height: 10px"></div>
+                        <div class="row">
+                            <div class="col-lg-12 col-md-12">
+                                <label style="font-weight: bolder; font-size: larger">Transport Details</label>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="col-lg-12 col-md-12">
+                                        <div class="row">
+                                            <label>Name</label>
+                                            @Html.DisplayFor(model => model.SalesBillDetails.TransportName)
+                                        </div>
+                                        <div class="row">
+                                            <label>Mode</label>
+                                            @Html.DisplayFor(model => model.SalesBillDetails.TransportMode)
+                                        </div>
+                                        <div class="row">
+                                            <label>Contact No.</label>
+                                            @Html.DisplayFor(model => model.SalesBillDetails.TransportContact)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="col-lg-4 col-md-4">
+                        <div style="height: 10px"></div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="row">
+                                <div class="col-lg-5 col-md-5">
+                                    <div class="row">
+                                        <label style="font-size: 14px;">Date</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="row">
+                                        @{
+                                            string Date = Convert.ToDateTime(Model.SalesBillDetails.Date).ToString("dd/MM/yyyy");
+                                        }
+                                        @Date
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-5 col-md-5">
+                                    <div class="row">
+                                        <label style="font-size: 14px;">Sales Bill No.</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="row">
+                                        @Html.DisplayFor(model => model.SalesBillDetails.SalesBillNo)
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <br />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="col-md-12 col-lg-12">
+                    <label style="font-weight: bolder; font-size: larger">Item Details:</label>
+                </div>
+                <table style="border: 1px double; width: 100%">
+                    <tr>
+                        <td>
+                            <div class="col-md-12 col-lg-12">
+                                <table class="table">
+                                    <thead>
+                                        <tr>
+                                            <th>S.N.</th>
+                                            <th>Item<br />
+                                                Code</th>
+                                            <th>Item<br />
+                                                Name</th>
+                                            <th>Item<br />
+                                                Type</th>
+                                            <th>Unit</th>
+                                            <th>Qty</th>
+                                            <th>Rate</th>
+                                            <th style="text-align: right">Disc<br />
+                                                (<i class="fa fa-inr"></i>)</th>
+                                            <th style="text-align: right">Disc<br />
+                                                (%)</th>
+                                            <th style="text-align: right">Tax<br />
+                                                (%)</th>
+                                            <th style="text-align: right">Amt<br />
+                                                (<i class="fa fa-inr"></i>)</th>
+                                            <th style="text-align: right">Prop<br />
+                                                Tax<br />
+                                                (%)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            int rowid = 1;
+                                            if (Model.SalesBillItemList != null && Model.SalesBillItemList.Any())
+                                            {
+                                                string row = string.Empty;
+                                                foreach (var item in Model.SalesBillItemList)
+                                                {
+                                                    row = "row" + rowid;
+                                            <tr id="@row">
+                                                @{
+                                                    double Qty = Convert.ToDouble(@item.Quantity);
+                                                    double Rate = Convert.ToDouble(@item.SellingPrice);
+                                                    var rate = Rate.ToString("#,###.00##");
+                                                    double disrs = Convert.ToDouble(@item.DiscountRPS);
+                                                    var DisRs = disrs.ToString("#,###.00##");
+                                                    double disper = Convert.ToDouble(@item.DiscountPercent);
+                                                    var DisPer = disper.ToString("#,###.00##");
+                                                    double tax = Convert.ToDouble(@item.ItemTax);
+                                                    var Tax = tax.ToString("#,###.00##");
+                                                    double Amt = Convert.ToDouble(@item.Amount);
+                                                    var amount = Amt.ToString("#,###.00##");
+                                                    double proptax = Convert.ToDouble(@item.ProportionateTax);
+                                                    var PropTax = proptax.ToString("#,###.00##");
+                                                }
+                                                <td>@rowid</td>
+                                                <td>@item.ItemCode</td>
+                                                <td>@item.ItemName</td>
+                                                <td>@item.ItemType</td>
+                                                <td>@item.Unit</td>
+                                                <td style="text-align: right">@item.Quantity</td>
+                                                <td style="text-align: right">@rate</td>
+                                                <td style="text-align: right">@DisRs</td>
+                                                <td style="text-align: right">@DisPer</td>
+                                                <td style="text-align: right">@Tax</td>
+                                                <td style="text-align: right">@amount</td>
+                                                <td style="text-align: right">@PropTax</td>
+                                            </tr>
+                                                    rowid = rowid + 1;
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <br />
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="col-lg-7 col-md-7"></div>
+                <div class="col-lg-5 col-md-5">
+                    @{
+                        double ttlamt = Convert.ToDouble(Model.SalesBillDetails.TotalAmount);
+                        var TtlAmt = ttlamt.ToString("#,###.00##");
+                        double taxamt = Convert.ToDouble(Model.SalesBillDetails.TotalTaxAmount);
+                        var TaxAmt = taxamt.ToString("#,###.00##");
+                        double adjamt = Convert.ToDouble(Model.SalesBillDetails.AdjustedAmount);
+                        var AdjAmt = adjamt.ToString("#,###.00##");
+                        double grdttl = Convert.ToDouble(Model.SalesBillDetails.GrandTotal);
+                        var GrdTtl = grdttl.ToString("#,###.00##");
+                                                                
+                    }
+                    <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align: right">
+                            <label style="font-size: 14px;">Total Amount:</label>
+                        </div>
+                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                            <label>@TtlAmt</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align: right">
+                            <label style="font-size: 14px;">Tax Amount:</label>
+                        </div>
+                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                            <label>@TaxAmt</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align: right">
+                            <label style="font-size: 14px;">Grand Total:</label>
+                        </div>
+                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                            <label>@GrdTtl</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align: right">
+                            <label style="font-size: 14px;">Adjust Amount:</label>
+                        </div>
+                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                            <label>@AdjAmt</label>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+    </table>
+
+    <div style="height: 10px"></div>
+
+    <div class="col-lg-12 col-md-12" style="text-align: center">
+        <button type="button" class="btn btn-primary" id="Close">Close</button>
+    </div>
+
+</div>

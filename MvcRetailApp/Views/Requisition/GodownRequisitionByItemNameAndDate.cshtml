@@ -1,0 +1,185 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GodownRequisitionByItemNameAndDate";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<script type="text/javascript">
+    $(function () {
+       
+        $("#RequisitionForGodownDetails_ItemName").autocomplete({
+            source: "/Requisition/GetItemNamesForGodown",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#RequisitionForGodownDetails_ItemName").val(ui.item.value);
+                }
+            }
+        });
+    });
+        </script>
+
+<script type="text/javascript">
+    function GetData() {
+        var itemname = $("#RequisitionForGodownDetails_ItemName").val();
+        var fromdate = document.getElementById("fromdate").value;
+        var todate = document.getElementById("todate").value;
+        if (todate != "") {
+            $.ajax({
+                url: '/Requisition/GetItemDetailsByItemNameandDateForGodown',
+                type: "GET",
+                data: { Itemname: itemname, FromDate: fromdate, ToDate: todate },
+                success: function (data) {
+                    $("#showpartial").html(data);
+                    document.getElementById("mainrequisition").style.display = "none";
+                    document.getElementById("mainrequisition1").style.display = "none";
+                    document.getElementById("requisitiondetails").style.display = "none";
+                    document.getElementById("stockdetails").style.display = "none";
+                    document.getElementById("requisitiondetailsgodown").style.display = "none";
+                    document.getElementById("mainrequisition5").style.display = "none";
+                    document.getElementById("save").style.display = "none";
+                    document.getElementById("savebutton").style.display = "none";
+                    document.getElementById("requisitiondetails2").style.display = "none";
+                    document.getElementById("mainrequisition2").style.display = "none";
+                }
+            });
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+       
+        new JsDatePick({
+            useMode: 2,
+            target: "fromdate",
+            dateFormat: "%d/%M/%Y"
+        });
+
+        new JsDatePick({
+            useMode: 2,
+            target: "todate",
+            dateFormat: "%d/%M/%Y"
+        });
+
+    });
+</script>
+
+<div class="col-md-12 col-lg-12" >
+
+                <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    
+                <div class="col-md-5 col-lg-5">
+                    <div class="col-md-12 col-lg-12">
+                          <label for="exampleInputname">Item(Search)</label>
+                    </div>
+
+                    <div class="col-md-4 col-lg-4">
+                        <div class="col-lg-12 col-md-12">
+                     
+                        <div class="row">
+                           
+                                        @Html.TextBoxFor(model => model.RequisitionForGodownDetails.ItemName, new { @placeholder = "Item Name", @class = "form-control" })
+                                        @Html.ValidationMessageFor(model => model.RequisitionForGodownDetails.ItemName ,null, new { style = "color:red" })
+                                        <label id="errorname" class="error" style="display: none"></label>
+
+                        </div>
+
+                        </div>
+
+
+                    </div> 
+               
+
+                    
+   <div class="col-md-3 col-lg-3">
+
+        
+             <div class="row">
+    
+
+        @Html.TextBoxFor(model => model.GodownStockDetails.ModifiedOn, new { id = "fromdate", @class = "form-control", @placeholder = "From Date" })
+  </div>
+   
+   </div>
+  
+
+          <div class="col-md-3 col-lg-3">
+              <div class="row">
+        @Html.TextBoxFor(model => model.GodownStockDetails.ModifiedOn, new { id = "todate", @class = "form-control", @placeholder="To Date"  })
+     
+                   </div>
+   </div>
+
+ <div class="col-lg-2 col-md-2"></div>
+
+       <div class="">
+            <div class="row">
+         <input type="button" value="Submit" onclick="GetData();" class="btn btn-success" />
+           
+        </div>
+            </div>
+
+    </div></div>
+                </div>
+           </div> 

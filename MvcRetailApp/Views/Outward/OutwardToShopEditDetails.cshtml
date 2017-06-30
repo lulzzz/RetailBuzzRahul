@@ -1,0 +1,303 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "OutwardToShopEditDetails";
+}
+
+<script>
+    $(function () {
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    function CalculateDynamicBalance(count) {
+        var stockquantity = "StockQuantity" + count;
+        var outwardquantity = "OutwardQuantity" + count;
+        var balance = "balance" + count;
+        var balval = "BalanceValue" + count;
+
+        var stkquan = (+document.getElementById(stockquantity).innerHTML);
+        var outquan = (+document.getElementById(outwardquantity).value);
+        if (outquan > stkquan) {
+            alert("Cannot exceed above Stock Quantity");
+            document.getElementById(outwardquantity).value = document.getElementById(stockquantity).innerHTML;
+        }
+
+        var dynamicbalance = (+document.getElementById(stockquantity).innerHTML) - (+document.getElementById(outwardquantity).value);
+        document.getElementById(balance).innerHTML = dynamicbalance;
+        document.getElementById(balval).value = dynamicbalance;
+    }
+
+</script>
+
+@using (Html.BeginForm("OutwardToShopEditDetails", "Outward", FormMethod.Post))
+{
+    <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="@Model.OutwardItemToShopList.Count()" /> 
+@*
+    @Html.HiddenFor(model => model.OutwardToShopDetails.OutwardId)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.OutwardCode)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.EmpDesignation)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.EmpEmail)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.EmpContactNo)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.SalesmanDesignation)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.SalesmanEmail)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.SalesmanContactNo)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.ShopCode)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.ShopName)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.ShopAddress)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.ShopEmail)
+    @Html.HiddenFor(model => model.OutwardToShopDetails.ShopContactNo)
+    *@
+    //ACCESS LOGIN BASED GODOWN NAME
+    {
+        string godowncode = string.Empty;
+        if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+        {
+            if (Session["LOGINSHOPGODOWNCODE"] != null)
+            {
+                godowncode = Session["LOGINSHOPGODOWNCODE"].ToString();
+
+    <input type="hidden" id="godowncode" value="@godowncode"/>
+                                
+    <div style="text-align: right">
+        <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+        <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAME"].ToString()</label>
+    </div>
+            }
+        }
+    }
+                    
+    <table style="border: 1px double; width: 100%">
+        <tr>
+            <td>
+                <div class="col-lg-12 col-md-12">
+
+                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 150px;">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-10">
+                                <div class="row">
+                                    <div style="height: 10px"></div>
+                                    <label>Shop Name: &nbsp</label>
+                                    @Html.DisplayFor(model => model.OutwardToShopDetails.ShopName)
+                                    <div id="shopdetailsdiv">
+                                        <label>Address: &nbsp;</label><label id="shopadd" style="font-weight: normal"></label>@Html.DisplayFor(model => model.OutwardToShopDetails.ShopAddress)<br />
+                                        <label>Email: &nbsp;</label><label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardToShopDetails.ShopEmail)</label><br />
+                                        <label>Contact No: &nbsp;</label><label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardToShopDetails.ShopContactNo)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 150px;">
+                        <div class="row">
+                            <div class="col-lg-10 col-md-10">
+                                <div style="height: 10px"></div>
+                                <label>Salesman Name: &nbsp</label>
+                                @Html.DisplayFor(model => model.OutwardToShopDetails.SalesmanName)
+                                <div id="salesmandetailsdiv">
+                                    <label>Designation: &nbsp;</label><label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardToShopDetails.SalesmanDesignation)</label><br />
+                                    <label>Email: &nbsp;</label><label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardToShopDetails.SalesmanEmail)</label>
+                                    <label>Contact No: &nbsp;</label><label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardToShopDetails.SalesmanContactNo)</label><br />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-4 col-md-4">
+                        <div class="col-md-12 col-lg-12">
+                            <div style="height: 10px"></div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6">
+                                    <label>Date:</label>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="row">
+                                        @{
+    var date = Convert.ToDateTime(Model.OutwardToShopDetails.Date).ToShortDateString();
+                                        }
+                                        <label id="date" style="font-weight: normal;">@date</label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="height: 7px"></div>
+                            <div class="row">
+                                <div class="col-lg-6 col-md-6">
+                                    <label>Outward No:</label>
+                                </div>
+                                <div class="col-lg-6 col-md-6">
+                                    <div class="row">
+                                        <label style="font-weight: normal;">@Model.OutwardToShopDetails.OutwardCode</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="height: 15px"></div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <table class="table" id="DynamicRows" style="border-color: #d2d2d2; border: outset">
+                    <tr>
+                        <th class="col-lg-1 col-md-1">
+                            <label style="text-align: center; width: 100%">S.No.</label></th>
+                        <th class="col-lg-3 col-md-3">
+                            <label style="text-align: center; width: 100%">Item</label></th>
+                        <th>
+                            <label style="text-align: center; width: 100%">Description</label></th>
+                        <th>
+                            <label style="text-align: center; width: 100%">Design</label></th>
+                        <th>
+                            <label style="text-align: center; width: 100%">Unit</label></th>
+                        <th>
+                            <label style="text-align: center; width: 100%">Color</label></th>
+                        <th>
+                            <label style="text-align: center; width: 100%">Stock Qty</label></th>
+                        <th class="col-lg-1 col-md-1">
+                            <label style="text-align: center; width: 100%">Outward Qty<label style="color: red">*</label></label></th>
+                        <th>
+                            <label style="text-align: center; width: 100%">Current Bal</label></th>
+                    </tr>
+                    @{
+    int count = 1;
+
+
+
+    foreach (var item in Model.OutwardItemToShopList)
+    {
+        var row = "row" + count;
+        var itemcode = "ItemCode" + count;
+        var itemname = "ItemName" + count;
+        var Description = "Description" + count;
+        var DescriptionValue = "DescriptionValue" + count;
+        var Design = "Design" + count;
+        var DesignValue = "DesignValue" + count;
+        var Unit = "Unit" + count;
+        var UnitValue = "UnitValue" + count;
+        var Color = "Color" + count;
+        var ColorValue = "ColorValue" + count;
+        var StockQuantity = "StockQuantity" + count;
+        var StockQuantityValue = "StockQuantityValue" + count;
+        var OutwardQuantity = "OutwardQuantity" + count;
+        var Barcode = "Barcode" + count;
+        var Rate = "Rate" + count;
+        var Material = "Material" + count;
+        var balance = "balance" + count;
+        var BalanceValue = "BalanceValue" + count;
+                        <tr id="@row">
+                            <td class="col-lg-1 col-md-1" style="text-align: center">
+                                <label style="font-weight: normal">@count</label>
+                            </td>
+                            <td class="col-lg-3 col-md-3">
+                                <label id="@itemname" style="font-weight:normal;text-align:left">@item.ItemName</label>
+                                <input type="hidden" id="@itemcode" name="@itemcode" value="@item.ItemCode" />
+                            </td>
+                            <td>
+                                <label id="@Description" style="font-weight: normal;text-align:left">@item.ItemDescription</label>
+                                <input type="hidden" id="@DescriptionValue" name="@DescriptionValue" value="@item.ItemDescription" />
+                            </td>
+                            <td>
+                                <label id="@Design" style="font-weight: normal;text-align:left">@item.DesignName</label>
+                                <input type="hidden" id="@DesignValue" name="@DesignValue" value="@item.DesignName" />
+                            </td>
+                            <td>
+                                <label id="@Unit" style="font-weight: normal;text-align:left">@item.Unit</label>
+                                <input type="hidden" id="@UnitValue" name="@UnitValue" value ="@item.Unit"/>
+                            </td>
+                            <td>
+                                <label id="@Color" style="font-weight: normal;text-align:left">@item.Color</label>
+                                <input type="hidden" id="@ColorValue" name="@ColorValue" value="@item.Color" />
+                            </td>
+                            <td class="col-lg-1 col-md-1" style="text-align:right">
+                                <label id="@StockQuantity" style="font-weight: normal;">@item.StockQuantity</label>
+                                <input type="hidden" id="@StockQuantityValue" name="@StockQuantityValue" value="@item.StockQuantity" />
+                            </td>
+                            <td class="col-lg-1 col-md-1">
+                                <input type="text" class="form-control" style="text-align: center" id="@OutwardQuantity" name="@OutwardQuantity" value="@item.OutwardQuantity" onchange="CalculateDynamicBalance(@count)" />
+                            </td>
+                            <td style="text-align:right">
+                                <label style="font-weight: normal" id="@balance">@item.CurrentBalance</label>
+                                <input type="hidden" id="@BalanceValue" name="@BalanceValue" value="@item.CurrentBalance" />
+                                <input type="hidden" id="@Barcode" name="@Barcode" value="@item.Barcode" />
+                                <input type="hidden" id="@Rate" name="@Rate" value="@item.MRP" />
+                                <input type="hidden" id="@Material" name="@Material" value="@item.Material" />
+                            </td>
+                        </tr>
+        count++;
+    }
+                    }
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <table class="table" style="border-color: #d2d2d2; border: outset">
+                    <div style="height: 18px"></div>
+                    <tr>
+                        <td>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 4px"></div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Store Keeper Name</label><br />
+                                    @Html.DisplayFor(model => model.OutwardToShopDetails.EmpName)
+                                </div>
+                                <div class="col-md-4 col-lg-4">
+                                    <label>Designation</label><br />
+                                    <label id="Designation" style="font-weight: normal">@Model.OutwardToShopDetails.EmpDesignation</label>
+                                </div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Email-Id</label><br />
+                                    <label id="Email" style="font-weight: normal">@Model.OutwardToShopDetails.EmpEmail</label>
+                                </div>
+                                <div class="col-md-2 col-lg-2">
+                                    <label>Contact No.</label><br />
+                                    <label id="MobileNo" style="font-weight: normal">@Model.OutwardToShopDetails.EmpContactNo</label>
+                                </div>
+                                <div style="height: 40px"></div>
+                            </div>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <div class="col-md-12 col-lg-12">
+                    <div style="height: 6px"></div>
+                    <div class="col-md-10 col-lg-10"></div>
+                    <div class="col-md-2 col-lg-2">
+                        <label>Prepared By</label><br />
+                        @Html.DisplayFor(model => model.OutwardToShopDetails.PrepaidBy)
+                    </div>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <div style="height: 10px"></div>
+            </td>
+        </tr>
+
+    </table>
+    <div style="height: 5px"></div>
+    <div style="text-align: center">
+        <button type="submit" id="Submit" class="btn btn-success">Update</button>
+    </div>
+}

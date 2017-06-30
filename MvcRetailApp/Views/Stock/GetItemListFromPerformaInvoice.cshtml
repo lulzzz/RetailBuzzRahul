@@ -1,0 +1,182 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetItemListFromPerformaInvoice";
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        //CALCULATE PERCENTAGE ON ONLOAD FUNCTION
+        var count = +document.getElementById("hdnRowCount").value;
+        for (i = 1; i <= count; i++) {
+
+            var pirate = "PIRate" + i;
+            var percentage = "Percentage" + i;
+            var sellingprice = "SellingPrice" + i;
+            var mrp = "MRP" + i;
+
+            var finalmrprs = +(document.getElementById(sellingprice).value) - (+document.getElementById(pirate).innerHTML);
+            var finalmrpper = (finalmrprs * 100) / +document.getElementById(pirate).innerHTML;
+            document.getElementById(percentage).value = finalmrpper.toFixed(2);
+        }
+        CalcTotalAmtAndQuan();
+    })
+</script>
+
+<script type="text/javascript">
+    //CALCULATE MRPRS AND MRPPER USING AMOUNT
+    function CalculatePerUsingMRP(count)
+    {
+        var mrp = "MRP" + count;
+        var pirate = "PIRate" + count;
+        var percentage = "Percentage" + count;
+        var sellingprice = "SellingPrice" + count;
+
+        //document.getElementById(sellingprice).disabled = false;
+        document.getElementById(sellingprice).value = document.getElementById(mrp).value;
+        var finalmrprs = +(document.getElementById(mrp).value) - (+document.getElementById(pirate).innerHTML);
+        var finalmrpper = (finalmrprs * 100) / +document.getElementById(pirate).innerHTML;
+        document.getElementById(percentage).value = finalmrpper.toFixed(2);
+        CalcTotalAmtAndQuan();
+    }
+
+    function CalculatePerUsingSellingPrice(count)
+    {
+        var pirate = "PIRate" + count;
+        var percentage = "Percentage" + count;
+        var sellingprice = "SellingPrice" + count;
+        var mrp = "MRP" + count;
+
+        if ((document.getElementById(sellingprice).value)>(document.getElementById(mrp).value))
+        {
+            alertbox("Cannot exceed above MRP");
+            document.getElementById(sellingprice).value = document.getElementById(mrp).value;
+        }
+        var finalmrprs = +(document.getElementById(sellingprice).value) - (+document.getElementById(pirate).innerHTML);
+        var finalmrpper = (finalmrprs * 100) / +document.getElementById(pirate).innerHTML;
+        document.getElementById(percentage).value = finalmrpper.toFixed(2);
+        CalcTotalAmtAndQuan();
+    }
+
+    // CALCULATE AMOUNT USING MRP PERCENTAGE
+    function CalculateAmountUsingPer(count) {
+        var PIRate = "PIRate" + count;
+        var percentage = "Percentage" + count;
+        var sellingprice = "SellingPrice" + count;
+        var mrp = "MRP" + count;
+
+        // (PerAmount= Rate * (Percentage/100))
+        // (SellingPrice = PerAmount + Rate)
+        //document.getElementById(sellingprice).disabled = false;
+        var calcobj = (+document.getElementById(percentage).value) / 100;
+        var PerAmount = (+document.getElementById(PIRate).innerHTML) * calcobj;
+        var FinalSellingPrice = (+document.getElementById(PIRate).innerHTML) + (PerAmount);
+        document.getElementById(sellingprice).value = FinalSellingPrice.toFixed(2);
+        document.getElementById(mrp).value = FinalSellingPrice.toFixed(2);
+        CalcTotalAmtAndQuan();
+    }
+
+    //CALCULATE TOTAL AMOUNT & TOTAL QUANTITY
+    function CalcTotalAmtAndQuan() {
+        document.getElementById("ttlquan").style.display = "inline";
+        document.getElementById("ttlbal").style.display = "inline";
+        var count = document.getElementById("hdnRowCount").value;
+        var finaltotalamount = 0;
+        var finaltotalquantity = 0;
+        for (i = 1; i <= count; i++) {
+            sellingprice = "SellingPrice" + i;
+            finaltotalamount = (+finaltotalamount) + (+document.getElementById(sellingprice).value);
+
+            totalquantity = "TotalQuantity" + i;
+            finaltotalquantity = (+finaltotalquantity) + (+document.getElementById(totalquantity).innerHTML);
+        }
+        document.getElementById("TotalAmount").innerHTML = finaltotalamount.toFixed(2);
+        document.getElementById("TotalAmountValue").value = finaltotalamount.toFixed(2);
+
+        document.getElementById("TotalQuantity").innerHTML = finaltotalquantity.toFixed(2);
+        document.getElementById("TotalQuantityValue").value = finaltotalquantity.toFixed(2);
+    }
+
+</script> 
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div style="width: 100%; height: 2px; background-color: gray;"></div>
+    </div>
+    <br />
+    <div class="col-md-12 col-lg-12">
+        <table class="table">
+            <thead>
+                <tr>
+                     <th>S.N.</th>
+                    <th style="text-align:center">Item<br />Code</th>
+                     <th style="text-align:center">Item<br />Name</th>
+                     <th style="text-align:center">Description</th>
+                     <th>Stock<br />Qty</th>
+                     <th>Ord<br />Qty</th>
+                     <th>Rcd<br />Qty</th>
+                     <th>Total<br />Qty</th>
+                     <th>Unit</th>
+                     <th>Cost<br />Price</th>
+                     <th class="col-lg-1 col-md-1" style="text-align:center">MRP(<i class="fa fa-inr"></i>)<i style="color:red">*</i></th>
+                     <th class="col-lg-1 col-md-1" style="text-align:center">Selling<br />Price(<i class="fa fa-inr"></i>)<i style="color:red">*</i></th>
+                     <th class="col-lg-1 col-md-1" style="text-align:center">(%)<i style="color:red">*</i></th>
+                     
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    if (Model.EntryStockItemList != null && Model.EntryStockItemList.Any())
+                    {
+                        string row = string.Empty;
+                        string stockquantity = string.Empty;
+                        string orderedquantity = string.Empty;
+                        string receivedquantity = string.Empty;
+                        string totalquantity = string.Empty;
+                        string MRP = string.Empty;
+                        string PIRate = string.Empty;
+                        string sellingprice = string.Empty;
+                        string percentage = string.Empty;
+                        int rowid = 1;
+                        int rowcount = Model.EntryStockItemList.Count();
+
+                        foreach (var item in Model.EntryStockItemList)
+                        {
+                            row = "row" + rowid;
+                            
+                            stockquantity = "stockquantity" + rowid;
+                            orderedquantity = "orderedquantity" + rowid;
+                            receivedquantity = "receivedquantity" + rowid;
+                            totalquantity = "TotalQuantity" + rowid;
+                            MRP = "MRP" + rowid;
+                            PIRate = "PIRate" + rowid;
+                            sellingprice = "SellingPrice" + rowid;
+                            percentage = "Percentage" + rowid;
+                            <tr id="@row">
+                                <td>&nbsp @rowid</td>
+                                <td>@item.ItemCode</td>
+                                <td>@item.Item</td>
+                                <td>@item.Description</td>
+                                <td>@item.StockQuantity</td>
+                                <td>@item.OrderedQuantity</td>
+                                <td>@item.ReceivedQuantity</td>
+                                <td><label id="@totalquantity">@item.TotalQuantity</label></td>
+                                <td>@item.Unit</td>
+                                <td><label id="@PIRate" style="font-weight:normal">@item.CostPrice</label></td>
+                                <td><input type="text" id="@MRP" name="@MRP" value="@item.MRP" class="form-control" placeholder="0.00" onchange="CalculatePerUsingMRP(@rowid)" disabled="disabled"/></td>
+                                <td><input type="text" id="@sellingprice" name="@sellingprice" value="@item.SellingPrice" class="form-control" placeholder="0.00" onchange="CalculatePerUsingSellingPrice(@rowid)"  disabled="disabled"/></td>
+                                <td><input type="text" id="@percentage" name="@percentage" class="form-control" placeholder="0%" onchange="CalculateAmountUsingPer(@rowid)"  disabled="disabled"/></td>
+                                
+                            </tr>
+                            rowid =rowid+1;
+                        }
+                        
+                        <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="@rowcount" />
+                    }
+                 }
+
+            </tbody>
+        </table>
+    </div>
+    
+</div>

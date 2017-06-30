@@ -1,0 +1,220 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "OutwardInterGodownReports";
+}
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var data1 = new JsDatePick({
+            useMode: 2,
+            target: "fromdate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data1.addOnSelectedDelegate(function () {
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+            if (todate != "") {
+                $.ajax({
+                    url: '/MisReports/GetOutwardInterGodownDetailsByDate',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate },
+                    success: function (data) {
+                        $("#OutwardPartialView").html(data);
+                    }
+                })
+            }
+        });
+        var data2 = new JsDatePick({
+            useMode: 2,
+            target: "todate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data2.addOnSelectedDelegate(function () {
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+            if (fromdate != "") {
+                $.ajax({
+                    url: '/MisReports/GetOutwardInterGodownDetailsByDate',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate },
+                    success: function (data) {
+                        $("#OutwardPartialView").html(data);
+                    }
+                })
+            }
+        });
+    });
+</script>
+
+@*OPEN PRINT PAGE ON PRINT CLICK BUTTON*@
+<script type="text/javascript">
+    function PrintDetails() {
+        window.open("/MisReports/PrintOutwardInterGodownDatewise", "_target", "width=715,height=830,top=50px,left=300px");
+    }
+</script>
+
+@Html.Partial("../Shared/Header")
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+
+        <!-- Start: Sidebar -->
+
+        <!-- End: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- Start: Content -->
+        <div class="mainpanel">
+
+
+            <div class="col-md-12 col-lg-12">
+                <br />
+
+                <label style="font-size: 22px">Outward InterGodown Report</label>
+            </div>
+            <div class="col-md-12 col-lg-12">
+                <div style="height:15px"></div>
+                <div class="col-md-4 col-lg-4">
+                    <div class="col-md-4 col-lg-4">
+                        <div class="row">
+                            <label>From Date<i style="color: red">*</i></label>
+                        </div>
+                    </div>
+                    <div class="col-md-8 col-lg-8">
+                        @Html.TextBoxFor(model => model.InwardFromStockDistributionDetails.ModifiedOn, new { id = "fromdate", @class = "form-control", @placeholder = "From Date" , @onkeypress="return false" })
+                    </div>
+                </div>
+
+                <div class="col-md-4 col-lg-4">
+                    <div class="col-md-4 col-lg-4">
+                        <label>To Date<i style="color: red">*</i></label>
+                    </div>
+                    <div class="col-md-8 col-lg-8">
+                        @Html.TextBoxFor(model => model.InwardFromStockDistributionDetails.ModifiedOn, new { id = "todate", @class = "form-control", @placeholder = "To Date" , @onkeypress="return false" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-lg-12">
+                <div style="height: 10px"></div>
+            </div>
+
+            <div class="col-md-12 col-lg-12">
+                <div class="col-md-12 col-lg-12">
+                    <div id="OutwardPartialView"></div>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-lg-12">
+                <div style="height: 10px"></div>
+            </div>
+
+            <div class="col-lg-12 col-md-12">
+                <div class="col-lg-offset-6 col-md-offset-6" style="display: none" id="printbtn">
+                    <button type="button" class="btn btn-primary" onclick="PrintDetails()">Print</button>
+                </div>
+            </div>
+
+            <div class="col-md-12 col-lg-12">
+                <div style="height: 10px"></div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+
+
+

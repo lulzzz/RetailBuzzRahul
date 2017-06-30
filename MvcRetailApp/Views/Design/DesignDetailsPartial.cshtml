@@ -1,0 +1,80 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DesignDetailsPartial";
+}
+
+
+<script>
+    $("#DesignDetails_DesignName").change(function () {
+        var txt = document.getElementById("DesignDetails_DesignName").value;
+        txt = txt.replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+        document.getElementById("DesignDetails_DesignName").value = txt;
+    });
+    $("#DesignDetails_DesignDescription").change(function () {
+        var txt = document.getElementById("DesignDetails_DesignDescription").value;
+        txt = txt.replace(/\w\S*/g, function (txt) {
+            return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+        });
+        document.getElementById("DesignDetails_DesignDescription").value = txt;
+    });
+</script>
+
+@Html.HiddenFor(model => model.ItemCategoryDetails.CategoryName)
+@Html.HiddenFor(model => model.ItemSubCategoryDetails.subCategoryName)
+
+<div class="row">
+    <div class="row">
+        <div class="row">
+            <div class="row">
+                <div class="row">
+                    <h2><strong>Design </strong>Details</h2>
+
+                    <div class="col-md-5 col-lg-5">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="form-group row">
+                                <div class="form-group">
+                                    <label>Design Name<label style="color: red">*</label></label>
+                                    @Html.TextBoxFor(model => model.DesignDetails.DesignName, new { @class = "form-control", @placeholder = "design name" })
+                                    @Html.ValidationMessageFor(model => model.DesignDetails.DesignName, null, new { style = "color:red" })
+                                </div>
+
+                                <div class="form-group">
+                                    <label>Design Description</label>
+                                    @Html.TextAreaFor(model => model.DesignDetails.DesignDescription, new { @class = "form-control", @placeholder = "design description" })
+                                    @Html.ValidationMessageFor(model => model.DesignDetails.DesignDescription, null, new { style = "color:red" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5 col-lg-5">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="form-group row">
+                                @*<div class="form-group">
+                                    <label>Design Size<label style="color: red">*</label></label>
+                                    @Html.TextBoxFor(model => model.DesignDetails.DesignSize, new { @class = "form-control", @placeholder = "design size" })
+                                    @Html.ValidationMessageFor(model => model.DesignDetails.DesignSize, null, new { style = "color:red" })
+                                </div>*@
+                                <div class="form-group">
+                                    <div class="form-group">
+                                        <label>Design Photograph</label>
+                                    </div>
+                                    <input type="file" id="file" name="file" data-val="true" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-offset-4">
+        <button type="submit" id="submit" class="btn btn-success">Save</button>
+    </div>
+</div>
+

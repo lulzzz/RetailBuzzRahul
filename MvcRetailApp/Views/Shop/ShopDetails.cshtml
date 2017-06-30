@@ -1,0 +1,104 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "ShopDetails";
+}
+
+<div class="col-lg-12 col-md-12">
+    <div class="col-lg-12 col-md-12">
+        <div class="row">
+            <div class="row">
+                <div class="row">
+                    <div id="title2" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+                        <h2>
+                            <label for="exampleInputname">Shop Details</label></h2>
+                    </div>
+                    <br />
+                    <br />
+                </div>
+                <label>Shop Code : </label>
+                @Html.DisplayFor(model => model.ShopDetails.ShopCode)
+            </div>
+        </div>
+        <br />
+        <div class="row">
+            <div class="row">
+                <div class="row">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-md-3 col-lg-3">
+                                <label>Shop Name</label><br />
+                                @Html.DisplayFor(model => model.ShopDetails.ShopName)
+                            </div>
+
+                            <div class="col-md-3 col-lg-3">
+                                <label>Shop Address</label><br />
+                                @Html.DisplayFor(model => model.ShopDetails.ShopAddress)
+                            </div>
+
+                            <div class="col-md-3 col-lg-3">
+                                <label>Shop Email</label><br />
+                                @Html.DisplayFor(model => model.ShopDetails.ShopEmail)
+                            </div>
+
+                            <div class="col-md-3 col-lg-3">
+                                <label>Employee Designation</label><br />
+                                @Html.DisplayFor(model => model.ShopDetails.EmpDesignation)
+                            </div>
+
+                        </div>
+                    </div>
+                    <br />
+                    <br />
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-md-3 col-lg-3">
+                                <label>Shop Description</label><br />
+                                @{
+                                    if (Model.ShopDetails.ShopDescription != null)
+                                    {
+                                    @Html.DisplayFor(model => model.ShopDetails.ShopDescription)        
+                                    }
+                                    else
+                                    {
+                                    <div style="text-align: center">
+                                        <label>----</label>
+                                    </div>
+                                    }
+                                }
+                            </div>
+
+                            <div class="col-md-3 col-lg-3">
+                                <label>Contact No</label><br />
+                                @Html.DisplayFor(model => model.ShopDetails.ShopContactNo)
+                            </div>
+
+                            <div class="col-md-3 col-lg-3">
+                                <label>Employee Name</label><br />
+                                @Html.DisplayFor(model => model.ShopDetails.EmpName)
+                            </div>
+                            <div class="col-md-3 col-lg-3">
+                                <label>Employee Email</label><br />
+                                @Html.DisplayFor(model => model.ShopDetails.EmpEmail)
+                            </div>
+                        </div>
+                    </div>
+
+                    <br />
+                    <br />
+
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-md-3 col-lg-3">
+                                <label>Short Code</label><br />
+                               @Html.DisplayFor(model => model.ShopDetails.ShortCode)
+                            </div>
+                            <div class="col-md-9 col-lg-9"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

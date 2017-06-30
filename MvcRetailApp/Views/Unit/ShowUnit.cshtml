@@ -1,0 +1,62 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ShowUnit";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var bndry = document.getElementById("NumberOfRows").value;
+        var type = document.getElementById("ViewType").value;
+        if (type == "edit") {
+            for (var i = 1; i <= bndry; i++) {
+                editid = "EditId" + i;
+                if (document.getElementById(editid) != null) {
+                    document.getElementById(editid).disabled = false;
+                }
+            }
+        }
+        else {
+            for (var i = 1; i <= bndry; i++) {
+                deleteid = "DeleteId" + i;
+                if (document.getElementById(deleteid) != null) {
+                    document.getElementById(deleteid).disabled = false;
+                }
+            }
+        }
+    });
+</script>
+@{
+    string type = TempData["Type"].ToString();
+    <input type="hidden" id="ViewType" value="@type" />
+    TempData["Type"] = type;
+}
+
+
+<h2><strong>Unit </strong>Details</h2>
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="col-md-12 col-lg-12">
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <label for="exampleInputname">Unit Code</label>
+                </div>
+                @Html.DisplayFor(model => model.UnitDetails.UnitCode)
+            </div>
+
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <label for="exampleInputname">Unit Name</label>
+                </div>
+                @Html.DisplayFor(model => model.UnitDetails.UnitName)
+            </div>
+            <div class="row">
+                <div class="col-lg-4 col-md-4">
+                    <label for="exampleInputname">Number Type </label>
+                </div>
+                <div class="row">
+                    @Html.DisplayFor(model => model.UnitDetails.NumberType)
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

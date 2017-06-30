@@ -1,0 +1,31 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DesignationDeletePartial";
+}
+
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.DesignationDetails.Id)
+@Html.HiddenFor(model => model.DesignationDetails.DesignationName)
+@Html.HiddenFor(model => model.DesignationDetails.DesignationCode)
+
+<h2><strong>Designation </strong>Details</h2>
+<br />
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="form-group col-md-4 col-lg-4">
+                <label for="exampleInputname">Designation Name</label>
+            </div>
+            <div class="form-group col-md-4 col-lg-4">
+                @Html.DisplayFor(model => model.DesignationDetails.DesignationName, new { @class = "form-control" })
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-offset-2">
+                <button type="submit" class="btn btn-success" onclick="DeleteDesignationPartial()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

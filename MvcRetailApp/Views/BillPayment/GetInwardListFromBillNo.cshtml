@@ -1,0 +1,180 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetInwardListFromBillNo";
+}
+
+<script type="text/javascript">
+    //SELECT ALL CHECKBOXES ON SELECT ALL CHECKBOX BUTTON
+    function SelectAllCheckbox() {
+        document.getElementById("InwardNoDDL").disabled = true;
+        document.getElementById("PONoDDL").disabled = true;
+        document.getElementById("ChallanNoDDL").disabled = true;
+        document.getElementById("BillNoDDL").disabled = true;
+        var count = document.getElementById("InwardListCount").value;
+
+        if ($("#SelectAllId").prop("checked")) {
+            for (i = 1; i < count; i++) {
+                var chkbox = "CheckBox" + i;
+                var payment = "Payment" + i;
+                var discount = "Discount" + i;
+                $("#" + chkbox).attr("checked", true);
+                document.getElementById(chkbox).value = "Yes";
+                document.getElementById(payment).disabled = false;
+                document.getElementById(discount).disabled = false;
+            }
+            CalcTotalPayment();
+        }
+        else {
+            for (i = 1; i < count; i++) {
+                var chkbox = "CheckBox" + i;
+                var payment = "Payment" + i;
+                var discount = "Discount" + i;
+                $("#" + chkbox).attr("checked", false);
+                document.getElementById(chkbox).value = "No";
+                document.getElementById(payment).disabled = true;
+                document.getElementById(discount).disabled = true;
+                document.getElementById(payment).value = 0;
+                document.getElementById(discount).value = 0;
+            }
+            CalcTotalPayment();
+        }
+    }
+</script>
+
+
+<script type="text/javascript">
+    function CheckCheckboxValue(Count) {
+        document.getElementById("InwardNoDDL").disabled = true;
+        document.getElementById("PONoDDL").disabled = true;
+        document.getElementById("ChallanNoDDL").disabled = true;
+        document.getElementById("BillNoDDL").disabled = true;
+        var checkbox = "CheckBox" + Count;
+        var payment = "Payment" + Count;
+        var discount = "Discount" + Count;
+        if ($("#" + checkbox).prop("checked")) {
+            document.getElementById(checkbox).value = "Yes";
+            document.getElementById(payment).disabled = false;
+            document.getElementById(discount).disabled = false;
+        }
+        else {
+            document.getElementById(payment).value = 0;
+            document.getElementById(discount).value = 0;
+            document.getElementById(checkbox).value = "No";
+            document.getElementById(payment).disabled = true;
+            document.getElementById(discount).disabled = true;
+        }
+        CalcTotalPayment();
+    }
+</script>
+
+<script type="text/javascript">
+    function CalcInwardBalance(count) {
+        var payment = "Payment" + count;
+        var discount = "Discount" + count;
+        var balance = "Balance" + count;
+        var prevbalance = "PrevBalance" + count;
+        var balanceval = "BalanceVal" + count;
+        var ans = (+(document.getElementById(prevbalance).value) - document.getElementById(payment).value) - document.getElementById(discount).value;
+        document.getElementById(balance).innerHTML = ans;
+        document.getElementById(balanceval).value = ans;
+        CalcTotalPayment();
+    }
+</script>
+
+<script type="text/javascript">
+    function CalcTotalPayment() {
+
+        var inwardcount = document.getElementById("InwardListCount").value;
+        var totalpayment = 0;
+        for (i = 1; i < inwardcount; i++) {
+            var payment = "Payment" + i;
+            totalpayment = +(document.getElementById(payment).value) + totalpayment;
+            document.getElementById("TotalPayment").innerHTML = totalpayment.toFixed(2);
+            document.getElementById("TotalPaymentVal").value = totalpayment.toFixed(2);
+        }
+
+        if (totalpayment != 0) {
+            document.getElementById("PaymentDetails").disabled = false;
+        }
+    }
+</script>
+
+<table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+    <thead style="background-color:#eee">
+        <tr>
+            <th style="text-align: center">SelectAll<br />
+                <input type="checkbox" id="SelectAllId" onclick="SelectAllCheckbox()" style="width: 17px; height: 17px;" />
+            </th>
+            <th style="text-align: center">Inward No.</th>
+            <th style="text-align: center">Inward<br />Date</th>
+            <th style="text-align: center">Grand<br />Total</th>
+            <th style="text-align: center">DebitNote<br />
+                Amount</th>
+            <th style="text-align: center">Amount<br />
+                Paid</th>
+            <th style="text-align: center" class=" col-lg-2 col-md-2">Payment<br />(<i class="fa fa-rupee"></i>)</th>
+            <th style="text-align: center" class=" col-lg-2 col-md-2">Discount<br />(<i class="fa fa-rupee"></i>)</th>
+            <th style="text-align: center">Balance</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int Count = 1;
+            if (Model.InwardFromSupplierList != null)
+            {
+                foreach (var data in Model.InwardFromSupplierList)
+                {
+                    string checkbox = "CheckBox" + Count;
+                    string inwardno = "InwardNo" + Count;
+                    string grandtotal = "GrandTotal" + Count;
+                    string debitnoteamt = "DebitNoteAmt" + Count;
+                    string amountpaid = "AmountPaid" + Count;
+                    string payment = "Payment" + Count;
+                    string discount = "Discount" + Count;
+                    string balance = "Balance" + Count;
+                    string prevbalance = "PrevBalance" + Count;
+                    string balanceval = "BalanceVal" + Count;
+
+                    string inwarddate = Convert.ToDateTime(data.InwardDate).ToString("dd/MM/yy");
+                    double actualbalance = (Convert.ToDouble(data.PaymentBalance) - Convert.ToDouble(data.ReadOnlyDebitNoteAmt));
+            <tr>
+                <td style="text-align: center">
+                    <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px" value="No" onchange="CheckCheckboxValue(@Count)"/></td>
+                <td style="text-align: center">@data.InwardNo<input type="hidden" id="@inwardno" name="@inwardno" value="@data.InwardNo"/></td>
+                <td style="text-align: center">@inwarddate</td>
+                <td style="text-align: center">@data.GrandTotal<input type="hidden" id="@grandtotal" name="@grandtotal" value="@data.GrandTotal"/></td>
+                <td style="text-align: center">@data.ReadOnlyDebitNoteAmt<input type="hidden" id="@debitnoteamt" name="@debitnoteamt" value="@data.ReadOnlyDebitNoteAmt"/></td>
+                <td style="text-align: center">@data.PaymentAmount<input type="hidden" id="@amountpaid" name="@amountpaid" value="@data.PaymentAmount"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@payment" name="@payment" class="form-control" placeholder="Payment" disabled="disabled" value="0" onchange="CalcInwardBalance(@Count)"/></td>
+                 <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@discount" name="@discount" class="form-control" placeholder="Discount" disabled="disabled" value="0" onchange="CalcInwardBalance(@Count)"/></td>
+                <td style="text-align: center"><label id="@balance">@actualbalance</label><input type="hidden" id="@balanceval" name="@balanceval"/><input type="hidden" id="@prevbalance" name="@prevbalance" value="@actualbalance"/></td>
+                @{Count++;}
+            </tr>
+                }
+            }
+        }
+        <input type="hidden" id="InwardListCount" name="InwardListCount" value="@Count"/>
+    </tbody>
+</table>
+
+<div class="col-lg-8 col-md-8"></div>
+<div class="col-lg-4 col-md-4">
+    <div class="row">
+        <div class="col-lg-12 col-md-12" style="text-align: right">
+            <label style="font-size: 14px; color: blue">Total Payment:</label>
+            <label id="TotalPayment" style="font-size: 14px; color:blue">0.00</label>
+            <input type="hidden" id="TotalPaymentVal" name="TotalPaymentVal" />
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-12 col-md-12" id="InwordsLable" style="display: none">
+        <label style="font-size: 14px">In Words:</label>
+        <label id="Inwords"></label>
+    </div>
+
+<div class="col-lg-12 col-md-12" style="text-align:right">
+    <button type="button" class="btn btn-link" id="PaymentDetails" onclick="GetPaymentDetails()" style="color:blue" disabled="disabled">Payment Details</button>
+</div>

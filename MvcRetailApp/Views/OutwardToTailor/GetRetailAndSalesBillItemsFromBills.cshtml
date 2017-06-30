@@ -1,0 +1,406 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetRetailAndSalesBillItemsFromBills";
+}
+
+<script type="text/javascript">
+    //SELECT ALL CHECKBOXES ON SELECT ALL CHECKBOX BUTTON
+    function SelectAllCheckbox() {
+        var count = document.getElementById("ItemList").value;
+
+        if ($("#SelectAllId").prop("checked")) {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                var narration = "Narration" + i;
+                var quantity = "Quantity" + i;
+                var tailoramt = "TailorAmt" + i;
+                var accessoriesamt = "AccessoriesAmt" + i;
+                var jobworktypeddl = "JobWorkTypeDDL" + i;
+                $("#" + chkbox).attr("checked", true);
+                document.getElementById(chkbox).value = "Yes";
+                document.getElementById(narration).disabled = false;
+                document.getElementById(quantity).disabled = false;
+                document.getElementById(tailoramt).disabled = false;
+                document.getElementById(accessoriesamt).disabled = false;
+                document.getElementById(jobworktypeddl).disabled = false;
+            }
+        }
+        else {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                var narration = "Narration" + i;
+                var quantity = "Quantity" + i;
+                var tailoramt = "TailorAmt" + i;
+                var accessoriesamt = "AccessoriesAmt" + i;
+                var jobworktypeddl = "JobWorkTypeDDL" + i;
+                $("#" + chkbox).attr("checked", false);
+                document.getElementById(chkbox).value = "No";
+                document.getElementById(narration).disabled = true;
+                document.getElementById(quantity).disabled = true;
+                document.getElementById(tailoramt).disabled = true;
+                document.getElementById(accessoriesamt).disabled = true;
+                document.getElementById(jobworktypeddl).disabled = true;
+
+            }
+        }
+    }
+</script>
+
+@*JOB WORK TYPE DDL FILLED ONLOAD FUNCTION*@
+<script type="text/javascript">
+    function FillJobWorkType(count) {
+
+        var jobworktypeddl = "JobWorkTypeDDL" + count;
+
+        $.getJSON("/OutwardToTailor/GetJobWorkTypes",
+                             function (data) {
+
+                                 var select = $("#" + jobworktypeddl);
+                                 select.empty();
+                                 $.each(data, function (index, itemdata) {
+                                     select.append($('<option/>', {
+                                         text: itemdata.Type,
+                                         value: itemdata.Type,
+                                     }));
+                                 });
+                             });
+    }
+</script>
+
+<script type="text/javascript">
+    function CheckCheckboxValue(Count) {
+        var checkbox = "CheckBox" + Count;
+        var narration = "Narration" + Count;
+        var quantity = "Quantity" + Count;
+        var tailoramt = "TailorAmt" + Count;
+        var accessoriesamt = "AccessoriesAmt" + Count;
+        var jobworktypeddl = "JobWorkTypeDDL" + Count;
+
+        if ($("#" + checkbox).prop("checked")) {
+            document.getElementById(checkbox).value = "Yes";
+            document.getElementById(narration).disabled = false;
+            document.getElementById(quantity).disabled = false;
+            document.getElementById(tailoramt).disabled = false;
+            document.getElementById(accessoriesamt).disabled = false;
+            document.getElementById(jobworktypeddl).disabled = false;
+            CalcGrandTotal();
+        }
+        else {
+            document.getElementById(narration).value = "";
+            document.getElementById(quantity).value = "";
+            document.getElementById(jobworktypeddl).value = "";
+            document.getElementById(tailoramt).value = 0;
+            document.getElementById(accessoriesamt).value = 0;
+
+            document.getElementById(checkbox).value = "No";
+            document.getElementById(narration).disabled = true;
+            document.getElementById(quantity).disabled = true;
+            document.getElementById(tailoramt).disabled = true;
+            document.getElementById(accessoriesamt).disabled = true;
+            document.getElementById(jobworktypeddl).disabled = true;
+            CalcGrandTotal();
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function CalcGrandTotal(Count) {
+        var ItemList = document.getElementById("ItemList").value;
+        var Count = ItemList - 1;
+
+        var TotalTailorAmt = 0;
+        for (i = 1; i <= Count; i++) {
+            var checkbox = "CheckBox" + i;
+            var tailoramt = "TailorAmt" + i;
+            var tailoramount = +document.getElementById(tailoramt).value;
+            if ($("#" + checkbox).prop("checked")) {
+                TotalTailorAmt = TotalTailorAmt + tailoramount;
+            }
+        }
+
+        var TotalAccessoriesAmt = 0;
+        for (i = 1; i <= Count; i++) {
+            var checkbox = "CheckBox" + i;
+            var accessoriesamt = "AccessoriesAmt" + i;
+            var accessoriesamount = +document.getElementById(accessoriesamt).value;
+            if ($("#" + checkbox).prop("checked")) {
+                TotalAccessoriesAmt = TotalAccessoriesAmt + accessoriesamount;
+            }
+        }
+
+        var ans = TotalTailorAmt + TotalAccessoriesAmt;
+
+        document.getElementById("GrandTotal").innerHTML = ans.toFixed(2);
+        document.getElementById("GrandTotalVal").value = ans.toFixed(2);
+        document.getElementById("Balance").innerHTML = ans.toFixed(2);
+        document.getElementById("BalanceVal").value = ans.toFixed(2);
+    }
+</script>
+
+<script type="text/javascript">
+    function CalBalance() {
+
+        var advancepaymentvalue = +document.getElementById("AdvancePayment").value;
+        if (advancepaymentvalue == 0) {
+            document.getElementById("save").disabled = false;
+        }
+        else {
+            document.getElementById("RetailBillNoDDL").disabled = true;
+            document.getElementById("SalesBillNoDDL").disabled = true;
+
+            var ItemList = document.getElementById("ItemList").value;
+            var Count = ItemList - 1;
+            for (i = 1; i <= Count; i++) {
+                var narration = "Narration" + i;
+                var quantity = "Quantity" + i;
+                var tailoramt = "TailorAmt" + i;
+                var accessoriesamt = "AccessoriesAmt" + i;
+                var jobworktypeddl = "JobWorkTypeDDL" + i;
+                var checkbox = "CheckBox" + i;
+                document.getElementById(narration).disabled = true;
+                document.getElementById(quantity).disabled = true;
+                document.getElementById(tailoramt).disabled = true;
+                document.getElementById(accessoriesamt).disabled = true;
+                document.getElementById(jobworktypeddl).disabled = true;
+                document.getElementById(checkbox).disabled = true;
+            }
+
+            var grandtotal = +document.getElementById("GrandTotal").innerHTML;
+            var advpay = +document.getElementById("AdvancePayment").value;
+            var bal = 0;
+            var bal = grandtotal - advpay;
+
+            if (bal < 0) {
+                alertbox("Can Not Exceed Balance..");
+                document.getElementById("AdvancePayment").value = grandtotal;
+                document.getElementById("Balance").innerHTML = 0;
+                document.getElementById("BalanceVal").value = 0;
+            }
+            else {
+                document.getElementById("Balance").innerHTML = bal.toFixed(2);
+                document.getElementById("BalanceVal").value = bal.toFixed(2);
+            }
+
+            if (advpay != 0) {
+                document.getElementById("InwordsLable").style.display = 'inline';
+                document.getElementById("Inwords").style.display = 'inline';
+                document.getElementById("Inwords").innerHTML = NumberToWords();
+                document.getElementById("TypeOfPaymentLabel").style.display = 'inline';
+                document.getElementById("TypeOfPaymentDiv").style.display = 'inline';
+                document.getElementById("verticalline2").style.display = 'inline';
+            }
+        }
+    }
+</script>
+
+<table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+            <th style="text-align: center">SelectAll<br />
+                <input type="checkbox" id="SelectAllId" onclick="SelectAllCheckbox()" style="width: 17px; height: 17px;" />
+            </th>
+            <th style="text-align: center">BillNo.</th>
+            <th style="text-align: center">Item Name</th>
+            <th style="text-align: center">Item Code</th>
+            <th style="text-align: center">JobWork<br />
+                Type</th>
+            <th style="text-align: center" class="col-lg-1 col-md-1">Quantity</th>
+            <th style="text-align: center" class="col-lg-3 col-md-3">Narration</th>
+            <th style="text-align: center">Tailor<br />
+                Amount</th>
+            <th style="text-align: center" class="col-lg-1 col-md-1">Accessories<br />
+                Amount</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int RBCount = 1;
+            if (Model.RetailBillItemList != null)
+            {
+                foreach (var data in Model.RetailBillItemList)
+                {
+                    string checkbox = "CheckBox" + RBCount;
+                    string billno = "BillNo" + RBCount;
+                    string itemcode = "ItemCode" + RBCount;
+                    string itemname = "ItemName" + RBCount;
+                    string narration = "Narration" + RBCount;
+                    string quantity = "Quantity" + RBCount;
+                    string tailoramt = "TailorAmt" + RBCount;
+                    string accessoriesamt = "AccessoriesAmt" + RBCount;
+                    string jobworktypeddl = "JobWorkTypeDDL" + RBCount;
+                    string itemtype = "ItemType" + RBCount;
+                    string description = "Description" + RBCount;
+
+                    string barcode = "Barcode" + RBCount;
+                    string unit = "Unit" + RBCount;
+                    string numbertype = "NumberType" + RBCount;
+                    string sellingprice = "SellingPrice" + RBCount;
+                    string mrp = "MRP" + RBCount;
+                    string size = "Size" + RBCount;
+                    string brand = "Brand" + RBCount;
+                    string designcode = "DesignCode" + RBCount;
+                    string designname = "DesignnName" + RBCount;
+                    string color = "Color" + RBCount;
+                    string material = "Material" + RBCount;
+                   
+            <tr>
+                <td style="text-align: center">
+                    <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px" value="No" onchange="CheckCheckboxValue(@RBCount)"/></td>
+                <td style="text-align: center">@data.RetailBillNo<input type="hidden" id="@billno" name="@billno" value="@data.RetailBillNo"/></td>
+                <td style="text-align: center">@data.ItemName<input type="hidden" id="@itemname" name="@itemname" value="@data.ItemName"/></td>
+                <td style="text-align: center">@data.ItemCode<input type="hidden" id="@itemcode" name="@itemcode" value="@data.ItemCode"/></td>
+                <td>
+                    <select id="@jobworktypeddl" name="@jobworktypeddl" class = "form-control", disabled = "disabled"></select>
+                    <script>FillJobWorkType(@RBCount)</script>
+                </td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@quantity" name="@quantity" class="form-control" placeholder="Qty" disabled="disabled"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@narration" name="@narration" class="form-control" placeholder="Narration" disabled="disabled"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@tailoramt" name="@tailoramt" class="form-control" placeholder="Amount" disabled="disabled" value="0" onchange="CalcGrandTotal(@RBCount)"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@accessoriesamt" name="@accessoriesamt" class="form-control" placeholder="Amount" disabled="disabled" value="0" onchange="CalcGrandTotal(@RBCount)"/></td>
+
+                <input type="hidden" id="@description" name="@description" value="@data.Description"/>
+                <input type="hidden" id="@itemtype" name="@itemtype" value="@data.ItemType"/>
+                <input type="hidden" id="@barcode" name="@barcode" value="@data.Barcode"/>
+                <input type="hidden" id="@unit" name="@unit" value="@data.Unit"/>
+                <input type="hidden" id="@numbertype" name="@numbertype" value="@data.NumberType"/>
+                <input type="hidden" id="@sellingprice" name="@sellingprice" value="@data.SellingPrice"/>
+                <input type="hidden" id="@mrp" name="@mrp" value="@data.MRP"/>
+                <input type="hidden" id="@size" name="@size" value="@data.Size"/>
+                <input type="hidden" id="@brand" name="@brand" value="@data.Brand"/>
+                <input type="hidden" id="@designcode" name="@designcode" value="@data.DesignCode"/>
+                <input type="hidden" id="@designname" name="@designname" value="@data.DesignName"/>
+                <input type="hidden" id="@color" name="@color" value="@data.Color"/>
+                <input type="hidden" id="@material" name="@material" value="@data.Material"/>
+
+                @{RBCount++;}
+            </tr>
+                }
+            }
+
+            int SBCount = RBCount;
+            if (Model.SalesBillItemList != null)
+            {
+
+                foreach (var data in Model.SalesBillItemList)
+                {
+                    string checkbox = "CheckBox" + SBCount;
+                    string billno = "BillNo" + SBCount;
+                    string itemcode = "ItemCode" + SBCount;
+                    string itemname = "ItemName" + SBCount;
+                    string narration = "Narration" + SBCount;
+                    string quantity = "Quantity" + SBCount;
+                    string tailoramt = "TailorAmt" + SBCount;
+                    string accessoriesamt = "AccessoriesAmt" + SBCount;
+                    string jobworktypeddl = "JobWorkTypeDDL" + SBCount;
+                    string itemtype = "ItemType" + SBCount;
+                    string description = "Description" + SBCount;
+
+                    string barcode = "Barcode" + SBCount;
+                    string unit = "Unit" + SBCount;
+                    string numbertype = "NumberType" + SBCount;
+                    string sellingprice = "SellingPrice" + SBCount;
+                    string mrp = "MRP" + SBCount;
+                    string size = "Size" + SBCount;
+                    string brand = "Brand" + SBCount;
+                    string designcode = "DesignCode" + SBCount;
+                    string designname = "DesignnName" + SBCount;
+                    string color = "Color" + SBCount;
+                    string material = "Material" + SBCount;
+                    
+            <tr>
+                <td style="text-align: center">
+                    <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px" value="No" onchange="CheckCheckboxValue(@SBCount)"/></td>
+                <td style="text-align: center">@data.SalesBillNo<input type="hidden" id="@billno" name="@billno" value="@data.SalesBillNo"/></td>
+                <td style="text-align: center">@data.ItemName<input type="hidden" id="@itemname" name="@itemname" value="@data.ItemName"/></td>
+                <td style="text-align: center">@data.ItemCode<input type="hidden" id="@itemcode" name="@itemcode" value="@data.ItemCode"/></td>
+                <td>
+                    <select id="@jobworktypeddl" name="@jobworktypeddl" class = "form-control", disabled = "disabled"></select>
+                    <script>FillJobWorkType(@SBCount)</script>
+                </td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@quantity" name="@quantity" class="form-control" placeholder="Qty" disabled="disabled"/></td>
+                 <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@narration" name="@narration" class="form-control" placeholder="Narration" disabled="disabled"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@tailoramt" name="@tailoramt" class="form-control" placeholder="Amount" disabled="disabled" value="0" onchange="CalcGrandTotal(@SBCount)"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center" id="@accessoriesamt" name="@accessoriesamt" class="form-control" placeholder="Amount" disabled="disabled" value="0" onchange="CalcGrandTotal(@SBCount)"/></td>
+
+                <input type="hidden" id="@description" name="@description" value="@data.Description"/>
+                <input type="hidden" id="@itemtype" name="@itemtype" value="@data.ItemType"/>
+                <input type="hidden" id="@barcode" name="@barcode" value="@data.Barcode"/>
+                <input type="hidden" id="@unit" name="@unit" value="@data.Unit"/>
+                <input type="hidden" id="@numbertype" name="@numbertype" value="@data.NumberType"/>
+                <input type="hidden" id="@sellingprice" name="@sellingprice" value="@data.SellingPrice"/>
+                <input type="hidden" id="@mrp" name="@mrp" value="@data.MRP"/>
+                <input type="hidden" id="@size" name="@size" value="@data.Size"/>
+                <input type="hidden" id="@brand" name="@brand" value="@data.Brand"/>
+                <input type="hidden" id="@designcode" name="@designcode" value="@data.DesignCode"/>
+                <input type="hidden" id="@designname" name="@designname" value="@data.DesignName"/>
+                <input type="hidden" id="@color" name="@color" value="@data.Color"/>
+                <input type="hidden" id="@material" name="@material" value="@data.Material"/>
+
+                @{SBCount++;}
+            </tr>
+                }
+            }
+            <input type="hidden" id="ItemList" value="@SBCount" name="ItemList"/>
+            
+        }
+    </tbody>
+</table>
+
+<div class="row">
+    <div style="height: 10px"></div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12 col-sm-12">
+        <div class="col-lg-8 col-md-8 col-sm-8">
+        </div>
+        <div class="col-lg-4 col-md-4 col-sm-4">
+            <div class="row">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <label style="font-size: 14px;">Grand Total:</label>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6" style="text-align: right">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <label id="GrandTotal" style="font-size: 14px;">0.00</label>
+                            <input type="hidden" id="GrandTotalVal" name="GrandTotalVal"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <label style="font-size: 14px;">Advance Payment<i style="color: red">*</i></label>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        @Html.TextBoxFor(model => model.OutwardToTailorDetails.AdvancePayment, new { @class = "form-control", id = "AdvancePayment", @placeholder = " Adv Payment", @style = "text-align:right", @onchange = "CalBalance();" })
+                        @Html.ValidationMessageFor(model => model.OutwardToTailorDetails.AdvancePayment, null, new { style = "color:red" })
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="row">
+                    <div class="col-lg-6 col-md-6 col-sm-6">
+                        <label style="font-size: 14px;">Balance:</label>
+                    </div>
+                    <div class="col-lg-6 col-md-6 col-sm-6" style="text-align: right">
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <label id="Balance" style="font-size: 14px">0.00</label>
+                            <input type="hidden" id="BalanceVal" name="BalanceVal"/>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

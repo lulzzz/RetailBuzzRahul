@@ -1,0 +1,82 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "InwardFromSupplier";
+}
+
+<script type="text/javascript">
+    function Report(type) {
+        if (type == 'Date') {
+            $.ajax({
+                url: "/MisReports/InwardFromSupplierDatewise",
+                type: "GET",
+                success: function (data) {
+                    document.getElementById("LoadSupplier").innerHTML = "";
+                    $("#LoadSupplier").html(data);
+                }
+            });
+        }
+        else{
+            $.ajax({
+                url: "/MisReports/InwardFromSupplierSupplierwise",
+                type: "GET",
+                success: function (data) {
+                    document.getElementById("LoadSupplier").innerHTML = "";
+                    $("#LoadSupplier").html(data);
+                }
+            });
+        }
+    }
+</script>
+
+<div class="col-lg-12 col-md-12">
+    @*<table style="border: 1px double; width: 100%">
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div style="height: 8px"></div>
+                        <div class="col-md-4 col-lg-4">
+                            <input type="radio" name="InwardBtn" onclick="Report('Date')" />
+                            <label style="font-size:14px">&nbsp Datewise Report</label>
+                        </div>
+                        <div class="col-md-4 col-lg-4">
+                            <input type="radio" name="InwardBtn" onclick="Report('Supplier')" />
+                            <label style="font-size:14px">&nbsp Supplierwise Report</label>
+                        </div>
+                        <div style="height: 8px"></div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <br />
+                <div id="LoadSupplier"></div>
+            </td>
+        </tr>
+
+    </table>*@
+
+
+   
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                        <div style="height: 8px"></div>
+                        <div class="col-md-4 col-lg-4">
+                            <input type="radio" name="InwardBtn" onclick="Report('Date')" />
+                            <label style="font-size:14px">&nbsp Datewise Report</label>
+                        </div>
+                        <div class="col-md-4 col-lg-4">
+                            <input type="radio" name="InwardBtn" onclick="Report('Supplier')" />
+                            <label style="font-size:14px">&nbsp Supplierwise Report</label>
+                        </div>
+                        <div style="height: 8px"></div>
+                    </div>
+                </div>
+           
+                <br />
+                <div id="LoadSupplier"></div>
+          
+</div>
+

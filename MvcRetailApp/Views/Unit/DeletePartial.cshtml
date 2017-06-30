@@ -1,0 +1,38 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DeletePartial";
+}
+
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.UnitDetails.UnitId)
+@Html.HiddenFor(model => model.UnitDetails.UnitCode)
+@Html.HiddenFor(model => model.UnitDetails.UnitName)
+@Html.HiddenFor(model => model.UnitDetails.NumberType)
+
+<h2><strong>Unit</strong>Details</h2>
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="form-group col-md-3 col-lg-3">
+                <label for="exampleInputname">Unit Name</label>
+            </div>
+            <div class="form-group col-md-4 col-lg-4">
+                @Html.DisplayFor(model => model.UnitDetails.UnitName)
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-3 col-lg-3">
+                <label for="exampleInputname">Number Type</label>
+            </div>
+            <div class="form-group col-md-4 col-lg-4">
+                @Html.DisplayFor(model => model.UnitDetails.NumberType)
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-offset-3">
+                <button type="submit" class="btn btn-success" onclick="UnitCodeDelete()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

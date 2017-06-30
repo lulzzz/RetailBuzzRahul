@@ -1,0 +1,275 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ShopRequisitionLogin";
+}
+
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+<script type="text/javascript">
+    function ShowQuantity(row) {
+
+        var itemcode = document.getElementById("itemcode" + row).value;
+
+        window.open("/Stock/ShowAllQuantity?code=" + itemcode, "_target", "width=500,height=300,top=150px,left=400px");
+    }
+    </script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#Submit").click(function () {
+            if (document.getElementById("ddltogodownname").value == "" && document.getElementById("ddltoshopname").value == "") {
+                alertbox("Please Select Either Shop Or Godown");
+                return false;
+            }
+
+            document.getElementById("retailcode").value = window.opener.document.getElementById("retailno").innerHTML;
+            var row = 1;
+            document.getElementById("transqty").value = window.opener.document.getElementById("Quantity" + row).value;
+            row = row + 1;
+            document.getElementById("ShopRequisitionGodown_PrepareBy").value = window.opener.document.getElementById("PreparedByName").innerHTML;
+            document.getElementById("ShopRequisitionGodown_EmailIdEmployee").value = window.opener.document.getElementById("PreparedByEmail").innerHTML;
+            document.getElementById("ShopRequisitionGodown_ContactNoEmployee").value = window.opener.document.getElementById("PreparedByContact").innerHTML;
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $("#PrepareByDDL").change(function () {
+            var empname = $(this).val();
+            $.getJSON("/SalesBill/GetEmployeeDetails", { name: empname },
+                    function (data) {
+                        document.getElementById("emailid").innerHTML = data.Email;
+                        document.getElementById("contactnoid").innerHTML = data.MobileNo;
+                        $("#ShopRequisitionGodown_EmailIdEmployee").val(data.Email);
+                        $("#ShopRequisitionGodown_ContactNoEmployee").val(data.MobileNo);
+                    });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#requiredquantity1").change(function () {
+            document.getElementById("Submit").disabled = false;
+        });
+
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#requiredquantity1').keyup(function () {
+            if (this.value.match(/[^0-9]/g)) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            }
+        });
+    });
+</script>
+
+  @using (Html.BeginForm("ShopRequisitionForRetailBill", "Requisition", FormMethod.Post, new { enctype = "multipart/form-data", id = "frm-create" }))
+  {
+      
+      @Html.ValidationSummary(true)
+      <input type="hidden" id="hdnrowcount" name="hdnrowcount">
+      @Html.HiddenFor(model => model.ShopRequisitionGodown.ReqCode)
+      @Html.HiddenFor(model => model.ShopRequisitionGodown.FromShopName)
+      @Html.HiddenFor(model => model.ShopRequisitionGodown.FromShopCode)
+      @Html.HiddenFor(model => model.ShopRequisitionGodown.PrepareBy)
+      @Html.HiddenFor(model => model.ShopRequisitionGodown.EmailIdEmployee)
+      @Html.HiddenFor(model => model.ShopRequisitionGodown.ContactNoEmployee)
+      
+      <input type="hidden" id="retailcode" name="retailcode" />
+      <input type="hidden" id="transqty" name="transqty" />
+
+      <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+             
+      <h2 style="text-align:center">ShopRequisition</h2>
+      {
+          string godowncode = string.Empty;
+          if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+          {
+              if (Session["LOGINSHOPGODOWNCODE"] != null)
+              {
+                  godowncode = Session["LOGINSHOPGODOWNCODE"].ToString();
+
+                    <input type="hidden" id="godowncode" value="@godowncode"/>
+                                
+                    <div style="text-align: right">
+                        <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                        <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAME"].ToString()</label>
+                    </div>
+              }
+          }
+      }
+             
+               <div class="col-md-12 col-lg-12" style="text-align:right">
+                     @{
+      string date = DateTime.Now.ToString("dd/MM/yyyy");
+      string Code = Model.REcode;
+                     }
+                     <div style="height: 10px"></div>
+                     <label style="font-size: 14px;">Date:&nbsp;&nbsp;</label>
+                     <label style="font-size: 16px;" id="date">@date</label>
+                     <br />
+                     <label style="font-size: 14px;">Requisition Code:&nbsp;&nbsp;</label>
+                     <label style="font-size: 16px " >@Code</label>
+                 </div>
+                     <div class="col-md-10 col-lg-12 col-sm-12">
+                 <table style="border: 1px double; border: outset"; >
+                    <thead>
+                        <tr>
+                                                                <th class="col-md-1 col-lg-1" style="text-align:center" >
+                                                                    <label>S.N.</label></th>
+                                                                 <th class="col-md-2 col-lg-2" style="text-align:center">
+                                                                    <label id="Headings">ItemCode</label></th>
+                                                                <th class="col-md-2 col-lg-2" style="text-align:center">
+                                                                    <label id="Headings">Item</label></th>
+                                                                <th class="col-md-3 col-lg-3" style="text-align:center">
+                                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                                <th class="col-md-1 col-lg-1" style="text-align:center">
+                                                                    <label id="Headings">Shop Qty</label></th>
+                                                                <th class="col-md-1 col-lg-1" style="text-align:center">
+                                                                    <label id="Headings">Required Quantity<i style="color: red">*</i></label></th>
+                        </tr>
+                    </thead>
+                   <tbody>
+                                                            @{
+      int count = 1;
+      if (Model.ShopStockDetails != null)
+      {
+
+          string itemname = "itemname" + count;
+          string itemcode = "itemcode" + count;
+          string itemdescription = "itemdescription" + count;
+          string itemquantity = "itemquantity" + count;
+          string requiredquantity = "requiredquantity" + count;
+                                                                        <tr >
+                                                                        <td style="text-align:center">1</td>
+                                                                        <td style="text-align:center">@Model.ShopStockDetails.ItemCode<input type="hidden" id="@itemcode" name="@itemcode" value="@Model.ShopStockDetails.ItemCode" /></td>
+                                                                        <td style="text-align:center">@Model.ShopStockDetails.ItemName<input type="hidden" id="@itemname" name="@itemname" value="@Model.ShopStockDetails.ItemName" /></td>
+                                                                        <td style="text-align:center">@Model.ShopStockDetails.Description<input type="hidden" id="@itemdescription" name="@itemdescription" value="@Model.ShopStockDetails.Description" /> </td>
+                                                                        <td style="text-align:center"><a href="#" onclick="ShowQuantity(1)"  style="font-weight: normal">@Model.ShopStockDetails.Quantity<input type="hidden" id="@itemquantity" name="@itemquantity" value="@Model.ShopStockDetails.Quantity" /> </a></td>
+                                                                        <td style="text-align:center"><input type="text" id="@requiredquantity" name="@requiredquantity"  class="form-control" placeholder="req.qty"/>
+                                                                        @Html.ValidationMessageFor(model => model.ShopRequisitionGodownItemDetails.RequiredQuantity, null, new { style = "color:red" })
+                                                                            @{count += 1;}
+                                                                        </tr>
+                                                                    
+      }
+                                                                <input type="hidden" value="1" id="totalrowcount" />
+                                                                <script>
+                                                                    document.getElementById("hdnrowcount").value = document.getElementById("totalrowcount").value;
+                                                                </script>
+                                                            }
+                                                        </tbody>
+                                                        </table>
+                         </div>
+                 <br />
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                                          <label>Request To Godown<label style="color: red"></label></label><br />
+                                            @Html.DropDownListFor(model => model.ShopRequisitionGodown.ToGodownName, new SelectList(Model.GodownStockList.Distinct(), "GodownName", "GodownName"), "Select Godown Name ", new { @class = "form-control", id = "ddltogodownname" })
+                                         
+                                        </div>
+
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                                            <label>Request To Shop <label style="color: red"></label></label><br />
+                                            @Html.DropDownListFor(model => model.ShopRequisitionGodown.ToShopName, new SelectList(Model.ShopStockList, "ShopName", "ShopName"), "Select Shop Name ", new { @class = "form-control", id = "ddltoshopname" })
+                                         
+                                        </div>
+
+                 <div class="col-md-4 col-sm-4 col-xs-4">
+                 <input type="radio" name="RadioBtn" id="RadioBtn" value="Yes" />
+                 <label>&nbsp Request To P.O</label>
+                 </div>
+                         
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <br/>
+                <div class="col-sm-offset-6 col-md-offset-6 col-xs-offset-6 ">
+                <button type="submit" id="Submit" class="btn btn-success" disabled="disabled";>Submit</button>
+                </div>
+               
+  }

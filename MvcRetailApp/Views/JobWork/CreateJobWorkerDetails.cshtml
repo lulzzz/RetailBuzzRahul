@@ -1,0 +1,289 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CreateJobWorkerDetails";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/popup.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<style>
+    #picture a.small:hover .large {
+        display: block;
+        position: absolute;
+        margin-right: 0px;
+        top: 136px;
+        left: -38px;
+        width: 210px;
+        height: 210px;
+    }
+</style>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- Start: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- Start: Content -->
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+                <br />
+
+                <div class="panel panel-default">
+                    <div class="panel-heading" style="vertical-align: central; height: 50%">
+                        <h2>Job Worker Details</h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-3 col-lg-3">
+                            @{
+                                string photo = string.Empty;
+                                photo = Model.JobWorkerDetails.Photo;
+                    
+                            }
+                            <div class="form-group row">
+                                <label for="exampleInputname">Name:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Name)
+                            </div>
+                             <div class="form-group row">
+                                <label for="exampleInputname">Date Of Birth:</label><br />
+                                @{
+                                    var dateofbirth = Convert.ToDateTime(Model.JobWorkerDetails.DateOfBirth).ToShortDateString();
+                                }
+                                @dateofbirth
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Address:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Address)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">State:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.State)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">City:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.City)
+                            </div>
+                           
+                            <div class="form-group row">
+                                <label for="exampleInputname">Age:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Age)
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3">
+                            <div class="form-group row">
+                                <label for="exampleInputname">Mobile No:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.MobileNo)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Residence No:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.ResidenceNo)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Email:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Email)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Department:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Department)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Designation:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Designation)
+
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Date Of Joining:</label><br />
+                                @{
+                                    var dateaofjoining = Convert.ToDateTime(Model.JobWorkerDetails.DateOfJoining).ToShortDateString();
+                                }
+                                @dateaofjoining
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3">
+                            <div class="form-group row">
+                                <label for="exampleInputname">Total Experience In Years:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.TotalExpYear)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Total Experience In Months:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.TotalExpmonth)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Salary:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Salary)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Blood Group:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.BloodGroup)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Industry:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.Industry)
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">Pan No:</label>
+                                <br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.PancardNo)
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3">
+                            <div class="form-group row">
+                                <label for="exampleInputname">ESIC No:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.ESIC, new { @class = "form-control" })
+                            </div>
+                            <div class="form-group row">
+                                <label for="exampleInputname">PF No:</label><br />
+                                @Html.DisplayFor(model => model.JobWorkerDetails.PFNO)
+                            </div>
+
+                            @{
+                                if (photo != null)
+                                {
+                                <div id="picture">
+                                    <div class="form-group row">
+                                        <label for="exampleInputname">Photo:</label><br />
+                                        <a class="small" href="#" title="">
+                                            <img src="@photo" title="" width="120" height="120"/>
+                                            <img class="large" src="@photo" title="" /></a>
+                                    </div>
+                                </div>
+                                }
+                            }
+                        </div>
+                    </div>
+                </div>
+                <hr />
+                <div class="panel panel-default">
+
+                    <div class="panel-heading" style="vertical-align: central; height: 50%">
+                        <h2>
+                            <label for="exampleInputname">Bank Details</label></h2>
+                    </div>
+                    <div class="panel-body">
+                        <div class="col-md-3 col-lg-3">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="form-group row">
+                                    <label for="exampleInputBankName">Bank Name:</label><br />
+                                    @Html.DisplayFor(model => model.JobWorkerDetails.BankName)
+                                </div>
+                                <div class="form-group row">
+                                    <label for="exampleInputIFSC Code">Branch Name:</label><br />
+                                    @Html.DisplayFor(model => model.JobWorkerDetails.Branch)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="form-group row">
+                                    <label for="exampleInputBankLocation">Bank IFSC:</label><br />
+                                    @Html.DisplayFor(model => model.JobWorkerDetails.BankIFSCNo)
+                                </div>
+                                <div class="form-group row">
+                                    <label for="exampleInputBankLocation">Bank Location:</label><br />
+                                    @Html.DisplayFor(model => model.JobWorkerDetails.BankAddress)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-lg-3">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="form-group row">
+                                    <label for="exampleInputAccountType">Account Type:</label><br />
+                                    @Html.DisplayFor(model => model.JobWorkerDetails.AccountType)
+                                </div>
+                                <div class="form-group row">
+                                    <label for="exampleInputAccountNo">Account No:</label><br />
+                                    @Html.DisplayFor(model => model.JobWorkerDetails.Account_No)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3 col-lg-3">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="form-group row">
+                                    <label for="exampleInputAccountType">MICR Code:</label><br />
+                                    @Html.DisplayFor(model => model.JobWorkerDetails.MICRCode)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@{
+    if (ViewData["JobWorkerChanged"] != null)
+    {
+        string prevjobworker = ViewData["JobWorkerChanged"].ToString();
+    <input type="hidden" id="WorkerChanged" value="@prevjobworker" />
+    <script type="text/javascript">
+        alertbox(document.getElementById("WorkerChanged").value);
+    </script>
+    }
+}
+

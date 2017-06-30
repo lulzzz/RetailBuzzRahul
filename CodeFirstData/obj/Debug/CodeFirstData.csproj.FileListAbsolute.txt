@@ -1,0 +1,11 @@
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\CodeFirstData.dll.config
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\CodeFirstData.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\CodeFirstData.pdb
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\CodeFirstEntities.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\EntityFramework.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\System.Web.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\CodeFirstEntities.pdb
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\bin\Debug\EntityFramework.xml
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\obj\Debug\CodeFirstData.csprojResolveAssemblyReference.cache
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\obj\Debug\CodeFirstData.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstData\obj\Debug\CodeFirstData.pdb

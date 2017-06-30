@@ -1,0 +1,191 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DirectPrinting";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Barcode").change(function () {
+
+            var barcodevalue = document.getElementById("Barcode").value;
+            $.getJSON("/BarcodePrinting/GetDetailsByBarcode", { barcode: barcodevalue },
+                          function (Data) {
+                              document.getElementById("DDLCategory").disabled = true;
+                              document.getElementById("itemdetails").style.display = 'inline';
+                              document.getElementById("printbtn").style.display = 'inline';
+                              document.getElementById("ItemCode").value = Data.itemCode;
+                              document.getElementById("name").innerHTML = Data.itemName;
+                              document.getElementById("description").innerHTML = Data.description;
+                              document.getElementById("design").innerHTML = Data.designName;
+                              document.getElementById("size").innerHTML = Data.size;
+                              document.getElementById("sellingprice").innerHTML = Data.sellingprice;
+                              document.getElementById("mrp").innerHTML = Data.mrp;
+                              document.getElementById("color").innerHTML = Data.colorCode;
+                              document.getElementById("barcode").src = Data.barcodeImage;
+                          });
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        @*LOAD SUBCATEGORY BY CATEGORY*@
+        $("#DDLCategory").change(function () {
+            document.getElementById("DDLSubCategory").disabled = false;
+            var idmodel = $(this).val();
+            $.getJSON("/BarcodePrinting/LoadSubCatByCat", { cat: idmodel },
+            function (Data) {
+                var select = $("#DDLSubCategory");
+                select.empty();
+                select.append($('<option/>', {
+                    value: 0,
+                    text: "Select Sub Category"
+                }));
+
+                $.each(Data, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+
+        @*LOAD ITEM LIST BY SUB CATEGORY*@
+        $("#DDLSubCategory").change(function () {
+            document.getElementById("DDLItem").disabled = false;
+            var idmodel = $(this).val();
+            $.getJSON("/BarcodePrinting/LoadItemBySubCat", { subcat: idmodel },
+            function (Data) {
+                var select = $("#DDLItem");
+                select.empty();
+                select.append($('<option/>', {
+                    value: 0,
+                    text: "Select Item"
+                }));
+
+                $.each(Data, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+
+        @*LOAD ITEM LIST BY SUB CATEGORY*@
+        $("#DDLItem").change(function () {
+            var code = $(this).val();
+            document.getElementById("ItemCode").value = code;
+            $.getJSON("/BarcodePrinting/GetItemDetails", { itemcode: code },
+                function (Data) {
+                    document.getElementById("DDLCategory").disabled = true;
+                    document.getElementById("DDLSubCategory").disabled = true;
+                    document.getElementById("Barcode").disabled = true;
+                    document.getElementById("itemdetails").style.display = 'inline';
+                    document.getElementById("printbtn").style.display = 'inline';
+                    document.getElementById("name").innerHTML = Data.itemName;
+                    document.getElementById("description").innerHTML = Data.description;
+                    document.getElementById("design").innerHTML = Data.designName;
+                    document.getElementById("size").innerHTML = Data.size;
+                    document.getElementById("sellingprice").innerHTML = Data.sellingprice;
+                    document.getElementById("mrp").innerHTML = Data.mrp;
+                    document.getElementById("color").innerHTML = Data.colorCode;
+                    document.getElementById("barcode").innerHTML = Data.barcode;
+
+                });
+        });
+    });
+</script>
+
+
+@*OPEN POPUP ON PRINT CLICK BUTTON*@
+<script type="text/javascript">
+    function OpenPopUp() {
+        var itemcode = document.getElementById("ItemCode").value;
+        window.open("/BarcodePrinting/PrintBarcode?code=" + itemcode, "_target", "width=190,height=188,top=300px,left=600px");
+    }
+</script>
+
+<br />
+<div class="col-d-12 col-lg-12">
+    <div class="col-d-3 col-lg-3">
+        <label>Scan Barcode</label><i style="color: red">*</i><br />
+        @Html.TextBoxFor(model => model.ItemDetails.Barcode, new { id = "Barcode", @class = "form-control", @placeholder = "Barcode" })
+    </div>
+    <div class="col-d-3 col-lg-3">
+        <label>Category</label><i style="color: red">*</i><br />
+        @Html.DropDownListFor(model => model.ItemCategoryDetails.CategoryName, new SelectList(Model.ItemCategoryList, "CategoryName", "CategoryName"), "Select Category", new { id = "DDLCategory", @class = "form-control" })
+    </div>
+    <div class="col-d-3 col-lg-3">
+        <label>Sub Category</label><i style="color: red">*</i><br />
+        @Html.DropDownListFor(model => model.ItemSubCategoryDetails.subCategoryName, Enumerable.Empty<SelectListItem>(), "Please Select Sub Category", new { id = "DDLSubCategory", @class = "form-control", @disabled = "disabled" })
+    </div>
+    <div class="col-d-3 col-lg-3">
+        <label>Item</label><i style="color: red">*</i><br />
+        @Html.DropDownListFor(model => model.OpeningStockDetails.ItemName, Enumerable.Empty<SelectListItem>(), "Please Select Item", new { id = "DDLItem", @class = "form-control", @disabled = "disabled" })
+    </div>
+</div>
+
+<div style="height: 80px"></div>
+
+<div class="col-lg-12 col-md-12">
+    <div id="itemdetails" style="display: none" class="col-lg-12 col-md-12">
+        <table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th style="text-align: center">Name</th>
+                    <th style="text-align: center">Description</th>
+                    <th style="text-align: center">Design</th>
+                    <th style="text-align: center">Size</th>
+                    <th style="text-align: center">Cost Price</th>
+                    <th style="text-align: center">Selling Price</th>
+                    <th style="text-align: center">MRP</th>
+                    <th style="text-align: center">Color</th>
+                    <th style="text-align: center">Barcode</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>
+                        <label id="name" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        <label id="description" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        <label id="design" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        <label id="size" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        <label id="costprice" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        <label id="sellingprice" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        <label id="mrp" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        <label id="color" style="font-weight: normal"></label>
+                    </td>
+                    <td>
+                        @*<img id="barcode" title="" width="160" height="42" />*@
+                        <label id="barcode"></label>
+
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="col-md-12 col-lg-12" style="text-align: center">
+    <button type="button" id="printbtn" class="btn btn-primary" onclick="OpenPopUp()" style="display: none">Print</button>
+</div>

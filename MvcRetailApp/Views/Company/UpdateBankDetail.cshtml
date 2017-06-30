@@ -1,0 +1,138 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "UpdateBankDetail";
+    
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlBankNames").change(function () {
+            var modeldata = $(this).val();
+            $.getJSON("/Company/GetBranch", { BankName: modeldata },
+            function (Data) {
+                var select = $("#ddlBankbranches");
+                select.empty();
+                select.append($('<option/>', {
+                    value: 0,
+                    text: "Select Branch"
+                }));
+                $.each(Data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#compbankdetails_MICRCode").change(function () {
+            var mcr = $(this).val();
+            mcr = mcr.replace(/ /g, "");
+            $("#compbankdetails_MICRCode").val(mcr);
+        });
+
+        $("#ddlBankbranches").change(function () {
+            var idmodel = $(this).val();
+            $.ajax({
+                url: '/Company/GetIFSCNoAndAddress',
+                type: "GET",
+                data: { branch: idmodel },
+                success: function (data) {
+                    $("#compbankdetails_BankLocation").val(data.BankAddress);
+                    $("#compbankdetails.BankIfsc").val(data.IFSCNo);
+                    document.getElementById("bankAddr").style.display = "none";
+                    document.getElementById("bankifscno").style.display = "none";
+                    document.getElementById("CompanyDetailsBankAddress").innerHTML = data.BankAddress;
+                    document.getElementById("CompanyDetailsBankIFSCNo").innerHTML = data.IFSCNo;
+                    $("#compbankdetails_MICRCode").val(data.Micr);
+                }
+            });
+        });
+    });
+</script>
+
+
+@Html.HiddenFor(model=>model.compbankdetails.BankId)
+@Html.HiddenFor(model=>model.compbankdetails.CompanyCode)
+@Html.HiddenFor(model=>model.compbankdetails.BankLocation)
+@Html.HiddenFor(model=>model.compbankdetails.BankIfsc)
+<div class="row"> 
+    <div id="title1" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">   
+        <h2>
+            <label for="exampleInputname">Bank Details</label></h2>    
+        </div>
+    <br />
+    <br />
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputBankName">Bank Name</label>
+                @Html.DropDownListFor(model => model.compbankdetails.BankName, new SelectList(Model.compbankdetails.listOfBankNames, "bankName", "bankName", Model.compbankdetails.BankName), "Select Bank", new { id = "ddlBankNames", @placeholder = "BankName", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.compbankdetails.BankName, null, new { style = "color:red" })
+            </div>
+            <div class="row">
+                <label for="exampleInputBranch">Branch</label>
+                @Html.DropDownListFor(model => model.compbankdetails.Branch, new SelectList(Model.compbankdetails.BranchList, "Branch", "Branch", Model.compbankdetails.Branch), "Select", new { id = "ddlBankbranches", @placeholder = "Branches", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.compbankdetails.Branch, null, new { style = "color:red" })
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <div class="form-group">
+                    <label>Bank IFSCNo</label><br />
+                    <label id="CompanyDetailsBankIFSCNo" style="font-weight: normal"></label>
+                    @{
+                        string ifscno = Model.compbankdetails.BankIfsc;
+                        <label id="bankifscno" style="font-weight: normal">@ifscno</label>
+                    }
+                </div>
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputBankLocation">Bank Location</label><br />
+                <label id="CompanyDetailsBankAddress" style="font-weight: normal"></label>
+                @{
+                    string address = Model.compbankdetails.BankLocation;
+                    <label id="bankAddr" style="font-weight: normal">@address</label>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputAccountType">Account Type</label>
+                @Html.DropDownListFor(model => model.compbankdetails.AccountType, new List<SelectListItem> { new SelectListItem { Text = "Current" }, new SelectListItem { Text = "Savings" } }, "Account Type", new { @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.compbankdetails.AccountType, null, new { style = "color:red" })
+            </div>
+            <div class="row">
+                <label for="exampleAccountNo">Account Number</label>
+                @Html.TextBoxFor(model => model.compbankdetails.AccountNo, new { @placeholder = "Account Number", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.compbankdetails.AccountNo,"",new  {style = "color:red" })
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="row">
+                <label for="exampleAccountNo">MICR Code</label>
+                @Html.TextBoxFor(model => model.compbankdetails.MICRCode, new { @placeholder = "MICR Code", @class = "form-control" })
+                @Html.ValidationMessageFor(model => model.compbankdetails.MICRCode,"",new  {style = "color:red" })
+            </div>
+        </div>
+    </div>
+
+</div>
+<div style="text-align:center">
+    <input type="button" id="Update Bank" value="Update Bank" class="btn btn-link" style="color: dodgerblue; font-weight: bolder;" onclick="UpdateBank()" />
+</div>
+
+                

@@ -1,0 +1,51 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "SubCategoryDeletePartial";
+}
+
+        @Html.HiddenFor(model=>model.ItemSubCategoryDetails.subCategoryId)
+        @Html.HiddenFor(model=>model.ItemSubCategoryDetails.categoryName)
+        @Html.HiddenFor(model=>model.ItemSubCategoryDetails.subCategoryName)
+        @Html.HiddenFor(model=>model.ItemSubCategoryDetails.ItemSubCategoryCode)
+ 
+   
+<h2><strong>Item SubCategory </strong>Details</h2>
+<br />
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label for="exampleInputname">Item SubCategory Code</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.ItemSubCategoryDetails.ItemSubCategoryCode)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label for="exampleInputname">Category Name</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.ItemSubCategoryDetails.categoryName)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label for="exampleInputname">SubCategory Name</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.ItemSubCategoryDetails.subCategoryName)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-offset-4">
+                <button type="submit" class="btn btn-success" onclick="DeleteSubCategory()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,25 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "RequisitionFullfilled";
+}
+
+<script type="text/javascript">
+    $(document).ready( function(){
+       
+        window.resizeTo(500, 500);
+        
+    });
+</script>
+
+<h1 style="text-align:center; font-size:30px; margin-top:30px;"> Requisition Sent or 
+    None of the values were entered</h1>
+@{
+    if (ViewData["PreviousGodownRequisitionViewdata"] != null)
+    {
+        string prevshopoutwardno = ViewData["PreviousGodownRequisitionViewdata"].ToString();
+    <input type="hidden" id="ShopOutwardNoChanged" value="@prevshopoutwardno" />
+    <script type="text/javascript">
+        alert(document.getElementById("PreviousGodownRequisitionViewdata").value);
+    </script>
+    }
+}

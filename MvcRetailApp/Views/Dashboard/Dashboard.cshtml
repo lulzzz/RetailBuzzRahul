@@ -1,0 +1,611 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "Dashboard";
+}
+<html>
+<!-- Meta, title, CSS, favicons, etc. -->
+<head>
+    <meta charset="utf-8" />
+    <title>Retail Managment Software</title>
+    <meta name="keywords" content="Retail Software" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Font CSS  -->
+    <link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+    <link href="~/Content/style.default.css" rel="stylesheet" />
+    <link href="~/Content/style.default.blue.css" rel="stylesheet" />
+    <!-- Core CSS  -->
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+    <link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+    <!-- Plugin CSS -->
+    <link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+
+    <!-- Theme CSS -->
+    <link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+    <link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+    <!-- Your Custom CSS -->
+    <link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+    <script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+    <script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+    <!-- Plugins - Via CDN -->
+    <script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+    <!-- Theme Javascript -->
+    <script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+    <script type="text/javascript" src="~/Scripts/main.js"></script>
+    <script type="text/javascript" src="~/Scripts/custom.js"></script>
+    <script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+    <script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+    <!-- PENDING POES PER DATE -->
+    <script type="text/javascript">
+        function pendingApprovalPOList() {
+            window.open("/Dashboard/GetPendingApprovalPo/", "_blank", "height=600,width=900");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function pendingPoList() {
+            window.open("/Dashboard/GetPendingPo/", "_blank", "height=600,width=850");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function ApproveInwards() {
+            window.location.assign("/Stock/EntryStockWithInwardApproval");
+            //window.open("/Dashboard/GetSupplierInwardsForApproval/", "_blank", "height=600,width=850");
+        }
+    </script>
+
+    <!-- INWARD PER DATE -->
+    <script type="text/javascript">
+        function InwardDetailsByDate() {
+            window.open("/Dashboard/GetInwardDetailsByDate/", "_blank", "height=600,width=850");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function RequisitionDetailsByDateForShop() {
+            window.open("/Dashboard/GetRequisitionDetailsByDateForShop/", "_blank", "height=600,width=600");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function RequisitionDetailsByDateForGodown() {
+            window.open("/Dashboard/GetRequisitionDetailsByDateForGodown/", "_blank", "height=600,width=600");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function RequisitionDetailsByDateForGodown1() {
+            window.open("/Dashboard/GetRequisitionDetailsByDateForGodown1/", "_blank", "height=600,width=600");
+        }
+    </script>
+    <script type="text/javascript">
+        function RequisitionDetailsByDateForSuperAdmin() {
+            window.open("/Dashboard/GetRequisitionDetailsByDateForSuperAdmin/", "_blank", "height=600,width=1000");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function RequisitionDetailsByDateForSuperAdmin1() {
+            window.open("/Dashboard/GetRequisitionDetailsByDateForSuperAdmin1/", "_blank", "height=600,width=1000");
+        }
+    </script>
+    <script type="text/javascript">
+        function InwardWithoutPoByDate() {
+            window.open("/Dashboard/GetInwardWithoutPoByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function InwardFromGodownByDate() {
+            window.open("/Dashboard/GetInwardFromGodownByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function InwardShopToGodownByDate() {
+            window.open("/Dashboard/GetInwardShopToGodownByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function InwardInterGodownByDate() {
+            window.open("/Dashboard/GetInwardInterGodownByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function InwardInterShopByDate() {
+            window.open("/Dashboard/GetInwardInterShopByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function OutwardToShopByDate() {
+            window.open("/Dashboard/GetOutwardToShopByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function OutwardShopToGodownByDate() {
+            window.open("/Dashboard/GetOutwardShopToGodownByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function OutwardInterGodownByDate() {
+            window.open("/Dashboard/GetOutwardInterGodownByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function OutwardInterShopByDate() {
+            window.open("/Dashboard/GetOutwardInterShopByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <!-- OUTWARD TO CLIENT PER DATE-->
+    <script type="text/javascript">
+        function OutwardToClientByDate() {
+            window.open("/Dashboard/GetOutwardToClientByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function EntryStockTillDate() {
+            window.open("/Dashboard/GetEntryStockTillDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function ShopStockTillDate() {
+            window.open("/Dashboard/GetShopStockTillDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function GodownStockTillDate() {
+            window.open("/Dashboard/GetGodownStockTillDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function RetailBillByDate() {
+            window.open("/Dashboard/GetRetailBillByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    
+    <script type="text/ecmascript">
+        function SalesBillByDate() {
+            window.open("/Dashboard/GetSalesBillByDate/", "_blank", "height=600,width=850");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function CashierSalesOrderByDate() {
+            window.open("/Dashboard/GetCashierSalesOrderList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function CashierRetailBillByDate() {
+            window.open("/Dashboard/GetCashierRetailBillList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function CashierTempCashMemoByDate() {
+            window.open("/Dashboard/GetCashierTempCashMemoList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function CashierSalesBillByDate() {
+            window.open("/Dashboard/GetCashierSalesBillList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function CashierRefundOrderByDate() {
+            window.open("/Dashboard/GetCashierRefundOrderList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function CashHandoverByDate() {
+            window.open("/Dashboard/GetCashHandoverList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function CardChequeHandoverByDate() {
+            window.open("/Dashboard/GetCardChequeHandoverList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function IncomeExchangeVoucherByDate() {
+            window.open("/Dashboard/GetIncomeExchangeVoucherList/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function SalesReturnByDate() {
+            window.open("/Dashboard/GetSalesReturnByDate/", "_blank", "height=600,width=950");
+        }
+    </script>
+
+    <script type="text/javascript">
+        function pendingApprovalCreditNoteList() {
+            window.open("/Dashboard/GetPendingApprovalCreditNote/", "_blank", "height=600,width=900");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function PurchaseReturnByDate() {
+            window.open("/Dashboard/GetPurchaseReturnByDate/", "_blank", "height=600,width=800");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function ViewQuotations() {
+            window.open("/Dashboard/GetQuotationList/", "_blank", "height=600,width=750");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function ViewSalesOrder() {
+            window.open("/Dashboard/GetSalesOrderList/", "_blank", "height=600,width=850");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function ViewDeliveryChallans() {
+            window.open("/Dashboard/GetDeliveryChallanList/", "_blank", "height=600,width=650");
+        }
+    </script>
+
+    <script type="text/ecmascript">
+        function PurchaseReports() {
+            $.ajax({
+                url: "/Dashboard/PurchaseOrderReports",
+                type: "GET",
+                success: function (data) {
+                    $("#Reports").html(data);
+                }
+            })
+        }
+        function InwardReports() {
+            $.ajax({
+                url: "/Dashboard/InwardReports",
+                type: "GET",
+                success: function (data) {
+                    $("#Reports").html(data);
+                }
+            })
+        }
+        function OutwardReports() {
+            $.ajax({
+                url: "/Dashboard/OutwardReports",
+                type: "GET",
+                success: function (data) {
+                    $("#Reports").html(data);
+                }
+            })
+        }
+        function StockReports() {
+            $.ajax({
+                url: "/Dashboard/StockReports",
+                type: "GET",
+                success: function (data) {
+                    $("#Reports").html(data);
+                }
+            })
+        }
+        function BillingReports() {
+            $.ajax({
+                url: "/Dashboard/BillingReports",
+                type: "GET",
+                success: function (data) {
+                    $("#Reports").html(data);
+                }
+            })
+        }
+        function CashierReports() {
+            $.ajax({
+                url: "/Dashboard/CashierReports",
+                type: "GET",
+                success: function (data) {
+                    $("#Reports").html(data);
+                }
+            })
+        }
+        function RequistionReports() {
+            $.ajax({
+                url: "/Dashboard/RequisitionReports",
+                type: "GET",
+                success: function (data) {
+                    $("#Reports").html(data);
+                }
+            })
+        }
+    </script>
+
+    @*DECIDE FIRST SELECED TAB ON ONLIAD FUNCTION*@
+     <script type="text/javascript">
+         $(function () {
+             if (document.getElementById("LoginUser") != null) {
+                 var LoginUser = document.getElementById("LoginUser").value;
+
+                 if (LoginUser == "SuperAdmin") {
+                     $("#CashierTab").trigger("click");
+                 }
+             }
+         });
+
+    </script>
+
+</head>
+<body>
+
+    @Html.Partial("../Shared/Header")
+    <!-- End: Header -->
+    <section>
+        <div class="mainwrapper" >
+            @Html.Partial("../Shared/LeftMenu")
+            <div class="mainpanel">
+
+                <input type="hidden" id="CheckCashierClick" name="CheckCashierClick" value="No"/>
+                <input type="hidden" id="CheckPurchaseClick" name="CheckPurchaseClick" value="No"/>
+                <input type="hidden" id="CheckInventoryClick" name="CheckInventoryClick" value="No"/>
+                <input type="hidden" id="CheckInwardClick" name="CheckInwardClick" value="No"/>
+                <input type="hidden" id="CheckOutwardClick" name="CheckOutwardClick" value="No"/>
+                <input type="hidden" id="CheckPointOfSaleClick" name="CheckPointOfSaleClick" value="No"/>
+                <input type="hidden" id="CheckRequisitionClick" name="CheckRequisitionClick" value="No"/>
+
+                <div class="col-md-12 col-lg-12">
+                    <div id="topbar">
+                        @{
+                            if (Session["LOGINSHOPGODOWNCODE"] != null || HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin")
+                            {
+                                string EmpDesignation = (string)TempData["EmployeeDesignation"];
+                                TempData["EmployeeDesignation"] = EmpDesignation;
+                                string EmpDepartment = (string)TempData["EmployeeDepartment"];
+                                TempData["EmployeeDepartment"] = EmpDepartment;
+                            <input type="hidden" id="LoginUser" value="@EmpDepartment" />
+                                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin")
+                                { 
+                            <script type="text/javascript">
+                                document.getElementById("LoginUser").value = "SuperAdmin";
+                            </script>
+                                }
+                                
+                             <ul class="nav nav-tabs">
+                                @{
+                                    
+                                //FOR SUPER ADMIN
+                                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin")
+                                {
+                                    <li class="active cashier"><a data-toggle="tab" href="#" id="CashierTab" onclick="CashierReports()" style="color: black"><label style="color:black; font-family:Calibri; font-size:20px">Cashier</label></a></li>
+                                    <li class="purchase"><a data-toggle="tab" href="#" id="PurchaseTab" onclick="PurchaseReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Purchase</label></a></li>
+                                    <li class="inventory"><a data-toggle="tab" href="#" id="InventoryTab" onclick="StockReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Inventory</label></a></li>
+                                    <li class="inward"><a data-toggle="tab" href="#" id="InwardTab" onclick="InwardReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Inwards</label></a></li>
+                                    <li class="outward"><a data-toggle="tab" href="#" id="OutwardTab" onclick="OutwardReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Outwards</label></a></li>
+                                    <li class="pointofsales"><a data-toggle="tab" href="#" id="BillingTab" onclick="BillingReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Point Of Sale</label></a></li>
+                                    <li class="requisition"><a data-toggle="tab" href="#" id="RequisitionTab" onclick="RequistionReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Requistion</label></a></li>
+                                }
+                                
+                                //EXCEPT SUPER ADMIN
+                                else
+                                 {
+                                    string AssignCashierTab="No";
+                                    string AssignPurchaseTab="No";
+                                    string AssignInventoryTab="No";
+                                    string AssignInwardsTab="No";
+                                    string AssignOutwardsTab="No";
+                                    string AssignPointIOfSaleTab="No";
+                                    string AssignRequisitionTab="No";
+                                    
+                                    int checkclickcounter=0;
+                                    
+                                    if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                                    {
+                                        foreach (var data in Model.userCredentialList)
+                                        {
+                                            //CASHIER TAB
+                                            if (data.AssignDashboardId == "D20" || data.AssignDashboardId == "D21" || data.AssignDashboardId == "D22" || data.AssignDashboardId == "D23" || data.AssignDashboardId == "D24" || data.AssignDashboardId == "D25")
+                                            {
+                                                AssignCashierTab = "Yes";
+                                                 
+                                                 <script>
+                                                     $(function () {
+                                                         $("#CashierTab").trigger("click");
+                                                     });
+                                                 </script>
+                                    
+                                                checkclickcounter = 1;
+                                            }
+
+                                            //PURCHASE TAB
+                                            if (data.AssignDashboardId == "D26" || data.AssignDashboardId == "D27" || data.AssignDashboardId == "D28")
+                                            {
+                                                AssignPurchaseTab = "Yes";
+                                                 
+                                                if(checkclickcounter!=1)
+                                                {
+                                                 <script>
+                                                     $(function () {
+                                                         $("#PurchaseTab").trigger("click");
+                                                     });
+                                                 </script>
+                                                }
+
+                                                checkclickcounter = 1;
+                                            }
+
+                                            //INVENTORY TAB
+                                            if (data.AssignDashboardId == "D29" || data.AssignDashboardId == "D30")
+                                            {
+                                                AssignInventoryTab = "Yes";
+                                                 
+                                                if(checkclickcounter!=1)
+                                                {
+                                                 <script>
+                                                     $(function () {
+                                                         $("#InventoryTab").trigger("click");
+                                                     });
+                                                 </script>
+                                                }
+
+                                                checkclickcounter = 1;
+                                            }
+
+                                            //INWARD TAB
+                                            if (data.AssignDashboardId == "D32" || data.AssignDashboardId == "D33" || data.AssignDashboardId == "D34" || data.AssignDashboardId == "D35" || data.AssignDashboardId == "D36" || data.AssignDashboardId == "D37")
+                                            {
+                                                AssignInwardsTab = "Yes";
+                                                 
+                                                if(checkclickcounter!=1)
+                                                {
+                                                 <script>
+                                                     $(function () {
+                                                         $("#InwardTab").trigger("click");
+                                                     });
+                                                 </script>
+                                                }
+
+                                                checkclickcounter = 1;
+                                            }
+
+                                            //OUTWARD TAB
+                                            if (data.AssignDashboardId == "D38" || data.AssignDashboardId == "D39" || data.AssignDashboardId == "D40" || data.AssignDashboardId == "D41" || data.AssignDashboardId == "D42")
+                                            {
+                                                AssignOutwardsTab = "Yes";
+                                                 
+                                                if(checkclickcounter!=1)
+                                                {
+                                                 <script>
+                                                     $(function () {
+                                                         $("#OutwardTab").trigger("click");
+                                                     });
+                                                 </script>
+                                                }
+
+                                                checkclickcounter = 1;
+                                            }
+
+                                            //POINT OF SALE TAB
+                                            if (data.AssignDashboardId == "D44" || data.AssignDashboardId == "D45" || data.AssignDashboardId == "D46" || data.AssignDashboardId == "D47" || data.AssignDashboardId == "D48" || data.AssignDashboardId == "D49" || data.AssignDashboardId == "D50" || data.AssignDashboardId == "D51")
+                                            {
+                                                AssignPointIOfSaleTab = "Yes";
+                                                 
+                                                if(checkclickcounter!=1)
+                                                {
+                                                 <script>
+                                                     $(function () {
+                                                         $("#BillingTab").trigger("click");
+                                                     });
+                                                 </script>
+                                                }
+
+                                                checkclickcounter = 1;
+                                            }
+
+                                            //REQUISITION TAB
+                                            if (data.AssignDashboardId == "D52" || data.AssignDashboardId == "D53" || data.AssignDashboardId == "D54" || data.AssignDashboardId == "D55")
+                                            {
+                                                AssignRequisitionTab = "Yes";
+                                                 
+                                                if(checkclickcounter!=1)
+                                                {
+                                                 <script>
+                                                     $(function () {
+                                                         $("#RequisitionTab").trigger("click");
+                                                     });
+                                                 </script>
+                                                }
+
+                                                checkclickcounter = 1;
+                                            }
+                                        }
+
+                                        if (AssignCashierTab == "Yes")
+                                        {
+                                             <li class="active cashier"><a data-toggle="tab" href="#" id="CashierTab" onclick="CashierReports()" style="color: black"><label style="color:black; font-family:Calibri; font-size:20px">Cashier</label></a></li>
+                                        }
+
+                                        if (AssignPurchaseTab == "Yes")
+                                        {
+                                             <li class="purchase"><a data-toggle="tab" href="#" id="PurchaseTab" onclick="PurchaseReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Purchase</label></a></li>
+                                        }
+
+                                        if (AssignInventoryTab == "Yes")
+                                        {
+                                             <li class="inventory"><a data-toggle="tab" href="#" id="InventoryTab" onclick="StockReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Inventory</label></a></li>
+                                        }
+
+                                        if (AssignInwardsTab == "Yes")
+                                        {
+                                             <li class="inward"><a data-toggle="tab" href="#" id="InwardTab" onclick="InwardReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Inwards</label></a></li>
+                                        }
+
+                                        if (AssignOutwardsTab == "Yes")
+                                        {
+                                             <li class="outward"><a data-toggle="tab" href="#" id="OutwardTab" onclick="OutwardReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Outwards</label></a></li>
+                                        }
+
+                                        if (AssignPointIOfSaleTab == "Yes")
+                                        {
+                                             <li class="pointofsales"><a data-toggle="tab" href="#" id="BillingTab" onclick="BillingReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Point Of Sale</label></a></li>
+                                        }
+
+                                        if (AssignRequisitionTab == "Yes")
+                                        {
+                                             <li class="requisition"><a data-toggle="tab" href="#" id="RequisitionTab" onclick="RequistionReports()" style="color: black"><label style="font-family:Calibri; font-size:20px">Requistion</label></a></li>
+                                        }
+                                    }
+                                 }
+                                }
+                            </ul>
+                            }
+                        }
+
+                    </div>
+                    @{
+                        if (Session["LOGINSHOPGODOWNCODE"] != null && HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+                        {
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red" id="LoginShop">@Session["SHOPGODOWNNAME"].ToString()</label>
+                        </div>
+                        <input type="hidden" id="LoginShopCode" value="@Session["LOGINSHOPGODOWNCODE"].ToString()" />
+                        }
+                    }
+
+                    <div style="height: 15px"></div>
+
+                    <div class="row">
+                        <div id="Reports"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

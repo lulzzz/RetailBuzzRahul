@@ -1,0 +1,1164 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ShopRequisitionForShopLogin";
+}
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateItemWiseAmount(rowid, '');
+		         CalculateTotalDiscount();
+		     }
+		 });
+    }
+</script>
+
+
+<script type="text/javascript">
+    function ckeckfornull() {
+
+        $("#ddltogodownname").attr("disabled", false);
+        $("#ddltoshopname").attr("disabled", false);
+        $("#RadioBtn").attr("disabled", false);
+
+        var countvalues = (+document.getElementById("hiddencountvalue4").value) + (+document.getElementById("hiddencountvalue").value) + (+document.getElementById("hiddencountvalue1").value) + (+document.getElementById("hiddencountvalue7").value);
+        for (var i = 1; i <= countvalues; i++) {
+            $("#outwardquantity" + i).attr("disabled", false);
+            $("#rejectquantity" + i).attr("disabled", false);
+        }
+    }
+
+    function ShowQuantity(row) {
+        var itemcode = document.getElementById("itemcode" + row).value;
+        window.open("/Stock/ShowAllQuantity?code=" + itemcode, "_target", "width=500,height=300,top=150px,left=400px");
+    }
+    </script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function Report(type) {
+        if (type == 'Name') {
+            $.ajax({
+                url: "/Requisition/ShopRequisitionByItem",
+                type: "GET",
+                success: function (data) {
+                    document.getElementById("mainrequisition").style.display = "none";
+                    document.getElementById("mainrequisition1").style.display = "none";
+                    document.getElementById("requisitiondetails").style.display = "none";
+                    document.getElementById("stockdetails").style.display = "none";
+                    document.getElementById("mainrequisition2").style.display = "none";
+                    document.getElementById("requisitiondetails2").style.display = "none";
+                    document.getElementById("save").style.display = "none";
+                    $("#LoadRequisition").html(data);
+                }
+            });
+        }
+        else
+            if (type == 'Date') {
+                $.ajax({
+                    url: "/Requisition/ShopRequisitionByDate",
+                    type: "GET",
+                    success: function (data) {
+                        document.getElementById("mainrequisition").style.display = "none";
+                        document.getElementById("mainrequisition1").style.display = "none";
+                        document.getElementById("requisitiondetails").style.display = "none";
+                        document.getElementById("stockdetails").style.display = "none";
+                        document.getElementById("mainrequisition2").style.display = "none";
+                        document.getElementById("requisitiondetails2").style.display = "none";
+                        document.getElementById("save").style.display = "none";
+                        $("#LoadRequisition").html(data);
+                    }
+                });
+            }
+            else
+                if (type == 'NameandDate') {
+                    $.ajax({
+                        url: "/Requisition/ShopRequisitionByItemNameAndDate",
+                        type: "GET",
+                        success: function (data) {
+                            document.getElementById("mainrequisition").style.display = "none";
+                            document.getElementById("mainrequisition1").style.display = "none";
+                            document.getElementById("requisitiondetails").style.display = "none";
+                            document.getElementById("stockdetails").style.display = "none";
+                            document.getElementById("mainrequisition2").style.display = "none";
+                            document.getElementById("requisitiondetails2").style.display = "none";
+                            document.getElementById("save").style.display = "none";
+                            $("#LoadRequisition").html(data);
+                        }
+                    });
+
+                }
+                else {
+                    $.ajax({
+                        url: "/Requisition/ShopRequisitionByItemNameCategory",
+                        type: "GET",
+                        success: function (data) {
+
+                            document.getElementById("mainrequisition").style.display = "none";
+                            document.getElementById("mainrequisition1").style.display = "none";
+                            document.getElementById("requisitiondetails").style.display = "none";
+                            document.getElementById("stockdetails").style.display = "none";
+                            document.getElementById("mainrequisition2").style.display = "none";
+                            document.getElementById("requisitiondetails2").style.display = "none";
+                            document.getElementById("save").style.display = "none";
+
+                            $("#LoadRequisition").html(data);
+                        }
+                    });
+                }
+        }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("PreparedByEmail").innerHTML = document.getElementById("PreparedBy").value;
+        var preparedbyemail = document.getElementById("PreparedByEmail").innerHTML;
+
+        $.getJSON("/RetailBill/GetPreparedByEmpDetails", { email: preparedbyemail },
+            function (data) {
+                document.getElementById("PreparedByName").innerHTML = data.Name;
+                document.getElementById("PreparedByContact").innerHTML = data.MobileNo;
+
+                document.getElementById("RequisitionForShopDetails_RequisitionForGodownPrepareBy").value = data.Name;
+                document.getElementById("RequisitionForShopDetails_RequisitionForGodownContactNoEmployee").value = data.MobileNo;
+                document.getElementById("RequisitionForShopDetails_RequisitionForGodownEmailIdEmployee").value = document.getElementById("PreparedBy").value;
+            });
+    });
+</script>
+
+
+
+<script type="text/javascript">
+    function stockcheck(count) {
+
+        var itemquantity = "itemquantity" + count;
+        var rejectquantity = "rejectquantity" + count;
+        var requiredqty = "requiredquantity" + count;
+        var outwardquantity = "outwardquantity" + count;
+        var balance = "balance" + count;
+        var balancevalue = "balancevalue" + count;
+        var requisitionfromshopname1 = "requisitionfromshopname" + count;
+
+        var quant = (+document.getElementById(itemquantity).value);
+        var rej = (+document.getElementById(rejectquantity).value);
+        var required = (+document.getElementById(requiredqty).value);
+        var requisition1 = (document.getElementById(requisitionfromshopname1).value);
+        var outward = (+document.getElementById(outwardquantity).value);
+
+        if (((+document.getElementById('hiddencountvalue').value) == '') && ((+document.getElementById('hiddencountvalue4').value) == '') &&
+           ((+document.getElementById('hiddencountvalue1').value) == '') && ((+document.getElementById('hiddencountvalue7').value) == '')) {
+            var countvalue = 0;
+        }
+
+        else (((+document.getElementById('hiddencountvalue').value != 0)) && (+document.getElementById('hiddencountvalue4').value != 0) &&
+           ((+document.getElementById('hiddencountvalue1').value) != 0) && (+document.getElementById('hiddencountvalue7').value != 0))
+        {
+            var countvalue = (+document.getElementById("hiddencountvalue4").value) + (+document.getElementById("hiddencountvalue").value) +
+                (+document.getElementById("hiddencountvalue1").value) + (+document.getElementById("hiddencountvalue7").value);
+        }
+
+        //if (rej >= required - outward) {
+        //   // alertbox("it should be between required minus outward");
+
+        //    var value1 = (+document.getElementById(requiredqty).value) - (+document.getElementById(outwardquantity).value);
+        //    document.getElementById(rejectquantity).value = Math.abs(value1);
+        //    return false;
+        //}
+
+        for (var i = 1; i <= countvalue; i++) {
+
+            if (rej >= required - outward) {
+                
+                var value1 = (+document.getElementById(requiredqty).value) - (+document.getElementById(outwardquantity).value);
+                document.getElementById(rejectquantity).value = Math.abs(value1);
+                var bal = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+
+                return false;
+            }
+            var bal = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+
+            document.getElementById(balance).innerHTML = Math.abs(bal);
+            document.getElementById(balancevalue).value = Math.abs(bal);
+
+            if (rej > required) {
+                alertbox("Reject cannot exceed required Qty");
+                var value = (+document.getElementById(requiredqty).value);
+
+                document.getElementById(rejectquantity).value = Math.abs(value);
+                document.getElementById(balance).innerHTML = 0;
+                document.getElementById(balancevalue).value = 0;
+                return false;
+            }
+
+            var bal = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+            
+            document.getElementById(balance).innerHTML = Math.abs(bal);
+            document.getElementById(balancevalue).value = Math.abs(bal);
+        }
+    }
+    </script>
+
+<script  type="text/javascript">
+    function EnableDD(count) {
+        if ($("#requiredquantity" + count).val() != "" && $("#requiredquantity" + count).val() != "0") {
+            $("#ddltogodownname").attr("disabled", false);
+            $("#ddltoshopname").attr("disabled", false);
+            $("#RadioBtn").attr("disabled", false);
+        }
+        else {
+            $("#ddltogodownname").val("").attr("selected", true);
+            $("#ddltogodownname").attr("disabled", true);
+            $("#ddltoshopname").val("").attr("selected", true);
+            $("#ddltoshopname").attr("disabled", true);
+            $("#RadioBtn").attr("checked", false);
+            $("#RadioBtn").attr("disabled", true);
+        }
+    }
+
+    function CalcStkQtyForOutward(count) {
+
+        var requisitionfromshopclick = "requisitionfromshopname" + count;
+        var datevalue = "requisitiondate" + count;
+        var itemcode = "itemcode" + count;
+        var itemquantity = "itemquantity" + count;
+        var itemname = "itemname" + count;
+        var rejectquantity = "rejectquantity" + count;
+        var requiredqty = "requiredquantity" + count;
+        var outwardquantity = "outwardquantity" + count;
+        var balance = "balance" + count;
+        var balancevalue = "balancevalue" + count;
+        var itemquantitylabel = "itemquantitylabel" + count;
+        var balancefromstock = "balancefromstock" + count;
+        var balancevaluefromstock = "balancevaluefromstock" + count;
+        var itemquantitylabel = "itemquantitylabel" + count;
+        var countvalues = (+document.getElementById("hiddencountvalue4").value) + (+document.getElementById("hiddencountvalue").value) + (+document.getElementById("hiddencountvalue1").value) + (+document.getElementById("hiddencountvalue7").value);
+
+        var itemqty = document.getElementById(itemquantity).value;
+        var reqqty = document.getElementById(requiredqty).value;
+        var outwardqty = document.getElementById(outwardquantity).value;
+
+        if (outwardqty <= itemqty && outwardqty <= reqqty && outwardqty != "") {
+        for (var i = 1; i <= countvalues; i++) {
+            var shname = "requisitionfromshopname" + i;
+            var itemcodes = "itemcode" + i;
+            if (document.getElementById(shname) != null){
+            if ((document.getElementById(shname).value != document.getElementById(requisitionfromshopclick).value) || (document.getElementById(itemcode).value == document.getElementById(itemcodes).value)) {
+                $("#outwardquantity" + i).attr("disabled", true);
+                $("#rejectquantity" + i).attr("disabled", true);
+                $("#outwardquantity" + count).attr("disabled", false);
+                $("#rejectquantity" + count).attr("disabled", false);
+            }
+          }
+       }
+     }
+        else {
+            for (var i = 1; i <= countvalues; i++) {
+                var shname = "requisitionfromshopname" + i;
+                var itemcodes = "itemcode" + i;
+                if (document.getElementById(shname) != null) {
+                    if ((document.getElementById(shname).value != document.getElementById(requisitionfromshopclick).value) || (document.getElementById(itemcode).value == document.getElementById(itemcodes).value)) {
+                        $("#outwardquantity" + i).attr("disabled", false);
+                        $("#rejectquantity" + i).attr("disabled", false);
+                        $("#outwardquantity" + count).attr("disabled", false);
+                        $("#rejectquantity" + count).attr("disabled", false);
+                    }
+                }
+            }
+        }
+
+
+        var quant = (+document.getElementById(itemquantity).value);
+        var rej = (+document.getElementById(rejectquantity).value);
+        var required = (+document.getElementById(requiredqty).value);
+        var outward = (+document.getElementById(outwardquantity).value);
+        var itemcodevalue = (document.getElementById(itemcode).value);
+
+        var itemqtyclick = (+document.getElementById(itemquantity).value);
+        var requisitionfromshopclickvalue = (document.getElementById(requisitionfromshopclick).value);
+        var reqdate = (document.getElementById(datevalue).value);
+
+        if (((+document.getElementById('hiddencountvalue').value) == '') && ((+document.getElementById('hiddencountvalue4').value) == '') &&
+           ((+document.getElementById('hiddencountvalue1').value) == '') && ((+document.getElementById('hiddencountvalue7').value) == '')) {
+            var countvalue = 0;
+        }
+
+        else (((+document.getElementById('hiddencountvalue').value != 0)) && (+document.getElementById('hiddencountvalue4').value != 0) &&
+            (+document.getElementById('hiddencountvalue1').value != 0) && (+document.getElementById('hiddencountvalue7').value != 0))
+        {
+            var countvalue = (+document.getElementById("hiddencountvalue4").value) + (+document.getElementById("hiddencountvalue").value) + (+document.getElementById("hiddencountvalue1").value) + (+document.getElementById("hiddencountvalue7").value);
+        }
+
+        for (var i = 1; i <= countvalue; i++) {
+
+            var requisitionfromshop = "requisitionfromshopname" + i;
+            var rejectqty = "rejectquantity" + i;
+            var outwardqty = "outwardquantity" + i;
+            var reqqty = "requiredquantity" + i;
+            var itemcode = "itemcode" + i;
+            var shopqty = "itemquantity" + i;
+            var itemqtylabel = "itemquantitylabel" + i;
+            var reqdate = "requisitiondate" + i;
+            var requisitionfromshopvalue = (document.getElementById(requisitionfromshop).value);
+            var shopqtyvalue = (+document.getElementById(shopqty).value);
+            var code = (document.getElementById(itemcode).value);
+
+            if (outward >= required - rej) {
+                alertbox("Cannot Exceed Required Quantity");
+
+                document.getElementById(outwardquantity).value = "";
+                document.getElementById(rejectquantity).value = "";
+                document.getElementById(balance).innerHTML = "";
+                document.getElementById(balancevalue).value = "";
+
+                var countvalues = (+document.getElementById("hiddencountvalue4").value) + (+document.getElementById("hiddencountvalue").value) + (+document.getElementById("hiddencountvalue1").value) + (+document.getElementById("hiddencountvalue7").value);
+                for (var i = 1; i <= countvalues; i++) {
+                    if (!$("#outwardquantity" + i).prop("disabled")) {
+                    $("#outwardquantity" + i).attr("disabled", false);
+                    $("#rejectquantity" + i).attr("disabled", false);
+                    }
+                }
+
+                return false;
+
+                var value1 = (+document.getElementById(requiredqty).value) - (+document.getElementById(rejectquantity).value);
+                document.getElementById(outwardquantity).value = Math.abs(value1);
+
+                var bal1 = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+                document.getElementById(balance).innerHTML = Math.abs(bal1);
+                document.getElementById(balancevalue).value = Math.abs(bal1);
+
+                var bal1 = (+document.getElementById(itemquantity).value) - (+document.getElementById(outwardqty).value);
+                //document.getElementById(balancefromstock).innerHTML = Math.abs(bal1);
+                //document.getElementById(balancevaluefromstock).value = Math.abs(bal1);
+                return false;
+            }
+            if (outward == itemqtyclick && outward < itemqtyclick && code == itemcodevalue && requisitionfromshopclickvalue == requisitionfromshopvalue
+                && reqdate != reqdatevalue) {
+            }
+
+            if (outward < itemqtyclick && code == itemcodevalue && requisitionfromshopclickvalue == requisitionfromshopvalue &&
+               reqdate != reqdatevalue) {
+                if (i != count) {
+
+                    var itemqtylabelvalue = (+document.getElementById(itemqtylabel).value);
+                    var reqdatevalue = (document.getElementById(reqdate).value);
+
+                    document.getElementById(itemqtylabel).innerHTML = Math.abs(itemqtyclick - outward);
+                    document.getElementById(shopqty).value = Math.abs(itemqtyclick - outward);
+                }
+            }
+
+            if (requisitionfromshopclickvalue != requisitionfromshopvalue) {
+                document.getElementById(rejectqty).disabled = true;
+                document.getElementById(outwardqty).disabled = true;
+            }
+            if (outward > itemqtyclick) {
+                alertbox("Transfer cannot exceed ShopQuantity");
+                var value = (+document.getElementById(requiredqty).value);
+                var itemqtyvaluelabel = "itemquantitylabel" + i;
+                //document.getElementById(outwardquantity).value = Math.abs(value);
+                document.getElementById(outwardquantity).value = "";
+                document.getElementById(rejectquantity).value = "";
+                document.getElementById(balance).innerHTML = "";
+                document.getElementById(balancevalue).value = "";
+
+                var countvalues = (+document.getElementById("hiddencountvalue4").value) + (+document.getElementById("hiddencountvalue").value) + (+document.getElementById("hiddencountvalue1").value) + (+document.getElementById("hiddencountvalue7").value);
+                for (var i = 1; i <= countvalues; i++) {
+                    if (!$("#outwardquantity" + i).prop("disabled")) {
+                    $("#outwardquantity" + i).attr("disabled", false);
+                    $("#rejectquantity" + i).attr("disabled", false);
+                    }
+                }
+                return false;
+
+                var bal1 = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+
+                document.getElementById(balance).innerHTML = Math.abs(bal1);
+                document.getElementById(balancevalue).value = Math.abs(bal1);
+
+                return false;
+
+                if (required < outward) {
+
+                    alertbox("Transfer cannot exceed Required Quantity");
+                    var value = (+document.getElementById(requiredqty).value);
+                    var itemqtyvaluelabel = "itemquantitylabel" + i;
+                    document.getElementById(outwardquantity).value = Math.abs(value);
+                    document.getElementById(balance).innerHTML = 0;
+                    document.getElementById(balancevalue).value = 0;
+
+                    var bal1 = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+                    document.getElementById(balance).innerHTML = Math.abs(bal1);
+                    document.getElementById(balancevalue).value = Math.abs(bal1);
+
+                    var bal1 = (+document.getElementById(itemquantity).value) - (+document.getElementById(outwardqty).value);
+                    //document.getElementById(balancefromstock).innerHTML = Math.abs(bal1);
+                    //document.getElementById(balancevaluefromstock).value = Math.abs(bal1);
+                    return false;
+                }
+            }
+
+            else
+                if (required < outward) {
+                    alertbox("Transfer cannot exceed Required Quantity");
+                    var value = (+document.getElementById(requiredqty).value);
+                    var itemqtyvaluelabel = "itemquantitylabel" + i;
+                    document.getElementById(outwardquantity).value = Math.abs(value);
+                    document.getElementById(balance).innerHTML = 0;
+                    document.getElementById(balancevalue).value = 0;
+
+                    var bal1 = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+                    document.getElementById(balance).innerHTML = Math.abs(bal1);
+                    document.getElementById(balancevalue).value = Math.abs(bal1);
+
+                    var bal1 = (+document.getElementById(itemquantity).value) - (+document.getElementById(outwardqty).value);
+                    //document.getElementById(balancefromstock).innerHTML = Math.abs(bal1);
+                    //document.getElementById(balancevaluefromstock).value = Math.abs(bal1);
+                    return false;
+                }
+
+            var bal = (+document.getElementById(requiredqty).value) - ((+document.getElementById(rejectquantity).value) + (+document.getElementById(outwardquantity).value));
+            document.getElementById(balance).innerHTML = Math.abs(bal);
+            document.getElementById(balancevalue).value = Math.abs(bal);
+
+            var bal1 = (+document.getElementById(itemquantity).value) - (+document.getElementById(outwardqty).value);
+            //document.getElementById(balancefromstock).innerHTML = Math.abs(bal1);
+            //document.getElementById(balancevaluefromstock).value = Math.abs(bal1);
+        }
+    }
+</script>
+
+@Html.Partial("../Shared/Header")
+<section>
+     <div class="mainwrapper">
+      
+        @Html.Partial("../Shared/LeftMenu")
+        
+        @using (Html.BeginForm("ShopRequisitionForShopLogin", "Requisition", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmCreate" }))
+        {
+         @Html.ValidationSummary(true)
+         
+          <input type="hidden" id="hdnrowcount" name="hdnrowcount">
+        
+          <input type="hidden" id="PreparedBy" value="@HttpContext.Current.Session["UserEmail"]" />
+
+         @Html.HiddenFor(model => model.RequisitionForShopDetails.LoggedInShopName)
+         @Html.HiddenFor(model => model.RequisitionForShopDetails.PrepareBy)
+         @Html.HiddenFor(model => model.RequisitionForShopDetails.RequisitionForGodownPrepareBy)
+         @Html.HiddenFor(model => model.RequisitionForShopDetails.RequisitionForGodownEmailIdEmployee)
+         @Html.HiddenFor(model => model.RequisitionForShopDetails.RequisitionForGodownContactNoEmployee)
+         @Html.HiddenFor(model => model.RequisitionForShopDetails.ReqCode)
+             <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                <source src="" type="audio/ogg" />
+             </audio>
+          <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+            <div class="col-md-3 col-sm-3 col-xs-3">
+               <h2>ShopRequisition</h2>
+                     </div>
+          @{
+            if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+            {
+                if (Session["LOGINSHOPGODOWNCODE"] != null)
+                {
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red" id="LoginShop">@Session["SHOPGODOWNNAME"].ToString()</label>
+                        </div>
+                        <input type="hidden" id="LoginShopCode" value="@Session["LOGINSHOPGODOWNCODE"].ToString()" />
+                }
+            }
+             }
+                <div class="row">
+                    <div class="col-lg-12 col-md-12">
+                      
+                        <div class="col-md-3 col-lg-3 col-sm-3">
+                            <input type="radio" name="RadioBtn" onclick="Report('Name')" />
+                            <label style="font-size: medium">&nbsp ItemWise Report</label>
+                        </div>
+                        <div class="col-md-3 col-lg-3 col-sm-3">
+                            <input type="radio" name="RadioBtn" onclick="Report('Date')" />
+                            <label style="font-size: medium">&nbsp DateWise Report</label>
+                        </div>
+                         <div class="col-md-3 col-lg-3 col-sm-3">
+                            <input type="radio" name="RadioBtn" onclick="Report('NameandDate')" />
+                            <label style="font-size: medium">&nbsp Item + DateWise Report</label>
+                        </div>
+
+                         <div class="col-md-3 col-lg-3 col-sm-3">
+                            <input type="radio" name="RadioBtn" onclick="Report('NameandDateCategory')" />
+                            <label style="font-size: medium">&nbsp ItemWise Category Report</label>
+                        </div>
+
+                    </div>
+                </div>
+                <div id="LoadRequisition"></div>
+                <div id="showpartial"></div>
+                <div id="ItemPartialView"></div>
+                 <div id="ItemPartialViewstock"></div>
+
+                <br />
+                <br/>
+               
+         <div class="col-md-3 col-sm-3 col-xs-3">
+          <div style="height: 10px"></div>
+            
+  @{
+            if (Model.ShopRequisitionGodownItemList != null && Model.ShopRequisitionGodownItemList.Any())
+            {
+     <script type="text/javascript">
+         $(document).ready(function () {
+             document.getElementById("requisitiondetails").style.display = "inline";
+             document.getElementById("mainrequisition").style.display = "table";
+
+         });
+     </script>
+      <input type="hidden" id="hiddencountvalue" name="hiddencountvalue" value="@Model.ShopRequisitionGodownItemList.Count()">
+            }
+            else
+            {
+                <input type="hidden" id="hiddencountvalue" name="hiddencountvalue" value="0">
+            }
+ }
+
+
+    <label style="color: red;text-align:right;display:none" id="requisitiondetails">Retail Bill Requisition</label>
+                    </div>
+         <div class="col-md-12 col-lg-12" id="AddingRows">
+         @*<div class="col-lg-12 col-md-12 hscroll" style="overflow-x: auto; overflow-y: hidden">*@
+           <table style="border:1px double ; border: outset; display:none" id="mainrequisition">
+                                                        
+             <thead style="border-bottom:double">
+                                                            <tr>
+                                                                <th style="text-align:center">
+                                                                    <label>S.N.</label></th>
+                                                                 <th style="text-align:center">
+                                                                    <label>Requisition Code</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label>Date Of Requisition Created</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label>Requisition From Shop</label></th>
+                                                                 <th style="text-align:center">
+                                                                    <label id="Headings">ItemCode</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="Headings">&nbsp;ItemName</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="DescriptionHeadings">&nbsp;Description</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="Headings">&nbsp;Shop Qty</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="Headings">&nbsp;Required Qty</label></th>
+                                                                 <th style="text-align:center">
+                                                                 <label id="Headings">Reject Qty</label></th>
+                                                                 <th style="text-align:center">
+                                                                 <label id="Headings">Outward Qty</label></th>
+                                                                 <th style="text-align:center">
+                                                                 <label id="Headings">Balance from Required Qty</label></th>
+                                                            @*<th style="text-align:center">
+                                                                 <label id="Headings">Balance from Stock Qty</label></th>*@
+                                                            </tr>
+                                                        </thead>
+              
+             <tbody>
+                                                             @{ 
+            int count = 1;
+            int countvalue = 1;
+            if (Model.ShopRequisitionGodownItemList != null && Model.ShopRequisitionGodownItemList.Any())
+            {
+                //int countvalue = 1;
+                foreach (var item1 in Model.ShopRequisitionGodownItemList)
+                {
+                    if (item1.RequiredQuantity != 0)
+                    {
+                        string itemname1 = "itemname" + count;
+                        string itemcoderetail = "itemcodevalue" + count;
+                        string datevalue = "requisitiondate" + count;
+                        string requisitionfromshopname1 = "requisitionfromshopname" + count;
+
+                        string itemcode1 = "itemcode" + count;
+                        string itemdescription1 = "itemdescription" + count;
+                        string itemquantity1 = "itemquantity" + count;
+                        string itemquantitylabel = "itemquantitylabel" + count;
+                        string requiredquantity1 = "requiredquantity" + count;
+                        string rejectquantity = "rejectquantity" + count;
+                        string outwardquantity = "outwardquantity" + count;
+                        string balance = "balance" + count;
+                        string balancevalue = "balancevalue" + count;
+                        string balancefromstock = "balancefromstock" + count;
+                        string balancevaluefromstock = "balancevaluefromstock" + count;
+                                                                        <tr>
+                                                                        <td  style="text-align:center">@countvalue  </td>
+                                                                        <td  style="text-align:center">@item1.ReqCode  <input type="hidden" id="@itemcoderetail" name="@itemcoderetail" value="@item1.ReqCode " /> </td>
+                                                                        <td style="text-align:center">@Convert.ToDateTime(@item1.SRDate).ToString("dd/MM/yyyy")<input type="hidden" id="@datevalue" name="@datevalue" value="@item1.SRDate" /></td>
+                                                                        <td  style="text-align:center">@item1.FromShopName <input type="hidden" id="@requisitionfromshopname1" name="@requisitionfromshopname1" value="@item1.FromShopName" /></td>
+                                                                      
+                                                                        <td  style="text-align:center">@item1.ItemCode<input type="hidden" id="@itemcode1" name="@itemcode1" value="@item1.ItemCode" /></td>
+                                                                        <td  style="text-align:center">@item1.ItemName<input type="hidden" id="@itemname1" name="@itemname1" value="@item1.ItemName" /></td>
+                                                                        <td  style="text-align:center">@item1.Description<input type="hidden" id="@itemdescription1" name="@itemdescription1" value="@item1.Description" /> </td>
+                                                                        <td  style="text-align:center"> <label id="@itemquantitylabel" style="font-weight:normal"> @item1.Shopqty</label> <input type="hidden" id="@itemquantity1" name="@itemquantity1" value="@item1.Shopqty" /> </td>
+                                                                        <td  style="text-align:center">@item1.RequiredQuantity<input type="hidden" id="@requiredquantity1" name="@requiredquantity1" value="@item1.RequiredQuantity" /></td>
+                                                                        <td  style="text-align:center"><input type="text" id="@rejectquantity" name="@rejectquantity"  class="form-control" placeholder="reject" onchange="stockcheck(@countvalue)"/></td>
+                                                                        <td  style="text-align:center"><input type="text" id="@outwardquantity" name="@outwardquantity"  class="form-control" placeholder="outward"  onchange="CalcStkQtyForOutward(@countvalue)"/></td>
+                                                                        <td  style="text-align:center">
+                                                                        <label id="@balance" style="font-weight:normal" ></label>   
+                                                                        <input type="hidden" id="@balancevalue" name="@balancevalue"  class="form-control"  value="0" /></td>
+                                                                        @*<td><label id="@balancefromstock" style="font-weight:normal" ></label>   
+                                                                        <input type="hidden" id="@balancevaluefromstock" name="@balancevaluefromstock"  class="form-control"  value="0" /></td>*@
+
+                                                                        @{count += 1;}
+                                                                        </tr>
+                                                                          countvalue += 1;
+
+                    }
+
+
+
+
+                }
+            }
+                                                                 }
+                                                                 </tbody>
+
+             </table>
+
+         @* </div>*@
+           
+
+          
+          <div style="height: 10px"></div>
+            
+  @{
+            if (Model.ShopRequisitionGodownitemsalesbillList != null && Model.ShopRequisitionGodownitemsalesbillList.Any())
+            {
+     <script type="text/javascript">
+         $(document).ready(function () {
+             document.getElementById("salesrequisitiondetails").style.display = "inline";
+             document.getElementById("mainrequisitionsalesbill").style.display = "table";
+
+         });
+     </script>
+      <input type="hidden" id="hiddencountvalue7" name="hiddencountvalue7" value="@Model.ShopRequisitionGodownitemsalesbillList.Count()">
+            }
+            else
+            {
+                <input type="hidden" id="hiddencountvalue7" name="hiddencountvalue7" value="0">
+            }
+ }
+
+
+    <label style="color: red;text-align:right;display:none" id="salesrequisitiondetails">Sales Bill Requisition</label>
+                    
+
+              @* <div class="col-lg-12 col-md-12 hscroll" style="overflow-x: auto; overflow-y: hidden">*@
+             <table style="border:1px double ; border: outset; display:none" id="mainrequisitionsalesbill">
+                                                        
+             <thead style="border-bottom:double">
+                                                            <tr>
+                                                                <th style="text-align:center">
+                                                                    <label>S.N.</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label>Requisition Code</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label>Date Of Requisition Created</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label>Requisition From Shop</label></th>
+                                                                 <th style="text-align:center">
+                                                                    <label id="Headings">ItemCode</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="Headings">ItemName</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="Headings">Shop Qty</label></th>
+                                                                <th style="text-align:center">
+                                                                    <label id="Headings">Required Qty</label></th>
+                                                                 <th style="text-align:center">
+                                                                 <label id="Headings">Reject Qty</label></th>
+                                                                 <th style="text-align:center">
+                                                                 <label id="Headings">Outward Qty</label></th>
+                                                                 <th style="text-align:center">
+                                                                 <label id="Headings">Balance from Required Qty</label></th>
+                                                            @*<th class="col-md-1 col-lg-1"  style="text-align:center">
+                                                                 <label id="Headings">Balance from Stock Qty</label></th>*@
+                                                            </tr>
+                                                        </thead>
+              
+             <tbody>
+                                                             @{ 
+           
+            int countvalue7 = countvalue;
+
+            int count7 = countvalue7;
+            if (Model.ShopRequisitionGodownitemsalesbillList != null && Model.ShopRequisitionGodownitemsalesbillList.Any())
+            {
+                foreach (var item1 in Model.ShopRequisitionGodownitemsalesbillList)
+                {
+                    if (item1.RequiredQuantity != 0)
+                    {
+                        string itemname7 = "itemname" + count7;
+                        string itemcodesales = "itemcodevalue" + count7;
+                        string datevalue7 = "requisitiondate" + count7;
+                        string requisitionfromshopname7 = "requisitionfromshopname" + count7;
+
+                        string itemcode7 = "itemcode" + count7;
+                        string itemdescription7 = "itemdescription" + count7;
+                        string itemquantity7 = "itemquantity" + count7;
+                        string itemquantitylabel7 = "itemquantitylabel" + count7;
+                        string requiredquantity7 = "requiredquantity" + count7;
+                        string rejectquantity7 = "rejectquantity" + count7;
+                        string outwardquantity7 = "outwardquantity" + count7;
+                        string balance7 = "balance" + count7;
+                        string balancevalue7 = "balancevalue" + count7;
+                        string balancefromstock7 = "balancefromstock" + count;
+                        string balancevaluefromstock7 = "balancevaluefromstock" + count;
+                                                                        <tr>
+                                                                        <td  style="text-align:center">@countvalue7  </td>
+                                                                        <td  style="text-align:center">@item1.ReqCode <input type="hidden" id="@itemcodesales" name="@itemcodesales" value="@item1.ReqCode" /></td>
+                                                                        <td style="text-align:center">@Convert.ToDateTime(@item1.SRDate).ToString("dd/MM/yyyy")<input type="hidden" id="@datevalue7" name="@datevalue7" value="@item1.SRDate" /></td>
+                                                                        <td  style="text-align:center">@item1.FromShopName <input type="hidden" id="@requisitionfromshopname7" name="@requisitionfromshopname7" value="@item1.FromShopName" /></td>
+                                                                        <td  style="text-align:center">@item1.ItemCode<input type="hidden" id="@itemcode7" name="@itemcode7" value="@item1.ItemCode" /></td>
+                                                                        <td  style="text-align:center">@item1.ItemName<input type="hidden" id="@itemname7" name="@itemname7" value="@item1.ItemName" /></td>
+                                                                        <td  style="text-align:center">@item1.Description<input type="hidden" id="@itemdescription7" name="@itemdescription7" value="@item1.Description" /> </td>
+                                                                        <td  style="text-align:center"> <label id="@itemquantitylabel7" style="font-weight:normal"> @item1.Shopqty</label> <input type="hidden" id="@itemquantity7" name="@itemquantity7" value="@item1.Shopqty" /> </td>
+                                                                        <td  style="text-align:center">@item1.RequiredQuantity<input type="hidden" id="@requiredquantity7" name="@requiredquantity7" value="@item1.RequiredQuantity" /></td>
+                                                                        <td  style="text-align:center"><input type="text" id="@rejectquantity7" name="@rejectquantity7"  class="form-control" placeholder="reject" onchange="stockcheck(@countvalue7)"/></td>
+                                                                        <td  style="text-align:center"><input type="text" id="@outwardquantity7" name="@outwardquantity7"  class="form-control" placeholder="outward"  onchange="CalcStkQtyForOutward(@countvalue7)"/></td>
+                                                                        <td  style="text-align:center">
+                                                                        <label id="@balance7" style="font-weight:normal" ></label>   
+                                                                        <input type="hidden" id="@balancevalue7" name="@balancevalue7"  class="form-control"  value="0" /></td>
+                                                                       @* <td><label id="@balancefromstock7" style="font-weight:normal" ></label>   
+                                                                        <input type="hidden" id="@balancevaluefromstock7" name="@balancevaluefromstock7"  class="form-control"  value="0" /></td>*@
+                                                                             @{count7 += 1;}
+                                                                        </tr>
+                                                                               countvalue7 += 1;
+
+                    }
+                }
+
+            }
+                                                                 }
+                                                                 </tbody>
+
+             </table>
+
+
+                   @*</div>*@
+
+
+                 @{
+            if (Model.RequisitionForShopList != null && Model.RequisitionForShopList.Any())
+            {
+     <script type="text/javascript">
+         $(document).ready(function () {
+             document.getElementById("requisitiondetails2").style.display = "inline";
+             document.getElementById("mainrequisition2").style.display = "table";
+
+         });
+
+     </script>
+        <input type="hidden" id="hiddencountvalue4" name="hiddencountvalue4" value="@Model.RequisitionForShopList.Count()">   
+                     
+            }
+            else
+            {
+                            <input type="hidden" id="hiddencountvalue4" name="hiddencountvalue4" value="0">   
+            }
+ }
+            
+              <div style="height: 10px"></div>
+
+         <label style="color: red;text-align:right;display:none " id="requisitiondetails2">Independent Shop Requisition</label>
+
+         @* <div class="col-lg-12 col-md-12 hscroll" style="overflow-x: auto; overflow-y: hidden">*@
+           <table  style="border: 1px double; border: outset; display:none;width:100%" id="mainrequisition2" >
+        
+                    <thead style="border-bottom:double ";>
+                                                            <tr>
+                                                                <th style="text-align:center";>
+                                                                    <label>S.N.</label></th>
+                                                                  <th style="text-align:center">
+                                                                    <label>Requisition Code</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label>Date Of Requisition Created</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label>Requisition From Shop</label></th>
+                                                                 <th style="text-align:center";>
+                                                                    <label id="Headings">ItemCode</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="Headings">ItemName</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="Headings">Shop Qty</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="Headings">Required Qty</label></th>
+                                                                 <th style="text-align:center";>
+                                                                 <label id="Headings">Reject Qty</label></th>
+                                                                 <th style="text-align:center";>
+                                                                 <label id="Headings">Outward Qty</label></th>
+                                                                <th style="text-align:center";>
+                                                                <label id="Headings">Balance from Required Qty</label></th>
+                                                            @*<th style="text-align:center">
+                                                                 <label id="Headings">Balance from Stock Qty</label></th>*@
+                                                            </tr>
+                                                        </thead>
+             
+                                                                 
+                   <tbody>
+                                                             @{ 
+            int newcount;
+            int newcount1;
+            int newcount3;
+            int countvalue4 = countvalue7;
+
+            int count2 = countvalue4;
+            if (Model.RequisitionForShopList != null && Model.RequisitionForShopList.Any())
+            {
+                foreach (var item1 in Model.RequisitionForShopList)
+                {
+                    if (item1.ReqQuantity != 0)
+                    {
+                        string itemname4 = "itemname" + count2;
+                        string itemcodeindependantshop = "itemcodevalue" + count2;
+                        string datevalue4 = "requisitiondate" + count2;
+                        string requisitionfromshopname4 = "requisitionfromshopname" + count2;
+
+                        string itemcode4 = "itemcode" + count2;
+                        string itemdescription4 = "itemdescription" + count2;
+                        string itemquantity4 = "itemquantity" + count2;
+                        string itemquantitylabel4 = "itemquantitylabel" + count2;
+                        string requiredquantity4 = "requiredquantity" + count2;
+                        string rejectquantity4 = "rejectquantity" + count2;
+                        string outwardquantity4 = "outwardquantity" + count2;
+                        string balance4 = "balance" + count2;
+                        string balancevalue4 = "balancevalue" + count2;
+                        string balancefromstock4 = "balancefromstock" + count;
+                        string balancevaluefromstock4 = "balancevaluefromstock" + count;
+                                                                        <tr>
+                                                                        <td  style="text-align:center">@countvalue4  </td>
+                                                                        <td  style="text-align:center">@item1.ReqCode <input type="hidden" id="@itemcodeindependantshop" name="@itemcodeindependantshop" value="@item1.ReqCode" /></td>
+                                                                        <td style="text-align:center">@Convert.ToDateTime(@item1.ModifiedOn).ToString("dd/MM/yyyy")<input type="hidden" id="@datevalue4" name="@datevalue4" value="@item1.ModifiedOn" /></td>
+                                                                        <td  style="text-align:center">@item1.LoggedInShopName <input type="hidden" id="@requisitionfromshopname4" name="@requisitionfromshopname4" value="@item1.LoggedInShopName" /></td>
+                                                                      
+                                                                        <td  style="text-align:center">@item1.ItemCode<input type="hidden" id="@itemcode4" name="@itemcode4" value="@item1.ItemCode" /></td>
+                                                                        <td  style="text-align:center">@item1.ItemName<input type="hidden" id="@itemname4" name="@itemname4" value="@item1.ItemName" /></td>
+                                                                        <td  style="text-align:center">@item1.Description<input type="hidden" id="@itemdescription4" name="@itemdescription4" value="@item1.Description" /> </td>
+                                                                        <td  style="text-align:center"> <label id="@itemquantitylabel4" style="font-weight:normal"> @item1.ShpQtyShopStock</label> <input type="hidden" id="@itemquantity4" name="@itemquantity4" value="@item1.ShpQtyShopStock" /> </td>
+                                                                        <td  style="text-align:center">@item1.ReqQuantity<input type="hidden" id="@requiredquantity4" name="@requiredquantity4" value="@item1.ReqQuantity" /></td>
+                                                                        <td  style="text-align:center"><input type="text" id="@rejectquantity4" name="@rejectquantity4"  class="form-control" placeholder="reject" onchange="stockcheck(@countvalue4)"/></td>
+                                                                        <td  style="text-align:center"><input type="text" id="@outwardquantity4" name="@outwardquantity4"  class="form-control" placeholder="outward"  onchange="CalcStkQtyForOutward(@countvalue4)"/></td>
+                                                                        <td  style="text-align:center">
+                                                                        <label id="@balance4" style="font-weight:normal" ></label>   
+                                                                        <input type="hidden" id="@balancevalue4" name="@balancevalue4"  class="form-control"  value="0" /></td>
+                                                                             @*<td><label id="@balancefromstock4" style="font-weight:normal" ></label>   
+                                                                        <input type="hidden" id="@balancevaluefromstock4" name="@balancevaluefromstock4"  class="form-control"  value="0" /></td>*@
+                                                                        @{count2 += 1;}
+                                                                        </tr>
+                                                                          { countvalue4 += 1; }
+
+                    }
+                }
+            }
+                                      }
+                                                        </tbody>
+              </table>
+                 
+          @* </div>*@
+
+            @{
+            if (!Model.ShopStockList.Any())
+            {
+    
+       <input type="hidden" id="hiddencountvalue1" name="hiddencountvalue1" value="0">
+                     
+            }
+
+            else
+            {
+     <script type="text/javascript">
+         $(document).ready(function () {
+             document.getElementById("stockdetails").style.display = "inline";
+             document.getElementById("mainrequisition1").style.display = "table";
+
+         });
+
+     </script>
+            }
+
+             }
+
+     <div style="height: 10px"></div>
+     <label style="color: red; display:none" id="stockdetails">Shortfall In Stock</label>
+          @*<div class="col-lg-12 col-md-12 hscroll" style="overflow-x: auto; overflow-y: hidden">*@
+       <table  style="border: 1px double; border: outset ;display:none"; id="mainrequisition1"  >
+                                                        
+    <thead style="border-bottom:double "; >
+                                                            <tr>
+                                                                <th style="text-align:center";>
+                                                                    <label>S.N.</label></th>
+                                                                 <th style="text-align:center">
+                                                                    <label>Requisition Code</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label>Date Of Requisition Created</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label>Requisition From Shop</label></th>
+                                                                 <th style="text-align:center";>
+                                                                    <label id="Headings">ItemCode</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="Headings">ItemName</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="Headings">Shop Qty</label></th>
+                                                                <th style="text-align:center";>
+                                                                    <label id="Headings">Required Qty</label></th>
+                                                                 <th style="text-align:center";>
+                                                                 <label id="Headings">Reject Qty</label></th>
+                                                                 <th style="text-align:center";>
+                                                                 <label id="Headings">Outward Qty</label></th>
+                                                                <th style="text-align:center";>
+                                                                <label id="Headings">Balance from Required Qty</label></th>
+                                                            @*<th style="text-align:center">
+                                                                 <label id="Headings">Balance from Stock Qty</label></th>*@
+                                                            
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                             @{ 
+                                                                
+            int countvalue1 = countvalue4;
+
+            int count1 = countvalue1;
+            if (Model.ShopStockList != null && Model.ShopStockList.Any())
+            {
+
+                foreach (var item in Model.ShopStockList)
+                {
+
+                    string itemname = "itemname" + count1;
+                    string itemcodeshopstock = "itemcodevalue" + count1;
+                    string datevalue1 = "requisitiondate" + count1;
+                    string requisitionfromshopname = "requisitionfromshopname" + count1;
+
+                    string itemcode = "itemcode" + count1;
+                    string itemdescription = "itemdescription" + count1;
+                    string itemquantity = "itemquantity" + count1;
+                    string requiredquantity = "requiredquantity" + count1;
+                    string rejectqauntity = "rejectquantity" + count1;
+                    string outwardquantity1 = "outwardquantity" + count1;
+                    string balance1 = "balance" + count1;
+                    string balancevalue1 = "balance" + count1;
+                    string balancefromstock1 = "balancefromstock" + count;
+                    string balancevaluefromstock1 = "balancevaluefromstock" + count;
+                                                                       <tr>
+                                                                       <td  style="text-align:center">@countvalue1 </td>
+                                                                       <td  style="text-align:center">----<input type="hidden" id="@itemcodeshopstock" name="@itemcodeshopstock" value="0" /> </td>
+                                                                       <td style="text-align:center">---- <input type="hidden" id="@datevalue1" name="@datevalue1" value="0" /></td>
+                                                                       <td style="text-align:center">---- <input type="hidden" id="@requisitionfromshopname" name="@requisitionfromshopname" value="null" /></td>
+                                                                    
+                                                                        <td  style="text-align:center">@item.ItemCode<input type="hidden" id="@itemcode" name="@itemcode" value="@item.ItemCode" /></td>
+                                                                        <td  style="text-align:center">@item.ItemName<input type="hidden" id="@itemname" name="@itemname" value="@item.ItemName" /></td>
+                                                                        <td  style="text-align:center">@item.Description<input type="hidden" id="@itemdescription" name="@itemdescription" value="@item.Description" /> </td>
+                                                                        <td  style="text-align:center"><a href="#" onclick="ShowQuantity(@countvalue1)" style="font-weight: normal">@item.Quantity <input type="hidden" id="@itemquantity" name="@itemquantity" value="@item.Quantity" /></a></td>
+                                                                        <td  style="text-align:center"><input type="text" id="@requiredquantity" name="@requiredquantity"   class="form-control" placeholder="req.qty" onchange="EnableDD(@count1)" /></td>
+                                                                        <td style="text-align:center"> ----<input type="hidden" id="@rejectqauntity" name="@rejectqauntity" value="0" /> </td>
+                                                                        <td style="text-align:center"> ----<input type="hidden" id="@outwardquantity1" name="@outwardquantity1" value="0" /> </td>
+                                                                        <td  style="text-align:center">----
+                                                                        <label id="@balance1" style="font-weight:normal"></label>  
+                                                                        <input type="hidden" id="@balancevalue1" name="@balancevalue1" value="0" class="form-control" /> </td>
+                                                                        @*<td><label id="@balancefromstock1" style="font-weight:normal" ></label>   
+                                                                        <input type="hidden" id="@balancevaluefromstock1" name="@balancevaluefromstock1"  class="form-control"  value="0" /></td>*@
+                                                                        @{count1 += 1;}
+                                                                        </tr>
+                                                                          countvalue1 += 1;
+                                                                      <input type="hidden" value="@Model.ShopStockList.Count()" id="hiddencountvalue1" name="hiddencountvalue1" />
+                                                                 
+                                                                 
+                }
+            }
+                                                                    <input type="hidden" value="@countvalue1" id="totalrowcount" name="totalrowcount" />
+                                                                    <script>
+                                                                        document.getElementById("hdnrowcount").value = document.getElementById("totalrowcount").value;
+                                                                    </script>
+                                                                 }
+                                                        </tbody>
+                                                        </table>
+
+          @*  </div>*@
+                 <br />
+                 <div id="save">
+                 <div class="col-md-3 col-sm-3 col-xs-3">
+                                            <label>Request To Godown<label style="color: red"></label></label><br />
+                                            @Html.DropDownListFor(model => model.RequisitionForShopDetails.ToGodownName, new SelectList(Model.GodownMasterList, "GodownName", "GodownName"), "Select Godown Name ", new { @class = "form-control", id = "ddltogodownname" , @disabled = "disabled" })
+                                         
+                                        </div>
+
+                 <div class="col-md-3 col-sm-3 col-xs-3">
+                                            <label>Request To Shop <label style="color: red"></label></label><br />
+                                            @Html.DropDownListFor(model => model.RequisitionForShopDetails.ToShopName, new SelectList(Model.ShopList, "ShopName", "ShopName"), "Select Shop Name ", new { @class = "form-control", id = "ddltoshopname" , @disabled = "disabled" })
+                                         
+                                        </div>
+
+                 <div class="col-md-3 col-sm-3 col-xs-3">
+                 <input type="radio" name="RadioBtn" id="RadioBtn" value="Yes" disabled  />
+                     <label>&nbsp Request To P.O</label>
+                     </div>
+              <br />
+                     <br />
+
+               
+                     <div class="col-md-12 col-lg-12" id="acceptedid">
+                                        <div class="row">
+                                            <div style="height: 15px"></div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <label>Prepared By</label><br />
+                                                <label id="PreparedByName"></label>
+                                            </div>
+                                            <div class="col-md-4 col-lg-4">
+                                                <label>Email-Id</label><br />
+                                                <label id="PreparedByEmail" style="font-weight: normal"></label>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <label>Contact No.</label><br />
+                                                <label id="PreparedByContact" style="font-weight: normal"></label>
+                                            </div>
+                                            @{
+            string preparetimeid = DateTime.Now.ToShortTimeString();
+                                            }
+                                            <div class="col-md-2 col-lg-2">
+                                                <label>Prepare Time</label><br />
+                                                <label style="font-weight: normal">@preparetimeid</label>
+                                            </div>
+                                            <div style="height: 70px"></div>
+                                        </div>
+                                    </div>
+
+                              <div class="col-sm-offset-5">
+                              <button type="submit" id="Submit" class="btn btn-success" onclick="ckeckfornull()">Submit</button>
+                                                 </div>
+                                                 <br/>
+               </div>
+ 
+         </div>
+
+     </div>
+            </div>
+        }
+         </div>
+
+</section>
+

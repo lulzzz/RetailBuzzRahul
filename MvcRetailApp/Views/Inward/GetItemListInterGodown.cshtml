@@ -1,0 +1,84 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GetItemListInterGodown";
+}
+
+<div class="col-md-12 col-lg-12">
+    <label style="font-size:16px">&nbsp; Item Details</label>
+    <table style="border: 1px double; width: 100%" class="table">
+        @{
+            if (Model.OutwardItemInterGodownList != null && Model.OutwardItemInterGodownList.Any())
+            {
+                <table border="1">
+                    <thead>
+                        <tr>
+                            <th class="col-md-1 col-lg-1">
+                                <label class="CenterText">SNo.</label>
+                            </th>
+                            <th class="col-md-2 col-lg-2">
+                                <label class="CenterText">Item</label>
+                            </th>
+                            <th class="col-md-2 col-lg-2">
+                                <label class="CenterText">Description</label>
+                            </th>
+                            <th class="col-md-2 col-lg-2">
+                                <label class="CenterText">Color</label>
+                            </th>
+                            <th class="col-md-2 col-lg-2">
+                                <label class="CenterText">Material</label>
+                            </th>
+                            <th class="col-md-2 col-lg-2">
+                                <label class="CenterText">Design</label>
+                            </th>
+                            <th class="col-md-2 col-lg-2">
+                                <label class="CenterText">Rate</label>
+                            </th>
+                            <th class="col-md-1 col-lg-1">
+                                <label class="CenterText">Quantity</label>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int count = 1;
+                            foreach (var item in Model.OutwardItemInterGodownList)
+                            {
+                                var row = "row" + count;
+                                var rate = Convert.ToDouble(item.MRP).ToString("#,###.00##");
+                                var quantity = Convert.ToDouble(item.QuantityTransfer).ToString("#,###.00##");
+
+
+                            <tr id="@row">
+                                <td style="text-align:center">@count</td>
+                                <td class="col-md-2 col-lg-2" style="text-align:left">
+                                    <label style="font-weight: normal">@item.ItemName</label>
+                                </td>
+                                <td class="col-md-2 col-lg-2" style="text-align:left">
+                                    <label style="font-weight: normal">@item.Description</label>
+                                </td>
+                                <td class="col-md-2 col-lg-2" style="text-align:left">
+                                    <label style="font-weight: normal">@item.ColorCode</label>
+                                </td>
+                                <td class="col-md-2 col-lg-2" style="text-align:left">
+                                    <label style="font-weight: normal">@item.TypeOfMaterial</label>
+                                </td>
+                                <td class="col-md-2 col-lg-2" style="text-align:left">
+                                    <label style="font-weight: normal">@item.DesignName</label>
+                                </td>
+                                <td class="col-md-2 col-lg-2" style="text-align:right">
+                                    <label style="font-weight: normal">@rate</label>
+                                </td>
+                                <td class="col-md-1 col-lg-1" style="text-align:right">
+                                    <label style="font-weight: normal">@quantity</label>
+                                </td>
+                            </tr>
+                                count++;
+                            }
+                        }
+                    </tbody>
+                </table>
+                            }
+        }
+    </table>
+</div>

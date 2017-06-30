@@ -1,0 +1,380 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetOutwardToTailorItemDetails";
+}
+
+<!--custom Alerts-->
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function infoBox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('infoClass');
+        bootbox.alert('<i class="fa fa-2x fa-info-circle"></i><br>' + message + '<hr>');
+    }
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         document.getElementById("InwordsLable").style.display = 'inline';
+		         document.getElementById("Inwords").innerHTML = NumberToWords();
+
+		         document.getElementById("TypeOfPaymentLabel").style.display = 'inline';
+		         document.getElementById("TypeOfPaymentDiv").style.display = 'inline';
+		         document.getElementById("verticalline2").style.display = 'inline';
+		         document.getElementById("DeliveredYesRadioBtn").disabled = false;
+		         document.getElementById("DeliveredNoRadioBtn").disabled = false;
+		         
+		         CalcBalanceAfterPayment();
+		     }
+		     else {
+		         document.getElementById("Payment").value = "";
+		         document.getElementById("Balance").innerHTML = document.getElementById("BalanceVal").value;
+		     }
+		 });
+    }
+
+    function confirmboxcheck(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         confirmboxyes("Do You Want To Delivered This Items To Client..");
+		     }
+		     else {
+		         $("#DeliveredYesRadioBtn").prop('checked', false);
+		     }
+		 });
+    }
+
+    function confirmboxyes(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         if ($("#DeliveredYesRadioBtn").prop("checked")) {
+		             document.getElementById("Delivered").value = "Yes";
+		         }
+		         else {
+		             document.getElementById("Delivered").value = "No";
+		         }
+		     }
+		     else {
+		         $("#DeliveredYesRadioBtn").prop('checked', false);
+		     }
+		 });
+    }
+
+    function confirmboxno(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         if ($("#DeliveredNoRadioBtn").prop("checked")) {
+		             document.getElementById("Delivered").value = "No";
+		         }
+		         else {
+		             document.getElementById("Delivered").value = "Yes";
+		         }
+		     }
+		     else {
+		         $("#DeliveredNoRadioBtn").prop('checked', false);
+		     }
+		 });
+    }
+</script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        var advancepayment = +document.getElementById("AdvancePayment").innerHTML;
+        document.getElementById("AdvancePayment").innerHTML = "<i class='fa fa-inr'></i>" + " " + addCommas(advancepayment.toFixed(2));
+
+        var grandtotal = +document.getElementById("GrandTotal").innerHTML;
+        document.getElementById("GrandTotal").innerHTML = "<i class='fa fa-inr'></i>" + " " + addCommas(grandtotal.toFixed(2));
+
+        var bal = +document.getElementById("Balance").innerHTML;
+        document.getElementById("Balance").innerHTML = "<i class='fa fa-inr'></i>" + " " + addCommas(bal.toFixed(2));
+
+    });
+</script>
+
+<script type="text/javascript">
+    function CalcBalanceAfterPayment() {
+
+        document.getElementById("BalanceVal").value = document.getElementById("hdnBalanceVal").value;
+        var advpay = +removeCommas(document.getElementById("AdvancePayment").innerHTML);
+        var grndttl = +removeCommas(document.getElementById("GrandTotal").innerHTML);
+        var payment = +removeCommas(document.getElementById("Payment").value);
+
+        var prevbal = grndttl - advpay;
+        var actualbalance = prevbal - payment;
+        if (actualbalance >= 0) {
+            document.getElementById("Balance").innerHTML = actualbalance.toFixed(2);
+            document.getElementById("BalanceVal").value = actualbalance.toFixed(2);
+        }
+        else {
+            alertbox("Can Not Exceed Balance..");
+            document.getElementById("Payment").value = document.getElementById("BalanceVal").value;
+            document.getElementById("Balance").innerHTML = 0;
+            document.getElementById("BalanceVal").value = 0;
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function GetPaymentAlert() {
+        confirmbox("Do You Want To Fill Payment Details..");
+    }
+</script>
+
+
+@*DISPLAY PARTIAL VIEW OF TYPE OF PAYMENT*@
+<script type="text/javascript">
+    function JobWorkPayment(type) {
+        document.getElementById("save").disabled = false;
+        document.getElementById("PayType").value = type;
+        document.getElementById("Payment").disabled = true;
+        document.getElementById("JobWorkPaymentDetails_PaymentType").value = type;
+
+        if (type == 'Cash') {
+
+            $.ajax({
+                url: "/JobWork/CashPayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+
+                    document.getElementById("TotalCash").value = +removeCommas(document.getElementById("Payment").value);
+                }
+            });
+        }
+        else if (type == 'Card') {
+            $.ajax({
+                url: "/JobWork/CardPayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+        else if (type == 'Cheque') {
+            $.ajax({
+                url: "/JobWork/ChequePayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+        else if (type == 'CashCardCheque') {
+            $.ajax({
+                url: "/JobWork/CashCardChequePayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+    }
+</script>
+
+@*CHECK BILL BALANCE OR NONE*@
+<script type="text/javascript">
+    function CheckDelivered(val) {
+        if (val == "Yes") {
+            $("#DeliveredNoRadioBtn").prop('checked', false);
+            var bal = +document.getElementById("Balance").innerHTML;
+            if (bal > 0) {
+                confirmboxcheck("Are You Sure.. You Want To Delivered This Items To Client.. Because Balance Is Still Pending..");
+            }
+            else {
+                confirmboxyes("Do You Want To Delivered This Items To Client..");
+            }
+        }
+        else if (val == "No") {
+            $("#DeliveredYesRadioBtn").prop('checked', false);
+            confirmboxno("Are You Sure.. You Can Not Delivered This Items To Client..");
+        }
+    }
+</script>
+
+
+
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+    <source src="" type="audio/ogg" />
+</audio>
+
+<table style="border: 1px double; width: 100%">
+    <tr>
+        <td>
+            <div class="col-md-12 col-lg-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">S.N.</th>
+                            <th style="text-align: center">Bill No</th>
+                            <th style="text-align: center">Item Name</th>
+                            <th style="text-align: center">Narration</th>
+                            <th style="text-align: center">JobWork<br />
+                                Type</th>
+                            <th style="text-align: center">Tailor<br />
+                                Amt(<i class="fa fa-inr"></i>)</th>
+                            <th style="text-align: center">Accessories<br />
+                                Amt(<i class="fa fa-inr"></i>)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.OutwardToTailorItemList != null && Model.OutwardToTailorItemList.Any())
+                            {
+                                string row1 = string.Empty;
+                                int rowid = 1;
+
+                                foreach (var item in Model.OutwardToTailorItemList)
+                                {
+                                    row1 = "row" + rowid;
+                            <tr id="@row1">
+                                @{
+                                    double tailotamt = Convert.ToDouble(@item.TailorAmount);
+                                    var TailorAmt = tailotamt.ToString("#,###.00##");
+                                    double accamt = Convert.ToDouble(@item.AccessoriesAmount);
+                                    var AccAmt = accamt.ToString("#,###.00##");
+                                }
+                                <td style="text-align: center">@rowid</td>
+                                <td style="text-align: center">@item.BillNo</td>
+                                <td style="text-align: center">@item.ItemName</td>
+                                <td style="text-align: center">@item.NarrationForTailor</td>
+                                <td style="text-align: center">@item.JobWorktype</td>
+                                <td style="text-align: right">@TailorAmt</td>
+                                <td style="text-align: right">@AccAmt</td>
+                            </tr>
+                                    rowid = rowid + 1;
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+<br />
+
+
+@{
+    if (Model.OutwardToTailorDetails != null)
+    {
+    <div class="col-lg-7 col-md-7"></div>
+    <div class="col-lg-5 col-md-5">
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Grand Total:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="GrandTotal" style="font-size: 14px;">@Html.DisplayFor(model => model.OutwardToTailorDetails.GrandTotal)</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Advance Payment:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="AdvancePayment" style="font-size: 14px;">@Html.DisplayFor(model => model.OutwardToTailorDetails.AdvancePayment)</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Payment:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label>@Html.TextBoxFor(model => model.JobWorkPaymentDetails.Payment, new { @class = "form-control", @onchange = "GetPaymentAlert()", id = "Payment", @style = "text-align:right", @placeholder = "Payment" })</label>
+            </div>
+        </div>
+    </div>
+    }
+         
+    <div class="col-lg-12 col-md-12" id="InwordsLable" style="display: none">
+        <label style="font-size: 14px">In Words:</label>
+        <label id="Inwords"></label>
+    </div>
+                              
+    <div class="col-lg-7 col-md-7"></div>
+    <div class="col-lg-5 col-md-5">
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;" id="BalLabel">Balance:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="Balance" style="font-size: 14px;">@Html.DisplayFor(model => model.OutwardToTailorDetails.Balance)</label>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-7 col-md-7"></div>
+    <div class="col-lg-5 col-md-5">
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;" id="DeliveredLabel">Delivered:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+               
+                    <input type="radio" id="DeliveredYesRadioBtn" name="DeliveredYesRadioBtn" onclick="CheckDelivered('Yes')" disabled="disabled"/>
+                    <label style="color: blue"> Yes</label>&nbsp;&nbsp;&nbsp;
+                
+                    <input type="radio" id="DeliveredNoRadioBtn" name="DeliveredNoRadioBtn" onclick="CheckDelivered('No')"  disabled="disabled"/>
+                    <label style="color: blue"> No</label>
+                
+            </div>
+        </div>
+    </div>
+}
+
+

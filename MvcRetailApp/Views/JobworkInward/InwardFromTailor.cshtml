@@ -1,0 +1,678 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "InwardFromTailor";
+}
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "TailorAmountDate",
+            dateFormat: "%d/%M/%Y"
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#OutwardToTailorCode").autocomplete({
+            source: "/JobWorkInward/GetOutwardToTailorNos",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#OutwardToTailorCode").val(ui.item.value);
+
+                    var outwardno = $("#OutwardToTailorCode").val();
+                    $.getJSON("/JobWorkInward/GetInwardDetails", { outward: outwardno },
+                       function (data) {
+
+                           window.open("/JobWorkInward/OutwardToTailorDetailsPop?no=" + outwardno, "_block", "width=1000,height=800,top=15px,left=15px");
+
+                           document.getElementById("OutwardDetails").style.display = 'inline';
+                           document.getElementById("OutwardHeading").style.display = 'inline';
+                           document.getElementById("OutwardOption").style.display = 'inline';
+
+                           $("#ClientName").text(data.ClientName);
+                           $("#TailorName").text(data.TailorName);
+                           $("#TailorAddress").text(data.TailorAddress);
+                           $("#TailorContact").text(data.TailorContact);
+
+                           $("#GrandTotal").text(data.GrandTotal);
+                           $("#AdvancePayment").text(data.AdvancePayment);
+                           $("#Balance").text(data.Balance);
+                           $("#ActualBalance").val(data.Balance);
+                           $("#BalanceValAfterTailorAmt").val(data.Balance);
+
+                           $("#GrandTotal1").text(data.GrandTotal);
+                           $("#AdvancePayment1").text(data.AdvancePayment);
+                           $("#Balance1").text(data.Balance);
+                       });
+                }
+            }
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    function CallView(type) {
+        if (type == 'InwardToShop') {
+
+            var no = document.getElementById("OutwardToTailorCode").value;
+            $.ajax({
+                url: "/JobWorkInward/GetOutwardToTailorItemDetails",
+                data: { OutwardNo: no },
+                type: "GET",
+                success: function (data) {
+                    $("#LoadItemList").html(data);
+                }
+            });
+
+            document.getElementById("InwardType").value = "InwardToShop";
+            document.getElementById("InwardToShopDetails").style.display = 'inline';
+            document.getElementById("SentToClientDetails").style.display = 'none';
+            document.getElementById("Submit").disabled = false;
+            document.getElementById("OutwardToTailorCode").disabled = true;
+            document.getElementById("prepareby").style.display = 'inline';
+            document.getElementById("Verticalline").style.display = 'inline';
+        }
+        else {
+            document.getElementById("InwardType").value = "SentToClient";
+            document.getElementById("SentToClientDetails").style.display = 'inline';
+            document.getElementById("InwardToShopDetails").style.display = 'none';
+            document.getElementById("Submit").disabled = false;
+            document.getElementById("OutwardToTailorCode").disabled = true;
+            document.getElementById("prepareby").style.display = 'inline';
+            document.getElementById("Verticalline").style.display = 'inline';
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#Submit").click(function () {
+
+            var inwardtype = document.getElementById("InwardType").value;
+            if (inwardtype == "InwardToShop") {
+                var rowid = document.getElementById("hdnRowCount").value;
+                var inwardtype = document.getElementById("InwardType").value;
+                if (inwardtype == "InwardToShop") {
+                    for (i = 1; i <= rowid; i++) {
+                        var prevItem = "Item" + i;
+                        var prevQuantity = "Quantity" + i;
+                        var prevNarration = "Narration" + i;
+                        var counter = 0;
+
+                        if (document.getElementById(prevItem) != null) {
+                            if ($("#" + prevItem).val() == "") {
+                                counter = 1;
+                                alertbox("Please Fill The Item");
+                            }
+                            else if ($("#" + prevQuantity).val() == "") {
+                                counter = 1;
+                                alertbox("Please Fill The Quantity");
+                            }
+                            else {
+                                document.getElementById(prevItem).disabled = false;
+                                document.getElementById(prevQuantity).disabled = false;
+                                document.getElementById(prevNarration).disabled = false;
+                                document.getElementById("OutwardToTailorCode").disabled = false;
+                                counter == 0;
+                            }
+                        }
+                    }
+
+                    if (counter == 0) {
+                        document.getElementById("Submit").disabled = true;
+                        $("#Save").trigger('click');
+                    }
+                }
+                else {
+                    document.getElementById("OutwardToTailorCode").disabled = false;
+                    document.getElementById("Submit").disabled = true;
+                    $("#Save").trigger('click');
+                }
+            }
+            else {
+
+                var valcounter = 0;
+                if (document.getElementById("TailorAmount").value == "") {
+                    alertbox("Please Fill Tailor Amount");
+                    valcounter = 1;
+                }
+                
+                if (document.getElementById("TailorAmountDate").value == "") {
+                    alertbox("Please Fill Tailor Amount Date");
+                    valcounter = 1;
+                }
+
+                if (valcounter == 0) {
+                    document.getElementById("OutwardToTailorCode").disabled = false;
+                    document.getElementById("Submit").disabled = true;
+                    $("#Save").trigger('click');
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        var email = $("#preparedby").val();
+        $.getJSON('/JobWorkInward/GetEmployeeDetails', { Email: email }, function (data) {
+            if (data != null) {
+                $("#name").text(data.Name);
+                $("#InwardFromTailorDetails_PreparedBy").val(data.Name);
+                $("#email").text(email);
+                $("#InwardFromTailorDetails_PreparedByEmail").val(email)
+                $("#designation").text(data.Designation)
+                $("#InwardFromTailorDetails_PreparedByDesignation").val(data.Designation);
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function CalcBalAfterTailorPayment()
+    {
+        document.getElementById("TailorAmountDate").disabled = false;
+        var amount = +document.getElementById("TailorAmount").value;
+        var balance = +document.getElementById("ActualBalance").value;
+        var ans = balance - amount;
+        if (ans < 0) {
+            alertbox("Paid amount is greater than Balance..");
+            document.getElementById("Balance").innerHTML = 0;
+            document.getElementById("BalanceValAfterTailorAmt").value = 0;
+        }
+        else {
+            document.getElementById("Balance").innerHTML = ans;
+            document.getElementById("BalanceValAfterTailorAmt").value = ans;
+        }
+    }
+</script>
+
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- Start: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+        <!-- Start: Content -->
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+
+
+                @using (Html.BeginForm("InwardFromTailor", "JobWorkInward", FormMethod.Post))
+                {
+                    @Html.HiddenFor(model => model.InwardFromTailorDetails.InwardCode);
+                    @Html.HiddenFor(model => model.InwardFromTailorDetails.PreparedBy);
+                    @Html.HiddenFor(model => model.InwardFromTailorDetails.PreparedByEmail);
+                    @Html.HiddenFor(model => model.InwardFromTailorDetails.PreparedByDesignation);
+                    
+                    <input type="hidden" id="InwardType" name="InwardType" />
+                    <input type="hidden" id="preparedby" value="@HttpContext.Current.Session["UserEmail"]"/>
+                    
+                    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                        <source src="" type="audio/ogg" />
+                    </audio>
+                    
+                    <h2>Inward From Tailor</h2>
+                    
+                                                                                                 {
+                                                                                                     if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+                                                                                                     {
+                                                                                                         if (Session["LOGINSHOPGODOWNCODE"] != null)
+                                                                                                         {
+                    <div style="text-align: right">
+                        <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                        <label style="font-family: 'Good Times'; font-size: small; color: red" id="LoginShop">@Session["SHOPGODOWNNAME"].ToString()</label>
+                    </div>
+                    <input type="hidden" id="ShopCode" value="@Session["LOGINSHOPGODOWNCODE"].ToString()" />
+                                                                                                         }
+                                                                                                     }
+                                                                                                 }
+                    
+                    <table style="border: 1px double; width: 100%">
+                        <tr>
+                            <td>
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="row">
+                                            <div class="form-group"></div>
+
+                                            <div class="form-group col-md-7 col-lg-7">
+                                            </div>
+
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="col-lg-12 col-md-12">
+                                                    <div class="col-md-12 col-lg-12" style="height: 55%">
+                                                        @{
+                                                                                                 string date = DateTime.Now.ToString("MM/dd/yyyy");
+                                                                                                 string inwardfromtailor = Model.InwardFromTailorDetails.InwardCode;
+                                                        }
+                                                        <div style="height: 10px"></div>
+                                                        <div class="row">
+                                                            <div class="col-lg-6 col-md-6">
+                                                                <div class="row">
+                                                                    <label style="font-size: 14px;">Date</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6 col-md-6">
+                                                                <div class="row">
+                                                                    <label style="font-size: 14px;" id="date">@date</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style="height: 7px"></div>
+                                                        <div class="row">
+                                                            <div class="col-lg-6 col-md-6">
+                                                                <div class="row">
+                                                                    <label style="font-size: 14px;">Inward No.</label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6 col-md-6">
+                                                                <div class="row">
+                                                                    <label style="font-size: 14px;">@inwardfromtailor</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div style="height: 7px"></div>
+                                                        <div class="row">
+                                                            <div class="col-lg-6 col-md-6">
+                                                                <div class="row">
+                                                                    <label style="font-size: 14px;">Outward To Tailor No.<label style="color: red">*</label></label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6 col-md-6">
+                                                                <div class="row">
+                                                                    @Html.TextBoxFor(model => model.InwardFromTailorDetails.OutwardToTailorCode, new { id = "OutwardToTailorCode", @class = "form-control", @placeholder = "Outward No" })
+                                                                    @Html.ValidationMessageFor(model => model.OutwardToTailorDetails.OutwardCode, null, new { style = "color:red" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+
+                                                        <div style="height: 10px"></div>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-12 col-lg-12" id="OutwardHeading" style="display: none">
+                                                    <label style="font-size: 15px">Outward Details:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="table table-bordered">
+                                                    <div class="row">
+                                                        <div class="row" id="OutwardDetails" style="display: none">
+                                                            <div style="height: 10px"></div>
+
+                                                            <div class="col-md-12 col-lg-12">
+                                                                <div class="col-md-3 col-lg-3">
+                                                                    <label>Client Name</label><br />
+                                                                    <label id="ClientName"></label>
+                                                                </div>
+                                                                <div class="col-md-3 col-lg-3">
+                                                                    <label>Tailor Name</label><br />
+                                                                    <label id="TailorName"></label>
+                                                                </div>
+                                                                <div class="col-md-3 col-lg-3">
+                                                                    <label>Tailor Contact-No</label><br />
+                                                                    <label id="TailorContact"></label>
+                                                                </div>
+                                                                <div class="col-md-3 col-lg-3">
+                                                                    <label>Tailor Address</label><br />
+                                                                    <label id="TailorAddress"></label>
+                                                                </div>
+
+                                                            </div>
+                                                            <div style="height: 20px"></div>
+                                                            <div class="form-group"></div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="OutwardOption" style="display: none">
+                                            <div class="col-md-2 col-lg-2">
+                                                <input type="radio" name="RadioButton" onclick="CallView('InwardToShop')" />
+                                                <label style="color: red">&nbsp Inward To Shop </label>
+                                            </div>
+                                            <div class="col-md-2 col-lg-2">
+                                                <input type="radio" name="RadioButton" onclick="CallView('SendToClient')" />
+                                                <label style="color: red">&nbsp Sent To Client </label>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="SentToClientDetails" style="display: none">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-1 col-lg-1">
+                                                    <label>Narration:</label>
+                                                </div>
+                                                <div class="col-md-11 col-lg-11">
+                                                    @Html.TextBoxFor(model => model.InwardFromTailorDetails.Narration, new { @class = "form-control", id = "Narration" })
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-12 col-lg-12">
+                                                <div style="height: 10px"></div>
+                                            </div>
+
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-7 col-lg-7"></div>
+                                                <div class="col-md-5 col-lg-5">
+                                                    <div class="col-md-12 col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label>Grand Total:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5" style="text-align: right">
+                                                                <div class="row">
+                                                                    <label id="GrandTotal"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label>Paid Amount:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5" style="text-align: right">
+                                                                <div class="row">
+                                                                    <label id="AdvancePayment"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label style="color:blue">Amount Paid To Tailor:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5" style="text-align: right">
+                                                                <div class="row">
+                                                                    @Html.TextBoxFor(model => model.InwardFromTailorDetails.PaidAmountToTailor, new { @class = "form-control", id = "TailorAmount", @placeholder = "Payment", onkeypress = "return AllowNumbers(event)", @style = "text-align:right", onchange="CalcBalAfterTailorPayment();", value="0" })
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-12 col-lg-12" style="height:10px">
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label style="color:blue">Amount Paid To Tailor Date:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5">
+                                                                <div class="row">
+                                                                    @Html.TextBoxFor(model => model.InwardFromTailorDetails.PaidAmountToTailorDate, new { @class = "form-control", id = "TailorAmountDate", @placeholder = "Date", @disabled="disabled", @style = "text-align:right"})
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label>Balance:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5" style="text-align: right">
+                                                                <div class="row">
+                                                                    <label id="Balance"></label><input type="hidden" id="ActualBalance" />
+                                                                    <input type="hidden" id="BalanceValAfterTailorAmt" name="BalanceValAfterTailorAmt"/>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row" id="InwardToShopDetails" style="display: none">
+                                            <div id="LoadItemList"></div>
+
+                                            <div class="col-md-12 col-lg-12">
+                                                <div style="height: 10px"></div>
+                                            </div>
+
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-9 col-lg-9"></div>
+                                                <div class="col-md-3 col-lg-3">
+                                                    <div class="col-md-12 col-lg-12">
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label>Grand Total:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5" style="text-align: right">
+                                                                <div class="row">
+                                                                    <label id="GrandTotal1"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label>Paid Amount:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5" style="text-align: right">
+                                                                <div class="row">
+                                                                    <label id="AdvancePayment1"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="col-md-7 col-lg-7">
+                                                                <label>Balance:</label>
+                                                            </div>
+                                                            <div class="col-md-5 col-lg-5" style="text-align: right">
+                                                                <div class="row">
+                                                                    <label id="Balance1"></label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="col-ld-12 col-md-12" id="Verticalline" style="display: none">
+                                    <div style="height: 15px"></div>
+                                    <div style="width: 100%; height: 1px; background-color: black"></div>
+                                    <div style="height: 10px"></div>
+                                </div>
+
+                                <div id="prepareby" style="display: none">
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-12">
+                                            <div style="height: 15px"></div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <label>Prepared By</label><br />
+                                                <label id="name" style="font-weight: normal"></label>
+                                            </div>
+                                            <div class="col-md-4 col-lg-4">
+                                                <label>Email-Id</label><br />
+                                                <label id="email" style="font-weight: normal"></label>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <label>Designation</label><br />
+                                                <label id="designation" style="font-weight: normal"></label>
+                                            </div>
+                                            @{
+                                                                                                 string preparetimeid = DateTime.Now.ToShortTimeString();
+                                            }
+                                            <div class="col-md-2 col-lg-2">
+                                                <label>Prepare Time</label><br />
+                                                <label style="font-weight: normal">@preparetimeid</label>
+                                            </div>
+                                            <div style="height: 70px"></div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12" style="display: none" id="Narr">
+                                    <div style="height: 10px"></div>
+                                    <div class="col-lg-2 col-md-2">
+                                        <div class="row">
+                                            <label>Narration</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-10 col-md-10">
+                                        <label style="font-weight: normal" id="narr">----</label>
+                                    </div>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </table>
+                    <br />
+                    
+                    <div class="col-lg-offset-5 col-md-offset-5">
+                        <button type="button" id="Submit" class="btn btn-success" disabled="disabled">Submit</button>
+                        <button type="submit" id="Save" style="display: none">Save</button>
+                    </div>
+                    
+                }
+            </div>
+        </div>
+    </div>
+</section>
+

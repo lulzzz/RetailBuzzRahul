@@ -1,0 +1,308 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GetOutwardShopToGodownDetailsForPrint";
+}
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+
+    $(function () {
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+    });
+
+    $("#Print").click(function () {
+        confirmbox("Do You Want To Print This Outward?");
+    });
+</script>
+
+@Html.HiddenFor(model => model.OutwardShopToGodownDetails.OutwardId)
+
+<table style="border: 1px double; width: 100%">
+    <tr>
+        <td>
+            <div class="col-lg-12 col-md-12">
+
+                <div class="col-lg-4 col-md-4 form-group">
+                    <div class="row">
+                        <div class="col-lg-10 col-md-10">
+                            <div class="row">
+                                <div style="height: 10px"></div>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="row">
+                                        <label style="font-size: 18px">Godown Details</label>
+                                    </div>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="row">
+                                            <label>Name:</label>
+                                            @Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownName, new { @class = "form-control" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12">
+                                    <label>Address: &nbsp;</label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownAddress)<br />
+                                    <label>Contact No: &nbsp;</label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownContactNo)<br />
+                                    <label>Email: &nbsp;</label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownEmail)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-2 col-md-2">
+                            <div style="width: 1px; height: 200px; background-color: lightgray"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-4 form-group">
+                    <div class="row">
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-10 col-md-10" id="empname" style="display: inline">
+                                <div style="height: 10px"></div>
+
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="row">
+                                            <label style="font-size: 18px">Store Keeper Details</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="row">
+                                        <label>Name: &nbsp;</label>@{
+                                            if (Model.OutwardShopToGodownDetails.StoreKeeperName == null)
+                                            {
+                                            <label>----</label><br />
+                                            }
+                                            else
+                                            {
+                                            @Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperName)<br />        
+                                            }
+                                        }
+                                        <label>Designation: &nbsp;</label>
+                                        @{
+                                            if (Model.OutwardShopToGodownDetails.StoreKeeperDesignation == null)
+                                            {
+                                            <label>----</label><br />
+                                            }
+                                            else
+                                            {
+                                            @Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperDesignation)<br />        
+                                            }
+                                        }
+                                        <label>Contact No: &nbsp;</label>
+                                        @{
+                                            if (Model.OutwardShopToGodownDetails.StoreKeeperContactNo == null)
+                                            {
+                                            <label>----</label><br />
+                                            }
+                                            else
+                                            {
+                                            @Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperContactNo)<br />        
+                                            }
+                                        }
+                                        <label>Email: &nbsp;</label>
+                                        @{
+                                            if (Model.OutwardShopToGodownDetails.StoreKeeperEmail == null)
+                                            {
+                                            <label>----</label><br />
+                                            }
+                                            else
+                                            {
+                                            @Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperEmail)<br />        
+                                            }
+                                        }
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-lg-1 col-md-1">
+                                <div style="width: 1px; height: 200px; background-color: lightgray"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-lg-4 col-md-4 form-group">
+                    <div class="row">
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12">
+                                @{
+                                    string date = Convert.ToDateTime(Model.OutwardShopToGodownDetails.Date).ToString("MM/dd/yyyy");
+                                }
+                                <div style="height: 10px"></div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6">
+                                        <label style="font-size: 14px;">Date:</label>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <label style="font-weight: normal;" id="date">@date</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="height: 7px"></div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6">
+                                        <label style="font-size: 14px;">Outward No:</label>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.OutwardCode)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="height: 7px"></div>
+                                <div class="row">
+                                    <div class="col-lg-6 col-md-6">
+                                        <label style="font-size: 14px;">Reference No : </label>
+                                    </div>
+                                    <div class="col-lg-6 col-md-6">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GatePass)</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="row form-group">
+
+                    @{
+                                        
+                        if (Model.OutwardItemShopToGodownList.Count() != 0 || Model.OutwardItemShopToGodownList.Any())
+                        {
+                        <div class="col-lg-12 col-md-12">
+                            <label style="font-size: 18px">Item Details</label>
+                        </div>
+                        <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                            <tr>
+                                <th>
+                                    <label>S.No.</label></th>
+                                <th>
+                                    <label>Item</label></th>
+                                <th>
+                                    <label>Description</label></th>
+                                <th>
+                                    <label>Design</label></th>
+                                <th>
+                                    <label>Unit</label></th>
+                                <th>
+                                    <label>Color</label></th>
+                                <th>
+                                    <label>Stock Quantity</label>
+                                </th>
+                                <th>
+                                    <label>Quantity</label></th>
+                                <th>
+                                    <label>Balance</label></th>
+                            </tr>
+                            @{int count = 1;
+                              foreach (var item in Model.OutwardItemShopToGodownList)
+                              {
+                                  var quantity = Convert.ToDouble(@item.OutwardQuantity).ToString("#,###.00##");
+                                  var stock = Convert.ToDouble(@item.StockQuantity).ToString("#,###.00##");
+                                  var balance = Convert.ToDouble(@item.CurrentBalance).ToString("#,###.00##");
+                                <tr>
+                                    <td style="text-align: left">@count</td>
+                                    <td style="text-align: left">@item.ItemName</td>
+                                    <td style="text-align: left">@item.ItemDescription</td>
+                                    <td style="text-align: left">@item.DesignName</td>
+                                    <td style="text-align: left">@item.Unit</td>
+                                    <td style="text-align: left">@item.Color</td>
+                                    <td style="text-align: right">@stock</td>
+                                    <td style="text-align: right">@quantity</td>
+                                    <td style="text-align: right">@balance</td>
+                                </tr>
+                                  count++;
+                              }
+                            }
+                        </table>
+                        }
+                    }
+                </div>
+
+
+                <div class="col-md-12 col-lg-12 form-group">
+                    <div class="row">
+                        <label style="font-size: 18px">Salesman Person Details</label><br />
+                    </div>
+
+                    <div style="height: 12px"></div>
+                    <div class="col-lg-12 col-md-12">
+                        <div class="col-lg-3 col-md-3">
+                            <label>Name: &nbsp;</label><br />
+                            <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanName)</label>
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>Designation: &nbsp;</label><br />
+                            <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanDesignation)</label>
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>Contact No: &nbsp;</label><br />
+                            <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanContactNo)</label>
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>Email: &nbsp;</label><br />
+                            <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanEmail)</label>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-12 form-group">
+                    <div style="height: 15px"></div>
+                    <div class="col-lg-10 col-md-10"></div>
+                    <div class="col-md-2 col-lg-2">
+                        <label>Prepared By</label><br />
+                        <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.PreparedBy)</label>
+                    </div>
+                    <div style="height: 25px"></div>
+                </div>
+
+                @{
+                    if (Model.OutwardShopToGodownDetails.Narration != null)
+                    { 
+                    <div class="col-lg-12 col-md-12">
+                        <div class="col-lg-2 col-md-2">
+                            <label style="font-size: 14px">Narration</label>
+                        </div>
+                        <div class="col-lg-10 col-md-10">
+                            @Html.DisplayFor(model => model.OutwardShopToGodownDetails.Narration)
+                        </div>
+                    </div>
+                    }
+                }
+
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div style="height: 10px"></div>
+
+<div style="text-align: center">
+    <button type="submit" id="Print" class="btn btn-primary">Print</button>
+</div>

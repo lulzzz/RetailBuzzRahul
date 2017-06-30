@@ -1,0 +1,160 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "EditPartial";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8/jquery.validate.min.js"></script>
+<style type="text/css">
+    label.error {
+        color: red;
+        font-size: 12px;
+    }
+</style>
+
+<script>
+    $(document).ready(function () {
+        $("#ShopDetails_EmpName").change(function () {
+            var name = $(this).val();
+            if (name == "") {
+                document.getElementById("hide").style.display = "none";
+                document.getElementById("hides").style.display = "none";
+            }
+            else {
+                document.getElementById("hide").style.display = "inline";
+                document.getElementById("hides").style.display = "inline";
+                $.getJSON("/Shop/GetEmp", { name: name }, function (data) {
+                    document.getElementById("emp.desg").innerHTML = data.Designation;
+                    document.getElementById("emp.email").innerHTML = data.Email;
+                    $("#ShopDetails_EmpDesignation").val(data.Designation);
+                    $("#ShopDetails_EmpEmail").val(data.Email);
+                });
+            }
+        });
+
+        $("#ShopDetails_ShopName").change(function () {
+            var name = $(this).val();
+            var shopname = document.getElementById("shophidden").value;
+
+            if (name != shopname) {
+                $.getJSON('/Shop/CheckShop', { ShopName: name }, function (data) {
+                    if (data == "true") {
+                        alertbox("Shop Name Already Exists");
+                        $("#ShopDetails_ShopName").val("");
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<div class="col-lg-12 col-md-12">
+    <div class="col-lg-12 col-md-12">
+        @using (Html.BeginForm())
+        {
+
+            @Html.HiddenFor(model => model.ShopDetails.ShopId)
+            @Html.HiddenFor(model => model.ShopDetails.ShopCode)
+            @Html.HiddenFor(model => model.ShopDetails.EmpEmail)
+            @Html.HiddenFor(model => model.ShopDetails.EmpDesignation)
+            <input type="hidden" id="shophidden" value="@Model.ShopDetails.ShopName" />
+
+            <div class="row">
+                <div class="row">
+                    <div class="row form-group">
+                        <h2>Shop Details</h2>
+
+                        <div class="col-md-4 col-lg-4">
+                            <label>Shop Code : </label>
+                            @Html.DisplayFor(model => model.ShopDetails.ShopCode)
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <div class="row form-group">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Shop Name</label><i style="color: red;">*</i><br />
+                                    @Html.TextBoxFor(model => model.ShopDetails.ShopName, new { @class = "form-control" , @placeholder="Shop Name", @readonly="yes" })
+                                    @Html.ValidationMessageFor(model => model.ShopDetails.ShopName, null, new { style = "color:red" })
+                                </div>
+
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Shop Address</label><i style="color: red;">*</i><br />
+                                    @Html.TextBoxFor(model => model.ShopDetails.ShopAddress, new { @class = "form-control" , @placeholder = "Address" })
+                                    @Html.ValidationMessageFor(model => model.ShopDetails.ShopAddress, null, new { style = "color:red" })
+                                </div>
+
+
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Shop Email<i style="color: red">*</i></label><br />
+                                    @Html.TextBoxFor(model => model.ShopDetails.ShopEmail, new { @class = "form-control" , @placeholder = "Email" })
+                                    @Html.ValidationMessageFor(model => model.ShopDetails.ShopEmail, null, new { style = "color:red" })
+                                </div>
+
+                                <div id="hide">
+                                    <div class="col-md-3 col-lg-3">
+                                        <label>Employee Designation</label><br />
+                                        <label id="emp.desg" style="font-weight: normal">@Html.DisplayFor(model => model.ShopDetails.EmpDesignation)</label>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        <br />
+                        
+                        <div class="row form-group">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Shop Description</label><br />
+                                    @Html.TextBoxFor(model => model.ShopDetails.ShopDescription, new { @class = "form-control", @placeholder = "Description" })
+                                </div>
+
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Contact No<sup><i style="color: red">*</i></sup></label><br />
+                                    @Html.TextBoxFor(model => model.ShopDetails.ShopContactNo, new { @class = "form-control" , @placeholder = "Contact No" })
+                                    @Html.ValidationMessageFor(model => model.ShopDetails.ShopContactNo, null, new { style = "color:red" })
+                                </div>
+
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Employee Name</label><i style="color: red;">*</i><br />
+                                    @Html.DropDownListFor(model => model.ShopDetails.EmpName, new SelectList(Model.EmpList, "Name", "Name", Model.ShopDetails.EmpName), "Select Employee Name", new { @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.ShopDetails.EmpName, null, new { style = "color:red" })
+                                </div>
+
+                                <div id="hides">
+                                    <div class="col-md-3 col-lg-3">
+                                        <label>Employee Email</label><br />
+                                        <label id="emp.email" style="font-weight: normal">@Html.DisplayFor(model => model.ShopDetails.EmpEmail)</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <br />
+                        <div class="row form-group">
+                            <div class="col-lg-12 col-md-12">
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Short Code</label><br />
+                                    @Html.TextBoxFor(model => model.ShopDetails.ShortCode, new { @class = "form-control" , @readonly = "readonly" })
+                                </div>
+                                <div class="col-lg-9 col-md-9"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-lg-offset-5 col-md-offset-5">
+                        <button type="button" class="btn btn-success" id="update" onclick="UpdateData()">Update</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>

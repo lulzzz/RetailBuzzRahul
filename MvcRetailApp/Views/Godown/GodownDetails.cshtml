@@ -1,0 +1,135 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GodownDetails";
+}
+<style>
+    .display_none {
+        margin-left: 30px;
+    }
+</style>
+
+
+@Html.HiddenFor(model => model.GodownDetails.GodownId)
+
+
+<div class="col-lg-12 col-md-12">
+    <div class="row">
+        <h2>Godown Details</h2>
+    </div>
+    <label>Godown Code : </label>
+    @Html.DisplayFor(model => model.GodownDetails.GdCode)
+</div>
+
+<div class="row form-group">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-4 col-md-4">
+            <label>Company Name</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.ComponyName)
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label>Contact No. 2</label><br />
+            @{
+                var a = Model.GodownDetails.ContactNo2;
+                if (a != null)
+                {   
+                @Html.DisplayFor(model => model.GodownDetails.ContactNo2)
+                }
+                else
+                {
+                <label class="display_none">---</label>
+                }
+            }
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label>Employee Name</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.EmpName)
+        </div>
+    </div>
+</div>
+
+<div class="row form-group">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-4 col-md-4">
+            <label>Godown Name</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.GodownName)
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label>Contact No. 3</label><br />
+            @if (Model.GodownDetails.ContactNo3 == null)
+            { 
+                <label class="display_none">----</label>
+            }
+            else
+            {
+                @Html.DisplayFor(model => model.GodownDetails.ContactNo3)    
+            }
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label>Designation</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.Designation)
+        </div>
+    </div>
+</div>
+
+<div class="row form-group">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-4 col-md-4">
+            <label>Contact No. 1</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.ContactNo1)
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label>Godown Email</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.GodownEmail)
+        </div>
+
+        <div class="col-lg-4 col-md-4">
+            <label>Employee Email</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.EmpEmail)
+        </div>
+    </div>
+</div>
+
+<div class="row form-group">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-4 col-md-4">
+            <label>Short Code</label><br />
+            @Html.DisplayFor(model => model.GodownDetails.ShortCode)
+        </div>
+        <div class="col-lg-8 col-md-8"></div>
+    </div>
+</div>
+
+<div class="col-lg-12 col-md-12">
+    <div class="row">
+        <h2>Godown Addresses</h2>
+    </div>
+    <table class="table-bordered col-md-12 col-lg-12" style="border-width: medium; border-color: grey;">
+        <tr>
+            <th class="col-lg-4 col-md-4">Location</th>
+            <th class="col-lg-4 col-md-4">Address</th>
+            <th class="col-lg-4 col-md-4">Area Name</th>
+        </tr>
+
+        @{
+            if (Model.GodownAddressList != null)
+            {
+                foreach (var address in Model.GodownAddressList)
+                {
+            <tr>
+                <td class="col-lg-4 col-md-4">@Html.DisplayFor(model => address.Location)</td>
+                <td class="col-lg-4 col-md-4">@Html.DisplayFor(model => address.Address)</td>
+                <td class="col-lg-4 col-md-4">@Html.DisplayFor(model => address.AreaName)</td>
+            </tr>
+                }
+            }
+        }
+
+
+    </table>
+</div>

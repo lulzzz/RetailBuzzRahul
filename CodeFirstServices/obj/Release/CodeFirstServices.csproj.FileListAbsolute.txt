@@ -1,0 +1,33 @@
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstServices.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstServices.pdb
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstData.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstEntities.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\EntityFramework.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstData.pdb
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstEntities.pdb
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\bin\Release\EntityFramework.xml
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.csprojResolveAssemblyReference.cache
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.pdb
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstServices.dll
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstServices.pdb
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstData.dll
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstEntities.dll
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\EntityFramework.dll
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstData.pdb
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstEntities.pdb
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\EntityFramework.xml
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.csprojResolveAssemblyReference.cache
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.dll
+W:\RetailApp\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstServices.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstServices.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstData.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstEntities.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\EntityFramework.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstData.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\CodeFirstEntities.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\bin\Release\EntityFramework.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.csprojResolveAssemblyReference.cache
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstServices\obj\Release\CodeFirstServices.pdb

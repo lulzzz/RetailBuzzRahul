@@ -1,0 +1,211 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetStkDisDetailsForPrint";
+}
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+    function confirmbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $.getJSON("/Inward/EncodeInwardId", { id: document.getElementById("OutwardStkDisDetails_Id").value },
+                     function (encodedvalue) {
+                         window.open("/StockDistribution/PrintStockDistribution?id=" + encodedvalue, "_target", "width=920,height=842,top=200px,left=300px")
+                     });
+		     }
+		     else {
+		         window.location.assign("/StockDistribution/StockDistribution");
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#print").click(function () {
+            confirmbox("Do You Want To Print This Stock Distribution??");
+        });
+    });
+</script>
+
+@Html.HiddenFor(model => model.OutwardStkDisDetails.Id)
+
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+    <source src="" type="audio/ogg" />
+</audio>
+
+<div class="col-lg-12 col-md-12">
+    <div class="table table-bordered">
+        <div class="row">
+            <div style="height: 10px"></div>
+            @{
+                if (Model.OutwardStkDisDetails.Code.Contains("GD"))
+                {
+                <div class="col-lg-12 col-md-12">
+                    <label style="font-size: medium">Godown Details:</label>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div class="col-md-4 col-lg-4">
+                        <label>Godown Name</label><br />
+                        @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownName)
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <label>Contact Person</label><br />
+                        @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownContactPerson)
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <label>Contact Number</label><br />
+                        @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownContactNo)
+                    </div>
+                </div>
+                }
+                else
+                {
+                <div class="col-lg-12 col-md-12">
+                    <label style="font-size: medium">Shop Details:</label>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div class="col-md-4 col-lg-4">
+                        <label>Shop Name</label><br />
+                        @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopName)
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <label>Contact Person</label><br />
+                        @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopContactPerson)
+                    </div>
+                    <div class="col-lg-4 col-md-4">
+                        <label>Contact Number</label><br />
+                        @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopContactNo)
+                    </div>
+                </div>
+                }
+            }
+
+        </div>
+    </div>
+</div>
+<div style="height: 100px"></div>
+
+<div class="col-lg-12 col-md-12">
+    <div class="table table-bordered">
+        <div style="height: 10px"></div>
+        <div class="row">
+            <div class="col-lg-2 col-md-2">
+                <div class="col-lg-12 col-md-12">
+                    <label>Reference No:</label>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-3">
+                <div class="row">
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.GatePass)
+                </div>
+            </div>
+        </div>
+        <div style="height: 9px"></div>
+    </div>
+</div>
+
+<div class="col-md-12 col-lg-12">
+    <label style="font-size: medium">Item Details:</label>
+</div>
+
+<div class="col-md-12 col-lg-12">
+    <table class="table" style="border-color: #d2d2d2; border: outset">
+        <thead>
+            <tr>
+                <th style="text-align: center" class="col-lg-1 col-md-1">
+                    <label>Sr.No.</label>
+                </th>
+                <th style="text-align: center" class="col-lg-3 col-md-3">
+                    <label>Item Code</label>
+                </th>
+                <th style="text-align: center" class="col-lg-3 col-md-3">
+                    <label>Item Name</label>
+                </th>
+                <th style="text-align: center" class="col-lg-3 col-md-3">
+                    <label>Color</label>
+                </th>
+                <th style="text-align: center" class="col-lg-3 col-md-3">
+                    <label>Unit</label>
+                </th>
+                <th style="text-align: center" class="col-lg-2 col-md-2">
+                    <label>Transfer Quantity</label>
+                </th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int count = 1;
+            }
+            @{
+                foreach (var item in Model.OutwardItemStkDisList)
+                {
+
+                    var itemqty = Convert.ToDouble(item.ItemQuantity).ToString("#,###.00##");
+                <tr>
+                    <td style="text-align: center" class="col-lg-1 col-md-1">@count</td>
+                    <td style="text-align: center">@item.ItemCode</td>
+                    <td style="text-align: center">@item.ItemName</td>
+                    <td style="text-align: center">@item.Color</td>
+                    <td style="text-align: center">@item.Unit</td>
+                    <td style="text-align: center">@itemqty</td>
+                    @{ count += 1; }
+                </tr>
+                                   
+                }
+            }
+        </tbody>
+    </table>
+</div>
+
+<div class="col-lg-12 col-md-12">
+    <div style="height: 10px"></div>
+    <div class="table table-bordered">
+        <div style="height: 10px"></div>
+        <div class="row">
+            <div class="col-lg-2 col-md-2">
+                <div class="col-lg-12 col-md-12">
+                    <label>Narration</label>
+                </div>
+            </div>
+            <div class="col-lg-10 col-md-10">
+                @{
+                    if (Model.OutwardStkDisDetails.Narration != null)
+                    { 
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.Narration)        
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+        </div>
+        <div style="height: 10px"></div>
+    </div>
+</div>
+
+<div class="col-lg-offset-5 col-md-offset-5">
+    <button type="button" class="btn btn-primary" id="print">Print</button>
+</div>

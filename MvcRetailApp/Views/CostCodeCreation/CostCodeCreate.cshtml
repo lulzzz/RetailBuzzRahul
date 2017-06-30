@@ -1,0 +1,274 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CostCodeCreate";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+
+<!--custom Alerts-->
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $("#save").click(function () {
+
+            var counter = 0;
+            if ($("#One").val() == "") {
+                alertbox("One Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Two").val() == "") {
+                alertbox("Two Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Three").val() == "") {
+                alertbox("Three Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Four").val() == "") {
+                alertbox("Four Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Five").val() == "") {
+                alertbox("Five Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Six").val() == "") {
+                alertbox("Six Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Seven").val() == "") {
+                alertbox("Seven Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Eight").val() == "") {
+                alertbox("Eight Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Nine").val() == "") {
+                alertbox("Nine Number Value Can Not Be Empty");
+                counter = 1;
+            }
+            else if ($("#Zero").val() == "") {
+                alertbox("Zero Number Value Can Not Be Empty");
+                counter = 1;
+            }
+
+            if (counter == 0) {
+                $("#submit").trigger('click');
+            }
+        })
+    });
+</script>
+
+@using (Html.BeginForm("CostCodeCreate", "CostCodeCreation", FormMethod.Post))
+{
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    
+    <input type="hidden" id="preparedbyemail" name="preparedbyemail" value="@HttpContext.Current.Session["UserEmail"]"/>
+    
+    <!-- Start: Header -->
+    @Html.Partial("../Shared/Header")
+
+    <!-- End: Header --> 
+    <!-- Start: Main -->
+    <section>
+        <div class="mainwrapper">
+            <!-- End: Sidebar -->
+            @Html.Partial("../Shared/LeftMenu")
+
+            <!-- Start: Content -->
+
+            <div class="mainpanel">
+                <div class="col-lg-12 col-md-12">
+                    <br />
+
+                    <h2>Cost Code Create</h2>
+
+                    @{
+    string shopcode = string.Empty;
+    string godowncode = string.Empty;
+    if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+    {
+        if (Session["LOGINSHOPGODOWNCODE"] != null)
+        {
+            if (Session["LOGINSHOPGODOWNCODE"].ToString().Contains("SH"))
+            {
+                shopcode = Session["LOGINSHOPGODOWNCODE"].ToString();
+            }
+            else
+            {
+                godowncode = Session["LOGINSHOPGODOWNCODE"].ToString();
+            }
+            
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAME"].ToString()</label>
+                        </div>
+        }
+    }
+                    }
+
+                    <div style="text-align:right"> 
+                        @{
+    var date = DateTime.Now;
+    var Date = Convert.ToDateTime(date).ToString("dd/MM/yyyy");
+                        }
+                        <label style="font-size:15px;">Date:</label>
+                        <label style="font-size:14px;">@Date</label>
+                    </div>
+
+                    <div style="height:10px"></div>
+
+                    <table style="border: 1px double; width: 100%">
+                        <tr>
+                            <td>
+                                <table style="border: 1px double; width: 100%">
+                                    <thead>
+                                        <tr style="border-bottom:1px solid #808080;">
+                                            <th style="border-right: 1px solid #808080; height: 40px; color:blue">&nbsp;&nbsp;Numbers&nbsp;&nbsp;</th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center">&nbsp;<label>1<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>2<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>3<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>4<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>5<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>6<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>7<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>8<i style="color:red">*</i></label></th>
+                                            <th style="border-right: 1px solid #808080; height: 40px; text-align:center"">&nbsp;<label>9<i style="color:red">*</i></label></th>
+                                            <th style="text-align:center;">&nbsp;<label>0<i style="color:red">*</i></label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td style="border-right: 1px solid #808080; height: 40px; color:blue">
+                                                <b>&nbsp;&nbsp;Value</b>&nbsp;&nbsp;
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_1, new { id = "One", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "One" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_2, new { id = "Two", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Two" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_3, new { id = "Three", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Three" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_4, new { id = "Four", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Four" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_5, new { id = "Five", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Five" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_6, new { id = "Six", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Six" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_7, new { id = "Seven", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Seven" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_8, new { id = "Eight", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Eight" })
+                                            </td>
+                                            <td style="border-right: 1px solid #808080; height: 40px;">
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_9, new { id = "Nine", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Nine" })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.CostCodeCreationDetails.Value_0, new { id = "Zero", @class = "form-control", @style = "text-align:center; width:100%", @placeholder = "Zero" })
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="height: 10px"></div>
+
+                    <div class="row">
+                        <div class="col-lg-9 col-md-9">
+                            <button type="button" class="col-lg-offset-7 col-md-offset-7 btn btn-success" id="save">Save</button>
+                            <button type="submit" class="col-lg-offset-7 col-md-offset-7 btn btn-success" id="submit" style="display: none;">Submit</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+}

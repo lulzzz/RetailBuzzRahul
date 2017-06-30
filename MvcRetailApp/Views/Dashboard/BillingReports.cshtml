@@ -1,0 +1,263 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "BillingReports";
+}
+
+@{
+    string EmpDesignation = (string)TempData["EmployeeDesignation"];
+    TempData["EmployeeDesignation"] = EmpDesignation;
+    string EmpDepartment = (string)TempData["EmployeeDepartment"];
+    TempData["EmployeeDepartment"] = EmpDepartment;
+
+    
+    string QuotationCard = "No";
+    string RetailBillCard = "No";
+    string SalesOrderCard = "No";
+    string SalesBillCard = "No";
+    string DeliveryChallanCard = "No";
+    string SalesReturnCard = "No";
+
+    if (Model.userCredentialList != null && Model.userCredentialList.Any())
+    {
+        foreach (var data in Model.userCredentialList)
+        {
+            //for cashier
+            if (data.AssignDashboardId == "D46")
+            {
+                QuotationCard = "Yes";
+            }
+
+            //for cash handover
+            if (data.AssignDashboardId == "D49")
+            {
+                RetailBillCard = "Yes";
+            }
+
+            //for income exchange voucher entry
+            if (data.AssignDashboardId == "D47")
+            {
+                SalesOrderCard = "Yes";
+            }
+
+            //for income exchange voucher entry
+            if (data.AssignDashboardId == "D51")
+            {
+                SalesBillCard = "Yes";
+            }
+
+            //for income exchange voucher entry
+            if (data.AssignDashboardId == "D48")
+            {
+                DeliveryChallanCard = "Yes";
+            }
+
+            //for income exchange voucher entry
+            if (data.AssignDashboardId == "D52")
+            {
+                SalesReturnCard = "Yes";
+            }
+        }
+    }
+    
+    
+
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            @{
+                
+                //Quotations Created In Currrent Date
+                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || QuotationCard=="Yes")
+                {
+                <div class="col-lg-4 col-md-4">
+                    <div class="panel panel-skyblue">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-file-text fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    @{
+                    var Quotations = (IEnumerable<CodeFirstEntities.Quotation>)TempData["Quotations"];
+                    TempData["Quotations"] = Quotations;
+                    <div class="huge">@Quotations.Count()</div>
+                                    }
+                                    <div>Quotation</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" onclick="ViewQuotations()">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                }
+                
+                //Sales Orders Created In Current Date
+                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || SalesOrderCard == "Yes")
+                {
+                <div class="col-lg-4 col-md-4">
+                    <div class="panel panel-skyblue">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-reorder fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    @{
+                    var SalesOrders = (IEnumerable<CodeFirstEntities.SalesOrder>)TempData["SalesOrders"];
+                    TempData["SalesOrders"] = SalesOrders;
+                    <div class="huge">@SalesOrders.Count()</div>
+                                    }
+                                    <div>Sales Order</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" onclick="ViewSalesOrder()">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                }
+                
+                //Delivery Challan Created In Current Date 
+                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || DeliveryChallanCard == "Yes")
+                {
+                <div class="col-lg-4 col-md-4">
+                    <div class="panel panel-skyblue">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-money fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    @{
+                    var DeliveryChallan = (IEnumerable<CodeFirstEntities.DeliveryChallan>)TempData["DeliveryChallans"];
+                    TempData["DeliveryChallans"] = DeliveryChallan;
+                    <div class="huge">@DeliveryChallan.Count()</div>
+                                    }
+                                    <div>Delivery Challan</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" onclick="ViewDeliveryChallans()">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                }
+            }
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            @{
+                //Retail Bills Created In Current Date
+                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || RetailBillCard == "Yes")
+                {
+                <div class="col-lg-4 col-md-4">
+                    <div class="panel panel-skyblue">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-print fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    @{
+                    var retailbill = (IEnumerable<CodeFirstEntities.RetailBill>)TempData["RetailBill"];
+                    TempData["RetailBill"] = retailbill;
+                    <div class="huge">@retailbill.Count()</div>
+                                    }
+
+                                    <div>Retail Bill</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" onclick="RetailBillByDate()">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                }
+
+                //Sales Bills Created In Current Date
+                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || SalesBillCard == "Yes")
+                {
+                <div class="col-lg-4 col-md-4">
+                    <div class="panel panel-skyblue">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-print fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    @{
+                    var salesbill = (IEnumerable<CodeFirstEntities.SalesBill>)TempData["SalesBill"];
+                    TempData["SalesBill"] = salesbill;
+                    <div class="huge">@salesbill.Count()</div>
+                                    }
+                                    <div>Sales Bill</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" onclick="SalesBillByDate()">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                }
+                
+                //Sales Returns Created In Current Date
+                if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || SalesReturnCard == "Yes")
+                {
+                <div class="col-lg-4 col-md-4">
+                    <div class="panel panel-skyblue">
+                        <div class="panel-heading">
+                            <div class="row">
+                                <div class="col-xs-3">
+                                    <i class="fa fa-print fa-3x"></i>
+                                </div>
+                                <div class="col-xs-9 text-right">
+                                    @{
+                    var salesreturns = (IEnumerable<CodeFirstEntities.SalesReturn>)TempData["SalesReturns"];
+                    TempData["SalesReturns"] = salesreturns;
+                    <div class="huge">@salesreturns.Count()</div>
+                                    }
+                                    <div>Sales Return</div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#" onclick="SalesReturnByDate()">
+                            <div class="panel-footer">
+                                <span class="pull-left">View Details</span>
+                                <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                                <div class="clearfix"></div>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+                }
+            }
+        </div>
+    </div>
+}

@@ -1,0 +1,199 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ViewCompanyDetails";
+}
+<script type="text/javascript">
+    $(function () {
+        var fromdate = $("#fromdate").text();
+        var todate = $("#todate").text();
+        var cmpregdate = $("#cmpregdate").text();
+
+        var dat = new Date(fromdate);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById("fromdate").innerHTML = data;
+
+        var dat = new Date(todate);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById("todate").innerHTML = data;
+
+        var dat = new Date(cmpregdate);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        $("#cmpregdate").text(data);
+    });
+</script>
+@Html.HiddenFor(model => model.companydetails.FinancialYearFrom)
+@Html.HiddenFor(model => model.companydetails.FinancialYearTo)
+@Html.HiddenFor(model => model.companydetails.CompanyRegisterationDate)
+
+<div class="row"></div>
+<div class="row"></div>
+
+<div class=" row">
+
+    <div id="title2" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+        <h2>
+            <label for="exampleInputname">Company Details</label>
+        </h2>
+    </div>
+</div>
+
+<br /><br /><br />
+
+<div class="row">
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label>Company Code</label><br />
+                @Html.DisplayFor(model => model.companydetails.CompanyCode)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Company Name</label><br />
+                @Html.DisplayFor(model => model.companydetails.companyName)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Company Reg. Date</label>
+                @{var cmpregdate = Convert.ToDateTime(Model.companydetails.CompanyRegisterationDate).ToShortDateString();}
+                <label id="cmpregdate" style="font-weight: normal">@cmpregdate</label>
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Address</label><br />
+                @Html.DisplayFor(model => model.companydetails.address)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Mailing Address</label><br />
+                @Html.DisplayFor(model => model.companydetails.MailingAddress)
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputname">Pin Code</label><br />
+                @Html.DisplayFor(model => model.companydetails.pincode)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Contact No. 1</label><br />
+                @Html.DisplayFor(model => model.companydetails.ContactNo1)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Contact No. 2</label><br />
+                @Html.DisplayFor(model => model.companydetails.ContactNo2)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Contact No. 3</label><br />
+                @Html.DisplayFor(model => model.companydetails.ContactNo3)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Email</label><br />
+                @Html.DisplayFor(model => model.companydetails.eMail)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputname">State</label><br />
+                @Html.DisplayFor(model => model.companydetails.State)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">City</label><br />
+                @Html.DisplayFor(model => model.companydetails.City)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Pan No</label><br />
+                @Html.DisplayFor(model => model.companydetails.panCard)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Website</label><br />
+                @Html.DisplayFor(model => model.companydetails.website)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Sales Tax No</label><br />
+                @Html.DisplayFor(model => model.companydetails.salesTaxNo)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputname">VAT No</label><br />
+                @Html.DisplayFor(model => model.companydetails.vatNo)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">REG No</label><br />
+                @Html.DisplayFor(model => model.companydetails.regNo)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">FY From Date </label>
+                <br />
+                @{
+                    var fromdate = Convert.ToDateTime(Model.companydetails.FinancialYearFrom).ToShortDateString();
+                    }
+                <label id="fromdate" style="font-weight: normal">@fromdate</label>
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">To Date </label>
+                <br />
+                @{
+                    var todate = Convert.ToDateTime(Model.companydetails.FinancialYearTo).ToShortDateString();
+                    }
+                <label id="todate" style="font-weight: normal">@todate</label>
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    if (Model.CompanyBankList != null && Model.CompanyBankList.Any())
+    {
+    <hr />
+    <div class="row">
+        <div id="title1" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+            <label for="exampleInputname">Bank Details</label>
+        </div>
+        <br />
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <table class="table-bordered col-md-12 col-lg-12" style="border-width: medium; border-color: grey;">
+                <tr>
+                    <th class="col-md-2 col-lg-2">Bank Name
+                    </th>
+                    <th class="col-md-2 col-lg-2">Branch
+                    </th>
+                    <th class="col-md-2 col-lg-2">Bank IFSCNo
+                    </th>
+                    <th class="col-md-2 col-lg-2">Bank Address
+                    </th>
+                    <th class="col-md-2 col-lg-2">Account Type
+                    </th>
+                    <th class="col-md-2 col-lg-2">Account Number
+                    </th>
+                    <th class="col-md-2 col-lg-2">MICR Code
+                    </th>
+                </tr>
+
+                @foreach (var bankdata in Model.CompanyBankList)
+                {
+                    <tr>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.BankName)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.Branch)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.BankIfsc)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.BankLocation)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.AccountType)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.AccountNo)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.MICRCode)</td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+    }
+}
+

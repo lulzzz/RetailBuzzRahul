@@ -1,0 +1,446 @@
+﻿@model CodeFirstEntities.EmployeeMaster
+@{
+    ViewBag.Title = "ViewDetails";
+}
+<!--code for on hover image-->
+<style>
+    #picture {
+        width: 100px;
+        height: 100px;
+        background-color: none;
+    }
+
+        #picture a.small {
+            display: block;
+            width: 100px;
+            height: 100px;
+            text-decoration: none;
+            background: none;
+            top: 0;
+            left: 0;
+            border: 0;
+        }
+
+        #picture a img {
+            border: 0;
+        }
+
+        #picture a.small:hover {
+            text-decoration: none;
+            background-color: #000000;
+            color: #000000;
+        }
+
+        #picture a .large {
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 0;
+            top: 0;
+            left: 0;
+        }
+
+        #picture a.small:hover .large {
+            display: block;
+            position: fixed;
+            margin-right: 0px;
+            margin-top: 290px;
+            margin-left: -55px;
+            width: 210px;
+            height: 210px;
+        }
+</style>
+
+<link href="~/Content/popup.css" rel="stylesheet" />
+<!--code for on hover image-->
+<script type="text/ecmascript">
+    $(document).ready(function () {
+        var cnt = document.getElementById("TotalNumberOfEmployees").value;
+        var type = document.getElementById("ViewType").value;
+        if (type == "Edit") {
+            for (var i = 1; i <= cnt; i++) {
+                var allRowId = "rowId" + i;
+                var editId = "editId" + i;
+                var labelEditId = "labelEditId" + i;
+                if (document.getElementById(editId) != null) {
+                    document.getElementById(editId).style.display = "inline";
+                    document.getElementById(labelEditId).style.display = "none";
+                }
+            }
+        }
+        else {
+            for (var i = 1; i <= cnt; i++) {
+                var deleteId = "deleteId" + i;
+                var allRowId = "rowId" + i;
+                var labelDeleteId = "labelDeleteId" + i;
+                if (document.getElementById(deleteId) != null) {
+                    document.getElementById(deleteId).style.display = "inline";
+                    document.getElementById(labelDeleteId).style.display = "none";
+                }
+            }
+        }
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var dob = document.getElementById("EmployeeDetails.DateOfBirth").innerHTML;
+        var dat = new Date(dob);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('EmployeeDetails.DateOfBirth').innerHTML = data;
+
+        var doj = document.getElementById("EmployeeDetails.DateOfJoining").innerHTML;
+        var dat = new Date(doj);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('EmployeeDetails.DateOfJoining').innerHTML = data;
+    });
+</script>
+
+@{
+    string type = TempData["Type"].ToString();
+    TempData["Type"] = type;
+    <input type="hidden" id="ViewType" value="@type" />
+}
+
+<div class="row">
+    <div class="row">
+        <div class="row">
+            <div id="title2" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+                <h2>
+                    <label for="exampleInputname">Employee Details</label>
+                </h2>
+            </div>
+            <br />
+            <br />
+            <br />
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group row">
+                        <label for="exampleInputname">Employee Code</label><br />
+                        @Html.DisplayFor(model => model.EmployeeCode)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Name</label><br />
+                        @Html.DisplayFor(model => model.Name)
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="exampleInputname">Address</label><br />
+                        @Html.DisplayFor(model => model.Address)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Contact No 1</label><br />
+                        @Html.DisplayFor(model => model.MobileNo)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Contact No 2</label><br />
+                        @Html.DisplayFor(model => model.ResidenceNo)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Email</label><br />
+                        @Html.DisplayFor(model => model.Email)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+
+                    <div class="form-group row">
+                        <label for="exampleInputname">Date Of Birth</label><br />
+                        @{
+                            var dateofbirth = Convert.ToDateTime(Model.DateOfBirth).ToString("MM/dd/yyyy");
+                        }
+                        <label id="EmployeeDetails.DateOfBirth" style="font-weight: normal">@dateofbirth</label>
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Age</label><br />
+                        <label id="EmployeeDetails.Age" style="font-weight: normal">@Html.DisplayFor(model => model.Age)</label>
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Designation</label><br />
+                        @Html.DisplayFor(model => model.Designation)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Department</label><br />
+                        @Html.DisplayFor(model => model.department)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Experience In Years</label><br />
+                        @Html.DisplayFor(model => model.totalExpYear)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Experience In Months</label><br />
+                        @Html.DisplayFor(model => model.totalExpmonth)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group row">
+                        <label for="exampleInputname">Salary</label><br />
+                        @Html.DisplayFor(model => model.Salary)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Date Of Joining</label><br />
+                        @{
+                            var dateofjoining = Convert.ToDateTime(Model.DateOfJoining).ToString("MM/dd/yyyy");
+                        }
+                        <label id="EmployeeDetails.DateOfJoining" style="font-weight: normal">@dateofjoining</label>
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Blood Group</label><br />
+                        @{
+                            if (Model.BloodGroup != null)
+                            { 
+                            @Html.DisplayFor(model => model.BloodGroup)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputPANNo">Pan No</label><br />
+                        @{
+                            if (Model.PancardNo != null)
+                            { 
+                            @Html.DisplayFor(model => model.PancardNo)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputEsic">ESIC NO</label><br />
+                        @{
+                            if (Model.ESIC != null)
+                            { 
+                            @Html.DisplayFor(model => model.ESIC)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputPFNO">PFNO</label><br />
+                        @{
+                            if (Model.PFNO != null)
+                            { 
+                            @Html.DisplayFor(model => model.PFNO)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group row">
+                        <label for="exampleInputname">State</label><br />
+                        @Html.DisplayFor(model => model.State)
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="exampleInputname">City</label><br />
+                        @Html.DisplayFor(model => model.City)
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputname">Industry</label><br />
+                        @{
+                            if (Model.Industry != null)
+                            { 
+                            @Html.DisplayFor(model => model.Industry)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="exampleInputname">Commission</label><br />
+                        @{
+                            if (Model.CommissionType != null)
+                            { 
+                            @Html.DisplayFor(model => model.CommissionType)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+
+                    <div class="form-group row">
+                        <label for="exampleInputname">Aadhar No</label><br />
+                        @{
+                            if (Model.AadharNo != null)
+                            { 
+                            @Html.DisplayFor(model => model.AadharNo)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+
+                    <!--code for on hover image-->
+                    <div id="picture">
+                        <div class="form-group row">
+                            @{
+                                string photo = string.Empty;
+                                photo = Model.Photo;
+                            }
+                            <label for="exampleInputname">Photo</label>
+                            @*<img src="@photo" width="120" height="120" />*@
+                            <a class="small" href="#" title="">
+                                <img src="../../EmployeePhotos\@photo" title="" width="120" height="120"/>
+                                <img class="large" src="../../EmployeePhotos\@photo" title="" /></a>
+                        </div>
+                    </div>
+                    <!--code for on hover image-->
+
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div id="title3" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+                <h2>
+                    <label for="exampleInputname">Bank Details</label>
+                </h2>
+            </div>
+            <br />
+            <br />
+            <br />
+        </div>
+        <div class="row">
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group row">
+                        <label for="exampleInputBankName">Bank Name</label><br />
+                        @{
+                            if (Model.BankName != null)
+                            { 
+                            @Html.DisplayFor(model => model.BankName)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputIFSC Code">Branch Name</label><br />
+                        @{
+                            if (Model.branch != null)
+                            { 
+                            @Html.DisplayFor(model => model.branch)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group row">
+                        <label for="exampleInputBankLocation">Bank Ifsc</label><br />
+                        @{
+                            if (Model.BankIFSCNo != null)
+                            { 
+                            @Html.DisplayFor(model => model.BankIFSCNo)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputBankLocation">Bank Location</label><br />
+                        @{
+                            if (Model.BankAddress != null)
+                            { 
+                            @Html.DisplayFor(model => model.BankAddress)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group row">
+                        <label for="exampleInputAccountType">Account Type</label><br />
+                        @{
+                            if (Model.AccountType != null)
+                            { 
+                            @Html.DisplayFor(model => model.AccountType)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                    <div class="form-group row">
+                        <label for="exampleInputAccountNo">Account No</label><br />
+                        @{
+                            if (Model.Account_No != null)
+                            { 
+                            @Html.DisplayFor(model => model.Account_No)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3 col-lg-3">
+                <div class="col-md-12 col-lg-12">
+                    <div class="form-group row">
+                        <label for="exampleInputAccountNo">MICR Code</label><br />
+                        @{
+                            if (Model.MICRCode != null)
+                            { 
+                            @Html.DisplayFor(model => model.MICRCode)        
+                            }
+                            else
+                            {
+                            <label>----</label>
+                            }
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

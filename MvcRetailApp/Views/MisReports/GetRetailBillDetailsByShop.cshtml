@@ -1,0 +1,711 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GetRetailBillDetailsByShop";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+
+<script>
+    $("#print").click(function(){
+        window.open("/MisReports/PrintCommissionReport","_target", "width=900,height=830,top=50px,left=300px");
+    });
+
+    function OpenRetailBill(id)
+    {
+        window.open("/RetailBill/PrintRetailBill?id=" + id,"_target", "width=850,height=842,top=200px,left=300px");
+    }
+
+    function ShowTable(type)
+    {
+        if(type == "show"){
+            document.getElementById("billdetails").style.display = "inline";
+            document.getElementById("hide").style.display = "inline";
+            document.getElementById("show").style.display = "none";
+        }
+        else
+        {
+            document.getElementById("billdetails").style.display = "none";
+            document.getElementById("hide").style.display = "none";
+            document.getElementById("show").style.display = "inline";
+        }
+    }
+</script>
+
+@{
+    int counts = 1;
+    foreach (var emp in Model.EmpList)
+    {
+        var empname = "empname" + counts;
+    <input type="hidden" name="@empname" id="@empname" value="@emp.Name" />
+        counts++;
+    }
+}
+
+@{
+    var unitlist = TempData["UnitList"] as string[];
+
+    if (Model.RetailBillItemList != null && Model.RetailBillItemList.Any())
+    {
+        var itemcount = 1; var empscount = 1;
+
+        for (var i = 1; i <= Model.RetailBillList.Count(); i++)
+        {
+            foreach (var data in Model.RetailBillList)
+            {
+                var retailbill = data.RetailBillNo;
+
+                foreach (var item in Model.RetailBillItemList)
+                {
+                    if (retailbill == item.RetailBillNo)
+                    {
+                        var itemname = "Item" + itemcount;
+    <script>
+
+        if(document.getElementById("@itemname") != null){
+            document.getElementById("@itemname").innerHTML += "@item.ItemCode" + "<html><br /></html>"; 
+        }
+    </script>
+                        foreach (var unit in unitlist)
+                        {
+                            if (unit == @item.Unit)
+                            {
+
+                                var unitname = unit + itemcount;
+                                
+    <script>
+        if(document.getElementById("@unitname") != null)
+        {
+            document.getElementById("@unitname").innerHTML = +document.getElementById("@unitname").innerHTML + @item.Quantity;
+        }
+    </script>
+                            }
+                        }
+                    }
+                }
+                itemcount++;
+            }
+            empscount++;
+        }
+    }
+}
+
+<div style="height: 20px"></div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("table.tablesorter").tablesorter({ widthFixed: true, sortList: [[0, 0]] })
+       .tablesorterPager({ container: $("#pager"), size: $(".pagesize option:selected").val() });
+    });
+</script>
+
+
+
+@if (Model.RetailBillList != null && Model.RetailBillList.Any())
+{
+    if (Model.EmpList != null && Model.EmpList.Any())
+    {
+    <input type="hidden" name="itemcommissionpercent" id="itemcommissionpercent" />
+    <input type="hidden" name="itemcommissionrupees" id="itemcommissionrupees" />
+    <label style="color: red">Employee(s) Details</label>
+    <table class="tablesorter table" style="border-color: #d2d2d2; border: outset">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Designation</th>
+                <th>Grand Total</th>
+                <th>Disc.<br />
+                    (<i class='fa fa-inr'></i>)</th>
+                <th>Disc.<br />
+                    (%) </th>
+                <th>Target<br />
+                    In Sales</th>
+                <th>Target<br />
+                    In Meter</th>
+                <th>Target<br />
+                    In Units</th>
+
+                @foreach (var unit in unitlist)
+                { 
+                    <th>@unit</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                var count = 1;
+                foreach (var data in Model.EmpList)
+                {
+                    var totaldiscount = "TotalDiscount" + count;
+                    var percentdiscount = "PerDiscount" + count;
+                    var grandtotal = "GrandTotal" + count;
+                    var salestarget = "SalesTarget" + count;
+                    var metertarget = "MeterTarget" + count;
+                    var unittarget = "UnitTarget" + count;
+            
+                <tr>
+                    <td>@data.Name</td>
+                    <td>@data.Designation</td>
+                    <td id="@grandtotal">0</td>
+                    <td id="@totaldiscount">0</td>
+                    <td id="@percentdiscount">0</td>
+                    <td id="@salestarget">0</td>
+                    <td id="@metertarget">0</td>
+                    <td id="@unittarget"></td>
+
+                    @{
+                    foreach (var unit in unitlist)
+                    {
+                        var unitname = "total" + unit + count;
+                        <td id="@unitname">0</td>
+                    }
+                    }
+                </tr>
+                    count++;
+                }
+            }
+        </tbody>
+    </table>
+    
+    <div style="height: 10px"></div>
+    
+    <label style="color: red">Commission Details</label>
+    <table class="tablesorter table" style="border-color: #d2d2d2; border: outset">
+        <thead>
+            <tr>
+                <th>Employee Name</th>
+                <th>Employee Code</th>
+                <th>Sales</th>
+                <th>Meter</th>
+                @{
+                if (Model.CommissionMasterList.Count() != 0 && Model.CommissionMasterList != null)
+                {
+                    foreach (var unit in Model.CommissionProductList)
+                    { 
+                    <th>@unit.UnitName</th>
+                    }
+                }
+                }
+                <th>Item Comm.(<i class="fa fa-inr"></i>)</th>
+                <th>Item Comm.(%)</th>
+                <th>Total(<i class="fa fa-inr"></i>)</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @{
+                int commcount = 1;
+                foreach (var empname in Model.EmpList)
+                {
+                    var finalemp = "FinalEmployee" + commcount;
+                    var commtarget = "SalesCommission" + commcount;
+                    var commmeter = "MeterCommission" + commcount;
+                    var commtotal = "TotalCommission" + commcount;
+                    var itemcommrupees = "ItemCommissionRupees" + commcount;
+                    var itemcommpercent = "ItemCommissionPercent" + commcount;
+                <tr>
+                    <td>
+                        <label style="font-weight: normal" id="@finalemp">@empname.Name</label>
+                    </td>
+                    <td>@empname.EmployeeCode</td>
+                    <td id="@commtarget">0</td>
+                    <td id="@commmeter">0</td>
+
+                    @{
+                    foreach (var data in Model.CommissionProductList)
+                    {
+                        var unit = data.UnitName + "Commission" + commcount; 
+                        <td>
+                            <label style="font-weight: normal" id="@unit">0</label>
+                        </td> 
+                    }
+                    }
+
+                    <td>
+                        <label style="font-weight:normal" id="@itemcommrupees">0</label>
+                    </td>
+                    <td>
+                        <label style="font-weight:normal" id="@itemcommpercent">0</label>
+                    </td>
+                    <td style="color:darkmagenta;font-weight:bold" id="@commtotal">0</td>
+                </tr>
+                    commcount++;
+                }
+            }
+
+        </tbody>
+    </table>
+    }
+    
+    <div style="text-align: center">
+        <button type="button" id="show" class="btn btn-link" style="color: green" onclick="ShowTable('show')">SHOW BILL DETAILS</button>
+        <button type="button" id="hide" class="btn btn-link" style="color: green; display: none" onclick="ShowTable('hide')">HIDE BILL DETAILS</button>
+    </div>
+    
+    <div id="billdetails" style="display: none">
+        <label style="color: red">Retail Bill(s) Details</label>
+        <table class="tablesorter table" style="border-color: #d2d2d2; border: outset">
+            <thead>
+                <tr>
+                    <th>S.No.</th>
+                    <th>Bill No</th>
+                    <th>Sales<br />
+                        Person</th>
+                    <th>Grand Total</th>
+                    <th>Disc.(<i class="fa fa-inr"></i>)</th>
+                    <th>Disc.(%)</th>
+                    <th>Item(s)</th>
+                    @foreach (var unit in unitlist)
+                    { 
+                        <th>@unit</th>
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @{
+                    int rowid = 1;
+                }
+
+                @foreach (var data in Model.RetailBillList)
+                {
+                    var emp = "Emp" + rowid;
+                    var retailbill = "RetailBill" + rowid;
+                    var total = "Total" + rowid;
+                    var discount = "Discount" + rowid;
+                    var item = "Item" + rowid;
+                    var percentdiscount = "PercentDiscount" + rowid;
+                    
+                    <tr>
+                        <td>@rowid</td>
+                        <td style="text-align: left">
+                            <button type="button" id="@retailbill" class="btn btn-link" style="color:blue" onclick="OpenRetailBill(@data.RetailMasterId)">@data.RetailBillNo</button>
+                        <td>
+                            <label id="@emp" style="font-weight: normal">@data.SalesPersonName</label></td>
+                        <td id="@total">@data.GrandTotal</td>
+                        <td id="@discount">@data.TotalDiscount</td>
+                        <td id="@percentdiscount">0</td>
+                        <td id="@item"></td>
+
+                        @{
+                    foreach (var unit in unitlist)
+                    {
+                        var unitname = unit + rowid;
+                            <td>
+                                <label style="font-weight:normal" id="@unitname">0</label>
+                            </td>
+                    }
+                        }
+                        @{
+                    rowid += 1;
+                        }
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+                
+    <div style="margin-left:510px" id="printbtn">
+        <button type="button" class="btn btn-primary" id="print">Print</button>
+    </div>
+    
+    <input type="hidden" name="rowcount" id="rowcount" value="@Model.RetailBillList.Count()" />
+    <script>
+        document.getElementById("printbtn").style.display = 'inline';
+        document.getElementById("pager").style.display = 'inline';
+    </script>
+}
+else
+{
+    <label style="color: red; text-align: center; font-weight: bolder; width: 100%">No Record Found..</label>
+    <script>
+        document.getElementById("printbtn").style.display = 'none';
+        document.getElementById("pager").style.display = 'none';
+    </script>
+}
+<div id="pager" style="display: none; text-align: center; width: 100px">
+    <form>
+        <img src="../Images/first.png" class="first" />
+        <img src="../Images/prev.png" class="prev" />
+        <input type="text" class="pagedisplay" id="pagertextbox" style="width: 170px" />
+        <img src="../Images/next.png" class="next" />
+        <img src="../Images/last.png" class="last" />
+        <select class="pagesize" id="pagerdropdown">
+            <option selected="selected" value="20">20</option>
+            <option value="40">40</option>
+            <option value="60">60</option>
+            <option value="80">80</option>
+            <option value="100">100</option>
+        </select>
+    </form>
+</div>
+
+@{
+    int retailbillcount = 1, empcounter = 1;
+    <script>
+        var sum = 0,tablehead=8;
+    </script>
+   
+    foreach (var emp in Model.EmpList)
+    {
+        for (var i = 1; i <= unitlist.Count(); i++)
+        {
+            retailbillcount = 1;
+    <script>
+        sum = 0;
+    </script>
+            foreach (var data in Model.RetailBillList)
+            {
+                if (data.SalesPersonName == emp.Name)
+                {
+                    foreach (var unit in unitlist)
+                    {
+                        var unitname = unit + retailbillcount;
+                        var empunit = "total" + unit + empcounter;
+        
+    <script>
+        var row = $("tr").find('th:eq('+tablehead+')'); 
+        if(row.html() == "@unit")
+        {
+            if(document.getElementById("@unitname") != null)
+            {
+                sum = +sum + +document.getElementById("@unitname").innerHTML;
+            }
+            document.getElementById("@empunit").innerHTML = sum;
+        }
+    </script>
+                    }
+                }
+                retailbillcount++;
+            }
+    <script>tablehead++;</script>
+        }
+    <script>tablehead = 8;</script>
+        empcounter++;
+    }
+}
+
+@{
+    <script>
+        var totaldis = 0, grandtotal = 0;
+    </script>
+    
+    int empcount = 1;
+    foreach (var data in Model.EmpList)
+    {
+        int count = 1;
+        var totaldiscount = "TotalDiscount" + empcount;
+        var grandtotal = "GrandTotal" + empcount;
+
+        foreach (var newdata in Model.RetailBillList)
+        {
+            var emp = "Emp" + count;
+
+            var discount = "Discount" + count;
+            var total = "Total" + count;
+
+    <script>
+        if(document.getElementById("@emp") != null){
+            var empname = document.getElementById("@emp").innerHTML;
+        }
+        if("@data.Name" == empname)
+        {
+            totaldis = +totaldis + +document.getElementById("@discount").innerHTML;
+            grandtotal = +grandtotal + +document.getElementById("@total").innerHTML;
+        }
+    </script>
+            count++;
+        }
+        
+    <script>
+        document.getElementById("@totaldiscount").innerHTML = totaldis;
+        document.getElementById("@grandtotal").innerHTML = grandtotal;
+    </script>
+        empcount++;
+    <script>
+        grandtotal=0,totaldis=0;
+    </script>
+    }
+}
+
+<script>
+    for(var i=1;i<=@Model.RetailBillList.Count();i++)
+    {
+        var total = "Total" + i;
+        var discount = "Discount" + i;
+        var percentdiscount = "PercentDiscount" + i;
+
+        if(document.getElementById(percentdiscount) != null)
+        {
+            var cal = (+document.getElementById(discount).innerHTML * 100) / +document.getElementById(total).innerHTML;
+            document.getElementById(percentdiscount).innerHTML = cal.toFixed(2);
+        }
+    }
+
+    for(var i=1;i<=@Model.EmpList.Count();i++)
+    {
+        var grandtotal = "GrandTotal" + i;
+        var discount = "TotalDiscount" + i;
+        var percent = "PerDiscount" + i;
+
+        if(document.getElementById(percent) != null)
+        {
+            var cal = (+document.getElementById(discount).innerHTML * 100) / +document.getElementById(grandtotal).innerHTML;
+            document.getElementById(percent).innerHTML = cal.toFixed(2);
+        }
+    }
+</script>
+
+@{
+    int targetcount = 1;
+    foreach (var emp in Model.EmpList)
+    {
+        var salestarget = "SalesTarget" + targetcount;
+        var metertarget = "MeterTarget" + targetcount;
+        var unittarget = "UnitTarget" + targetcount;
+        
+        if (Model.CommissionMasterList != null && Model.CommissionMasterList.Count() != 0)
+        {
+            foreach (var comm in Model.CommissionMasterList)
+            {
+                if (emp.Name == comm.EmployeeName)
+                {
+    <script>
+        if("@comm.TotalSale" != "")
+        {
+            document.getElementById("@salestarget").innerHTML = "@comm.TotalSaleCommPercent" + "% on " + "@comm.TotalSale";
+        }
+        else
+        {
+            document.getElementById("@salestarget").innerHTML = "0";
+        }
+        if("@comm.Meter" != "")
+        {
+            document.getElementById("@metertarget").innerHTML = "<html><body><i class='fa fa-inr'></i></body></html>" +  " @comm.MeterCommPercent " + " on " + "@comm.Meter";
+        }
+        else
+        {
+            document.getElementById("@metertarget").innerHTML = "0";
+        }
+    </script>
+                }
+            }
+        }
+        targetcount++;
+   }
+}
+        
+        @{
+            int targetcounts = 1;
+            foreach (var emps in Model.EmpList)
+            {
+                var unittarget = "UnitTarget" + targetcounts;
+                
+                if (Model.CommissionProductList != null && Model.CommissionProductList.Count() != 0)
+                {
+                    foreach (var comm in Model.CommissionProductList)
+                    {
+                        if (emps.Name == comm.EmployeeName)
+                        { 
+    <script>
+        if("@comm.UnitName" != "")
+        {
+            document.getElementById("@unittarget").innerHTML += "@comm.UnitPercent " + "% on " + "@comm.UnitAmount @comm.UnitName" + "<html><br /></html>";
+        }
+    </script>
+                        }
+                    }
+                }
+                targetcounts++;
+            }
+}
+
+@{
+    int employeecount = 1;
+    foreach (var emp in Model.EmpList)
+    {
+        var salestarget = "SalesTarget" + employeecount;
+        var grandtotal = "GrandTotal" + employeecount;
+        var totalmeter = "totalMeter" + employeecount;
+        var metertarget = "MeterTarget" + employeecount;
+        var salescomm = "SalesCommission" + employeecount;
+        var metercomm = "MeterCommission" + employeecount;
+        var totalcommission = "TotalCommission" + employeecount;
+
+        if (Model.CommissionMasterList.Count() != 0 && Model.CommissionMasterList != null)
+        {
+            foreach (var unit in Model.CommissionMasterList)
+            {
+                if (emp.Name == unit.EmployeeName)
+                {
+                    if (unit.TotalSale != null)
+                    {
+    <script>
+        var target = "@unit.TotalSale";
+        var targetpercent = "@unit.TotalSaleCommPercent";
+        var meter = "@unit.Meter";
+        var meterpercent = "@unit.MeterCommPercent";
+        var total = document.getElementById("@grandtotal").innerHTML;
+        var targetsalecommission = 0;
+
+        if(+total >= +target)
+        {
+            targetsalecommission = (+total * +targetpercent) / 100;
+        }
+        document.getElementById("@salescomm").innerHTML = targetsalecommission;
+        document.getElementById("@totalcommission").innerHTML = +document.getElementById("@totalcommission").innerHTML + +targetsalecommission;
+    </script>
+                    }
+                    if (unit.Meter != null)
+                    { 
+    <script>
+        var meter = "@unit.Meter";
+        var meterpercent = "@unit.MeterCommPercent";
+        var totalmeter = +document.getElementById("@totalmeter").innerHTML;
+        var targetmetercommission = 0;
+
+        if(+totalmeter >= +meter)
+        {
+            targetmetercommission = +meterpercent;
+        }
+        document.getElementById("@metercomm").innerHTML = targetmetercommission;
+        document.getElementById("@totalcommission").innerHTML = +document.getElementById("@totalcommission").innerHTML + +targetmetercommission;
+    </script>
+                    }
+
+
+                    if (unit.ItemCommissionRupees != null)
+                    {
+                        var itemcommrps = "ItemCommissionRupees" + employeecount;
+<script>
+
+    if (@unit.ItemCommissionRupees != 0)
+    {
+        document.getElementById("itemcommissionrupees").value = +document.getElementById("itemcommissionrupees").value + +(@unit.ItemCommissionRupees);
+                        if (document.getElementById("@itemcommrps") != null)
+                        {
+                            document.getElementById("@itemcommrps").innerHTML = +document.getElementById("@itemcommrps").innerHTML + +(@unit.ItemCommissionRupees);
+                            document.getElementById("@totalcommission").innerHTML = +document.getElementById("@totalcommission").innerHTML + +(@unit.ItemCommissionRupees);
+                        }
+                    }        
+                    
+</script>
+    
+    
+
+    
+                        if (unit.ItemCommissionPercent != null)
+                        {
+                            var itemcommpercent = "ItemCommissionPercent" + employeecount;
+        
+<script>
+    if (@unit.ItemCommissionPercent != 0)
+    {
+        document.getElementById("itemcommissionpercent").value = +document.getElementById("itemcommissionpercent").value + +(@unit.ItemCommissionPercent);
+        if (document.getElementById("@itemcommpercent") != null)
+        {
+            var rate = @unit.ItemSellingPrice;
+                                var amount = (+(rate) * +@unit.ItemCommissionPercent) / 100;
+
+                                document.getElementById("@itemcommpercent").innerHTML = +document.getElementById("@itemcommpercent").innerHTML + +(amount);
+                                document.getElementById("@totalcommission").innerHTML = +document.getElementById("@totalcommission").innerHTML + +(amount);
+                            }
+                        }
+
+</script>       
+                        }
+
+
+                    }
+                }
+            }
+            employeecount++;
+            <script>
+                document.getElementById("itemcommissionpercent").value = "";
+                document.getElementById("itemcommissionrupees").value = "";
+            </script>
+        }
+    }
+}
+
+@{
+    var emcount = 1;
+    foreach (var emp in Model.EmpList)
+    {
+        if (Model.CommissionProductList != null && Model.CommissionProductList.Count() != 0)
+        {
+            foreach (var other in Model.CommissionProductList)
+            {
+    <script>
+        var tablehead = 8;
+    </script>
+                var totalunit = "total" + other.UnitName + emcount;
+                var totalunitcommission = other.UnitName + "Commission" + emcount;
+                var unitname = other.UnitName;
+                var unitpercent = other.UnitPercent;
+                var totalcommissions = "TotalCommission" + emcount;
+
+                for (var i = 1; i <= unitlist.Length; i++)
+                {
+    <script>
+        var unit,totalcommission=0;
+        var tbleheadname = $('tr').find('th:eq('+tablehead+')');
+
+        if(document.getElementById("@totalunit") != null)
+        {
+            if(tbleheadname.html() == "@other.UnitName")
+            {   
+                if(+document.getElementById("@totalunit").innerHTML >= +("@other.UnitAmount")){
+                    document.getElementById("@totalunitcommission").innerHTML = (+document.getElementById("@totalunit").innerHTML * +("@unitpercent")) / 100;
+                    document.getElementById("@totalcommissions").innerHTML = +document.getElementById("@totalcommissions").innerHTML + +document.getElementById("@totalunitcommission").innerHTML;
+                }
+            }
+        }
+        tablehead = +tablehead + 1;
+    </script>
+                }
+            }
+            emcount++;
+        }
+    }
+}
+
+<script>
+    $(document).ready(function(){
+
+        setTimeout(function(){
+            for(var i= 1;i<=@Model.EmpList.Count();i++)
+            {
+                var totalcomm = "TotalCommission" + i;
+            
+                if(document.getElementById(totalcomm) != null){
+                    var amount = +document.getElementById(totalcomm).innerHTML;
+                    amount = amount.toFixed(2);
+                    document.getElementById(totalcomm).innerHTML = +amount;
+                }
+            }
+        },1000);
+
+
+        setTimeout(function(){
+            for(var i= 1;i<=@Model.EmpList.Count();i++)
+            {
+                var finalemp = "FinalEmployee" + i;
+                var totalcomm = "TotalCommission" + i;
+                if(document.getElementById(finalemp) != null){
+                    var name  = document.getElementById(finalemp).innerHTML;
+                }
+
+                if(document.getElementById(totalcomm) != null){
+                    var amount = +document.getElementById(totalcomm).innerHTML;
+                }
+
+                $.getJSON("/MisReports/SaveCommission",{FromDate:$("#fromdate").val(),ToDate:$("#todate").val(),EmpName:name,Amount:amount},function(data){
+                
+                });
+            }
+        },5000);
+    });
+</script>

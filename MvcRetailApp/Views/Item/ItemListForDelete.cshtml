@@ -1,0 +1,143 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "ItemListForDelete";
+}
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function confirmbox(message, row, code) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         document.getElementById(row).style.display = "none";
+		         $.getJSON("/Item/InActiveItem", { code: code }, function () {
+		         });
+		     }
+		 });
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(document).ready(function () {
+            $("table.tablesorter").tablesorter({ widthFixed: true, sortList: [[0, 0]] })
+           .tablesorterPager({ container: $("#pager"), size: $(".pagesize option:selected").val() });
+        });
+    });
+
+    function DeleteRow(id) {
+        var itemcode = "itemcode" + id;
+        var row = "row" + id;
+        var code = document.getElementById(itemcode).value;
+        confirmbox("Do You Want To Delete This Item", row, code);
+    }
+</script>
+
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+    <source src="" type="audio/ogg" />
+</audio>
+
+@{
+    if (Model.ItemList != null && Model.ItemList.Any())
+    {
+    <table class="table tablesorter" style="border-color: #d2d2d2; border: outset">
+        <thead>
+            <tr>
+                <th style="text-align: center">Item Code</th>
+                <th style="text-align: center">Item Name</th>
+                <th style="text-align: center">Description</th>
+                <th style="text-align: center">Design</th>
+                <th style="text-align: center">Material</th>
+                <th style="text-align: center">Brand</th>
+                <th style="text-align: center">Color</th>
+                <th style="text-align: center">Unit</th>
+                <th style="text-align: center">Rate</th>
+                <th></th>
+            </tr>
+        </thead>
+
+
+        <tbody>
+            @{
+        int count = 1;
+        foreach (var item in Model.ItemList)
+        {
+            var row = "row" + count;
+            var itemcode = "itemcode" + count;
+            var rate = Convert.ToDouble(@item.mrp).ToString("#,###.00##");
+                <tr id="@row">
+                    <td>
+                        <label style="font-weight: normal">@item.itemCode</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.itemName</label>
+                        <input type="hidden" name="@itemcode" id="@itemcode" value="@item.itemCode" />
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.description</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.designName</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.typeOfMaterial</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.brandName</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.colorCode</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.unit</label>
+                    </td>
+                    <td style="text-align: right">
+                        <label style="font-weight: normal">@rate</label>
+                    </td>
+                    <td>
+                        <a href="#" onclick="DeleteRow(@count)" class="fa fa-trash fa-lg" style="color:red" />
+                    </td>
+                </tr>
+            count++;
+        }
+            }
+        </tbody>
+    </table>
+    }
+    else
+    {
+    <label style="font-size: x-large; color: red; width: 100%; text-align: center">No Item Found</label>
+    <script type="text/javascript">
+        document.getElementById("pager").style.display = "none";
+    </script>
+    }
+}
+<br />
+<div id="pager" style="text-align: center">
+    <form>
+        <img src="../Images/first.png" class="first" />
+        <img src="../Images/prev.png" class="prev" />
+        <input type="text" class="pagedisplay" id="pagertextbox" style="width: 170px" />
+        <img src="../Images/next.png" class="next" />
+        <img src="../Images/last.png" class="last" />
+        <select class="pagesize" id="pagerdropdown">
+            <option selected="selected" value="5">5</option>
+            <option value="10">10</option>
+            <option value="20">20</option>
+            <option value="30">30</option>
+            <option value="40">40</option>
+        </select>
+    </form>
+</div>

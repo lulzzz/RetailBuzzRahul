@@ -1,0 +1,110 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "SOItemDetailsPopUp";
+}
+
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#close").click(function () {
+            window.close();
+        });
+    });
+</script>
+
+@{
+    if (Model.ItemDetails != null)
+    {
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 15px;"></div>
+    </div> 
+    <div class="col-lg-12 col-md-12">
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <label>Description</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.description)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Design</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.designName)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Material</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.typeOfMaterial)
+            </div>
+        </div>
+        <div class="row">
+            <div style="height: 15px;"></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <label>Size</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.size)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Brand</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.brandName)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Color</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.colorCode)
+            </div>
+        </div>
+    </div>
+    }
+    else
+    {
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 15px;"></div>
+    </div> 
+    <div class="col-lg-12 col-md-12">
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <label>Description</label><br />
+                @Html.DisplayFor(model => model.NonInventoryItemDetails.description)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Design</label><br />
+                @Html.DisplayFor(model => model.NonInventoryItemDetails.designName)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Material</label><br />
+                @Html.DisplayFor(model => model.NonInventoryItemDetails.typeOfMaterial)
+            </div>
+        </div>
+        <div class="row">
+            <div style="height: 15px;"></div>
+        </div>
+        <div class="row">
+            <div class="col-lg-4 col-md-4">
+                <label>Size</label><br />
+                @Html.DisplayFor(model => model.NonInventoryItemDetails.size)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Brand</label><br />
+                @Html.DisplayFor(model => model.NonInventoryItemDetails.brandName)
+            </div>
+            <div class="col-lg-4 col-md-4">
+                <label>Color</label><br />
+                @Html.DisplayFor(model => model.NonInventoryItemDetails.colorCode)
+            </div>
+        </div>
+    </div> 
+    }
+}
+
+<div class="col-lg-12 col-md-12">
+    <div style="height: 15px;"></div>
+</div>
+<div class="col-lg-12 col-md-12" style="text-align:center">
+    <button type="button" id="close" class="btn btn-primary">Close</button>
+</div>
+
+
+
+

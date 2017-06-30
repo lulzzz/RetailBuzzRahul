@@ -1,0 +1,217 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetDetailsByStockDistributionNo";
+}
+
+@*CALCULATE BALANCE USING INTER TRANSFER*@
+<script type="text/javascript">
+    function CalcStkQtyForTanstr(count) {
+        var intertransfer = "InterTransfer" + count;
+        var previousintertransfer = "PrevInterTransfer" + count;
+        var totalquantity = "TotalQuantity" + count;
+        var balance = "Balance" + count;
+        var balancevalue = "BalanceValue" + count;
+
+        // validation on inter transfer > stock quantity
+        var interquan = (+document.getElementById(intertransfer).value);
+        var ttlquan = (+document.getElementById(totalquantity).innerHTML) + (+document.getElementById(previousintertransfer).value);
+        if (interquan > ttlquan) {
+            alertbox("Cannot exceed above Stock Quantity");
+            document.getElementById(intertransfer).value = ttlquan;
+        }
+
+        //calculate (balance = totalquantity - intertransfer)
+        var finalbalance = (((+document.getElementById(totalquantity).innerHTML) + (+document.getElementById(previousintertransfer).value)) - (+document.getElementById(intertransfer).value));
+        document.getElementById(balance).innerHTML = finalbalance;
+        document.getElementById(balancevalue).value = finalbalance;
+    }
+</script>
+
+@*UNIT VALIDATION*@
+<script type="text/javascript">
+    function AllowDecimal(key, rowid) {
+        var numbertype = $("#numberType" + rowid).val();
+        var quantity = $("#InterTransfer" + rowid).val();
+        var pointFoundCount = 0;
+        for (var i = 0; i <= quantity.length; i++) {
+            if (quantity[i] == '.') {
+                pointFoundCount++;
+            }
+        }
+
+        var pointposition = quantity.indexOf(".");
+        var digitupto = 0;
+        if (pointposition != -1) {
+            digitupto = quantity.substr(pointposition, quantity.length).length;
+        }
+
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (numbertype == 'Whole') { //if unit type is whole number then don't allow point
+            if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+        }
+        else if (keycode == 46) { //if decimal point is inserted
+            if (pointFoundCount > 0 && pointFoundCount < 2) { // more than one decimal point is inserted then don't allow to insert it
+                return false;
+            }
+        }
+        else if (digitupto != 0) { // if unit type is decimal then wait for decimal point to be insert then execute this condition 
+            if (numbertype == '2Digit') { // if unit type is 2 digit the then allow 2 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 3) {
+                    return false;
+                }
+            }
+            else { // if unit type is 2 digit the then allow 3 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 4) {
+                    return false;
+                }
+            }
+        }
+        else { //don't allow any decimal point or character until first digit occurs
+            if (quantity.length == 0) // if first digit is point in quantity field then don't allow it and characters too
+            {
+                if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+            else { //don't allow any character until the above else if condition meets
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+
+<input type="hidden" id="ShopGodownCode" name="ShopGodownCode" value="@Model.OutwardStkDisDetails.Code"/>
+
+<div style="border: 1px solid;">
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            @{
+                if (Model.OutwardStkDisDetails.Code.Contains("SH"))
+                {
+                <div class="col-md-3 col-lg-3">
+                    <label>Shop Name:</label><br />
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopName)
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Shop Contact Person:</label><br />
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopContactPerson)
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Shop Contact No:</label><br />
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.ShopContactNo)
+                </div>
+                }
+                else
+                {
+                <div class="col-md-3 col-lg-3">
+                    <label>Godown Name:</label><br />
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownName)
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Godown Contact Person:</label><br />
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownContactPerson)
+                </div>
+                <div class="col-md-3 col-lg-3">
+                    <label>Godown Contact No:</label><br />
+                    @Html.DisplayFor(model => model.OutwardStkDisDetails.GodownContactNo)
+                </div>
+                }
+            }
+        </div>
+    </div>
+    <div style="height: 10px"></div>
+</div>
+
+<div style="height: 15px"></div>
+
+<div class="row">
+        <div class="col-md-12 col-lg-12">
+            <label>GatePass No:</label>
+            @Html.DisplayFor(model => model.OutwardStkDisDetails.GatePass)
+        </div>
+</div>
+
+<div style="height: 15px"></div>
+
+<div style="border: 1px solid;">
+    <div class="row">
+        <div style="height: 10px"></div>
+
+        <div class="col-md-12 col-lg-12">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th style="text-align: center">Sr.No.</th>
+                        <th style="text-align: center">Item Code</th>
+                        <th style="text-align: center">Item Name</th>
+                        <th style="text-align: center">Color</th>
+                        <th style="text-align: center">Unit</th>
+                        <th style="text-align: center">Qty</th>
+                        <th style="text-align: center">Previous</br>Inter Transfer</th>
+                        <th style="text-align: center" class="col-lg-2 col-md-2">Inter Transfer<i style="color: red">*</i></th>
+                        <th style="text-align: center">Bal</th>
+                    </tr>
+                </thead>
+                <tbody>
+
+                    @{
+                        int rowid = 1;
+                        if (Model.OutwardItemStkDisList != null && Model.OutwardItemStkDisList.Any())
+                        {
+                            foreach (var item in Model.OutwardItemStkDisList)
+                            {
+                                string itemcode = "ItemCode" + rowid;
+                                string previousintertransfer = "PrevInterTransfer" + rowid;
+                                string intertransfer = "InterTransfer" + rowid;
+                                string totalquantity = "TotalQuantity" + rowid;
+                                string balance = "Balance" + rowid;
+                                string balancevalue = "BalanceValue" + rowid;
+                                string numbertype = "numberType" + rowid;
+                        <tr>
+                            <td style="text-align: center">@rowid</td>
+                            <td style="text-align: center;">@item.ItemCode<input type="hidden"/ id="@itemcode" name="@itemcode" value="@item.ItemCode"></td>
+                            <td style="text-align: center;">@item.ItemName</td>
+                            <td style="text-align: center;">@item.Color</td>
+                            <td style="text-align: center;">@item.Unit<input type="hidden" id="@numbertype" value="@item.NumberType" /></td>
+                            <td style="text-align: center;">
+                                <label id="@totalquantity" style="font-weight:normal; color:red">@item.ReadOnlyQuantity</label></td>
+                            <td style="text-align: center;">@item.ItemQuantity</td>
+                            <td class="col-lg-2 col-md-2">
+                                <input type="text" id="@intertransfer" name="@intertransfer" class="form-control" placeholder="Qty" autocomplete="off" onchange="CalcStkQtyForTanstr(@rowid)"  style="text-align:center" onkeypress="return AllowDecimal(event,@rowid)"/></td>
+                                <input type="hidden" id="@previousintertransfer" name="@previousintertransfer" value="@item.ItemQuantity"/>
+                            <td style="text-align: center">
+                                <label id="@balance" style="font-weight:normal"></label>
+                                <input type="hidden" id="@balancevalue" name="@balancevalue" /></td>
+                        </tr>
+                                rowid++;
+                            }
+                        }
+
+                        long listcount = Model.OutwardItemStkDisList.Count();
+                        <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="@listcount" />
+                    }
+                </tbody>
+            </table>
+        </div>
+        <div style="height: 10px"></div>
+    </div>
+</div>
+
+<div style="height: 15px"></div>
+
+<div class="row">
+        <div class="col-md-12 col-lg-12">
+            @{
+                if(Model.OutwardStkDisDetails.Narration!=null)
+                {
+            <label>Narration:</label>
+            @Html.DisplayFor(model => model.OutwardStkDisDetails.Narration)
+            }
+            }
+        </div>
+</div>

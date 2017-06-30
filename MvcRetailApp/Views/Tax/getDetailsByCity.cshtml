@@ -1,0 +1,300 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "getDetailsByCity";
+}
+
+   
+<script type="text/javascript">
+    $("#ddltodate").click(function () {
+        new JsDatePick({
+            useMode: 2,
+            target: "ddltodate",
+            dateFormat: "%d/%M/%Y"
+        });
+    });
+</script>    
+<script type="text/javascript">
+    function InsertTax() {
+        $.ajax({
+            url: '/Tax/InsertIntoSubTaxMaster',
+            type: "POST",
+            data: {
+                hdnRowCount:document.getElementById("hdnRowCount").value,
+                state: document.getElementById("ddlSate").value,
+            },
+            success: function (data) {
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function AddTaxNewWindow() {
+       
+        window.open("/Tax/DynamicRowCreationForState?Vat=" + document.getElementById("MainTaxMasters_VAT").value + "&st=" + document.getElementById("MainTaxMasters_SalesTax").value + "&ot=" + document.getElementById("MainTaxMasters_OtherTax").value + "&state=" + document.getElementById("stateid").value, "_blank", "width=1000,height=330,left=200px top=300px scrolling=yes");
+
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+            var idModel = document.getElementById("ddlSate").value;
+            var rowid = document.getElementById("hdnRowCount").value;
+            rowid = +rowid + 1;
+            var city = document.createElement("SELECT");
+            var select = "citylist" + rowid;
+            var taxtype = "taxtype" + rowid;
+            var fromdate = "fromdate" + rowid;
+            var todate = "todate" + rowid;
+            var percentage = "percentage" + rowid;
+            var unorderedlist = $("#AddingRows");
+            $.getJSON("/Tax/LoadDistrictByState", { id: idModel },
+           function (stateData) {
+               city.className = "form-control";
+               city.id = "city" + rowid;
+               city.name = "city" + rowid;
+               var myoption1 = document.createElement("option");
+               myoption1.text = "Select District";
+               myoption1.value = 0;
+               city.appendChild(myoption1);
+               $.each(stateData, function (index, itemData) {
+                   var myoption = document.createElement("option");
+                   myoption.text = itemData.Text;
+                   myoption.value = itemData.Value;
+                   city.appendChild(myoption);
+               });
+           });
+            var data = "<tr>";
+            data += "<td>" + rowid + "</<td>"
+            data += "<td><select id='" + taxtype + "' name= '" + taxtype + "'class='form-control'><option value='0'>Select Tax</option><option value='VAT'>VAT</option><option value='SalesTax'>Sales Tax</option><option value='OtherTax'>Other Tax</option></select></td>";
+            data += "<td id='" + select + "' name='" + select + "'></td>"
+            data += "<td><input type='textbox' id='" + fromdate + "' name='" + fromdate + "' class='form-control'></input></td>";
+            data += "<td><input type='textbox' id='" + todate + "' name='" + todate + "' class='form-control'></input></td>";
+            data += "<td><input type='textbox' id='" + percentage + "' name='" + percentage + "' class='form-control'></input></td></tr>";
+            unorderedlist.append(data);
+            var cities = document.getElementById(select);
+            cities.appendChild(city);
+
+            new JsDatePick({
+                useMode: 2,
+                target: fromdate,
+                dateFormat: "%d/%M/%Y"
+            });
+
+            new JsDatePick({
+                useMode: 2,
+                target: todate,
+                dateFormat: "%d/%M/%Y"
+            });
+            $("#hdnRowCount").val(rowid);
+        }
+    });
+
+</script>
+<script type="text/javascript">
+    function UpdateTaxData() {
+
+        var taxmaster = {
+            Id: $("#SubTaxMasters_Id").val(),
+            ToDate: $("#ddltodate").val(),
+            FromDate: $("#SubTaxMasters_FromDate").val(),
+            City: $("#SubTaxMasters_City").val(),
+            Code: $("#SubTaxMasters_Code").val(),
+            Percentage: $("#SubTaxMasters_Percentage").val(),
+            TaxType: $("#SubTaxMasters_TaxType").val(),
+
+        };
+
+        $.ajax({
+            url: '/Tax/UpdateTax',
+            contentType: "application/json; charset=utf-8",
+            type: "POST",
+            data: JSON.stringify(taxmaster),
+            datatype: "json",
+            success: function (data) {
+            
+                document.getElementById("updatedresult").style.display = "inline";
+                document.getElementById("detailscity").style.display = "none";
+                $("#updatedresult").html(data);
+            }
+        });
+
+    }
+</script>
+
+
+<script type="text/javascript">
+    function AddTax() {
+        var idModel = document.getElementById("ddlSate").value;
+        document.getElementById("dynamic").style.display = "inline";
+        var rowid = document.getElementById("hdnRowCount").value;
+        rowid = +rowid + 1;
+        var city = document.createElement("SELECT");
+        var select = "citylist" + rowid;
+        var taxtype = "taxtype" + rowid;
+        var fromdate = "fromdate" + rowid;
+        var todate = "todate" + rowid; 
+        var percentage = "percentage" + rowid;
+        var unorderedlist = $("#AddingRows");
+        $.getJSON("/Tax/LoadDistrictByState", { id: idModel },
+        function (stateData) {
+            city.className = "form-control";
+            city.id = "city" + rowid;
+            city.name = "city" + rowid;
+            var myoption1 = document.createElement("option");
+            myoption1.text = "Select District";
+            myoption1.value = 0;
+            city.appendChild(myoption1);
+            $.each(stateData, function (index, itemData) {
+                var myoption = document.createElement("option");
+                myoption.text = itemData.Text;
+                myoption.value = itemData.Value;
+                city.appendChild(myoption);
+            });
+        });
+        var data = "<tr>";
+        data += "<td>" + rowid + "</<td>"
+        data += "<td><select id='" + taxtype + "' name='" + taxtype + "' class='form-control'><option value='0'>Select Tax</option><option value='VAT'>VAT</option><option value='SalesTax'>Sales Tax</option><option value='OtherTax'>Other Tax</option></select></td>";
+        data += "<td id='"+ select+ "' name='"+ select+ "'></td>"
+        data += "<td><input type='textbox' id='"+fromdate+"' name='"+fromdate+"' class='form-control'></input></td>";
+        data += "<td><input type='textbox' id='"+todate+"' name='"+todate+"' class='form-control'></input></td>";
+        data += "<td><input type='textbox' id='" + percentage + "' name='" + percentage + "' class='form-control'></input></td></tr>";
+        
+        unorderedlist.append(data);
+        var cities = document.getElementById(select);
+        cities.appendChild(city);
+
+        new JsDatePick({
+            useMode: 2,
+            target: fromdate,
+            dateFormat: "%d/%M/%Y"
+        });
+
+        new JsDatePick({
+            useMode: 2,
+            target: todate,
+            dateFormat: "%d/%M/%Y"
+        });
+        $("#hdnRowCount").val(rowid);
+        document.getElementById("Insert Tax").style.display = "inline";
+    }
+
+</script>
+
+@using (Html.BeginForm("getDetailsByCity", "TaxMaster", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmCreate" }))
+{
+    
+   // @Html.HiddenFor(model=>model.SubTaxMasters.Code)
+    @Html.HiddenFor(model=>model.MainTaxMasters.State)
+    @Html.HiddenFor(model=>model.MainTaxMasters.VAT)
+    @Html.HiddenFor(model=>model.MainTaxMasters.SalesTax)
+    @Html.HiddenFor(model=>model.MainTaxMasters.OtherTax)
+    @Html.HiddenFor(model=>model.SubTaxMasters.Id)
+    @Html.HiddenFor(model=>model.SubTaxMasters.TaxType)
+    @Html.HiddenFor(model=>model.SubTaxMasters.FromDate)
+    @Html.HiddenFor(model=>model.SubTaxMasters.ToDate)
+    @Html.HiddenFor(model=>model.SubTaxMasters.Percentage)
+    @Html.HiddenFor(model=>model.SubTaxMasters.City)
+    @Html.HiddenFor(model=>model.stateid)
+  <div class="row">
+     <input type="hidden" id="hdnRowCount" name="hdnRowCount" /> 
+
+                         <div class="col-md-3 col-lg-3">
+                            <div class="col-md-11 col-lg-11">
+                                <div class="row">
+
+                                    <div class="col-md-11 col-lg-11">
+                                        <div class="form-group row">
+                                            <label for="exampleInputname">TaxType</label>
+                                          <br />
+                                          @Html.DisplayFor(model => model.SubTaxMasters.TaxType)
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        <div class="col-md-3 col-lg-3">
+                            <div class="col-md-11 col-lg-11">
+                                <div class="row">
+
+                                    <div class="col-md-11 col-lg-11">
+                                        <div class="form-group row">
+                                            <label for="exampleInputname">FromDate</label>
+                                          <br />
+                                          @Html.DisplayFor(model => model.SubTaxMasters.FromDate)
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                          <div class="col-md-3 col-lg-3">
+                            <div class="col-md-11 col-lg-11">
+                                <div class="row">
+
+                                    <div class="col-md-11 col-lg-11">
+                                        <div class="form-group row">
+                                            <label for="exampleInputname">ToDate</label>
+                                          <br />
+                                          @Html.TextBoxFor(model => model.SubTaxMasters.ToDate, new { @placeholder = "ToDate", @class = "form-control", id = "ddltodate" })
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                         <div class="col-md-3 col-lg-3">
+                            <div class="col-md-11 col-lg-11">
+                                <div class="row">
+
+                                    <div class="col-md-11 col-lg-11">
+                                        <div class="form-group row">
+                                            <label for="exampleInputname">Percentage</label>
+                                          <br />
+                                          @Html.DisplayFor(model => model.SubTaxMasters.Percentage)
+                                        </div>
+                                    </div>
+                                </div>
+                                </div>
+                            </div>
+                        </div>
+    
+   
+
+<div class="row">
+<div class="col-lg-12 col-md-12">
+    <div class="row" style="display:none" id="dynamic">
+                        <table class="table" id="AddingRows" style="border-width:2px;border-color:GrayText;border:1px double;">
+                         
+                                <tr>
+                                    <th class="col-md-1 col-lg-1"><label>S.N.</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="Headings">TaxType</label></th>
+                                     <th class="col-md-2 col-lg-2"><label id="Headins">District</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="DescriptionHeadings">FromDate</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="Heading">ToDate</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="Headin">Percentage</label></th>
+                                </tr>
+                        </table>
+                    </div>
+    <br />
+    <br />
+    <div class="form-group row">
+        <div class="col-lg-3"></div>
+        <div class="col-lg-1">
+         <input type="button" id="Add Tax" value="Add New Tax" class="btn btn-link col-lg-offset-4" style="color: dodgerblue; font-weight: bolder; " onclick="AddTaxNewWindow()" />
+       </div>
+        <div class="col-lg-1"></div>
+        <div class="col-lg-1">
+               <input type="submit" id="Insert Tax" value="Insert Tax" class="btn btn-link col-lg-offset-7" style="color: dodgerblue; font-weight: bolder; display:none "  />
+                    </div>         
+           </div>
+    </div>
+    </div>
+      <div class="row">
+               <div class="col-lg-offset-5">
+           <button type="button" class="btn btn-success" id="Update" onclick="UpdateTaxData()">Update</button>
+           </div> 
+
+    </div>
+                
+
+}

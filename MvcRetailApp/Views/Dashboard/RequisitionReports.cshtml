@@ -1,0 +1,165 @@
+﻿@{
+    ViewBag.Title = "RequisitionReports";
+}
+@{
+    string EmpDesignation = (string)TempData["EmployeeDesignation"];
+    TempData["EmployeeDesignation"] = EmpDesignation;
+    string EmpDepartment = (string)TempData["EmployeeDepartment"];
+    TempData["EmployeeDepartment"] = EmpDepartment;
+    
+    if (EmpDepartment == "Sales")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-navyblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-file-text-o fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var details = (IEnumerable<CodeFirstEntities.RequisitionForShop>)TempData["Requisitionsshops"];
+        TempData["Requisitionsshops"] = details;
+                            <div class="huge">@details.Count()</div>
+                        }
+                        <div>Requisitions</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="RequisitionDetailsByDateForShop()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    else
+        if (EmpDepartment == "Godown")
+        {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-navyblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-file-text-o fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+
+                        @{
+            var details = (IEnumerable<CodeFirstEntities.RequisitionForShop>)TempData["Requisitionsgodowns"];
+            TempData["Requisitionsgodowns"] = details;
+                            <div class="huge">@details.Count()</div>
+                        }
+                        <div>ShopRequisitions</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="RequisitionDetailsByDateForGodown()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+
+        </div>
+    </div>
+        }
+        else
+            if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin")
+            {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-navyblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-file-text-o fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+                var details = (IEnumerable<CodeFirstEntities.RequisitionForShop>)TempData["Requisitionssuperadmin"];
+                TempData["Requisitionssuperadmin"] = details;
+                            <div class="huge">@details.Count()</div>
+                        }
+                        <div>ShopRequisitions</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="RequisitionDetailsByDateForSuperAdmin()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+            }
+
+    if (EmpDepartment == "Godown")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-navyblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-file-text-o fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+
+                        @{
+        var details1 = (IEnumerable<CodeFirstEntities.RequisitionForGodown>)TempData["Requisitionsgodowns1"];
+        TempData["Requisitionsgodowns1"] = details1;
+                            <div class="huge">@details1.Count()</div>
+                        }
+                        <div>GodownRequisitions</div>
+
+                    </div>
+                </div>
+            </div>
+
+            <a href="#" onclick="RequisitionDetailsByDateForGodown1()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-navyblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-file-text-o fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var details = (IEnumerable<CodeFirstEntities.RequisitionForGodown>)TempData["Requisitionssuperadmin1"];
+        TempData["Requisitionssuperadmin1"] = details;
+                            <div class="huge">@details.Count()</div>
+                        }
+                        <div>GodownRequisitions</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="RequisitionDetailsByDateForSuperAdmin1()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+}

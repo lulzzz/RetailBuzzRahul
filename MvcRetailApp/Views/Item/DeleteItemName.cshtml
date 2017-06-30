@@ -1,0 +1,318 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DeleteItemName";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function confirmbox(message, id) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $.ajax({
+		             url: '/Item/ItemNameDeletePartial',
+		             type: "GET",
+		             data: { ID: id },
+		             success: function (data) {
+		                 document.getElementById('LoadPartialView').style.display = "inline";
+		                 $("#PartialView").html(data);
+		             }
+		         });
+		     }
+		     else {
+		         window.location.assign("/Item/DeleteItemName");
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLSubCatList").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel == "") {
+                document.getElementById("Searchdiv").style.display = "none";
+                document.getElementById("ItemNameView").style.display = "none";
+            }
+            else {
+                document.getElementById("Searchdiv").style.display = "inline";
+                document.getElementById("ItemNameView").style.display = "inline";
+                $.ajax({
+                    url: '/Item/LoadItemNames',
+                    type: "GET",
+                    data: { name: idmodel },
+                    success: function (data) {
+
+                        $("#ItemNameView").html(data);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#searchbutton").click(function () {
+            document.getElementById("Searchdiv").style.display = "inline";
+            var idmodel = document.getElementById("searchtext").value;
+            $.ajax({
+                url: '/Item/ItemNameList',
+                type: "GET",
+                data: { name: idmodel },
+                success: function (data) {
+
+                    $("#ItemNameView").html(data);
+                }
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function ItemNameDeleteRow(id, bndry, count) {
+        document.getElementById('ShowItemName').style.display = "none";
+        for (var i = 1; i <= bndry; i++) {
+            NameDeleteId = "NameDeleteId" + i;
+            LabNameDeleteId = "LableNameDeleteId" + i;
+            rowid = "RowId" + i;
+            if (document.getElementById(NameDeleteId) != null) {
+                document.getElementById(NameDeleteId).style.display = "none";
+                document.getElementById(LabNameDeleteId).style.display = "inline";
+                document.getElementById(rowid).style.backgroundColor = "#defff2";
+            }
+        }
+        document.getElementById("DDLSubCatList").disabled = true;
+        document.getElementById("searchbutton").disabled = true;
+        document.getElementById("searchtext").disabled = true;
+        RowId = "RowId" + count;
+        document.getElementById(RowId).style.backgroundColor = "lightgreen";
+
+        confirmbox("Are you sure! You want to delete this Row???", id)
+
+        document.getElementById('pagertextbox').disabled = true;
+        document.getElementById('pagerdropdown').disabled = true;
+        document.getElementById("pager").style.display = "none";
+        $("#NumberOfRows").val(bndry);
+        $("#SelectedRowValue").val(count)
+    }
+</script>
+
+
+<script type="text/javascript">
+    function DeleteItemName() {
+        var itmname = {
+            Id: $("#ItemNameDetails_Id").val(),
+            ItemCategory: $("#ItemNameDetails_ItemCategory").val(),
+            ItemSubcategory: $("#ItemNameDetails_ItemSubcategory").val(),
+            Name: $("#ItemNameDetails_Name").val(),
+            ItemType: $("#ItemNameDetails_ItemType").val(),
+        };
+
+        $.ajax({
+            url: '/Item/ItemNameDeletePartial',
+            contentType: "application/json;charset=utf-8",
+            type: "POST",
+            data: JSON.stringify(itmname),
+            datatype: "json",
+            success: function (data) {
+                document.getElementById('LoadPartialView').style.display = "none";
+                document.getElementById('ShowItemName').style.display = "inline";
+                $("#ShowItemName").html(data);
+            }
+        });
+
+        //this code is used for delete the row in the list  
+        var count = document.getElementById("SelectedRowValue").value;
+        var rowid = "RowId" + count;
+        document.getElementById(rowid).style.display = "none";
+
+        document.getElementById("pager").style.display = "inline";
+        document.getElementById("DDLSubCatList").disabled = false;
+        document.getElementById("searchbutton").disabled = false;
+        document.getElementById("searchtext").disabled = false;
+        document.getElementById('pagertextbox').disabled = false;
+        document.getElementById('pagerdropdown').disabled = false;
+    }
+</script>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- Start: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+
+
+        <!-- Start: Content -->
+
+        @Html.ValidationSummary(true)
+
+        <input type="hidden" id="NumberOfRows" name="NumberOfRows" />
+        <input type="hidden" id="SelectedRowValue" />
+        <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+            <source src="" type="audio/ogg" />
+        </audio>
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+
+                <br />
+                <div class="col-md-12 col-lg-12">
+                    <div class="row">
+                        <div class="form-group col-md-4 col-lg-4">
+                            <div class="form-group col-md-11 col-lg-11">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="form-group col-md-11 col-lg-11">
+                                                <label>Sub-Category Name</label>
+                                                @Html.DropDownListFor(model => model.ItemSubCategoryDetails.subCategoryName, new SelectList(Model.ItemSubCategoryList, "subCategoryName", "subCategoryName"), "Select Sub-Category", new { id = "DDLSubCatList", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="row" id="Searchdiv" style="display: none">
+                                            <div class="row">
+                                                <div class="form-group col-md-12 col-lg-12">
+                                                    @Html.Label("Search")
+                                                    <div class="row">
+                                                        <div class="form-group col-md-8 col-lg-8">
+                                                            @Html.TextBox("search", ViewData.TemplateInfo.FormattedModelValue, new { placeholder = "Search", @class = "form-control", id = "searchtext" })
+                                                        </div>
+                                                        <button type="submit" id="searchbutton" class="btn btn-primary glyphicon glyphicon-search" style="width: 70px"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-12 col-lg-12">
+                                            <div class="form-group col-md-12 col-lg-12">
+                                                <div class="row">
+                                                    <div class="form-group col-md-12 col-lg-12">
+                                                        <div id="ItemNameView"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="float: left; min-height: 650px; width: 1px; background-color: lightgrey;"></div>
+                        </div>
+
+                        <!--this div is used to display Right hand side partial view-->
+                        <div class="form-group col-md-8 col-lg-8" id="LoadPartialView">
+                            <div id="PartialView"></div>
+                        </div>
+
+                        <div class="form-group col-md-8 col-lg-8">
+                            <div id="ShowItemName"></div>
+                        </div>
+                    </div>
+
+
+                </div>
+                <!--end of tile body-->
+            </div>
+            <!--end of countainer-->
+        </div>
+    </div>
+</section>
+<!-- End: Main -->

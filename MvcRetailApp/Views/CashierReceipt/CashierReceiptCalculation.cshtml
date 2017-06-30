@@ -1,0 +1,1623 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CashierReceiptCalculation";
+}
+
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function NumberToWords() {
+        if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+            var junkVal = (+removeCommas(document.getElementById('AdvancePayment').value));
+        }
+        else { var junkVal = (+removeCommas(document.getElementById('GrandTotal').innerHTML)); }
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+        }
+        else if (Number(junkVal) == 0) {
+            return 'Rupees Zero Only';
+        }
+        else {
+            alertbox('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alertbox('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+
+
+
+@*CALCULATE ORDER ADVANCE CARD TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        //for credit card amount
+        var ans1 = 0;
+        if (document.getElementById("OrderAdvCreditCardCounter") != null) {
+            var CreditCardCouter = document.getElementById("OrderAdvCreditCardCounter").value;
+            for (i = 1; i <= CreditCardCouter; i++) {
+                var OrderAdvCreditCardAmt = "OrderAdvCreditCardAmount" + i;
+                var CreditCardAmount = +removeCommas(document.getElementById(OrderAdvCreditCardAmt).innerHTML);
+                ans1 = ans1 + CreditCardAmount;
+            }
+        }
+
+        //for debit card amount
+        var ans2 = 0;
+        if (document.getElementById("OrderAdvDebitCardCounter") != null) {
+            var DebitCardCouter = document.getElementById("OrderAdvDebitCardCounter").value;
+            for (i = 1; i <= DebitCardCouter; i++) {
+                var OrderAdvDebitCardAmt = "OrderAdvDebitCardAmount" + i;
+                var DebitCardAmount = +removeCommas(document.getElementById(OrderAdvDebitCardAmt).innerHTML);
+                ans2 = ans2 + DebitCardAmount;
+            }
+        }
+
+        if (document.getElementById("OrderAdvCreditCardCounter") != null && document.getElementById("OrderAdvDebitCardCounter") != null) {
+            var ans = ans1 + ans2;
+        }
+        else if (document.getElementById("OrderAdvCreditCardCounter") != null) {
+            var ans = ans1;
+        }
+        else if (document.getElementById("OrderAdvDebitCardCounter") != null) {
+            var ans = ans2;
+        }
+        if (document.getElementById("OrderAdvCreditCardCounter") != null || document.getElementById("OrderAdvDebitCardCounter") != null) {
+            if (ans != 0) {
+                document.getElementById("OrderAdvanceCardDiv").style.display = 'inline';
+                document.getElementById("OrderAdvanceCardAmountDiv").style.display = 'inline';
+                document.getElementById("TotalOrderAdvanceCardAmount").style.display = 'inline';
+                document.getElementById("TotalOrderAdvanceCardAmount").innerHTML = addCommas(ans.toFixed(2));
+            }
+        }
+    });
+</script>
+
+@*CALCULATE ORDER ADVANCE CASH TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ans = 0;
+        if (document.getElementById("OrderAdvCashCounter") != null) {
+            var CashCouter = document.getElementById("OrderAdvCashCounter").value;
+            for (i = 1; i <= CashCouter; i++) {
+                var OrderAdvCashAmt = "OrderAdvCashAmount" + i;
+                var CashAmount = +removeCommas(document.getElementById(OrderAdvCashAmt).innerHTML);
+                ans = ans + CashAmount;
+            }
+            if (ans != 0) {
+                document.getElementById("OrderAdvanceCashDiv").style.display = 'inline';
+                document.getElementById("OrderAdvanceCashAmountDiv").style.display = 'inline';
+                document.getElementById("TotalOrderAdvanceCashAmount").style.display = 'inline';
+                document.getElementById("TotalOrderAdvanceCashAmount").innerHTML = addCommas(ans.toFixed(2));
+            }
+        }
+    });
+</script>
+
+@*CALCULATE ORDER ADVANCE CHEQUE TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ans = 0;
+        if (document.getElementById("OrderAdvChequeCounter") != null) {
+            var ChequeCouter = document.getElementById("OrderAdvChequeCounter").value;
+            for (i = 1; i <= ChequeCouter; i++) {
+                var OrderAdvChequeAmt = "OrderAdvChequeAmount" + i;
+                var ChequeAmount = +removeCommas(document.getElementById(OrderAdvChequeAmt).innerHTML);
+                ans = ans + ChequeAmount;
+            }
+            if (ans != 0) {
+                document.getElementById("OrderAdvanceChequeDiv").style.display = 'inline';
+                document.getElementById("OrderAdvanceChequeAmountDiv").style.display = 'inline';
+                document.getElementById("TotalOrderAdvanceChequeAmount").style.display = 'inline';
+                document.getElementById("TotalOrderAdvanceChequeAmount").innerHTML = addCommas(ans.toFixed(2));
+            }
+        }
+    });
+</script>
+
+@*CALCULATE BILL BALANCE RECEIVED TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ans = 0;
+        if (document.getElementById("BillBalanceReceivedCounter") != null) {
+            var BillBalCouter = document.getElementById("BillBalanceReceivedCounter").value;
+            for (i = 1; i <= BillBalCouter; i++) {
+                var BillBalRecAmt = "BillBalReceivedAmount" + i;
+                var BillBalAmount = +removeCommas(document.getElementById(BillBalRecAmt).innerHTML);
+                ans = ans + BillBalAmount;
+            }
+            if (ans != 0) {
+                document.getElementById("BillBalanceReceivedDiv").style.display = 'inline';
+                document.getElementById("BillBalanceReceivedAmountDiv").style.display = 'inline';
+                document.getElementById("TotalBillBalanceAmount").style.display = 'inline';
+                document.getElementById("TotalBillBalanceAmount").innerHTML = addCommas(ans.toFixed(2));
+            }
+        }
+    });
+</script>
+
+@*CALCULATE CREDIT INVOICE TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        //for adjust amount sales bill
+        var ans1 = 0;
+        if (document.getElementById("CreditInvForAdjAmtSB") != null) {
+            var CreditInvCouter1 = document.getElementById("CreditInvForAdjAmtSB").value;
+            for (i = 1; i <= CreditInvCouter1; i++) {
+                var adjamtsbcreditinvamount = "AdjAmtSBForCreditInvAmount" + i;
+                var CreditInvAdjAmtSB = +removeCommas(document.getElementById(adjamtsbcreditinvamount).innerHTML);
+                ans1 = ans1 + CreditInvAdjAmtSB;
+            }
+        }
+
+        //for cashier sales bill
+        var ans2 = 0;
+        if (document.getElementById("CreditInvForCashSB") != null) {
+            var CreditInvCouter2 = document.getElementById("CreditInvForCashSB").value;
+            for (i = 1; i <= CreditInvCouter2; i++) {
+                var cashsbcreditinvamount = "CashSBForCreditInvAmount" + i;
+                var CreditInvCashSB = +removeCommas(document.getElementById(cashsbcreditinvamount).innerHTML);
+                ans2 = ans2 + CreditInvCashSB;
+            }
+        }
+
+        if (document.getElementById("CreditInvForAdjAmtSB") != null && document.getElementById("CreditInvForCashSB") != null) {
+            var ans = ans1 + ans2;
+        }
+        else if (document.getElementById("CreditInvForAdjAmtSB") != null) {
+            var ans = ans1;
+        }
+        else if (document.getElementById("CreditInvForCashSB") != null) {
+            var ans = ans2;
+        }
+        if (document.getElementById("CreditInvForAdjAmtSB") != null || document.getElementById("CreditInvForCashSB") != null) {
+            if (ans != 0) {
+                document.getElementById("CreditInvoiceReceiptDiv").style.display = 'inline';
+                document.getElementById("CreditInvoiceReceiptAmountDiv").style.display = 'inline';
+                document.getElementById("TotalCreditInvReceiptAmount").style.display = 'inline';
+                document.getElementById("TotalCreditInvReceiptAmount").innerHTML = addCommas(ans.toFixed(2));
+            }
+        }
+    });
+</script>
+
+@*CALCULATE ADVANCE ADJUSTED TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        //for sales bill advance adjust
+        var ans1 = 0;
+        if (document.getElementById("AdvanceAdjustedForSB") != null) {
+            var AdvAdjCouter1 = document.getElementById("AdvanceAdjustedForSB").value;
+            for (i = 1; i <= AdvAdjCouter1; i++) {
+                var sbforadjadv = "SBForAdjustadvance" + i;
+                var SBAdvAdj = +removeCommas(document.getElementById(sbforadjadv).innerHTML);
+                ans1 = ans1 + SBAdvAdj;
+            }
+        }
+
+        //for retail bill advance adjust
+        var ans2 = 0;
+        if (document.getElementById("AdvanceAdjustedForRB") != null) {
+            var AdvAdjCouter2 = document.getElementById("AdvanceAdjustedForRB").value;
+            for (i = 1; i <= AdvAdjCouter2; i++) {
+                var rbforadjadv = "RBForAdjustadvance" + i;
+                var RBAdvAdj = +removeCommas(document.getElementById(rbforadjadv).innerHTML);
+                ans2 = ans2 + RBAdvAdj;
+            }
+        }
+
+        //for temporary cash memo advance adjust
+        var ans3 = 0;
+        if (document.getElementById("AdvanceAdjustedForTCM") != null) {
+            var AdvAdjCouter3 = document.getElementById("AdvanceAdjustedForTCM").value;
+            for (i = 1; i <= AdvAdjCouter3; i++) {
+                var tcmforadjadv = "TCMForAdjustadvance" + i;
+                var TCMAdvAdj = +removeCommas(document.getElementById(tcmforadjadv).innerHTML);
+                ans3 = ans3 + TCMAdvAdj;
+            }
+        }
+
+        if (document.getElementById("AdvanceAdjustedForSB") != null && document.getElementById("AdvanceAdjustedForRB") != null && document.getElementById("AdvanceAdjustedForTCM") != null) {
+            var ans = ans1 + ans2 + ans3;
+        }
+        else if (document.getElementById("AdvanceAdjustedForSB") != null && document.getElementById("AdvanceAdjustedForRB") != null) {
+            var ans = ans1 + ans2;
+        }
+        else if (document.getElementById("AdvanceAdjustedForRB") != null && document.getElementById("AdvanceAdjustedForTCM") != null) {
+            var ans = ans2 + ans3;
+        }
+        else if (document.getElementById("AdvanceAdjustedForTCM") != null && document.getElementById("AdvanceAdjustedForSB") != null) {
+            var ans = ans3 + ans1;
+        }
+        else if (document.getElementById("AdvanceAdjustedForSB") != null) {
+            var ans = ans1;
+        }
+        else if (document.getElementById("AdvanceAdjustedForRB") != null) {
+            var ans = ans2;
+        }
+        else if (document.getElementById("AdvanceAdjustedForTCM") != null) {
+            var ans = ans3;
+        }
+        if (document.getElementById("AdvanceAdjustedForSB") != null || document.getElementById("AdvanceAdjustedForRB") != null || document.getElementById("AdvanceAdjustedForTCM") != null) {
+            if (ans != 0) {
+                document.getElementById("AdvanceAdjustedDiv").style.display = 'inline';
+                document.getElementById("AdvanceAdjustedAmountDiv").style.display = 'inline';
+                document.getElementById("TotalAdjustedAdvanceAmount").style.display = 'inline';
+                document.getElementById("TotalAdjustedAdvanceAmount").innerHTML = addCommas(ans.toFixed(2));
+            }
+        }
+    });
+</script>
+
+@*CALCULATE PENDING BILL BALANCE TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var RBans = 0;
+        var TCMans = 0;
+        var ans = 0;
+        if (document.getElementById("RBPendingBillBalanceCounter") != null) {
+            var RBPendingBillBalCouter = document.getElementById("RBPendingBillBalanceCounter").value;
+            for (i = 1; i <= RBPendingBillBalCouter; i++) {
+                var rbpendbillbalamt = "RBPendingBillBalAmt" + i;
+                var RBPendingBillBalAmount = +removeCommas(document.getElementById(rbpendbillbalamt).innerHTML);
+                RBans = RBans + RBPendingBillBalAmount;
+            }
+        }
+        if (document.getElementById("TCMPendingBillBalanceCounter") != null) {
+            var TCMPendingBillBalCouter = document.getElementById("TCMPendingBillBalanceCounter").value;
+            for (i = 1; i <= TCMPendingBillBalCouter; i++) {
+                var tcmpendbillbalamt = "TCMPendingBillBalAmt" + i;
+                var TCMPendingBillBalAmount = +removeCommas(document.getElementById(tcmpendbillbalamt).innerHTML);
+                TCMans = TCMans + TCMPendingBillBalAmount;
+            }
+        }
+
+        if (RBans != 0 || TCMans != 0) {
+            ans = RBans + TCMans;
+            document.getElementById("PendingBillBalDiv").style.display = 'inline';
+            document.getElementById("PendingBillBalAmountDiv").style.display = 'inline';
+            document.getElementById("TotalPendingBillBalanceAmount").style.display = 'inline';
+            document.getElementById("TotalPendingBillBalanceAmount").innerHTML = addCommas(ans.toFixed(2));
+        }
+    });
+</script>
+
+
+@*CALCULATE CARD CHEQUE TOTAL AMOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var ans = 0;
+        if (document.getElementById("CardAndChequeHandoverCounter") != null) {
+            var CardChequeHandoverCouter = document.getElementById("CardAndChequeHandoverCounter").value;
+            for (i = 1; i <= CardChequeHandoverCouter; i++) {
+                var cardchequehandoveramount = "CardChequeHandoverAmount" + i;
+                var HandoverAmount = +removeCommas(document.getElementById(cardchequehandoveramount).innerHTML);
+                ans = ans + HandoverAmount;
+            }
+            if (ans != 0) {
+                document.getElementById("CreditCardHandedOverDiv").style.display = 'inline';
+                document.getElementById("CreditCardHandedOverAmountDiv").style.display = 'inline';
+                document.getElementById("TotalCardChequeHandoverAmount").style.display = 'inline';
+                document.getElementById("TotalCardChequeHandoverAmount").innerHTML = addCommas(ans.toFixed(2));
+            }
+        }
+    });
+</script>
+
+@*CALCULATE CREDIT SIDE GRAND TOTAL*@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var openingbalamt = 0;
+        var cashsalesamt = 0;
+        var orderadvancecardamt = 0;
+        var orderadvancecashamt = 0;
+        var orderadvancecachequeamt = 0;
+        var billbalancereceivedamt = 0;
+        var creditinvreceiptamt = 0;
+        var indirectincomeamt = 0;
+        var miscellaneousincomeamt = 0;
+
+        if (document.getElementById("OpeningBalanceAmount") != null) {
+            openingbalamt = +removeCommas(document.getElementById("OpeningBalanceAmount").innerHTML);
+        }
+        else {
+            openingbalamt = 0;
+        }
+
+        if (document.getElementById("CashSalesTotalAmount") != null) {
+            cashsalesamt = +removeCommas(document.getElementById("CashSalesTotalAmount").innerHTML);
+        }
+        else {
+            cashsalesamt = 0;
+        }
+
+        if (document.getElementById("TotalOrderAdvanceCardAmount") != null) {
+            orderadvancecardamt = +removeCommas(document.getElementById("TotalOrderAdvanceCardAmount").innerHTML);
+        }
+        else {
+            orderadvancecardamt = 0;
+        }
+
+        if (document.getElementById("TotalOrderAdvanceCashAmount") != null) {
+            orderadvancecashamt = +removeCommas(document.getElementById("TotalOrderAdvanceCashAmount").innerHTML);
+        }
+        else {
+            orderadvancecashamt = 0;
+        }
+
+        if (document.getElementById("TotalOrderAdvanceChequeAmount") != null) {
+            orderadvancecachequeamt = +removeCommas(document.getElementById("TotalOrderAdvanceChequeAmount").innerHTML);
+        }
+        else {
+            orderadvancecachequeamt = 0;
+        }
+
+        if (document.getElementById("TotalBillBalanceAmount") != null) {
+            billbalancereceivedamt = +removeCommas(document.getElementById("TotalBillBalanceAmount").innerHTML);
+        }
+        else {
+            billbalancereceivedamt = 0;
+        }
+
+        if (document.getElementById("TotalCreditInvReceiptAmount") != null) {
+            creditinvreceiptamt = +removeCommas(document.getElementById("TotalCreditInvReceiptAmount").innerHTML);
+        }
+        else {
+            creditinvreceiptamt = 0;
+        }
+
+        if (document.getElementById("IndirectIncomeTotalAmount") != null) {
+            indirectincomeamt = +removeCommas(document.getElementById("IndirectIncomeTotalAmount").innerHTML);
+        }
+        else {
+            indirectincomeamt = 0;
+        }
+
+        if (document.getElementById("TotalMiscellaneousAmount") != null) {
+            miscellaneousincomeamt = +removeCommas(document.getElementById("TotalMiscellaneousAmount").innerHTML);
+        }
+        else {
+            miscellaneousincomeamt = 0;
+        }
+
+        var TotalCreditGrandTotal = openingbalamt + cashsalesamt + orderadvancecardamt + orderadvancecashamt + orderadvancecachequeamt + billbalancereceivedamt + creditinvreceiptamt + indirectincomeamt + miscellaneousincomeamt;
+        document.getElementById("CreditSideGrandTotal").innerHTML = addCommas(TotalCreditGrandTotal.toFixed(2));
+
+    });
+</script>
+
+
+@*CALCULATE CLOSING BALANCE*@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var advanceadjustedamt = 0;
+        var pendingbillbalanceamt = 0;
+        var cardchequehandedoveramt = 0;
+        var cashhandedoveramt = 0;
+        var indirectexpensesamt = 0;
+        var closingbalamt = 0;
+        var creditsidegrandtotal = 0;
+
+        if (document.getElementById("TotalAdjustedAdvanceAmount") != null) {
+            advanceadjustedamt = +removeCommas(document.getElementById("TotalAdjustedAdvanceAmount").innerHTML);
+        }
+        else {
+            advanceadjustedamt = 0;
+        }
+
+        if (document.getElementById("TotalPendingBillBalanceAmount") != null) {
+            pendingbillbalanceamt = +removeCommas(document.getElementById("TotalPendingBillBalanceAmount").innerHTML);
+        }
+        else {
+            pendingbillbalanceamt = 0;
+        }
+
+        if (document.getElementById("TotalCardChequeHandoverAmount") != null) {
+            cardchequehandedoveramt = +removeCommas(document.getElementById("TotalCardChequeHandoverAmount").innerHTML);
+        }
+        else {
+            cardchequehandedoveramt = 0;
+        }
+
+        if (document.getElementById("TotalCashHandover") != null) {
+            cashhandedoveramt = +removeCommas(document.getElementById("TotalCashHandover").innerHTML);
+        }
+        else {
+            cashhandedoveramt = 0;
+        }
+
+        if (document.getElementById("IndirectExpensesTotalAmount") != null) {
+            indirectexpensesamt = +removeCommas(document.getElementById("IndirectExpensesTotalAmount").innerHTML);
+        }
+        else {
+            indirectexpensesamt = 0;
+        }
+
+        if (document.getElementById("CreditSideGrandTotal") != null) {
+            creditsidegrandtotal = +removeCommas(document.getElementById("CreditSideGrandTotal").innerHTML);
+        }
+        else {
+            creditsidegrandtotal = 0;
+        }
+
+        closingbalamt = creditsidegrandtotal - (advanceadjustedamt + pendingbillbalanceamt + cardchequehandedoveramt + cashhandedoveramt + indirectexpensesamt);
+        document.getElementById("TotalClosingBal").innerHTML = addCommas(closingbalamt.toFixed(2));
+    });
+</script>
+
+@*CALCULATE DEBIT SIDE GRAND TOTAL*@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var advanceadjustedamt = 0;
+        var pendingbillbalanceamt = 0;
+        var cardchequehandedoveramt = 0;
+        var cashhandedoveramt = 0;
+        var indirectexpensesamt = 0;
+        var closingbalamt = 0;
+
+        if (document.getElementById("TotalAdjustedAdvanceAmount") != null) {
+            advanceadjustedamt = +removeCommas(document.getElementById("TotalAdjustedAdvanceAmount").innerHTML);
+        }
+        else {
+            advanceadjustedamt = 0;
+        }
+
+        if (document.getElementById("TotalPendingBillBalanceAmount") != null) {
+            pendingbillbalanceamt = +removeCommas(document.getElementById("TotalPendingBillBalanceAmount").innerHTML);
+        }
+        else {
+            pendingbillbalanceamt = 0;
+        }
+
+        if (document.getElementById("TotalCardChequeHandoverAmount") != null) {
+            cardchequehandedoveramt = +removeCommas(document.getElementById("TotalCardChequeHandoverAmount").innerHTML);
+        }
+        else {
+            cardchequehandedoveramt = 0;
+        }
+
+        if (document.getElementById("TotalCashHandover") != null) {
+            cashhandedoveramt = +removeCommas(document.getElementById("TotalCashHandover").innerHTML);
+        }
+        else {
+            cashhandedoveramt = 0;
+        }
+
+        if (document.getElementById("IndirectExpensesTotalAmount") != null) {
+            indirectexpensesamt = +removeCommas(document.getElementById("IndirectExpensesTotalAmount").innerHTML);
+        }
+        else {
+            indirectexpensesamt = 0;
+        }
+
+        if (document.getElementById("TotalClosingBal") != null) {
+            closingbalamt = +removeCommas(document.getElementById("TotalClosingBal").innerHTML);
+        }
+        else {
+            closingbalamt = 0;
+        }
+        var TotalDebitGrandTotal = advanceadjustedamt + pendingbillbalanceamt + cardchequehandedoveramt + cashhandedoveramt + indirectexpensesamt + closingbalamt;
+        document.getElementById("DebitSideGrandTotal").innerHTML = addCommas(TotalDebitGrandTotal.toFixed(2));
+
+    });
+</script>
+
+<div class="col-md-12 col-lg-12" style="border: 1px solid #000;">
+    <div class="col-md-6 col-lg-6" style="border-right: 1px solid #000;">
+        <div class="row">
+            <div class="row" style="background-color: #fff; border-bottom: 1px solid #808080;">
+                <label style="font-size: 16px; color: red; text-align: center; width: 100%; margin-top: 5px;">CREDIT</label>
+            </div>
+
+                @*LEFT SIDE DETAILS*@
+                <div class="row">
+
+                    <div class="col-md-12 col-lg-12">
+                        <div class="row">
+                            <div class="col-md-9 col-lg-9">
+                                <div style="height: 10px"></div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="row">
+                                        <label style="font-size: 16px"><u>Details:</u></label>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-lg-3" style="text-align: right">
+                                <div style="height: 10px"></div>
+                                <div class="col-md-12 col-lg-12">
+                                    <label style="font-size: 16px;"><u>Amount</u></label>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-12">
+                        @*OPENING BALANCE*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="OpeningBalanceDiv">
+                                <label style="font-size: 14px">OPENING BALANCE:</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                        @*OPENING BALANCE AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            <div class="row" id="OpeningBalanceAmountDiv">
+                                @{
+                                    double TotalOpeningBalance = Convert.ToDouble(Session["TotalOpeningBalance"]);
+                                    var totalopeningbal = Convert.ToDouble(@TotalOpeningBalance);
+                                    var TOTALOPENINGBALANCE = totalopeningbal.ToString("#,###.00##");
+                                }
+                                <div class="col-md-12 col-lg-12">
+                                    <label id="OpeningBalanceAmount" style="font-size: 14px; color: blue">@TOTALOPENINGBALANCE</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-12">
+                        @*FOR CASH SALES*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="CashSalesDiv">
+                                <label style="font-size: 14px">CASH SALES:</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                        @*FOR CASH SALES AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            <div class="row" id="CashSalesAmount">
+                                @{
+                                    var CashSalesAmount = Session["CashSalesAmount"].ToString();
+                                    var cashsales = Convert.ToDouble(@CashSalesAmount);
+                                    var CASHSALESAMOUNT = cashsales.ToString("#,###.00##");
+                                }
+                                <div class="col-md-12 col-lg-12">
+                                    <label id="CashSalesTotalAmount" style="font-size: 14px; color: blue">@CASHSALESAMOUNT</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-12">
+                        @*ORDER ADVANCE IN CARD*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="OrderAdvanceCardDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">ORDER ADVANCE-CARD:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            var CashierSOListForCard = Session["CashierSOListForCard"] as List<CodeFirstEntities.CashierSalesOrder>;
+                                            foreach (var data in CashierSOListForCard)
+                                            {
+                                                if (@data.CreditCardAmount != 0 || @data.DebitCardAmount != 0)
+                                                {
+                                            <label style="font-weight: normal">Order No.</label>
+                                            <label style="font-weight: normal">@data.OrderNo</label>
+                                            <br />
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        @*ORDER ADVANCE IN CARD AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            <div class="row" id="OrderAdvanceCardAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 25px"></div>
+                                    </div>
+                                    @{
+                                        var CashierSOListForCardAmount = Session["CashierSOListForCard"] as List<CodeFirstEntities.CashierSalesOrder>;
+                                        int OrderAdvCreditCardCounter = 1;
+                                        int OrderAdvDebitCardCounter = 1;
+                                        foreach (var data in CashierSOListForCardAmount)
+                                        {
+                                            if (@data.CreditCardAmount != 0)
+                                            {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                                string OrderAdvCreditCardAmt = "OrderAdvCreditCardAmount" + OrderAdvCreditCardCounter;
+                                                var creditcardamt = Convert.ToDouble(@data.CreditCardAmount);
+                                                var CREDITCARDAMOUNT = creditcardamt.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@OrderAdvCreditCardAmt">@CREDITCARDAMOUNT</label>
+                                            @{
+                                                OrderAdvCreditCardCounter++;
+                                            }
+                                        </div>
+                                            }
+                                            else if (@data.DebitCardAmount != 0)
+                                            {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                                string OrderAdvDebitCardAmt = "OrderAdvDebitCardAmount" + OrderAdvDebitCardCounter;
+                                                var debitcardamt = Convert.ToDouble(@data.DebitCardAmount);
+                                                var DEBITCARDAMOUNT = debitcardamt.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@OrderAdvDebitCardAmt">@DEBITCARDAMOUNT</label>
+                                            @{
+                                                OrderAdvDebitCardCounter++;
+                                            }
+                                        </div>
+                                            }
+                                        }
+                                        var TotalOrderAdvCreditCardCounter = (OrderAdvCreditCardCounter - 1);
+                                        var TotalOrderAdvDebitCardCounter = (OrderAdvDebitCardCounter - 1);
+                                        <input type="hidden" id="OrderAdvCreditCardCounter" name="OrderAdvCreditCardCounter" value="@TotalOrderAdvCreditCardCounter"/>
+                                        <input type="hidden" id="OrderAdvDebitCardCounter" name="OrderAdvDebitCardCounter" value="@TotalOrderAdvDebitCardCounter"/>
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <label id="TotalOrderAdvanceCardAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-12">
+                        @*ORDER ADVANCE IN CASH*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="OrderAdvanceCashDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">ORDER ADVANCE-CASH:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            var CashierSOListForCash = Session["CashierSOListForCash"] as List<CodeFirstEntities.CashierSalesOrder>;
+                                            foreach (var data in CashierSOListForCash)
+                                            {
+                                                if (data.TotalCash != 0)
+                                                {
+                                            <label style="font-weight: normal">Order No.</label>
+                                            <label style="font-weight: normal">@data.OrderNo</label>
+                                            <br />
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        @*ORDER ADVANCE IN CASH AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            <div class="row" id="OrderAdvanceCashAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 27px"></div>
+                                    </div>
+                                    @{
+                                        var CashierSOListForCashAmount = Session["CashierSOListForCash"] as List<CodeFirstEntities.CashierSalesOrder>;
+                                        int OrderAdvCashCounter = 1;
+                                        foreach (var data in CashierSOListForCashAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            if (data.TotalCash != 0)
+                                            {
+                                                string OrderAdvCashAmt = "OrderAdvCashAmount" + OrderAdvCashCounter;
+                                                var actualcashamount = data.AdvancePayment - data.CreditCardAmount - data.DebitCardAmount - data.ChequeAmount;
+                                                var cashamt = Convert.ToDouble(@actualcashamount);
+                                                var CASHAMOUNT = cashamt.ToString("#,###.00##");
+                                                <label style="font-weight: normal" id="@OrderAdvCashAmt">@CASHAMOUNT</label>
+                                                OrderAdvCashCounter++;
+                                            }
+                                            }
+                                        </div>
+                                        }
+                                        var TotalOrderAdvCashCounter = (OrderAdvCashCounter - 1);
+                                        <input type="hidden" id="OrderAdvCashCounter" name="OrderAdvCashCounter" value="@TotalOrderAdvCashCounter"/>
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <label id="TotalOrderAdvanceCashAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-12">
+                        @*ORDER ADVANCE IN CHEQUE*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="OrderAdvanceChequeDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">ORDER ADVANCE-CHEQUE:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            var CashierSOListForCheque = Session["CashierSOListForCheque"] as List<CodeFirstEntities.CashierSalesOrder>;
+                                            foreach (var data in CashierSOListForCheque)
+                                            {
+                                                if (data.ChequeAmount != 0)
+                                                {
+                                            <label style="font-weight: normal">Order No.</label>
+                                            <label style="font-weight: normal">@data.OrderNo</label>
+                                            <br />
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                            </div>
+                        </div>
+                        @*ORDER ADVANCE IN CHEQUE AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            <div class="row" id="OrderAdvanceChequeAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 27px"></div>
+                                    </div>
+                                    @{
+                                        var CashierSOListForChequeAmount = Session["CashierSOListForCheque"] as List<CodeFirstEntities.CashierSalesOrder>;
+                                        int OrderAdvChequeCounter = 1;
+                                        foreach (var data in CashierSOListForChequeAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            if (data.ChequeAmount != 0)
+                                            {
+                                                string OrderAdvChequeAmt = "OrderAdvChequeAmount" + OrderAdvChequeCounter;
+                                                var chequeamount = Convert.ToDouble(@data.ChequeAmount);
+                                                var CHEQUEAMOUNT = chequeamount.ToString("#,###.00##");
+                                                <label style="font-weight: normal" id="@OrderAdvChequeAmt">@CHEQUEAMOUNT</label>
+                                                OrderAdvChequeCounter++;
+                                            }
+                                            }
+                                        </div>
+                                        }
+                                        var TotalOrderAdvChequeCounter = (OrderAdvChequeCounter - 1);
+                                        <input type="hidden" id="OrderAdvChequeCounter" name="OrderAdvChequeCounter" value="@TotalOrderAdvChequeCounter"/>
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <label id="TotalOrderAdvanceChequeAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-12">
+                        @*BILL BALANCE FOR RETAIL BILL*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="BillBalanceReceivedDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">BILL BALANCE RECEIVED:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            var CashierRBListForBillBalance = Session["CashierRBListForBillBalance"] as List<CodeFirstEntities.CashierRetailBill>;
+                                            foreach (var data in CashierRBListForBillBalance)
+                                            {
+                                            <label style="font-weight: normal">Retail Bill No.</label>
+                                            <label style="font-weight: normal">@data.RetailBillNo</label>
+                                            <br />
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*BILL BALANCE FOR RETAIL BILL AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            <div class="row" id="BillBalanceReceivedAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 27px"></div>
+                                    </div>
+                                    @{
+                                        var CashierRBListForBillBalanceAmount = Session["CashierRBListForBillBalance"] as List<CodeFirstEntities.CashierRetailBill>;
+                                        int BillBalReceivedCounter = 1;
+                                        foreach (var data in CashierRBListForBillBalanceAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            string BillBalRecAmt = "BillBalReceivedAmount" + BillBalReceivedCounter;
+                                            var payment = Convert.ToDouble(@data.Payment);
+                                            var PAYMENT = payment.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@BillBalRecAmt">@PAYMENT</label>
+                                            @{
+                                            BillBalReceivedCounter++;
+                                            }
+                                        </div>
+                                        <input type="hidden" id="BillBalanceReceivedCounter" name="BillBalanceReceivedCounter" value="@CashierRBListForBillBalanceAmount.Count()"/>
+                                        }
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <label id="TotalBillBalanceAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-12">
+                        @*CREDIT INVOICE RECEIPT FOR SALES BILL*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="CreditInvoiceReceiptDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">CREDIT INVOICE RECEIPT:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            //for adjust amount sales bill
+                                            var AdjAmtSBListForCreditInvRec = Session["AdjAmtSBListForCreditInvRec"] as List<CodeFirstEntities.SalesBillAdjAmtDetail>;
+                                            foreach (var data in AdjAmtSBListForCreditInvRec)
+                                            {
+                                            <label style="font-weight: normal">Sales Bill No.</label>
+                                            <label style="font-weight: normal">@data.SalesBillNo</label>
+                                            <label>&nbsp;-&nbsp;</label>
+                                            <label style="font-weight: normal">@data.AdjustedBill</label>
+                                            <br />
+                                            }
+
+                                            //for cashier sales bill
+                                            var CashierSBListForCreditInvRec = Session["CashierSBListForCreditInvRec"] as List<CodeFirstEntities.CashierSalesBill>;
+                                            foreach (var data in CashierSBListForCreditInvRec)
+                                            {
+                                            <label style="font-weight: normal">Sales Bill No.</label>
+                                            <label style="font-weight: normal">@data.SalesBillNo</label>
+                                            <br />
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @*CREDIT INVOICE RECEIPT FOR SALES BILL AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            <div class="row" id="CreditInvoiceReceiptAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 27px"></div>
+                                    </div>
+                                    @{
+                                        var AdjAmtSBListForCreditInvRecAmount = Session["AdjAmtSBListForCreditInvRec"] as List<CodeFirstEntities.SalesBillAdjAmtDetail>;
+                                        int AdjAmtSBCreditInvCounter = 1;
+                                        foreach (var data in AdjAmtSBListForCreditInvRecAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            string adjamtsbcreditinvamount = "AdjAmtSBForCreditInvAmount" + AdjAmtSBCreditInvCounter;
+                                            var adjamount = Convert.ToDouble(@data.AdjustedAmount);
+                                            var ADJUSTAMOUNT = adjamount.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@adjamtsbcreditinvamount">@ADJUSTAMOUNT</label>
+                                            @{
+                                            AdjAmtSBCreditInvCounter++;
+                                            }
+                                            <input type="hidden" id="CreditInvForAdjAmtSB" name="CreditInvForAdjAmtSB" value="@AdjAmtSBListForCreditInvRecAmount.Count()"/>
+                                        </div>
+                                        }
+
+                                        var CashierSBListForCreditInvRecAmount = Session["CashierSBListForCreditInvRec"] as List<CodeFirstEntities.CashierSalesBill>;
+                                        int CashSBCreditInvCounter = 1;
+                                        foreach (var data in CashierSBListForCreditInvRecAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            string cashsbcreditinvamount = "CashSBForCreditInvAmount" + CashSBCreditInvCounter;
+                                            var payment = Convert.ToDouble(@data.Payment);
+                                            var PAYMENT = payment.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@cashsbcreditinvamount">@PAYMENT</label>
+                                            @{
+                                            CashSBCreditInvCounter++;
+                                            }
+                                            <input type="hidden" id="CreditInvForCashSB" name="CreditInvForCashSB" value="@CashierSBListForCreditInvRecAmount.Count()"/>
+                                        </div>
+                                        }
+                                        <div class="col-md-12 col-lg-12">
+                                            <label id="TotalCreditInvReceiptAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                        </div>
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 col-lg-12">
+                        @*INDIRECT INCOME FOR RETAIL BILL*@
+                        <div class="col-md-9 col-lg-9">
+                            <div class="row" id="IndirectIncomeDiv">
+                                <label style="font-size: 14px">INDIRECT INCOME:</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                        @*INDIRECT INCOME FOR RETAIL BILL AMOUNT*@
+                        <div class="col-md-3 col-lg-3" style="text-align: right">
+                            @*FOR INDIRECT INCOME AMOUNT*@
+                            <div class="row" id="IndirectIncomeAmount">
+                                @{
+                                    var IndirectIncomeAmount = Session["IndirectIncome"].ToString();
+                                    var indirectincm = Convert.ToDouble(@IndirectIncomeAmount);
+                                    var INDIRECTINCOME = indirectincm.ToString("#,###.00##");
+                                }
+                                <div class="col-md-12 col-lg-12">
+                                    <label id="IndirectIncomeTotalAmount" style="font-size: 14px; color: blue">@INDIRECTINCOME</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-6"">
+        <div class="row">
+            <div class="row" style="background-color: #fff; border-bottom: 1px solid #808080;">
+                <label style="font-size: 16px; color: red; text-align: center; width: 100%; padding-top: 5px;">DEBIT</label>
+            </div>
+        
+            @*RIGHT SIDE DETAILS*@
+            <div class="row">
+
+                <div class="col-md-12 col-lg-12">
+                    <div class="col-md-9 col-lg-9">
+                        <div style="height: 10px"></div>
+                        <label style="font-size: 16px"><u>Details:</u></label>
+                        <div class="col-md-12 col-lg-12">
+                            <div style="height: 10px"></div>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-lg-3" style="text-align: right">
+                        <div style="height: 10px"></div>
+                        <div class="row">
+                            <label style="font-size: 16px; text-align: right"><u>Amount</u></label>
+                        </div>
+                        <div class="col-md-12 col-lg-12">
+                            <div style="height: 10px"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-12">
+                    @*ADVANCE ADJUSTED*@
+                    <div class="col-md-9 col-lg-9">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row" id="AdvanceAdjustedDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">ADVANCE ADJUSTED:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            var RBListForAdvanceAdjust = Session["RBListForAdvanceAdjust"] as List<CodeFirstEntities.RetailBillAdjAmtDetail>;
+                                            foreach (var data in RBListForAdvanceAdjust)
+                                            {
+                                            <label style="font-weight: normal">Order No.</label>
+                                            <label style="font-weight: normal">@data.AdjustedBill</label>
+                                            <label>&nbsp;-&nbsp;</label>
+                                            <label style="font-weight: normal">@data.RetailBillNo</label>
+                                            <br />
+                                            }
+
+                                            var TCMListForAdvanceAdjust = Session["TCMListForAdvanceAdjust"] as List<CodeFirstEntities.TemporaryCashMemoAdjAmtDetail>;
+                                            foreach (var data in TCMListForAdvanceAdjust)
+                                            {
+                                            <label style="font-weight: normal">Order No.</label>
+                                            <label style="font-weight: normal">@data.AdjustedBill</label>
+                                            <label>&nbsp;-&nbsp;</label>
+                                            <label style="font-weight: normal">@data.TempCashMemoNo</label>
+                                            <br />
+                                            }
+
+                                            var SBListForAdvanceAdjust = Session["SBListForAdvanceAdjust"] as List<CodeFirstEntities.SalesBillAdjAmtDetail>;
+                                            foreach (var data in SBListForAdvanceAdjust)
+                                            {
+                                            <label style="font-weight: normal">Order No.</label>
+                                            <label style="font-weight: normal">@data.AdjustedBill</label>
+                                            <label>&nbsp;-&nbsp;</label>
+                                            <label style="font-weight: normal">@data.SalesBillNo</label>
+                                            <br />
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*ADVANCE ADJUSTED AMOUNT*@
+                    <div class="col-md-3 col-lg-3" style="text-align: right">
+                        <div class="row">
+                            <div class="row" id="AdvanceAdjustedAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 26px"></div>
+                                    </div>
+                                    @{
+                                        var RBListForAdvanceAdjustAmount = Session["RBListForAdvanceAdjust"] as List<CodeFirstEntities.RetailBillAdjAmtDetail>;
+                                        int RBAdjAdvCounter = 1;
+                                        foreach (var data in RBListForAdvanceAdjustAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            string rbforadjadv = "RBForAdjustadvance" + RBAdjAdvCounter;
+                                            var adjamount = Convert.ToDouble(@data.AdjustedAmount);
+                                            var ADJUSTAMOUNT = adjamount.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@rbforadjadv">@ADJUSTAMOUNT</label>
+                                            @{
+                                            RBAdjAdvCounter++;
+                                            }
+                                            <input type="hidden" id="AdvanceAdjustedForRB" name="AdvanceAdjustedForRB" value="@RBListForAdvanceAdjustAmount.Count()"/>
+                                        </div>
+                                        }
+
+                                        var TCMListForAdvanceAdjustAmount = Session["TCMListForAdvanceAdjust"] as List<CodeFirstEntities.TemporaryCashMemoAdjAmtDetail>;
+                                        int TCMAdjAdvCounter = 1;
+                                        foreach (var data in TCMListForAdvanceAdjustAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            string tcmforadjadv = "TCMForAdjustadvance" + TCMAdjAdvCounter;
+                                            var adjamount = Convert.ToDouble(@data.AdjustedAmount);
+                                            var ADJUSTAMOUNT = adjamount.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@tcmforadjadv">@ADJUSTAMOUNT</label>
+                                            @{
+                                            TCMAdjAdvCounter++;
+                                            }
+                                            <input type="hidden" id="AdvanceAdjustedForTCM" name="AdvanceAdjustedForTCM" value="@TCMListForAdvanceAdjustAmount.Count()"/>
+                                        </div>
+                                        }
+
+                                        var SBListForAdvanceAdjustAmount = Session["SBListForAdvanceAdjust"] as List<CodeFirstEntities.SalesBillAdjAmtDetail>;
+                                        int SBAdjAdvCounter = 1;
+                                        foreach (var data in SBListForAdvanceAdjustAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            string sbforadjadv = "SBForAdjustadvance" + SBAdjAdvCounter;
+                                            var adjamount = Convert.ToDouble(@data.AdjustedAmount);
+                                            var ADJUSTAMOUNT = adjamount.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@sbforadjadv">@ADJUSTAMOUNT</label>
+                                            @{
+                                            SBAdjAdvCounter++;
+                                            }
+                                            <input type="hidden" id="AdvanceAdjustedForSB" name="AdvanceAdjustedForSB" value="@SBListForAdvanceAdjustAmount.Count()"/>
+                                        </div>
+                                        }
+                                        <div class="col-md-12 col-lg-12">
+                                            <label id="TotalAdjustedAdvanceAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                        </div>
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-12">
+                    @*PENDING BILL BALANCE*@
+                    <div class="col-md-9 col-lg-9">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row" id="PendingBillBalDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">PENDING BILL BALANCE AMOUNT:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            string RetailBillNo = string.Empty;
+                                            string RBPendingBillBalanceAmount = string.Empty;
+                                            int RBListForPendingBillBalanceCounter = Convert.ToInt32(Session["RBListForPendingBillBalanceCounter"]);
+                                            string[] RBListForPendingBillBalance = Session["RBListForPendingBillBalance"] as string[];
+                                            string[] RBAmount = Session["RBListForPendingBillBalanceAmount"] as string[];
+                                            for (int i = 0; i < RBListForPendingBillBalanceCounter; i++)
+                                            {
+                                                RBPendingBillBalanceAmount = RBAmount[i];
+                                                if (Convert.ToInt32(RBPendingBillBalanceAmount) != 0)
+                                                {
+                                                    RetailBillNo = RBListForPendingBillBalance[i];
+                                            <label style="font-weight: normal">Retail Bill No.</label>
+                                            <label style="font-weight: normal">@RetailBillNo</label><br />
+                                                }
+                                            }
+
+                                            string TempCashMemoNo = string.Empty;
+                                            string TCMPendingBillBalanceAmount = string.Empty;
+                                            int TCMListForPendingBillBalanceCounter = Convert.ToInt32(Session["TCMListForPendingBillBalanceCounter"]);
+                                            string[] TCMListForPendingBillBalance = Session["TCMListForPendingBillBalance"] as string[];
+                                            string[] TCMAmount = Session["TCMListForPendingBillBalanceAmount"] as string[];
+                                            for (int i = 0; i < TCMListForPendingBillBalanceCounter; i++)
+                                            {
+                                                TCMPendingBillBalanceAmount = TCMAmount[i];
+                                                if (Convert.ToInt32(TCMPendingBillBalanceAmount) != 0)
+                                                {
+                                                    TempCashMemoNo = TCMListForPendingBillBalance[i];
+                                            <label style="font-weight: normal">Temp Cash Memo No.</label>
+                                            <label style="font-weight: normal">@TempCashMemoNo</label><br />
+                                                }
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*PENDING BILL BALANCE AMOUNT*@
+                    <div class="col-md-3 col-lg-3" style="text-align: right">
+                        <div class="row">
+                            <div class="row" id="PendingBillBalAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 27px"></div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            string RetailBillPendingBillBalanceAmount = string.Empty;
+                                            int RBListForPendingBillBalanceAmountCounter = Convert.ToInt32(Session["RBListForPendingBillBalanceCounter"]);
+                                            string[] RBListForPendingBillBalanceAmount = Session["RBListForPendingBillBalanceAmount"] as string[];
+                                            int RBPendingBillBalCounter = 1;
+                                            for (int i = 0; i < RBListForPendingBillBalanceAmountCounter; i++)
+                                            {
+                                                RetailBillPendingBillBalanceAmount = RBListForPendingBillBalanceAmount[i];
+                                                if (Convert.ToInt32(RetailBillPendingBillBalanceAmount) != 0)
+                                                {
+                                                    string rbpendingbillbalamt = "RBPendingBillBalAmt" + RBPendingBillBalCounter;
+                                                    var amount = Convert.ToDouble(@RetailBillPendingBillBalanceAmount);
+                                                    var ans = amount.ToString("#,###.00##");
+                                            <label style="font-weight: normal" id="@rbpendingbillbalamt">@ans</label>
+                                            <br />
+                                                    RBPendingBillBalCounter++;
+                                                }
+                                            }
+                                            var RBPendingBillBalanceCounterValue = (RBPendingBillBalCounter - 1);
+                                            <input type="hidden" id="RBPendingBillBalanceCounter" name="RBPendingBillBalanceCounter" value="@RBPendingBillBalanceCounterValue"/>
+
+
+                                            string TempCashMemoPendingBillBalanceAmount = string.Empty;
+                                            int TCMListForPendingBillBalanceAmountCounter = Convert.ToInt32(Session["TCMListForPendingBillBalanceCounter"]);
+                                            string[] TCMListForPendingBillBalanceAmount = Session["TCMListForPendingBillBalanceAmount"] as string[];
+                                            int TCMPendingBillBalCounter = 1;
+                                            for (int i = 0; i < TCMListForPendingBillBalanceAmountCounter; i++)
+                                            {
+                                                TempCashMemoPendingBillBalanceAmount = TCMListForPendingBillBalanceAmount[i];
+                                                if (Convert.ToInt32(TempCashMemoPendingBillBalanceAmount) != 0)
+                                                {
+                                                    string tcmpendingbillbalamt = "TCMPendingBillBalAmt" + TCMPendingBillBalCounter;
+                                                    var amount = Convert.ToDouble(@TempCashMemoPendingBillBalanceAmount);
+                                                    var ans = amount.ToString("#,###.00##");
+                                            <label style="font-weight: normal" id="@tcmpendingbillbalamt">@ans</label>
+                                            <br />
+                                                    TCMPendingBillBalCounter++;
+                                                }
+                                            }
+                                            var TCMPendingBillBalanceCounterValue = (TCMPendingBillBalCounter - 1);
+                                            <input type="hidden" id="TCMPendingBillBalanceCounter" name="TCMPendingBillBalanceCounter" value="@TCMPendingBillBalanceCounterValue"/>
+                                        }
+                                        <label id="TotalPendingBillBalanceAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-12">
+                    @*CREDIT CARD HANDED OVER*@
+                    <div class="col-md-9 col-lg-9">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row" id="CreditCardHandedOverDiv" style="display: none">
+                                <div class="row">
+                                    <label style="font-size: 14px">CARD/CHEQUE HANDED OVER:</label>
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+                                            var CreditCardHandList = Session["CreditCardHandList"] as List<CodeFirstEntities.CardChequeHandover>;
+                                            foreach (var data in CreditCardHandList)
+                                            {
+                                            <label style="font-weight: normal">Card/Cheque No.</label>
+                                            <label style="font-weight: normal">@data.CardChequeNo</label>
+                                            <br />
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 24px"></div>
+                                    </div>
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*CREDIT CARD HANDED OVER AMOUNT*@
+                    <div class="col-md-3 col-lg-3" style="text-align: right">
+                        <div class="row">
+                            <div class="row" id="CreditCardHandedOverAmountDiv" style="display: none">
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 29px"></div>
+                                    </div>
+                                    @{
+                                        var CreditCardHandListAmount = Session["CreditCardHandList"] as List<CodeFirstEntities.CardChequeHandover>;
+                                        int CardChequeHandoverCounter = 1;
+                                        foreach (var data in CreditCardHandListAmount)
+                                        {
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+                                            string cardchequehandoveramount = "CardChequeHandoverAmount" + CardChequeHandoverCounter;
+                                            var amount = Convert.ToDouble(@data.CardChequeAmount);
+                                            var AMOUNT = amount.ToString("#,###.00##");
+                                            }
+                                            <label style="font-weight: normal" id="@cardchequehandoveramount">@AMOUNT</label>
+                                            @{
+                                            CardChequeHandoverCounter++;
+                                            }
+                                            <input type="hidden" id="CardAndChequeHandoverCounter" name="CardAndChequeHandoverCounter" value="@CreditCardHandListAmount.Count()"/>
+                                        </div>
+                                        }
+                                        <div class="col-md-12 col-lg-12">
+                                            <label id="TotalCardChequeHandoverAmount" style="display: none; font-size: 14px; color: blue"></label>
+                                        </div>
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <div style="height: 10px"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-12">
+                    @*CASH HANDED OVER*@
+                    <div class="col-md-9 col-lg-9">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row" id="CashHandedOverDiv">
+                                <label style="font-size: 14px">CASH HANDED OVER:</label>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*CASH HANDED OVER AMOUNT*@
+                    <div class="col-md-3 col-lg-3" style="text-align: right">
+                        <div class="row">
+                            <div class="row" id="CashHandedOverAmountDiv">
+                                @{
+                                    double cashhandoveramount = 0; ;
+                                    foreach (var data in Model.CashHandoverList)
+                                    {
+                                        cashhandoveramount = cashhandoveramount + Convert.ToDouble(data.HandoverCash);
+                                    }
+                                    var handovercash = Convert.ToDouble(@cashhandoveramount);
+                                    var HANDOVERCASH = handovercash.ToString("#,###.00##");
+                                }
+                                <div class="col-md-12 col-lg-12">
+                                    <label id="TotalCashHandover" style="font-size: 14px; color: blue">@HANDOVERCASH</label>
+                                </div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-12">
+                    @*INDIRECT EXPENSES*@
+                    <div class="col-md-9 col-lg-9">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row" id="IndirectExpensesDiv">
+                                <label style="font-size: 14px">INDIRECT EXPENSES:</label>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @*INDIRECT EXPENSES AMOUNT*@
+                    <div class="col-md-3 col-lg-3" style="text-align: right">
+                        <div class="row">
+                            <div class="row" id="IndirectExpensesAmount">
+                                @{
+                                    var IndirectExpensesAmount = Session["IndirectExpenses"].ToString();
+                                    var indirectexpense = Convert.ToDouble(@IndirectExpensesAmount);
+                                    var INDIRECTEXPPENSES = indirectexpense.ToString("#,###.00##");
+                                }
+                                <div class="col-md-12 col-lg-12">
+                                    <label id="IndirectExpensesTotalAmount" style="font-size: 14px; color: blue">@INDIRECTEXPPENSES</label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12 col-lg-12">
+                    @*CLOSING BALANCE*@
+                    <div class="col-md-9 col-lg-9">
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row" id="ClosingBalanceDiv">
+                                <label style="font-size: 14px">CLOSING BALANCE:</label>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                    </div>
+                    @*CLOSING BALANCE AMOUNT*@
+                    <div class="col-md-3 col-lg-3" style="text-align: right">
+                        <div class="row">
+                            <div class="row" id="ClosingBalanceAmountDiv">
+                                <div class="col-md-12 col-lg-12">
+                                    <label id="TotalClosingBal" style="font-size: 14px; color: blue"></label>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+       
+            </div>
+    </div>
+</div>
+
+
+@*GRAND TOTAL*@
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-6 col-lg-6">
+        <div class="col-md-8 col-lg-8" style="text-align: right">
+            <div class="row">
+                <label style="font-size: 16px">Grand Total:</label>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-4" style="text-align: right">
+            <div class="row">
+                <label style="font-size: 16px; color: blue" id="CreditSideGrandTotal"></label>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 col-lg-6">
+        <div class="col-md-12 col-lg-12">
+            <div class="col-md-8 col-lg-8" style="text-align: right">
+                <div class="row">
+                    <div class="row">
+                        <label style="font-size: 16px">Grand Total:</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4" style="text-align: right">
+                <div class="row">
+                    <div class="row">
+                        <div class="row">
+                            <label style="font-size: 16px; color: blue" id="DebitSideGrandTotal"></label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+

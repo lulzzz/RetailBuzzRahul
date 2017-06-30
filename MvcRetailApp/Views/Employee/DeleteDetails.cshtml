@@ -1,0 +1,280 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "DeleteDetails";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<!--code for on hover image-->
+@*<style>
+    #picture {
+        width: 100px;
+        height: 100px;
+        background-color: none;
+    }
+
+        #picture a.small {
+            display: block;
+            width: 100px;
+            height: 100px;
+            text-decoration: none;
+            background: none;
+            top: 0;
+            left: 0;
+            border: 0;
+        }
+
+        #picture a img {
+            border: 0;
+        }
+
+        #picture a.small:hover {
+            text-decoration: none;
+            background-color: #000000;
+            color: #000000;
+        }
+
+        #picture a .large {
+            display: block;
+            position: absolute;
+            width: 0;
+            height: 0;
+            border: 0;
+            top: 0;
+            left: 0;
+        }
+
+        #picture a.small:hover .large {
+            display: block;
+            position: fixed;
+            margin-right: 0px;
+            top: 119px;
+            left: -52px;
+            width: 210px;
+            height: 210px;
+        }
+</style>*@
+
+@using (Html.BeginForm("DeleteDetails", "EmployeeMaster", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmCreate" }))
+{
+
+    @Html.HiddenFor(model => model.EmployeeDetails.Name)
+    @Html.HiddenFor(model => model.EmployeeDetails.EmpId)
+    @Html.HiddenFor(model => model.EmployeeDetails.EmployeeCode) 
+    @Html.HiddenFor(model => model.EmployeeDetails.ResidenceNo)
+    @Html.HiddenFor(model => model.EmployeeDetails.totalExpYear)
+    @Html.HiddenFor(model => model.EmployeeDetails.PancardNo)
+    @Html.HiddenFor(model => model.EmployeeDetails.Email)
+    @Html.HiddenFor(model => model.EmployeeDetails.totalExpmonth)
+    @Html.HiddenFor(model => model.EmployeeDetails.State)
+    @Html.HiddenFor(model => model.EmployeeDetails.Address)
+    @Html.HiddenFor(model => model.EmployeeDetails.Designation)
+    @Html.HiddenFor(model => model.EmployeeDetails.Salary)
+    @Html.HiddenFor(model => model.EmployeeDetails.City)
+    @Html.HiddenFor(model => model.EmployeeDetails.DateOfBirth)
+    @Html.HiddenFor(model => model.EmployeeDetails.Age)
+    @Html.HiddenFor(model => model.EmployeeDetails.DateOfJoining)
+    @Html.HiddenFor(model => model.EmployeeDetails.BloodGroup)
+    @Html.HiddenFor(model => model.EmployeeDetails.CommissionType)
+    @Html.HiddenFor(model => model.EmployeeDetails.CommissionValue)
+    @Html.HiddenFor(model => model.EmployeeDetails.CommissionUnit)
+    @Html.HiddenFor(model => model.EmployeeDetails.BankName)
+    @Html.HiddenFor(model => model.EmployeeDetails.BankAddress)
+    @Html.HiddenFor(model => model.EmployeeDetails.BankIFSCNo)
+    @Html.HiddenFor(model => model.EmployeeDetails.Account_No)
+    @Html.HiddenFor(model => model.EmployeeDetails.AccountType)
+    @Html.HiddenFor(model => model.EmployeeDetails.branch)
+    @Html.HiddenFor(model => model.EmployeeDetails.MICRCode)
+    @Html.HiddenFor(model => model.EmployeeDetails.Industry)
+    @Html.HiddenFor(model => model.EmployeeDetails.department)
+    @Html.HiddenFor(model => model.EmployeeDetails.MobileNo)
+    @Html.HiddenFor(model => model.EmployeeDetails.Photo)
+
+    
+    <div class="row">
+
+        <div id="title2" style="position: absolute; font-family: Arial; font-size: 16px; text-align: left;">
+            <h2>Employee Details</h2>
+        </div>
+        <br />
+        <br />
+        <br />
+
+
+        @{
+    string photo = string.Empty;
+    photo = "../EmployeePhotos/" + Model.EmployeeDetails.Photo;
+        }
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputname">Employee Name</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.Name)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputContact">Experience In Years</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.totalExpYear)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputAddress">Experience In Months</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.totalExpmonth)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputState">Pan No</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.PancardNo)
+        </div>
+    </div> 
+
+    <div class="row">
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputPincode">State</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.State)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputWebsite">Salary</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.Salary)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputEmail">Designation</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.Designation)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputPANNo">Industry</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.Industry)
+        </div>
+    </div>
+    
+    <div class="row">
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputCountry">Address</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.Address)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputVAT">Date Of Birth</label><br />
+            @{
+    var birthdate = Convert.ToDateTime(Model.EmployeeDetails.DateOfBirth).ToShortDateString();
+            }
+            @birthdate
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputVAT">Date Of Joining</label><br />
+            @{
+    var joindate = Convert.ToDateTime(Model.EmployeeDetails.DateOfJoining).ToShortDateString();
+            }
+            @joindate
+        </div>
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputPANNo">BloodGroup</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.BloodGroup)
+        </div>
+    </div>
+    
+    <div class="row">
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputSalesTax">City</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.City)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputSalesTax">Age</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.Age)
+        </div>
+
+        <div class="form-group col-md-3 col-lg-3">
+            <label for="exampleInputCity">Email</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.Email)
+        </div>
+        <div class="col-lg-3 col-md-3 form-group">
+            <label for="exampleInputCity">Commission</label><br />
+            @Html.DisplayFor(model => model.EmployeeDetails.CommissionType)
+        </div>
+    </div>  
+    
+    <div class="row">
+        @{
+    if (photo != null)
+    {
+            <div id="picture">
+                <div class="form-group col-lg-3 col-md-3">
+                    <label for="exampleInputname">Photo</label><br />
+                    <a class="small" href="#" title="">
+                        <img src="@photo" title="" width="120" height="120"/></a>
+                </div>
+            </div>
+    }
+        }
+    </div>
+                            
+    
+    <div class="row">
+        <div id="title3" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+            <h2>
+                <label for="exampleInputname">Bank Details</label>
+            </h2>
+        </div>
+        <br />
+        <br />
+        <br />
+    </div>  
+    <div class="row">
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputBankName">Bank Name</label><br />
+                    @Html.DisplayFor(model => model.EmployeeDetails.BankName)
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputIFSC Code">Branch Name</label><br />
+                    @Html.DisplayFor(model => model.EmployeeDetails.branch)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputBankLocation">Bank Ifsc</label><br />
+                    @Html.DisplayFor(model => model.EmployeeDetails.BankIFSCNo)
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputBankLocation">Bank Location</label><br />
+                    @Html.DisplayFor(model => model.EmployeeDetails.BankAddress)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputAccountType">Account Type</label><br />
+                    @Html.DisplayFor(model => model.EmployeeDetails.AccountType)
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputAccountNo">Account No</label><br />
+                    @Html.DisplayFor(model => model.EmployeeDetails.Account_No)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputAccountType">MICR Code</label><br />
+                    @Html.DisplayFor(model => model.EmployeeDetails.MICRCode)
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <div class="col-lg-offset-5">
+        <button type="button" onclick="DeleteData()" class="btn btn-success" id="Update">Delete</button>
+    </div>
+}

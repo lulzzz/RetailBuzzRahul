@@ -1,0 +1,95 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "ItemList";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+<script type="text/javascript">
+    function CompleteQuotation() {
+        var quotno = document.getElementById("complete").value;
+        $.getJSON("/ProcessingQuotation/CompleteQuotation", { QuotNo: quotno }, function (data) {
+            var rowid = window.opener.document.getElementById(quotno).value;
+            window.opener.document.getElementById("ButtonDiv" + rowid).innerHTML = "";
+            window.opener.$("#ButtonDiv" + rowid).append("<label style='color:green;text-align:center;width:100%'>Completed</label>");
+            window.opener.document.getElementById("SendingStatus" + rowid).innerText = "Completed";
+            window.close();
+        });
+
+    }
+</script>
+
+<div class="col-lg-12 col-md-12">
+    <label style="font-weight: bold; font-size: 20px">Quotation Details</label>
+</div>
+<div style="height: 9px"></div>
+<div class="col-lg-12 col-md-12">
+    <div class="row">
+        <div class="col-sm-6 col-xs-6">
+            <label style="font-weight: normal; font-size: 18px">Quotation No: &nbsp @Model.QuotationDetails.QuotNo</label>
+        </div>
+        <div class="col-sm-6 col-xs-6" style="text-align:right">
+            <label style="font-weight: normal; font-size: 18px">Processed In: &nbsp @Model.QuotationDetails.ProcessedIn</label>
+        </div>
+    </div>
+</div>
+
+
+@{
+    if (Model.SalesOrderItemList != null && Model.SalesOrderItemList.Count() != 0)
+    {
+    <table class="table" id="ItemsFromPerforma" style="width: 100%; border: outset; border-color: #d2d2d2">
+        <thead>
+            <tr>
+                <th class="col-md-2 col-lg-2">
+                    <label class="CenterText">Item</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Design</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">QUOT QTY</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">STK QTY</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Balance</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Unit</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Rate</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Disc(%)</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Amt</label></th>
+            </tr>
+        </thead>
+        @{
+        int count = 1;
+        foreach (var item in Model.SalesOrderItemList)
+        {
+            <tbody>
+                <tr>
+                    <td>@item.ItemName</td>
+                    <td>@item.DesignName</td>
+                    <td>@item.QuotQuantity</td>
+                    <td>@item.ReadOnlyTotalStockQuantity</td>
+                    <td>@item.SOBalance</td>
+                    <td>@item.Unit</td>
+                    <td>@item.SellingPrice</td>
+                    <td>@item.DisInPercent</td>
+                    <td>@item.Amount</td>
+                </tr>
+
+            </tbody>
+            count++;
+        }
+        }
+    </table>
+    }
+}
+
+<div class="col-lg-12 col-md-12" style="text-align: center">
+    <button type="button" id="complete" onclick="CompleteQuotation()" value="@Model.QuotationDetails.QuotNo" class="btn btn-success">Complete</button>
+</div>

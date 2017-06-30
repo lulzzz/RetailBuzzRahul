@@ -1,0 +1,3282 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "RetailBillWithTax";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateAmount(rowid);
+		         CalculateTotalDiscount();
+		         CalculateTotalAmount();
+		         CalcGrandTotal();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function NumberToWords() {
+        if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+            var junkVal = (+removeCommas(document.getElementById('AdvancePayment').value));
+        }
+        else { var junkVal = (+removeCommas(document.getElementById('GrandTotal').innerHTML)); }
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+        }
+        else if (Number(junkVal) == 0) {
+            return 'Rupees Zero Only';
+        }
+        else {
+            alertbox('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alertbox('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+
+
+<script type="text/javascript">
+    function AllowNumbersWithoutDecimal(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+</script>
+
+
+@*VALIDATION ON UNIT AND RATE*@
+<script type="text/javascript">
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function AllowDecimal(key, rowid) {
+        var numbertype = $("#NumberType" + rowid).val();
+        var quantity = $("#Quantity" + rowid).val();
+        var pointFoundCount = 0;
+        for (var i = 0; i <= quantity.length; i++) {
+            if (quantity[i] == '.') {
+                pointFoundCount++;
+            }
+        }
+
+        var pointposition = quantity.indexOf(".");
+        var digitupto = 0;
+        if (pointposition != -1) {
+            digitupto = quantity.substr(pointposition, quantity.length).length;
+        }
+
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (numbertype == 'Whole') { //if unit type is whole number then don't allow point
+            if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+        }
+        else if (keycode == 46) { //if decimal point is inserted
+            if (pointFoundCount > 0 && pointFoundCount < 2) { // more than one decimal point is inserted then don't allow to insert it
+                return false;
+            }
+        }
+        else if (digitupto != 0) { // if unit type is decimal then wait for decimal point to be insert then execute this condition 
+            if (numbertype == '2Digit') { // if unit type is 2 digit the then allow 2 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 3) {
+                    return false;
+                }
+            }
+            else { // if unit type is 2 digit the then allow 3 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 4) {
+                    return false;
+                }
+            }
+        }
+        else { //don't allow any decimal point or character until first digit occurs
+            if (quantity.length == 0) // if first digit is point in quantity field then don't allow it and characters too
+            {
+                if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+            else { //don't allow any character until the above else if condition meets
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+
+
+<!--Restrict Enter Key to Submit the Bill-->
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+@*BY DEFAULT CLIENT NAME IS CUSTOMER*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("ClientName").value = 'Customer';
+    });
+</script>
+
+@*EDIT RETAIL BILL*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#editbtn").click(function () {
+            window.location.assign("/RetailBill/RetailBillUpdate");
+        })
+    });
+</script>
+
+@*PRINT RETAIL BILL*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#printbtn").click(function () {
+            window.location.assign("/RetailBill/RetailBillPrint");
+        })
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var shopcode = document.getElementById("ShopCode").value;
+
+        $.getJSON("/RetailBill/GetShopDetails", { code: shopcode },
+                  function (data) {
+                      document.getElementById("RetailBillDetails_ShopContactPerson").value = data.EmpName;
+                      document.getElementById("RetailBillDetails_ShopAddress").value = data.ShopAddress;
+                      document.getElementById("RetailBillDetails_ShopName").value = data.ShopName;
+                      document.getElementById("RetailBillDetails_ShopEmail").value = data.ShopEmail;
+                  });
+
+        document.getElementById("PreparedByEmail").innerHTML = document.getElementById("preparedby").value;
+        var preparedbyemail = document.getElementById("PreparedByEmail").innerHTML;
+
+        $.getJSON("/RetailBill/GetPreparedByEmpDetails", { email: preparedbyemail },
+                  function (data) {
+                      document.getElementById("PreparedByName").innerHTML = data.Name;
+                      document.getElementById("PreparedByContact").innerHTML = data.MobileNo;
+                      document.getElementById("RetailBillDetails_PreparedBy").value = data.Name;
+                  });
+    })
+</script>
+
+@*GET ITEM DETAILS ON BARCOIDE CHANGE EVENT*@
+<script type="text/javascript">
+    function GetItemsByBarcode(rowid) {
+
+        document.getElementById("QuotationNo").disabled = "true";
+        document.getElementById("SalesOrderNo").disabled = "true";
+        document.getElementById("ChallanNo").disabled = "true";
+        document.getElementById("TempCashMemoNo").disabled = "true";
+
+        //CHECK IF SAME BARCODE IS ALREADY SELECTED THEN ENABLES PREVIOUS ROW
+        Barcode = "Barcode" + rowid;
+        var rowcount = document.getElementById("hdnRowCount").value;
+        var barcode = document.getElementById(Barcode).value;
+        var counter = 0;
+        var validationcounter = 0;
+        for (i = 1; i < rowcount; i++) {
+            var BARCODE = "Barcode" + i;
+            var ITEMNAME = "ItemName" + i;
+            var QUANTITY = "Quantity" + i;
+            var DISCOUNTPER = "DisPer" + i;
+            var DISCOUNTRS = "DisRs" + i;
+            var NARRATION = "Narration" + i;
+
+            //IF ITEM IS ALREADY SELECTED THEN GET ALERT
+            if (document.getElementById(BARCODE) != null) {
+                if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                    if ($("#" + BARCODE).val().toUpperCase() == barcode.toUpperCase()) {
+                        alertbox("The Item Is Already Selected Please Change The Quantity..");
+                        document.getElementById(NARRATION).disabled = false;
+                        document.getElementById(QUANTITY).disabled = false;
+                        document.getElementById(DISCOUNTRS).disabled = false;
+                        document.getElementById(DISCOUNTPER).disabled = false;
+
+                        //ITEM IS ALREADY SELECTED THEN EMPTY CURRENT ROW
+                        var BARCODE = "Barcode" + rowcount;
+                        var ITEMNAME = "ItemName" + rowcount;
+                        var ITEMCODE = "ItemCode" + rowcount;
+                        var NARRATION = "Narration" + rowcount;
+                        var STKQUAN = "StkQty" + rowcount;
+                        var SHOPQUAN = "ShopQty" + rowcount;
+                        var QUANTITY = "Quantity" + rowcount;
+                        var DISCOUNTPER = "DisPer" + rowcount;
+                        var DISCOUNTRS = "DisRs" + rowcount;
+                        var UNIT = "Unit" + rowcount;
+                        var SELLINGPRICE = "SellingPrice" + rowcount;
+                        var ITEMTAX = "ItemTax" + rowcount;
+                        var AMOUNT = "Amount" + rowcount;
+
+                        document.getElementById(BARCODE).value = "";
+                        document.getElementById(NARRATION).value = "";
+                        document.getElementById(ITEMNAME).value = "";
+                        document.getElementById(ITEMCODE).value = "";
+                        document.getElementById(STKQUAN).innerHTML = "";
+                        document.getElementById(SHOPQUAN).innerHTML = "";
+                        document.getElementById(QUANTITY).value = "";
+                        document.getElementById(DISCOUNTPER).value = "";
+                        document.getElementById(DISCOUNTRS).value = "";
+                        document.getElementById(UNIT).innerHTML = "";
+                        document.getElementById(SELLINGPRICE).value = "";
+                        document.getElementById(ITEMTAX).innerHTML = "";
+                        document.getElementById(AMOUNT).innerHTML = "";
+
+                        counter = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //IF COUNTER IS 0 THAT MEANS CURRENT BARCODE IS NOT SELECED IN PREVIOUS ROWS
+        if (counter == 0) {
+            //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+            for (i = 1; i < rowcount; i++) {
+                var ITEMNAME = "ItemName" + i;
+                var ITEMTYPE = "ItemType" + i;
+                var QUANTITY = "Quantity" + i;
+                var DISCOUNTPER = "DisPer" + i;
+                var DISCOUNTRS = "DisRs" + i;
+                var NARRATION = "Narration" + i;
+
+                if ($("#" + ITEMNAME).val() == "") {
+                    alertbox("Please Select The Item");
+                    var BARCODE = "Barcode" + rowcount;
+                    document.getElementById(BARCODE).value = "";
+                    validationcounter++;
+                }
+                else if ($("#" + QUANTITY).val() == "" || +$("#" + QUANTITY).val() == 0) {
+                    alertbox("Please Fill The Quantity");
+                    var BARCODE = "Barcode" + rowcount;
+                    document.getElementById(BARCODE).value = "";
+                    validationcounter++;
+                }
+                else if ($("#" + SELLINGPRICE).val() == "" || (+$("#" + SELLINGPRICE).val()) == 0) {
+                    alertbox("Please Fill The Rate");
+                    var BARCODE = "Barcode" + rowcount;
+                    document.getElementById(BARCODE).value = "";
+                    validationcounter++;
+                }
+                else {
+                    if (document.getElementById(QUANTITY) != null) {
+                        if (document.getElementById(ITEMTYPE).value == "Inventory") {
+                            document.getElementById(NARRATION).disabled = true;
+                            document.getElementById(QUANTITY).disabled = true;
+                            document.getElementById(DISCOUNTPER).disabled = true;
+                            document.getElementById(DISCOUNTRS).disabled = true;
+                        }
+                    }
+                }
+            }
+
+            if (validationcounter == 0) {
+                //DISPLAY DETAILS ON BARCODE CHANGE EVENT
+                var barcodevalue = document.getElementById("Barcode" + rowid).value;
+                var shopcode = document.getElementById("ShopCode").value;
+                if (barcodevalue != "") {
+                    document.getElementById("Quantity" + rowid).disabled = false;
+                    $.getJSON("/RetailBill/GetBarcodeItemDetails", { barcode: barcodevalue, shop: shopcode },
+                          function (data) {
+                              if (data != "Fail") {
+                                  if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                                      document.getElementById("AdvancePayment").disabled = false;
+                                  }
+                                  document.getElementById("ItemCode" + rowid).innerHTML = data.ItemCode;
+                                  document.getElementById("ItemCodeVal" + rowid).value = data.ItemCode;
+                                  document.getElementById("ItemName" + rowid).value = data.ItemName;
+                                  document.getElementById("StkQty" + rowid).innerHTML = data.totalstkqty;
+                                  document.getElementById("ShopQty" + rowid).innerHTML = data.Quantity;
+                                  document.getElementById("Unit" + rowid).innerHTML = data.Unit;
+                                  document.getElementById("UnitVal" + rowid).value = data.Unit;
+                                  document.getElementById("NumberType" + rowid).value = data.NumberType;
+                                  document.getElementById("SellingPrice" + rowid).value = data.SellingPrice;
+                                  document.getElementById("MRP" + rowid).value = data.MRP;
+                                  document.getElementById("Color" + rowid).value = data.Color;
+                                  document.getElementById("Material" + rowid).value = data.Material;
+                                  document.getElementById("ItemTax" + rowid).innerHTML = data.taxPercent;
+                                  document.getElementById("ItemTaxVal" + rowid).value = data.taxPercent;
+                                  document.getElementById("Size" + rowid).value = data.Size;
+                                  document.getElementById("Brand" + rowid).value = data.Brand;
+                                  document.getElementById("DesignCode" + rowid).value = data.DesignCode;
+                                  document.getElementById("DesignName" + rowid).value = data.DesignName;
+                                  document.getElementById("Description" + rowid).value = data.Description;
+                                  document.getElementById("DisPer" + rowid).value = data.discount;
+                                  document.getElementById("DisRs" + rowid).value = data.discountrps;
+                                  document.getElementById("Narration" + rowid).disabled = false;
+                                  document.getElementById("DisPer" + rowid).disabled = false;
+                                  document.getElementById("DisRs" + rowid).disabled = false;
+
+                                  //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                                  //on each item which is applied
+                                  var tax = data.taxPercent;
+                                  if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                                      var taxcount = document.getElementById("ItemTaxCount").value;
+                                      if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                                          $("#ItemTaxNumber" + taxcount).val(tax);
+                                          document.getElementById("AddTaxes").style.display = "inline";
+                                          $("#AddedTax1").text(tax + "%");
+                                      }
+                                      else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                                          var taxpresent = 0;
+                                          for (var i = 1; i <= taxcount; i++) {
+                                              var taxno = "ItemTaxNumber" + i;
+                                              //if tax is already present then no need to make other taxnumbers
+                                              if (tax == $("#" + taxno).val()) {
+                                                  taxpresent++;
+                                              }
+                                          }
+                                          if (taxpresent == 0) {
+                                              taxcount++;
+                                              var taxno = "ItemTaxNumber" + taxcount;
+                                              var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                              $("#AllTaxesNumbersValue").append(data);
+                                              var addedtaxno = "AddedTax" + taxcount;
+                                              var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                              var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                              var addedamount = "AddedAmount" + taxcount;
+                                              var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                              var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                              newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                              newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                              $("#AddTaxes").append(newlabel);
+                                              $("#ItemTaxCount").val(taxcount);
+                                          }
+                                      }
+                                  }
+                              }
+                              else {
+                                  alertbox("Invalid Barcode..");
+                              }
+                          });
+                }
+            }
+        }
+    }
+</script>
+
+
+@*DYNAMIC ROW GENERATION ON ENTER KEY*@
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+
+            //CREATE DYNAMIC ROWS IN DIRECT RETAIL BILL
+            if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                var rowid = document.getElementById("hdnRowCount").value;
+                var prevBarcode = "Barcode" + rowid;
+                var prevQuantity = "Quantity" + rowid;
+                var prevDiscount = "DisPer" + rowid;
+                var prevDiscountRs = "DisRs" + rowid;
+                var prevItemName = "ItemName" + rowid;
+                var previtemtype = "ItemType" + rowid;
+                var prevNarration = "Narration" + rowid;
+
+                if (document.getElementById(prevBarcode) != null) {
+                    if ($("#" + prevBarcode).val() == "") {
+                        alertbox("Please Select The Barcode");
+                    }
+                    else if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                        alertbox("Please Fill The Quantity");
+                    }
+                    else {
+                        if ($("#" + previtemtype).val() == "Inventory") {
+                            document.getElementById(prevBarcode).disabled = true;
+                            document.getElementById(prevNarration).disabled = true;
+                            document.getElementById(prevQuantity).disabled = true;
+                            document.getElementById(prevDiscount).disabled = true;
+                            document.getElementById(prevDiscountRs).disabled = true;
+                            document.getElementById(prevItemName).disabled = true;
+                            DynamicRows();
+                        }
+                    }
+                }
+                else {
+                    DynamicRows();
+                }
+            }
+                //CREATE DYNAMIC ROWS IN RETAIL BILL WITH MILTIPLE BILLS
+            else {
+                DynamicRows();
+            }
+        }
+
+    });
+
+    function DynamicRows() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        rowid = +rowid + 1;
+        var row = "row" + rowid;
+        var Barcode = "Barcode" + rowid;
+        var Narration = "Narration" + rowid;
+        var ItemCode = "ItemCode" + rowid;
+        var ItemCodeVal = "ItemCodeVal" + rowid;
+        var ItemName = "ItemName" + rowid;
+        var Description = "Description" + rowid;
+        var StockQuantity = "StkQty" + rowid;
+        var ShopQuantity = "ShopQty" + rowid;
+        var Quantity = "Quantity" + rowid;
+        var Unit = "Unit" + rowid;
+        var UnitVal = "UnitVal" + rowid;
+        var NumberType = "NumberType" + rowid;
+        var SellingPrice = "SellingPrice" + rowid;
+        var MRP = "MRP" + rowid;
+        var Brand = "Brand" + rowid;
+        var Size = "Size" + rowid;
+        var DesignCode = "DesignCode" + rowid;
+        var DesignName = "DesignName" + rowid;
+        var DiscountPer = "DisPer" + rowid;
+        var DiscountRs = "DisRs" + rowid;
+        var AmountVal = "AmountVal" + rowid;
+        var Amount = "Amount" + rowid;
+        var Color = "Color" + rowid;
+        var Material = "Material" + rowid;
+        var ItemTax = "ItemTax" + rowid;
+        var ItemTaxVal = "ItemTaxVal" + rowid;
+        var ItemTaxAmt = "ItemTaxAmt" + rowid;
+        var itemtype = "ItemType" + rowid;
+        var ItemList = $("#AddItemRows");
+
+        var data = "<tr id='" + row + "'><td style='text-align:center'>" + rowid + "</td>";
+        data += "<td class='col-md-2 col-lg-2 col-sm-2'><input type='text' name='" + Barcode + "' id='" + Barcode + "' autocomplete='off' class='form-control' onchange='GetItemsByBarcode(" + rowid + ")' style='text-align:center' /></td>";
+        data += "<td><label id='" + ItemCode + "' style='font-weight: normal'></label><input type='hidden' id='" + ItemCodeVal + "' name='" + ItemCodeVal + "' /></td>";
+        data += "<td class='col-md-2 col-lg-2 col-sm-2'><input type='text' name='" + ItemName + "' id='" + ItemName + "' autocomplete='off' class='form-control'style='text-align:center' disabled='disabled'/></td>";
+        data += "<td class='col-md-2 col-lg-2 col-sm-2'><textarea id='" + Narration + "' name='" + Narration + "' class='form-control' placeholder='Narration' style='text-align: center' rows='1' disabled='disabled'></textarea></td>";
+        data += "<td style='text-align:center'><a id='" + StockQuantity + "' href='#' onclick='ShowQuantity(" + rowid + ")'></a></td>";
+        data += "<td style='text-align:center'><a id='" + ShopQuantity + "' href='#' onclick='ShopRequisition(" + rowid + ")'></a></td>";
+        data += "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + Quantity + "' id='" + Quantity + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"quantity\"' + ")' onkeypress='return AllowDecimal(event," + rowid + ")' disabled/></td>";
+        data += "<td> <label id='" + Unit + "' style='font-weight: normal'></label><input type='hidden' id='" + UnitVal + "' name='" + UnitVal + "' /><input type='hidden' id='" + NumberType + "' name='" + NumberType + "' /><input type='hidden' id='" + Description + "' name='" + Description + "' /></td>";
+        data += "<td style='text-align:center'><input type='text' id='" + SellingPrice + "' name='" + SellingPrice + "' style='text-align: center' class='form-control' disabled='disabled'/><input type='hidden' id='" + DesignCode + "' name='" + DesignCode + "' /><input type='hidden' id='" + DesignName + "' name='" + DesignName + "' /><input type='hidden' id='" + MRP + "' name='" + MRP + "' /></td>";
+        data += "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountPer + "' id='" + DiscountPer + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"percent\"' + ")' disabled value='0' placeholder='0%' onclick='PutTheDiscountType(\"percent\")' /></td>";
+        data += "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountRs + "' id='" + DiscountRs + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"rps\"' + ")' disabled value='0.00' placeholder='0'  onclick='PutTheDiscountType(\"rps\")' /></td>";
+        data += "<td><label id='" + ItemTax + "' style='font-weight: normal'></label><input type='hidden' name='" + ItemTaxVal + "' id='" + ItemTaxVal + "' /><input type='hidden' name='" + ItemTaxAmt + "' id='" + ItemTaxAmt + "' /><input type='hidden' id='" + Brand + "' name='" + Brand + "' /><input type='hidden' id='" + Size + "' name='" + Size + "' /></td>";
+        data += "<td style='text-align:center'> <label id='" + Amount + "' style='font-weight: normal'></label><input type='hidden' id='" + AmountVal + "' name='" + AmountVal + "' /><input type='hidden' id='" + itemtype + "' name='" + itemtype + "' value='Inventory' /></td>";
+        data += "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + rowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td><input type='hidden' name='" + Color + "' id='" + Color + "' /><input type='hidden' name='" + Material + "' id='" + Material + "' /></tr>";
+
+        ItemList.append(data);
+
+        $("#hdnRowCount").val(rowid);
+    }
+</script>
+
+@*CREATE NON-INVENTORY ITEMS*@
+<script type="text/javascript">
+    $(function () {
+        $("#NonInvButton").click(function () {
+            var noninvrowid = document.getElementById("hdnRowCount").value;
+
+            var prevBarcode = "Barcode" + noninvrowid;
+            var prevQuantity = "Quantity" + noninvrowid;
+            var prevDiscount = "DisPer" + noninvrowid;
+            var prevDiscountRs = "DisRs" + noninvrowid;
+            var prevItemName = "ItemName" + noninvrowid;
+            var prevNarration = "Narration" + noninvrowid;
+
+            if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                alertbox("Please Fill The Quantity");
+            }
+            else {
+                if ($("#QuotationNo").val() == "" && $("#OrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                    if (document.getElementById(prevBarcode) != null) {
+                        document.getElementById(prevBarcode).disabled = true;
+                        document.getElementById(prevNarration).disabled = true;
+                        document.getElementById(prevQuantity).disabled = true;
+                        document.getElementById(prevDiscount).disabled = true;
+                        document.getElementById(prevDiscountRs).disabled = true;
+                        document.getElementById(prevItemName).disabled = true;
+                    }
+                }
+                noninvrowid = +noninvrowid + 1;
+                row = "row" + noninvrowid;
+                var ItemCode = "ItemCode" + noninvrowid;
+                var ItemCodeVal = "ItemCodeVal" + noninvrowid;
+                var Narration = "Narration" + noninvrowid;
+                var ItemName = "ItemName" + noninvrowid;
+                var ItemNameVal = "ItemNameVal" + noninvrowid;
+                var Description = "Description" + noninvrowid;
+                var StockQuantity = "StkQty" + noninvrowid;
+                var ShopQuantity = "ShopQty" + noninvrowid;
+                var Quantity = "Quantity" + noninvrowid;
+                var Unit = "Unit" + noninvrowid;
+                var UnitVal = "UnitVal" + noninvrowid;
+                var NumberType = "NumberType" + noninvrowid;
+                var SellingPrice = "SellingPrice" + noninvrowid;
+                var MRP = "MRP" + noninvrowid;
+                var Size = "Size" + noninvrowid;
+                var DesignCode = "DesignCode" + noninvrowid;
+                var DesignName = "DesignName" + noninvrowid;
+                var Brand = "Brand" + noninvrowid;
+                var DiscountPer = "DisPer" + noninvrowid;
+                var DiscountRs = "DisRs" + noninvrowid;
+                var AmountVal = "AmountVal" + noninvrowid;
+                var Amount = "Amount" + noninvrowid;
+                var Color = "Color" + noninvrowid;
+                var Material = "Material" + noninvrowid;
+                var ItemTax = "ItemTax" + noninvrowid;
+                var ItemTaxVal = "ItemTaxVal" + noninvrowid;
+                var ItemTaxAmt = "ItemTaxAmt" + noninvrowid;
+                var itemtype = "ItemType" + noninvrowid;
+                var ItemList = $("#AddItemRows");
+
+                ItemList.append(
+                "<tr id='" + row + "'><td style='text-align:center'>" + noninvrowid + "</td>" +
+                "<td style='text-align:center'><label>----</label></td>" +
+                "<td style='text-align:center'><label id='" + ItemCode + "' style='font-weight: normal'>-----</label><input type='hidden' id='" + ItemCodeVal + "' name='" + ItemCodeVal + "' /></td>" +
+                "<td class='col-md-2 col-lg-2 col-sm-2'><select id='" + ItemName + "' name='" + ItemName + "' class='form-control'><option>Select Item</option></select><input type='hidden' id='" + ItemNameVal + "' name='" + ItemNameVal + "' /></td>" +
+                "<td class='col-md-2 col-lg-2 col-sm-2'><textarea id='" + Narration + "' name='" + Narration + "' class='form-control' placeholder='Narration' style='text-align: center' rows='1'></textarea></td>" +
+                "<td style='text-align:center'><label>----</label></td>" +
+                "<td style='text-align:center'><label>----</label></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + Quantity + "' id='" + Quantity + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"quantity\"' + ")' onkeypress='return AllowDecimal(event," + noninvrowid + ")'/></td>" +
+                "<td><label id='" + Unit + "' style='font-weight: normal'></label><input type='hidden' id='" + UnitVal + "' name='" + UnitVal + "' /><input type='hidden' id='" + NumberType + "' name='" + NumberType + "' /><input type='hidden' id='" + Description + "' name='" + Description + "' /></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1' style='text-align:center'> <input type='text' name='" + SellingPrice + "' id='" + SellingPrice + "' autocomplete='off' class='form-control'style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"quantity\"' + ")'/><input type='hidden' id='" + MRP + "' name='" + MRP + "' /></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountPer + "' id='" + DiscountPer + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"percent\"' + ")' value='0' placeholder='0%' onclick='PutTheDiscountType(\"percent\")' /></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountRs + "' id='" + DiscountRs + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"rps\"' + ")' value='0.00' placeholder='0'  onclick='PutTheDiscountType(\"rps\")' /></td>" +
+                "<td><label id='" + ItemTax + "' style='font-weight: normal'></label><input type='hidden' name='" + ItemTaxVal + "' id='" + ItemTaxVal + "' /><input type='hidden' name='" + ItemTaxAmt + "' id='" + ItemTaxAmt + "' /><input type='hidden' id='" + Brand + "' name='" + Brand + "' /><input type='hidden' id='" + DesignCode + "' name='" + DesignCode + "' /><input type='hidden' id='" + DesignName + "' name='" + DesignName + "' /></td>" +
+                "<td style='text-align:center'> <label id='" + Amount + "' style='font-weight: normal'></label><input type='hidden' id='" + AmountVal + "' name='" + AmountVal + "' /><input type='hidden' id='" + itemtype + "' name='" + itemtype + "' value='NonInventory' /><input type='hidden' id='" + Size + "' name='" + Size + "' /></td>" +
+                "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + noninvrowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td><input type='hidden' name='" + Color + "' id='" + Color + "' /><input type='hidden' name='" + Material + "' id='" + Material + "' /></tr>"
+                );
+
+                //FILL NON INVENTORY ITEM DDL ON ENTER CLICK EVENT
+                $.getJSON("/RetailBill/GetNonInventoryItems",
+                function (data) {
+
+                    var select = $("#" + ItemName);
+                    select.empty();
+                    select.append($('<option/>', {
+                        text: "Select Item",
+                        value: "",
+                    }));
+                    $.each(data, function (index, itemdata) {
+                        select.append($('<option/>', {
+                            text: itemdata.Text + " " + itemdata.Value,
+                            value: itemdata.Value,
+                        }));
+                    });
+                });
+
+
+                //GET ITEM DETAILS FROM ITEMNAME
+                $("#" + ItemName).change(function () {
+                    var noninvitemcode = document.getElementById(ItemName).value;
+                    var rowcount = document.getElementById("hdnRowCount").value;
+
+                    // EMPTY STOCK QUANTITY AND QUANTITY BECOZ IF WE CHANGE ITEM PREVIOUS ROWS STOCK QUANTITY AND QUANTITY IS EMPTY
+                    var qty = "Quantity" + rowcount;
+                    var amt = "Amount" + rowcount;
+                    var narration = "Narration" + rowcount;
+                    var disrs = "DisRs" + rowcount;
+                    var disper = "DisPer" + rowcount;
+                    //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                    if (document.getElementById(qty) != null) {
+                        document.getElementById(qty).value = "";
+                        document.getElementById(narration).value = "";
+                        document.getElementById(amt).innerHTML = "";
+                        document.getElementById(disrs).value = "0";
+                        document.getElementById(disper).value = "0";
+                        $("#SellingPrice" + noninvrowid).val("");
+                        $("#StkQty" + noninvrowid).text("");
+                        $("#ShopQty" + noninvrowid).text("");
+                        $("#Unit" + noninvrowid).text("");
+                        $("#ItemTax" + noninvrowid).text("");
+                    }
+
+                    //IF COUNTER IS 0 THAT MEANS CURRENT ITEM IS NOT SELECED IN PREVIOUS ROWS
+                    var nonvalidationcount = 0;
+                    for (i = 1; i < rowcount; i++) {
+                        //VALIDATIONS ON QUANTITY OR ITEM IS EMPTY
+                        var preitem = "ItemCode" + i;
+                        var prequantity = "Quantity" + i;
+                        var presellingprice = "SellingPrice" + i;
+                        var ITEM = $("#" + preitem).html();
+                        var QUANTITY = $("#" + prequantity).val();
+                        var SELLINGPRICE = $("#" + presellingprice).val();
+
+                        if (document.getElementById(preitem) != null) {
+                            if (ITEM == "") {
+                                alertbox("Please Select The Item ");
+                                nonvalidationcount++;
+                                $("#ItemCode" + noninvrowid).val("").attr("selected", true);
+                                break;
+                            }
+                            else if (QUANTITY == "" || +QUANTITY == 0) {
+                                alertbox("Please Fill The Quantity");
+                                nonvalidationcount++;
+                                $("#ItemCode" + noninvrowid).val("").attr("selected", true);
+                                break;
+                            }
+                            else if (SELLINGPRICE == "" || +SELLINGPRICE == 0) {
+                                alertbox("Please Fill The Rate");
+                                nonvalidationcount++;
+                                $("#ItemCode" + noninvrowid).val("").attr("selected", true);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (nonvalidationcount == 0) {
+                        //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+                        for (i = 1; i < rowcount; i++) {
+                            var QUANTITY = "Quantity" + i;
+                            var SELLINGPRICE = "SellingPrice" + i;
+                            var DISRS = "DisRs" + i;
+                            var DISPER = "DisPer" + i;
+                            var ITEMTYPE = "ItemType" + i;
+                            var NARRATION = "Narration" + i;
+                            //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                            if (document.getElementById(QUANTITY) != null) {
+                                if (document.getElementById(ITEMTYPE) == "Inventory") {
+                                    document.getElementById(NARRATION).disabled = true;
+                                    document.getElementById(QUANTITY).disabled = true;
+                                    document.getElementById(SELLINGPRICE).disabled = true;
+                                    document.getElementById(DISPER).disabled = true;
+                                    document.getElementById(DISRS).disabled = true;
+                                }
+                            }
+                        }
+
+                        if (noninvitemcode != "") {
+                            $.getJSON("/RetailBill/GetNonInvItemdetailsByItemCode", { ItemCode: noninvitemcode },
+                               function (data) {
+                                   if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                                       document.getElementById("AdvancePayment").disabled = false;
+                                   }
+                                   $("#" + ItemCode).text(data.itemCode);
+                                   $("#" + ItemCodeVal).val(data.itemCode);
+                                   $("#" + ItemNameVal).val(data.itemName);
+                                   $("#" + Brand).val(data.brandName);
+                                   $("#" + Size).val(data.size);
+                                   $("#" + DesignCode).val(data.designCode);
+                                   $("#" + DesignName).val(data.designName);
+                                   $("#" + Unit).text(data.unit);
+                                   $("#" + UnitVal).val(data.unit);
+                                   $("#" + Description).val(data.description);
+                                   $("#" + NumberType).val(data.NumberType);
+                                   $("#" + Color).val(data.colorCode);
+                                   $("#" + SellingPrice).val(data.sellingprice);
+                                   $("#" + MRP).val(data.mrp);
+                                   $("#" + Material).val(data.typeOfMaterial);
+                                   $("#" + ItemTax).text(data.taxPercent);
+                                   $("#" + ItemTaxVal).val(data.taxPercent);
+                                   $("#" + DiscountPer).val(data.discount);
+                                   $("#" + DiscountRs).val(data.discountrps);
+
+                                   //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                                   //on each item which is applied
+                                   var tax = data.taxPercent;
+                                   if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                                       var taxcount = document.getElementById("ItemTaxCount").value;
+                                       if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                                           $("#ItemTaxNumber" + taxcount).val(tax);
+                                           document.getElementById("AddTaxes").style.display = "inline";
+                                           $("#AddedTax1").text(tax + "%");
+                                       }
+                                       else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                                           var taxpresent = 0;
+                                           for (var i = 1; i <= taxcount; i++) {
+                                               var taxno = "ItemTaxNumber" + i;
+                                               //if tax is already present then no need to make other taxnumbers
+                                               if (tax == $("#" + taxno).val()) {
+                                                   taxpresent++;
+                                               }
+                                           }
+                                           if (taxpresent == 0) {
+                                               taxcount++;
+                                               var taxno = "ItemTaxNumber" + taxcount;
+                                               var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                               $("#AllTaxesNumbersValue").append(data);
+                                               var addedtaxno = "AddedTax" + taxcount;
+                                               var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                               var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                               var addedamount = "AddedAmount" + taxcount;
+                                               var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                               var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                               newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                               newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                               $("#AddTaxes").append(newlabel);
+                                               $("#ItemTaxCount").val(taxcount);
+                                           }
+                                       }
+                                   }
+
+                               });
+                        }
+                        else { alertbox("Please Select Item First"); }
+                    }
+                });
+
+                $("#hdnRowCount").val(noninvrowid);
+            }
+        });
+    });
+</script>
+
+@*QUOTATION NO AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#QuotationNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/RetailBill/GetQuotationNo", { SearchTerm: request.term },
+                function (data) {
+                    if (data != "Fail") {
+                        response(data);
+                    }
+                    else {
+                        alertbox("Please Enter Correct Bill No..");
+                        document.getElementById("QuotationNo").value = "";
+                    }
+                });
+            },
+
+            minLength: 1,
+            @*DISPLAY BILL DETAILS IN POP-UP PAGE*@
+            select: function (event, ui) {
+                //JSON IS CALLED AFTER BILL NO SELECTED
+                if (ui.item) {
+                    $("#QuotationNo").val(ui.item.value);
+                    var orderno = $("#QuotationNo").val();
+                    $.getJSON("/RetailBill/GetClientDetails", { BillNo: orderno },
+                              function (data) {
+
+                                  document.getElementById("SalesOrderNo").value = "";
+                                  document.getElementById("ChallanNo").value = "";
+                                  document.getElementById("TempCashMemoNo").value = "";
+                                  document.getElementById("SalesOrderNo").disabled = "true";
+                                  document.getElementById("ChallanNo").disabled = "true";
+                                  document.getElementById("TempCashMemoNo").disabled = "true";
+
+                                  document.getElementById("ClientName").value = data.ClientName;
+                                  document.getElementById("RetailBillDetails_ClientAddress").value = data.ClientAddress;
+                                  document.getElementById("RetailBillDetails_ClientContact").value = data.ClientContactNo;
+                                  document.getElementById("RetailBillDetails_ClientEmail").value = data.ClientEmail;
+                                  document.getElementById("ClientState").value = data.ClientState;
+                                  document.getElementById("ClientType").value = data.ClientType;
+                                  document.getElementById("FormType").value = data.FormType;
+                                  document.getElementById("SalesPerson").value = data.SalesPersonName;
+
+                                  document.getElementById("ClientName").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientAddress").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientContact").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientEmail").disabled = "true";
+                              });
+
+                    document.getElementById("Submit").disabled = false;
+                    var shopcode = document.getElementById("ShopCode").value;
+                    document.getElementById("AddTaxes").style.display = "inline";
+                    window.open("/RetailBill/GetClientPendingBills?BillNo=" + orderno + "&ShopCode=" + shopcode, "_target", "width=800,height=500,top=150px,left=350px");
+                }
+            }
+        });
+    });
+</script>
+
+@*SALES ORDER NO AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#SalesOrderNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/RetailBill/GetSalesOrderNo", { SearchTerm: request.term },
+                function (data) {
+                    if (data != "Fail") {
+                        response(data);
+                    }
+                    else {
+                        alertbox("Please Enter Correct Bill No..");
+                        document.getElementById("SalesOrderNo").value = "";
+                    }
+                });
+            },
+
+            minLength: 1,
+            @*DISPLAY BILL DETAILS IN POP-UP PAGE*@
+            select: function (event, ui) {
+                //JSON IS CALLED AFTER BILL NO SELECTED
+                if (ui.item) {
+                    $("#SalesOrderNo").val(ui.item.value);
+                    var orderno = $("#SalesOrderNo").val();
+                    $.getJSON("/RetailBill/GetClientDetails", { BillNo: orderno },
+                              function (data) {
+
+                                  document.getElementById("QuotationNo").value = "";
+                                  document.getElementById("ChallanNo").value = "";
+                                  document.getElementById("TempCashMemoNo").value = "";
+                                  document.getElementById("QuotationNo").disabled = "true";
+                                  document.getElementById("ChallanNo").disabled = "true";
+                                  document.getElementById("TempCashMemoNo").disabled = "true";
+
+                                  document.getElementById("ClientName").value = data.ClientName;
+                                  document.getElementById("RetailBillDetails_ClientAddress").value = data.ClientAddress;
+                                  document.getElementById("RetailBillDetails_ClientContact").value = data.ClientContactNo;
+                                  document.getElementById("RetailBillDetails_ClientEmail").value = data.ClientEmail;
+                                  document.getElementById("ClientState").value = data.ClientState;
+                                  document.getElementById("ClientType").value = data.ClientType;
+                                  document.getElementById("FormType").value = data.FormType;
+                                  document.getElementById("SalesPerson").value = data.SalesPersonName;
+
+                                  document.getElementById("ClientName").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientAddress").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientContact").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientEmail").disabled = "true";
+                              });
+
+                    document.getElementById("Submit").disabled = false;
+                    var shopcode = document.getElementById("ShopCode").value;
+                    document.getElementById("AddTaxes").style.display = "inline";
+                    window.open("/RetailBill/GetClientPendingBills?BillNo=" + orderno + "&ShopCode=" + shopcode, "_target", "width=800,height=500,top=150px,left=350px");
+                }
+            }
+        });
+    });
+</script>
+
+@*DELIVERY CHALLAN AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#ChallanNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/RetailBill/GetDeliveryChallanNo", { SearchTerm: request.term },
+                function (data) {
+                    if (data != "Fail") {
+                        response(data);
+                    }
+                    else {
+                        alertbox("Please Enter Correct Bill No..");
+                        document.getElementById("ChallanNo").value = "";
+                    }
+                });
+            },
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#ChallanNo").val(ui.item.value);
+                    var challanno = $("#ChallanNo").val();
+
+                    $.getJSON("/RetailBill/GetClientDetails", { BillNo: challanno },
+                               function (data) {
+
+                                   document.getElementById("QuotationNo").value = "";
+                                   document.getElementById("SalesOrderNo").value = "";
+                                   document.getElementById("TempCashMemoNo").value = "";
+                                   document.getElementById("SalesOrderNo").disabled = "true";
+                                   document.getElementById("QuotationNo").disabled = "true";
+                                   document.getElementById("TempCashMemoNo").disabled = "true";
+
+                                   document.getElementById("ClientName").value = data.ClientName;
+                                   document.getElementById("RetailBillDetails_ClientAddress").value = data.ClientAddress;
+                                   document.getElementById("RetailBillDetails_ClientContact").value = data.ClientContactNo;
+                                   document.getElementById("RetailBillDetails_ClientEmail").value = data.ClientEmail;
+                                   document.getElementById("ClientState").value = data.ClientState;
+                                   document.getElementById("ClientType").value = data.ClientType;
+                                   document.getElementById("FormType").value = data.FormType;
+                                   document.getElementById("SalesPerson").value = data.SalesPersonName;
+
+                                   document.getElementById("ClientName").disabled = "true";
+                                   document.getElementById("RetailBillDetails_ClientAddress").disabled = "true";
+                                   document.getElementById("RetailBillDetails_ClientContact").disabled = "true";
+                                   document.getElementById("RetailBillDetails_ClientEmail").disabled = "true";
+                               });
+
+                    document.getElementById("Submit").disabled = false;
+                    var shopcode = document.getElementById("ShopCode").value;
+                    document.getElementById("AddTaxes").style.display = "inline";
+                    window.open("/RetailBill/GetClientPendingBills?BillNo=" + challanno + "&ShopCode=" + shopcode, "_target", "width=800,height=500,top=150px,left=350px");
+                }
+            }
+        });
+    });
+</script>
+
+@*CALCULATE TOTAL AMOUNT*@
+<script type="text/javascript">
+    function CalculateTotalAmount() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalamount = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var Amount = "Amount" + i;
+            if (document.getElementById(Amount) != null) {
+                totalamount = totalamount + (+removeCommas(document.getElementById(Amount).innerHTML));
+            }
+        }
+        document.getElementById("TotalAmount").innerHTML = "<i class='fa fa-rupee'></i>" + " " + addCommas(totalamount.toFixed(2));
+        document.getElementById("hdnTotalAmount").value = totalamount.toFixed(2);
+        document.getElementById("Inwords").innerHTML = NumberToWords();
+    }
+</script>
+
+
+@*Ckeck validation and display payment details*@
+<script type="text/javascript">
+    function CheckValidationAndPaymentDetails() {
+
+        var rowid = document.getElementById("hdnRowCount").value;
+
+        //VALIDATION AND PAYMENT DETAILS FOR DIRECT RETAIL BILL
+        if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+            var prevShopQuantity = "ShopQty" + rowid;
+            var prevBarcode = "Barcode" + rowid;
+            var prevQuantity = "Quantity" + rowid;
+            var prevSellingPrice = "SellingPrice" + rowid;
+            var prevDiscount = "DisPer" + rowid;
+            var prevDiscountRs = "DisRs" + rowid;
+            var prevItemName = "ItemName" + rowid;
+            var prevItemType = "ItemType" + rowid;
+
+            //INVENTORY ITEM DISABLED
+            if (document.getElementById(prevQuantity) != null) {
+                if (document.getElementById(prevItemType).value == "Inventory") {
+                    if ($("#" + prevBarcode).val() == "") {
+                        alertbox("Please Select The Barcode");
+                        document.getElementById("AdvancePayment").value = "";
+                    }
+                    else if ($("#" + prevItemName).val() == "") {
+                        alertbox("Please Select The Item");
+                        document.getElementById("AdvancePayment").value = "";
+                    }
+                    else if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                        alertbox("Please Fill The Quantity");
+                        document.getElementById("AdvancePayment").value = "";
+                    }
+                    else if ($("#" + prevSellingPrice).val() == "" || (+$("#" + prevSellingPrice).val()) == 0) {
+                        alertbox("Please Fill The Rate");
+                        document.getElementById("AdvancePayment").value = "";
+                    }
+                    else {
+                        //VALIDATION FOR QUANTITY <= SHOP STOCK QUANTITY
+                        var shopqty = document.getElementById(prevShopQuantity).innerHTML;
+                        var qty = document.getElementById(prevQuantity).value;
+
+                        if (shopqty != "----") {
+                            shopqty = +shopqty;
+                            if (qty > shopqty) {
+                                alertbox("Can Not Exceed Above Shop Stock Quantity..");
+                                document.getElementById(prevQuantity).value = "";
+                                document.getElementById("AdvancePayment").value = "";
+                                counter = 1;
+                            }
+                        }
+
+                        var advancepayment = (+document.getElementById("AdvancePayment").value);
+                        var totalamount = +removeCommas(document.getElementById("GrandTotal").innerHTML);
+                        var Balance = totalamount - advancepayment;
+                        if (Balance < 0) {
+                            document.getElementById("Balance").innerHTML = "<i class='fa fa-rupee'></i>" + " " + 0;
+                            document.getElementById("hdnBalance").value = 0;
+                            //  if balance < 0 then refund the amount
+                            var refund = advancepayment - totalamount;
+                            //document.getElementById("RetailBillDetails_Refund").value = refund;
+                        }
+                        else {
+                            Balance = Math.round(Balance.toFixed(2));
+                            document.getElementById("Balance").innerHTML = "<i class='fa fa-rupee'></i>" + " " + addCommas(Balance.toFixed(2));
+                            document.getElementById("hdnBalance").value = Balance.toFixed(2);
+                            //document.getElementById("RetailBillDetails_Refund").value = 0;
+                        }
+                        document.getElementById("Inwords").innerHTML = NumberToWords();
+
+                        if (document.getElementById("AdvancePayment").value != "" && +document.getElementById("AdvancePayment").value != 0) {
+                            document.getElementById("verticalline2").style.display = "inline";
+                            document.getElementById("TypeOfPaymentLabel").style.display = "inline";
+                            document.getElementById("TypeOfPaymentDiv").style.display = "inline";
+                        }
+                        else if (document.getElementById("AdvancePayment").value == "" || +document.getElementById("AdvancePayment").value == 0) {
+                            document.getElementById("verticalline2").style.display = "none";
+                            document.getElementById("TypeOfPaymentLabel").style.display = "none";
+                            document.getElementById("TypeOfPaymentDiv").style.display = "none";
+                        }
+                        document.getElementById("Submit").disabled = false;
+                    }
+                }
+
+                    //NON INVENTORY ITEM CAN NOT BE DISABLED
+                else {
+                    if ($("#" + prevItemName).val() == "") {
+                        alertbox("Please Select The Item");
+                        document.getElementById("AdvancePayment").value = "";
+                    }
+                    else if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                        alertbox("Please Fill The Quantity");
+                        document.getElementById("AdvancePayment").value = "";
+                    }
+                    else if ($("#" + prevSellingPrice).val() == "" || (+$("#" + prevSellingPrice).val()) == 0) {
+                        alertbox("Please Fill The Rate");
+                        document.getElementById("AdvancePayment").value = "";
+                    }
+                    else {
+                        var advancepayment = (+document.getElementById("AdvancePayment").value);
+                        var totalamount = +removeCommas(document.getElementById("GrandTotal").innerHTML);
+                        var Balance = totalamount - advancepayment;
+                        if (Balance < 0) {
+                            document.getElementById("Balance").innerHTML = "<i class='fa fa-rupee'></i>" + " " + 0;
+                            document.getElementById("hdnBalance").value = 0;
+                            //if balance < 0 then refund the amount
+                            //var refund = advancepayment - totalamount;
+                            //document.getElementById("RetailBillDetails_Refund").value = refund;
+                        }
+                        else {
+                            Balance = Math.round(Balance.toFixed(2));
+                            document.getElementById("Balance").innerHTML = "<i class='fa fa-rupee'></i>" + " " + addCommas(Balance.toFixed(2));
+                            document.getElementById("hdnBalance").value = Balance.toFixed(2);
+                            //document.getElementById("RetailBillDetails_Refund").value = 0;
+                        }
+                        document.getElementById("Inwords").innerHTML = NumberToWords();
+
+                        if (document.getElementById("AdvancePayment").value != "" && +document.getElementById("AdvancePayment").value != 0) {
+                            document.getElementById("verticalline2").style.display = "inline";
+                            document.getElementById("TypeOfPaymentLabel").style.display = "inline";
+                            document.getElementById("TypeOfPaymentDiv").style.display = "inline";
+                        }
+                        else if (document.getElementById("AdvancePayment").value == "" || +document.getElementById("AdvancePayment").value == 0) {
+                            document.getElementById("verticalline2").style.display = "none";
+                            document.getElementById("TypeOfPaymentLabel").style.display = "none";
+                            document.getElementById("TypeOfPaymentDiv").style.display = "none";
+                        }
+                        document.getElementById("Submit").disabled = false;
+                    }
+                }
+            }
+            else {
+                if (document.getElementById("AdvancePayment").value != "" && +document.getElementById("AdvancePayment").value != 0) {
+                    document.getElementById("verticalline2").style.display = "inline";
+                    document.getElementById("TypeOfPaymentLabel").style.display = "inline";
+                    document.getElementById("TypeOfPaymentDiv").style.display = "inline";
+                }
+                else if (document.getElementById("AdvancePayment").value == "" || +document.getElementById("AdvancePayment").value == 0) {
+                    document.getElementById("verticalline2").style.display = "none";
+                    document.getElementById("TypeOfPaymentLabel").style.display = "none";
+                    document.getElementById("TypeOfPaymentDiv").style.display = "none";
+                }
+                document.getElementById("Submit").disabled = false;
+            }
+        }
+    }
+</script>
+
+@*CALCULATE AMOUNT + CALCULATE AMOUNT USING DISCOUNT IN RS OR PERCENT*@
+<script type="text/javascript">
+    function CalculateAmount(count, type) {
+        if (type == "rps") {
+            document.getElementById("discountType").value = "rps";
+        }
+        else if (type == "percent") {
+            document.getElementById("discountType").value = "percent"
+        }
+
+        var proportionatecount = document.getElementById("hdnRowCount").value;
+        for (var i = 1; i <= proportionatecount; i++) {
+            var proportionate = "proportionate" + i;
+            var proporamount = "proportionatetaxamount" + i;
+            if (document.getElementById(proportionate) != null) {
+                document.getElementById(proportionate).innerHTML = "0";
+                document.getElementById(proporamount).value = 0;
+            }
+        }
+        var quantity = "Quantity" + count;
+        var stockquantity = "StkQty" + count;
+        var shopquantity = "ShopQty" + count;
+        var sellingprice = "SellingPrice" + count;
+        var amount = "Amount" + count;
+        var amountvalue = "AmountVal" + count;
+        var disper = "DisPer" + count;
+        var disrs = "DisRs" + count;
+
+        if (document.getElementById(quantity) != null) {
+            var percent = (+document.getElementById(disper).value) / 100;
+            var rupees = (+document.getElementById(disrs).value);
+
+            if (document.getElementById(shopquantity) != null) {
+                var shopqty = document.getElementById(shopquantity).innerHTML;
+                var qty = +document.getElementById(quantity).value;
+
+                // if quantity > shop stock quantity then it gives an alert
+                if (shopqty != "----") {
+                    shopqty = +shopqty;
+                    if (qty > shopqty) {
+                        alertbox("Can Not Exceed Above Shop Quantity..");
+                        document.getElementById(quantity).value = "";
+                    }
+                }
+            }
+
+            var dynamicamount = (+document.getElementById(quantity).value) * (+document.getElementById(sellingprice).value);
+
+            //CALCULATE AMOUNT USING DISCOUNT
+            var discounttype = document.getElementById("discountType").value;
+            var QuanVal = +(document.getElementById(quantity).value);
+            var SellingPriceVal = +(document.getElementById(sellingprice).value);
+
+            if (QuanVal == 0 || SellingPriceVal == 0) {
+                document.getElementById(disrs).value = "0.00";
+            }
+
+            else if (discounttype == "percent") {
+                if (percent != 0) {
+                    var valueafterdiscount = dynamicamount * percent;
+                    document.getElementById(disrs).value = valueafterdiscount.toFixed(2);
+                    dynamicamount = dynamicamount - valueafterdiscount;
+
+                }
+                else { document.getElementById(disrs).value = "0.00"; }
+            }
+            else {
+                if (rupees != 0) {
+                    var valueafterdiscount = rupees / dynamicamount * 100;
+                    document.getElementById(disper).value = valueafterdiscount.toFixed(1);
+                    dynamicamount = dynamicamount - rupees;
+                }
+                else { document.getElementById(disper).value = 0; }
+            }
+            document.getElementById(amount).innerHTML = addCommas(dynamicamount.toFixed(2));
+            document.getElementById(amountvalue).value = dynamicamount.toFixed(2);
+        }
+
+        CalculateTotalAmount();
+        CalculateTotalDiscount();
+        CalculateTaxSummary(count);
+        CalcGrandTotal();
+    }
+</script>
+
+<script type="text/javascript">
+    //CALCULATE GRAND TOTAL
+    function CalcGrandTotal() {
+        var payment = +document.getElementById("AdvancePayment").value;
+        var ttlamt = 0;
+        var amt = +removeCommas(document.getElementById("TotalAmount").innerHTML);
+        var totaltaxamt = 0;
+        var TaxCount = (+document.getElementById("ItemTaxCount").value);
+        if (+($("#ItemTaxNumber1").val()) != 0) {
+            for (var i = 1; i <= TaxCount; i++) {
+                var addedtaxamount = "AddedTaxAmount" + i;
+                amt = amt + (+removeCommas(document.getElementById(addedtaxamount).innerHTML));
+                totaltaxamt = totaltaxamt + (+removeCommas(document.getElementById(addedtaxamount).innerHTML));
+            }
+            document.getElementById("TotalTaxAmount").innerHTML = addCommas(totaltaxamt.toFixed(2));
+            document.getElementById("hdnTotalTaxAmount").value = totaltaxamt.toFixed(2);
+        }
+        amt = Math.round(amt.toFixed(2));
+        document.getElementById("Balance").innerHTML = "<i class='fa fa-rupee'></i>" + " " + addCommas(amt.toFixed(2));
+        document.getElementById("hdnBalance").value = addCommas(amt.toFixed(2));
+        amt = Math.round(amt.toFixed(2));
+        document.getElementById("GrandTotal").innerHTML = "<i class='fa fa-rupee'></i>" + " " + addCommas(amt.toFixed(2));
+        document.getElementById("hdnGrandTotal").value = amt.toFixed(2);
+        document.getElementById("Inwords").innerHTML = NumberToWords();
+    }
+</script>
+
+@*CALCULATE TAX SUMMARY *@
+<script type="text/javascript">
+    function CalculateTaxSummary(rowid) {
+        var TaxCount = document.getElementById("ItemTaxCount").value;
+
+        var currentitemtaxvalue = "ItemTaxVal" + rowid;
+        var currentamount = "Amount" + rowid;
+        var currenttaxamount = "ItemTaxAmt" + rowid;
+
+        if (document.getElementById(currentamount) != null) {
+            document.getElementById(currenttaxamount).value = ((+removeCommas(document.getElementById(currentamount).innerHTML)) * (+document.getElementById(currentitemtaxvalue).value / 100)).toFixed(2);
+        }
+        rowid = +document.getElementById("hdnRowCount").value;
+        for (var i = 1; i <= TaxCount; i++) {
+            var TotalTaxAmount = 0;
+            var itemtaxno = "ItemTaxNumber" + i;
+            var addedtaxamount = "AddedTaxAmount" + i;
+            var addedtaxamounthdn = "AddedTaxAmounthdn" + i;
+            var addedamount = "AddedAmount" + i;
+            var addedamounthdn = "AddedAmounthdn" + i;
+            for (var j = 1; j <= rowid; j++) {
+                var itemtaxvalue = "ItemTaxVal" + j;
+                var amount = "Amount" + j;
+                if (document.getElementById(amount) != null) {
+                    if ($("#" + itemtaxno).val() == $("#" + itemtaxvalue).val()) {
+                        TotalTaxAmount = (+TotalTaxAmount) + (+removeCommas(document.getElementById(amount).innerHTML));
+                    }
+                }
+            }
+            document.getElementById(addedamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedamounthdn).value = TotalTaxAmount.toFixed(2);
+            TotalTaxAmount = TotalTaxAmount * (+document.getElementById(itemtaxno).value / 100);
+            document.getElementById(addedtaxamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedtaxamounthdn).value = TotalTaxAmount.toFixed(2);
+        }
+    }
+</script>
+
+@*CALCULATE TAX DISCOUNT *@
+<script type="text/javascript">
+    function CalculateTotalDiscount() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalamount = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var disinrs = "DisRs" + i;
+            if (document.getElementById(disinrs) != null) {
+                totalamount = (+totalamount) + (+removeCommas(document.getElementById(disinrs).value));
+            }
+        }
+        document.getElementById("RetailBillDetails_TotalDiscount").value = totalamount.toFixed(2);
+    };
+</script>
+
+@*CALCULATE ITEM TAX IN MULTIPLE BILL POPUP*@
+<script type="text/javascript">
+    function CalculateItemTaxNumber() {
+        var rowcount = +document.getElementById("hdnRowCount").value;
+        for (i = 1; i <= rowcount; i++) {
+            var tax = document.getElementById("ItemTaxVal" + i).value;
+            if (tax != 0) {//if tax is '0' no need to add new taxnumber
+                CalculateItemTax(tax);
+            }
+        }
+    }
+
+    function CalculateItemTax(tax) {
+        var taxcount = document.getElementById("ItemTaxCount").value;
+        if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+            $("#ItemTaxNumber" + taxcount).val(tax);
+            document.getElementById("AddTaxes").style.display = "inline";
+            $("#AddedTax1").text(tax + "%");
+        }
+        else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+            var taxpresent = 0;
+            for (var i = 1; i <= taxcount; i++) {
+                var taxno = "ItemTaxNumber" + i;
+                //if tax is already present then no need to make other taxnumbers
+                if (tax == $("#" + taxno).val()) {
+                    taxpresent++;
+                }
+            }
+            if (taxpresent == 0) {
+                taxcount++;
+                var taxno = "ItemTaxNumber" + taxcount;
+                var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                $("#AllTaxesNumbersValue").append(data);
+                var addedtaxno = "AddedTax" + taxcount;
+                var addedtaxamount = "AddedTaxAmount" + taxcount;
+                var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                var addedamount = "AddedAmount" + taxcount;
+                var addedamounthdn = "AddedAmounthdn" + taxcount;
+                var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                $("#AddTaxes").append(newlabel);
+                $("#ItemTaxCount").val(taxcount);
+            }
+        }
+
+    }
+</script>
+
+
+@*CALCULATE AMOUNT IN MULTIPLE BILL POPUP WITH BALANCE AS QUANTITY*@
+<script type="text/javascript">
+    function CalculateItemWiseAmount() {
+        var rowid = +document.getElementById("hdnRowCount").value;
+        for (var i = 1; i <= rowid; i++) {
+            CalculateItemAmtWithBalAsQty(i);
+            CalculateTaxSummary(i);
+        }
+    }
+
+    function CalculateItemAmtWithBalAsQty(i) {
+        var quantity = "Quantity" + i;
+        var sellingprice = "SellingPrice" + i;
+        var amount = "Amount" + i;
+        var amountvalue = "AmountVal" + i;
+        var disper = "DisPer" + i;
+        var disrs = "DisRs" + i;
+
+        var percent = (+document.getElementById(disper).value) / 100;
+        var rupees = (+document.getElementById(disrs).value);
+        var dynamicamount = (+document.getElementById(quantity).value) * (+document.getElementById(sellingprice).value);
+
+        //CALCULATE AMOUNT USING DISCOUNT
+        var discounttype = "percent";
+        var QuanVal = +(document.getElementById(quantity).value);
+        var SellingPriceVal = +(document.getElementById(sellingprice).value);
+
+        if (QuanVal == 0 || SellingPriceVal == 0) {
+            document.getElementById(disper).value = "0";
+            document.getElementById(disrs).value = "0.00";
+        }
+
+        else if (discounttype == "percent") {
+            if (percent != 0) {
+                var valueafterdiscount = dynamicamount * percent;
+                document.getElementById(disrs).value = valueafterdiscount.toFixed(2);
+                dynamicamount = dynamicamount - valueafterdiscount;
+
+            }
+            else { document.getElementById(disrs).value = "0.00"; }
+        }
+        else {
+            if (rupees != 0) {
+                var valueafterdiscount = rupees / dynamicamount * 100;
+                document.getElementById(disper).value = valueafterdiscount.toFixed(1);
+                dynamicamount = dynamicamount - rupees;
+            }
+            else { document.getElementById(disper).value = 0; }
+        }
+        document.getElementById(amount).innerHTML = addCommas(dynamicamount.toFixed(2));
+        document.getElementById(amountvalue).value = dynamicamount.toFixed(2);
+    }
+
+
+</script>
+
+@*DELETE ROW*@
+<script type="text/javascript">
+    function DeleteRow(rowid) {
+        var row = "row" + rowid;
+        confirmbox("Are you sure you wish to delete this row?", row);
+    }
+</script>
+
+@*GET LOGIN EMPLOYEE DETAILS (PREPAID BY)*@
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        $("#PreparedBy").change(function () {
+            var empname = $(this).val();
+            $.getJSON("/RetailBill/GetEmployeeDetails", { name: empname },
+                    function (data) {
+                        document.getElementById("emailid").innerHTML = data.Email;
+                        document.getElementById("contactnoid").innerHTML = data.MobileNo;
+                    });
+        });
+    });
+</script>
+
+@*SALES PERSON NAME AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#SalesPerson").autocomplete({
+            source: "/RetailBill/GetEmployeeName",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#SalesPerson").val(ui.item.value);
+                    var empname = document.getElementById("SalesPerson").value;
+
+                    $.getJSON("/RetailBill/GetEmployeeDetails", { name: empname },
+                   function (data) {
+
+                       document.getElementById("RetailBillDetails_SalesPersonContact").value = data.MobileNo;
+                       document.getElementById("RetailBillDetails_SalesPersonEmail").value = data.Email;
+                       document.getElementById("RetailBillDetails_SalesPersonAddress").value = data.Address;
+                       document.getElementById("RetailBillDetails_SalesPersonDesignation").value = data.Designation;
+                   });
+                }
+            }
+        });
+    });
+</script>
+
+@*CLIENT NAME AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#ClientName").autocomplete({
+            source: "/RetailBill/GetCustomerNames",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#ClientName").val(ui.item.value);
+
+                    var clientname = document.getElementById("ClientName").value;
+                    // DISPLAY CLIENT DETAILS ON CLIENT NAME CHANGE EVENT
+                    $.getJSON("/RetailBill/GetCustomerDetails", { name: clientname },
+                    function (data) {
+
+                        document.getElementById("RetailBillDetails_ClientAddress").value = data.Address;
+                        document.getElementById("RetailBillDetails_ClientContact").value = data.Contact;
+                        document.getElementById("RetailBillDetails_ClientEmail").value = data.EmailId;
+                    });
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#Submit").click(function () {
+
+            if (document.getElementById("TempCashMemoNo").value == "") {
+                // VALIDATION AND PAYMENT DETAILS FOR MULTIPLE RETAIL BILL
+                if ($("#QuotationNo").val() != "" || $("#SalesOrderNo").val() != "" || $("#ChallanNo").val() != "") {
+
+                    var rowid = document.getElementById("hdnRowCount").value;
+                    var counter = 0;
+                    for (i = 1; i <= rowid; i++) {
+                        var prevShopQuantity = "ShopQty" + i;
+                        var prevBarcode = "Barcode" + i;
+                        var prevQuantity = "Quantity" + i;
+                        var prevSellingPrice = "SellingPrice" + i;
+                        var prevDiscount = "DisPer" + i;
+                        var prevDiscountRs = "DisRs" + i;
+                        var prevItemName = "ItemName" + i;
+                        var prevItemType = "ItemType" + i;
+
+                        //INVENTORY ITEM DISABLED
+                        if (document.getElementById(prevQuantity) != null) {
+                            if (document.getElementById(prevItemType).value == "Inventory") {
+                                if ($("#" + prevBarcode).val() == "") {
+                                    alertbox("Please Select The Barcode");
+                                    counter = 1;
+                                }
+                                else if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                                    alertbox("Please Fill The Quantity");
+                                    counter = 1;
+                                }
+                                else if ($("#" + prevSellingPrice).val() == "" || ($("#" + prevSellingPrice).val()) == 0) {
+                                    alertbox("Please Fill The Rate");
+                                    counter = 1;
+                                }
+                                else if ($("#" + prevItemName).val() == "") {
+                                    alertbox("Please Select The Item");
+                                    counter = 1;
+                                }
+                                else {
+
+                                    //VALIDATION FOR QANTITY <= SHOP STOCK QUANTITY
+                                    var shopqty = document.getElementById(prevShopQuantity).innerHTML;
+                                    var qty = document.getElementById(prevQuantity).value;
+
+                                    if (shopqty != "----") {
+                                        shopqty = +shopqty;
+                                        if (qty > shopqty) {
+                                            alertbox("Can Not Exceed Above Shop Stock Quantity..");
+                                            document.getElementById(prevQuantity).value = "";
+                                            counter = 1;
+                                        }
+                                    }
+                                }
+                            }
+
+                                //NON INVENTORY ITEM CAN NOT BE DISABLED
+                            else {
+                                if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                                    alertbox("Please Fill The Quantity");
+                                    counter = 1;
+                                }
+                                else if ($("#" + prevSellingPrice).val() == "" || ($("#" + prevSellingPrice).val()) == 0) {
+                                    alertbox("Please Fill The Rate");
+                                    counter = 1;
+                                }
+                                else if ($("#" + prevItemName).val() == "") {
+                                    alertbox("Please Select The Item");
+                                    counter = 1;
+                                }
+                            }
+                        }
+                    }
+                    if (counter == 0) {
+                        var emptyrowcount = 0;
+                        for (i = 1; i <= rowid; i++) {
+                            var prevBarcode = "Barcode" + i;
+                            var prevQuantity = "Quantity" + i;
+                            var prevDiscount = "DisPer" + i;
+                            var prevDiscountRs = "DisRs" + i;
+                            var prevItemName = "ItemName" + i;
+                            var prevItemType = "ItemType" + i;
+                            var prevSellingPrice = "SellingPrice" + i;
+                            var prevNarration = "Narration" + i;
+
+                            if (document.getElementById(prevQuantity) != null) {
+                                if (document.getElementById(prevItemType).value == "Inventory") {
+                                    document.getElementById(prevBarcode).disabled = false;
+                                }
+                                document.getElementById(prevQuantity).disabled = false;
+                                document.getElementById(prevDiscount).disabled = false;
+                                document.getElementById(prevDiscountRs).disabled = false;
+                                document.getElementById(prevItemName).disabled = false;
+                                document.getElementById(prevSellingPrice).disabled = false;
+                                document.getElementById(prevNarration).disabled = false;
+                            }
+                            else { emptyrowcount++ };
+                        }
+                        if (emptyrowcount == rowid) {
+                            alertbox("Please Insert At Least One Item...");
+                            return false;
+                        }
+                        else {
+                            document.getElementById("Balance").innerHTML = document.getElementById("GrandTotal").innerHTML;
+                            document.getElementById("hdnBalance").value = +removeCommas(document.getElementById("GrandTotal").innerHTML);
+                            document.getElementById("ClientName").disabled = false;
+                            document.getElementById("RetailBillDetails_ClientAddress").disabled = false;
+                            document.getElementById("RetailBillDetails_ClientContact").disabled = false;
+                            document.getElementById("RetailBillDetails_ClientEmail").disabled = false;
+                            document.getElementById("QuotationNo").disabled = false;
+                            document.getElementById("SalesOrderNo").disabled = false;
+                            document.getElementById("ChallanNo").disabled = false;
+                            document.getElementById("AdvancePayment").disabled = false;
+                            $("#Save").trigger('click');
+                        }
+                    }
+                }
+
+
+                    // CHECK CASHIER PAYMENT VALIDATIONS WHEN DIRECT RETAIL BILLS
+                else {
+                    if ($("#paymentradiobtn1").prop("checked") || $("#paymentradiobtn2").prop("checked") || $("#paymentradiobtn3").prop("checked") || $("#paymentradiobtn4").prop("checked")) {
+                        var type = document.getElementById("PayType").value;
+                        var payment = +(document.getElementById("AdvancePayment").value);
+                        var validationcount = 0;
+                        //CASH PAYMENT VALIDATIONS
+                        if (type == "Cash") {
+
+                            document.getElementById("Amt1").disabled = false;
+                            document.getElementById("Amt2").disabled = false;
+                            document.getElementById("Amt3").disabled = false;
+                            document.getElementById("Amt4").disabled = false;
+                            document.getElementById("Amt5").disabled = false;
+                            document.getElementById("Amt6").disabled = false;
+                            document.getElementById("Amt7").disabled = false;
+                            document.getElementById("TotalCash").disabled = false;
+
+                            if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                                alertbox("Please Enter Total Cash");
+                                validationcount = 1;
+                                return false;
+                            }
+
+                            //if part payment < total amount then get refund alert..
+                            if (document.getElementById("TotalCash") != null) {
+                                var totalcash = +(document.getElementById("TotalCash").value);
+                                if (totalcash > payment) {
+                                    var refund = (totalcash - payment).toFixed(2);
+                                    var msg = alertbox(refund + " " + "Rupees Refunded..");
+                                    document.getElementById("CashierReceivableDetails_Refund").value = refund;
+                                }
+                            }
+                        }
+
+                            //CARD PAYMENT VALIDATIONS
+                        else if (type == "Card") {
+                            if (document.getElementById("Card") != null) {
+                                var selectedcard = document.getElementById("Card").value;
+                            }
+
+                            if (selectedcard != "") {
+                                //if we select credit card then validations on credit card details..
+                                if (selectedcard == "CreditCard") {
+
+                                    var creditamt = +(document.getElementById("CashierReceivableDetails_CreditCardAmount").value);
+
+                                    if ($("#CashierReceivableDetails_CreditCardNo").val() == "") {
+                                        alertbox("Please Enter Credit Card Number");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardAmount").val() == "") {
+                                        alertbox("Please Enter Credit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardType").val() == "") {
+                                        alertbox("Please Enter Credit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardBank").val() == "") {
+                                        alertbox("Please Enter Credit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if (creditamt != payment) {
+                                        alertbox("Please Enter The Correct Amount For Payment");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+
+                                    //if we select debit card then validations on debit card details..
+                                else {
+
+                                    var debitamt = +(document.getElementById("CashierReceivableDetails_DebitCardAmount").value);
+
+                                    if ($("#CashierReceivableDetails_DebitCardName").val() == "") {
+                                        alertbox("Please Enter Debit Card Name");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardNo").val() == "") {
+                                        alertbox("Please Enter Debit Card No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardType").val() == "") {
+                                        alertbox("Please Enter Debit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardAmount").val() == "") {
+                                        alertbox("Please Enter Debit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardBank").val() == "") {
+                                        alertbox("Please Enter Debit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if (debitamt != payment) {
+                                        alertbox("Please Enter The Correct Amount For Payment");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+                            }
+                            else {
+                                alertbox("Please Select The Card..");
+                                return false;
+                            }
+                        }
+
+                            //CHEQUE PAYMENT VALIDATION
+                        else if (type == "Cheque") {
+
+                            var chequeamt = +(document.getElementById("CashierReceivableDetails_ChequeAmount").value);
+
+                            if ($("#CashierReceivableDetails_ChequeNo").val() == "") {
+                                alertbox("Please Enter Cheque No");
+                                validationcount = 1;
+                                return false;
+                            }
+                            else if ($("#CashierReceivableDetails_ChequeAccNo").val() == "") {
+                                alertbox("Please Enter Cheque Account No");
+                                validationcount = 1;
+                                return false;
+                            }
+                            else if ($("#CashierReceivableDetails_ChequeAmount").val() == "") {
+                                alertbox("Please Enter Cheque Amount");
+                                validationcount = 1;
+                                return false;
+                            }
+                            else if ($("#CashierReceivableDetails_ChequeDate").val() == "") {
+                                alertbox("Please Enter Cheque Date");
+                                validationcount = 1;
+                                return false;
+                            }
+                            else if ($("#CashierReceivableDetails_ChequeBank").val() == "") {
+                                alertbox("Please Enter Cheque Bank");
+                                validationcount = 1;
+                                return false;
+                            }
+                            else if ($("#CashierReceivableDetails_ChequeBranch").val() == "") {
+                                alertbox("Please Enter Cheque Branch");
+                                validationcount = 1;
+                                return false;
+                            }
+                            else if (chequeamt != payment) {
+                                alertbox("Please Enter The Correct Amount For Payment");
+                                validationcount = 1;
+                                return false;
+                            }
+                        }
+
+                        else if (type == "CashCardCheque") {
+
+                            // cash card check combination
+                            if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#CashierReceivableDetails_ChequeNo").val() != "" && $("#Card").val() != "") {
+
+                                document.getElementById("Amt1").disabled = false;
+                                document.getElementById("Amt2").disabled = false;
+                                document.getElementById("Amt3").disabled = false;
+                                document.getElementById("Amt4").disabled = false;
+                                document.getElementById("Amt5").disabled = false;
+                                document.getElementById("Amt6").disabled = false;
+                                document.getElementById("Amt7").disabled = false;
+                                document.getElementById("TotalCash").disabled = false;
+
+                                if ($("#Card").val() == "CreditCard") {
+
+                                    if ($("#CashierReceivableDetails_CreditCardNo").val() == "") {
+                                        alertbox("Please Enter Credit Card Number");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardAmount").val() == "") {
+                                        alertbox("Please Enter Credit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardType").val() == "") {
+                                        alertbox("Please Enter Credit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardBank").val() == "") {
+                                        alertbox("Please Enter Credit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+
+                                    else if ($("#CashierReceivableDetails_ChequeNo").val() == "") {
+                                        alertbox("Please Enter Cheque No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeAccNo").val() == "") {
+                                        alertbox("Please Enter Cheque Account No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeAmount").val() == "") {
+                                        alertbox("Please Enter Cheque Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeDate").val() == "") {
+                                        alertbox("Please Enter Cheque Date");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeBank").val() == "") {
+                                        alertbox("Please Enter Cheque Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeBranch").val() == "") {
+                                        alertbox("Please Enter Cheque Branch");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+
+                                    else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                                        alertbox("Please Enter Total Cash");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+
+                                else {
+                                    if ($("#CashierReceivableDetails_DebitCardName").val() == "") {
+                                        alertbox("Please Enter Debit Card Name");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardNo").val() == "") {
+                                        alertbox("Please Enter Debit Card No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardType").val() == "") {
+                                        alertbox("Please Enter Debit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardAmount").val() == "") {
+                                        alertbox("Please Enter Debit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardBank").val() == "") {
+                                        alertbox("Please Enter Debit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+
+                                    else if ($("#CashierReceivableDetails_ChequeNo").val() == "") {
+                                        alertbox("Please Enter Cheque No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeAccNo").val() == "") {
+                                        alertbox("Please Enter Cheque Account No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeAmount").val() == "") {
+                                        alertbox("Please Enter Cheque Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeDate").val() == "") {
+                                        alertbox("Please Enter Cheque Date");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeBank").val() == "") {
+                                        alertbox("Please Enter Cheque Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_ChequeBranch").val() == "") {
+                                        alertbox("Please Enter Cheque Branch");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+
+                                    else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                                        alertbox("Please Enter Total Cash");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+
+                            }
+
+                                //cash and cheque combination
+                            else if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#CashierReceivableDetails_ChequeNo").val() != "") {
+
+                                document.getElementById("Amt1").disabled = false;
+                                document.getElementById("Amt2").disabled = false;
+                                document.getElementById("Amt3").disabled = false;
+                                document.getElementById("Amt4").disabled = false;
+                                document.getElementById("Amt5").disabled = false;
+                                document.getElementById("Amt6").disabled = false;
+                                document.getElementById("Amt7").disabled = false;
+                                document.getElementById("TotalCash").disabled = false;
+
+                                if ($("#CashierReceivableDetails_ChequeNo").val() == "") {
+                                    alertbox("Please Enter Cheque No");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeAccNo").val() == "") {
+                                    alertbox("Please Enter Cheque Account No");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeAmount").val() == "") {
+                                    alertbox("Please Enter Cheque Amount");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeDate").val() == "") {
+                                    alertbox("Please Enter Cheque Date");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeBank").val() == "") {
+                                    alertbox("Please Enter Cheque Bank");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeBranch").val() == "") {
+                                    alertbox("Please Enter Cheque Branch");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                                    alertbox("Please Enter Total Cash");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                            }
+
+                                //cash and card combination
+                            else if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#Card").val() != "") {
+
+                                document.getElementById("Amt1").disabled = false;
+                                document.getElementById("Amt2").disabled = false;
+                                document.getElementById("Amt3").disabled = false;
+                                document.getElementById("Amt4").disabled = false;
+                                document.getElementById("Amt5").disabled = false;
+                                document.getElementById("Amt6").disabled = false;
+                                document.getElementById("Amt7").disabled = false;
+                                document.getElementById("TotalCash").disabled = false;
+
+                                if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                                    alertbox("Please Enter Total Cash");
+                                    validationcount = 1;
+                                    return false;
+                                }
+
+                                if ($("#Card").val() == "CreditCard") {
+
+                                    if ($("#CashierReceivableDetails_CreditCardNo").val() == "") {
+                                        alertbox("Please Enter Credit Card Number");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardAmount").val() == "") {
+                                        alertbox("Please Enter Credit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardType").val() == "") {
+                                        alertbox("Please Enter Credit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardBank").val() == "") {
+                                        alertbox("Please Enter Credit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+
+                                    //if we select debit card then validations on debit card details..
+                                else {
+
+                                    var debitamt = +(document.getElementById("CashierReceivableDetails_DebitCardAmount").value);
+
+                                    if ($("#CashierReceivableDetails_DebitCardName").val() == "") {
+                                        alertbox("Please Enter Debit Card Name");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardNo").val() == "") {
+                                        alertbox("Please Enter Debit Card No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardType").val() == "") {
+                                        alertbox("Please Enter Debit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardAmount").val() == "") {
+                                        alertbox("Please Enter Debit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardBank").val() == "") {
+                                        alertbox("Please Enter Debit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+                            }
+
+                                //card and cheque combination
+                            else if ($("#CashierReceivableDetails_ChequeNo").val() != "" && ($("#Card").val() != "")) {
+
+                                if ($("#CashierReceivableDetails_ChequeNo").val() == "") {
+                                    alertbox("Please Enter Cheque No");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeAccNo").val() == "") {
+                                    alertbox("Please Enter Cheque Account No");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeAmount").val() == "") {
+                                    alertbox("Please Enter Cheque Amount");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeDate").val() == "") {
+                                    alertbox("Please Enter Cheque Date");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeBank").val() == "") {
+                                    alertbox("Please Enter Cheque Bank");
+                                    validationcount = 1;
+                                    return false;
+                                }
+                                else if ($("#CashierReceivableDetails_ChequeBranch").val() == "") {
+                                    alertbox("Please Enter Cheque Branch");
+                                    validationcount = 1;
+                                    return false;
+                                }
+
+                                if ($("#Card").val() == "CreditCard") {
+
+                                    if ($("#CashierReceivableDetails_CreditCardNo").val() == "") {
+                                        alertbox("Please Enter Credit Card Number");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardAmount").val() == "") {
+                                        alertbox("Please Enter Credit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardType").val() == "") {
+                                        alertbox("Please Enter Credit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_CreditCardBank").val() == "") {
+                                        alertbox("Please Enter Credit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+
+                                    //if we select debit card then validations on debit card details..
+                                else {
+
+                                    var debitamt = +(document.getElementById("CashierReceivableDetails_DebitCardAmount").value);
+
+                                    if ($("#CashierReceivableDetails_DebitCardName").val() == "") {
+                                        alertbox("Please Enter Debit Card Name");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardNo").val() == "") {
+                                        alertbox("Please Enter Debit Card No");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardType").val() == "") {
+                                        alertbox("Please Enter Debit Card Type");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardAmount").val() == "") {
+                                        alertbox("Please Enter Debit Card Amount");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                    else if ($("#CashierReceivableDetails_DebitCardBank").val() == "") {
+                                        alertbox("Please Enter Debit Card Bank");
+                                        validationcount = 1;
+                                        return false;
+                                    }
+                                }
+                            }
+
+                            else if ($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) {
+                                alertbox("Please Select Only Cash Part Payment..");
+                                validationcount = 1;
+                            }
+
+                            else if ($("#Card").val() != "") {
+                                alertbox("Please Select Only Card Part Payment..");
+                                validationcount = 1;
+                            }
+
+                            else if ($("#CashierReceivableDetails_ChequeNo").val() != "") {
+                                alertbox("Please Select Only Cheque Part Payment..");
+                                validationcount = 1;
+                            }
+
+                            else {
+                                alertbox("Please Fill All The Part Payment Details Before Submit..")
+                                validationcount = 1;
+                            }
+
+
+                            // display alert gor refund amount in type cashcardcheque..
+                            var creditamt = 0;
+                            var debitamt = 0;
+                            var chequeamt = 0;
+                            var totalcashamt = 0;
+                            if (document.getElementById("AddAdv") != null) {
+                                var addadv = document.getElementById("AddAdv").value;
+                            }
+
+                            if ($("#Card").val() != "") {
+                                if ($("#Card").val() == "CreditCard") {
+                                    creditamt = +(document.getElementById("CashierReceivableDetails_CreditCardAmount").value);
+                                }
+                                else {
+                                    debitamt = +(document.getElementById("CashierReceivableDetails_DebitCardAmount").value);
+                                }
+                            }
+                            if ($("#CashierReceivableDetails_ChequeNo").val() != "") {
+                                var chequeamt = +(document.getElementById("CashierReceivableDetails_ChequeAmount").value);
+                            }
+                            if ($("#TotalCash").val() != "" || +($("#TotalCash").val()) != 0) {
+                                var totalcashamt = +(document.getElementById("TotalCash").value);
+                            }
+
+                            var totalamt = creditamt + debitamt + chequeamt + totalcashamt;
+                            var refund = (totalamt - payment).toFixed(2);
+
+                            //get refund alert if cash part payment in included..
+                            if ($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) {
+                                if (refund >= 0) {
+                                    alertbox(refund + " " + "Rupees Refunded..");
+                                    document.getElementById("CashierReceivableDetails_Refund").value = refund;
+                                }
+                                else {
+                                    alertbox("Please Enter The Correct Amount For Payment");
+                                    validationcount = 1;
+                                }
+                            }
+                            else {
+                                if (payment != totalamt) {
+                                    alertbox("Please Enter The Correct Amount For Payment");
+                                    validationcount = 1;
+                                }
+                            }
+                        }
+
+                        if (validationcount == 0) {
+                            document.getElementById("ClientName").disabled = false;
+                            document.getElementById("RetailBillDetails_ClientAddress").disabled = false;
+                            document.getElementById("RetailBillDetails_ClientContact").disabled = false;
+                            document.getElementById("RetailBillDetails_ClientEmail").disabled = false;
+                            document.getElementById("QuotationNo").disabled = false;
+                            document.getElementById("SalesOrderNo").disabled = false;
+                            document.getElementById("ChallanNo").disabled = false;
+                            document.getElementById("AdvancePayment").disabled = false;
+
+                            var rowid = document.getElementById("hdnRowCount").value;
+                            if (document.getElementById("AdvancePayment").value == "") {
+                                alertbox("Payment Cannot Be Empty");
+                                return false;
+                            }
+                            else {
+                                for (i = 1; i <= rowid; i++) {
+                                    var itemname = "ItemName" + i;
+                                    var narration = "Narration" + i;
+                                    var itemtype = "ItemType" + i;
+                                    var barcode = "Barcode" + i;
+                                    var quantity = "Quantity" + i;
+                                    var sellingprice = "SellingPrice" + i;
+                                    var disper = "DisPer" + i;
+                                    var disrs = "DisRs" + i;
+                                    if (document.getElementById(itemname) != null) {
+                                        if (document.getElementById(itemtype).value == "Inventory") {
+                                            document.getElementById(barcode).disabled = false;
+                                        }
+                                        document.getElementById(narration).disabled = false;
+                                        document.getElementById(itemname).disabled = false;
+                                        document.getElementById(quantity).disabled = false;
+                                        document.getElementById(sellingprice).disabled = false;
+                                        document.getElementById(disper).disabled = false;
+                                        document.getElementById(disrs).disabled = false;
+                                    }
+                                }
+                                $("#Save").trigger('click');
+                            }
+                        }
+                    }
+
+                    else {
+                        document.getElementById("ClientName").disabled = false;
+                        document.getElementById("RetailBillDetails_ClientAddress").disabled = false;
+                        document.getElementById("RetailBillDetails_ClientContact").disabled = false;
+                        document.getElementById("RetailBillDetails_ClientEmail").disabled = false;
+                        document.getElementById("QuotationNo").disabled = false;
+                        document.getElementById("SalesOrderNo").disabled = false;
+                        document.getElementById("ChallanNo").disabled = false;
+                        document.getElementById("AdvancePayment").disabled = false;
+                        if (document.getElementById("AdvancePayment").value == "") {
+                            alertbox("Payment Cannot Be Empty");
+                            return false;
+                        }
+                        else {
+                            var rowid = document.getElementById("hdnRowCount").value;
+                            var emptyrowcount = 0;
+                            for (i = 1; i <= rowid; i++) {
+                                var itemname = "ItemName" + i;
+                                var narration = "Narration" + i;
+                                var itemtype = "ItemType" + i;
+                                var barcode = "Barcode" + i;
+                                var quantity = "Quantity" + i;
+                                var sellingprice = "SellingPrice" + i;
+                                var disper = "DisPer" + i;
+                                var disrs = "DisRs" + i;
+                                if (document.getElementById(itemname) != null) {
+                                    if (document.getElementById(itemtype).value == "Inventory") {
+                                        document.getElementById(barcode).disabled = false;
+                                    }
+                                    document.getElementById(narration).disabled = false;
+                                    document.getElementById(itemname).disabled = false;
+                                    document.getElementById(quantity).disabled = false;
+                                    document.getElementById(sellingprice).disabled = false;
+                                    document.getElementById(disper).disabled = false;
+                                    document.getElementById(disrs).disabled = false;
+                                }
+                                else { emptyrowcount++ };
+                            }
+                            if (emptyrowcount == rowid) {
+                                alertbox("Please Insert At Least One Item...");
+                                return false;
+                            }
+                            else {
+                                $("#Save").trigger('click');
+                            }
+                        }
+                    }
+                }
+            }
+            else {
+
+                document.getElementById("ClientName").disabled = false;
+                document.getElementById("RetailBillDetails_ClientAddress").disabled = false;
+                document.getElementById("RetailBillDetails_ClientContact").disabled = false;
+                document.getElementById("RetailBillDetails_ClientEmail").disabled = false;
+
+                document.getElementById("QuotationNo").disabled = false;
+                document.getElementById("SalesOrderNo").disabled = false;
+                document.getElementById("ChallanNo").disabled = false;
+
+                //enabled textbox values after saving..
+                var rowcount = document.getElementById("hdnRowCountForTempCashMemo").value;
+                for (i = 1; i < rowcount; i++) {
+                    var barcode = "Barcode" + i;
+                    var itemname = "ItemName" + i;
+                    var quantity = "Quantity" + i;
+                    var sellingprice = "SellingPrice" + i;
+                    var narration = "Narration" + i;
+
+                    if (document.getElementById(sellingprice) != null) {
+                        document.getElementById(barcode).disabled = false;
+                        document.getElementById(itemname).disabled = false;
+                        document.getElementById(quantity).disabled = false;
+                        document.getElementById(sellingprice).disabled = false;
+                        document.getElementById(narration).disabled = false;
+                    }
+                }
+                $("#Save").trigger('click');
+            }
+        });
+    });
+</script>
+@*ASSIGN DISCOUNT TYPE VALUE IN HIDDEN VARIABLE*@
+<script type="text/javascript">
+    function PutTheDiscountType(type) {
+        document.getElementById("discountType").value = type;
+    }
+</script>
+
+@*DISPLAY TOTAL STOCK IN POPUP*@
+<script>
+    function ShowQuantity(row) {
+        var itemcode = document.getElementById("ItemCode" + row).innerHTML;
+        window.open("/Stock/ShowAllQuantity?code=" + itemcode, "_target", "width=500,height=300,top=150px,left=400px");
+    }
+</script>
+
+@*SHOP REQUOSITION POPUP*@
+<script type="text/javascript">
+    function ShopRequisition(row) {
+        var itemcode = document.getElementById("ItemCode" + row).innerHTML;
+        window.open("/Requisition/ShopRequisitionForRetailBill?code=" + itemcode, "_blank", "width=625,height=500,top=150px,left=150px");
+    }
+</script>
+
+<style type="text/css">
+    .CenterText {
+        text-align: center;
+        width: 100%;
+    }
+</style>
+
+@*DISPLAY PARTIAL VIEW OF TYPE OF PAYMENT*@
+<script type="text/javascript">
+    function CashierModule(type) {
+        document.getElementById("Submit").disabled = false;
+        document.getElementById("CashierPaymentType").value = type;
+        document.getElementById("PaymentDetails").value = "Yes";
+        document.getElementById("AdvancePayment").disabled = true;
+        document.getElementById("Submit").disabled = false;
+        document.getElementById("PayType").value = type;
+        if (type == 'Cash') {
+            $.ajax({
+                url: "/RetailBill/CashPayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                    var balance = +removeCommas(document.getElementById("AdvancePayment").value);
+                    document.getElementById("TotalCash").value = balance;
+                }
+            });
+        }
+        else if (type == 'Card') {
+            $.ajax({
+                url: "/RetailBill/CardPayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+        else if (type == 'Cheque') {
+            $.ajax({
+                url: "/RetailBill/ChequePayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+        else {
+            $.ajax({
+                url: "/RetailBill/CashCardChequePayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+    }
+</script>
+
+
+
+@*TEM[PORARY CASH MEMO NO AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#TempCashMemoNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/RetailBill/GetTemporaryCashMemoNo", { SearchTerm: request.term },
+                function (data) {
+                    if (data != "Fail") {
+                        response(data);
+                    }
+                    else {
+                        alertbox("Please Enter Correct Bill No..");
+                        document.getElementById("TempCashMemoNo").value = "";
+                    }
+                });
+            },
+
+            minLength: 1,
+            @*DISPLAY BILL DETAILS IN POP-UP PAGE*@
+            select: function (event, ui) {
+                //JSON IS CALLED AFTER BILL NO SELECTED
+                if (ui.item) {
+                    $("#TempCashMemoNo").val(ui.item.value);
+                    var tempcashmemono = $("#TempCashMemoNo").val();
+                    $.getJSON("/RetailBill/GetClientDetails", { BillNo: tempcashmemono },
+                              function (data) {
+
+                                  document.getElementById("QuotationNo").value = "";
+                                  document.getElementById("SalesOrderNo").value = "";
+                                  document.getElementById("ChallanNo").value = "";
+                                  document.getElementById("QuotationNo").disabled = "true";
+                                  document.getElementById("SalesOrderNo").disabled = "true";
+                                  document.getElementById("ChallanNo").disabled = "true";
+
+                                  document.getElementById("ClientName").value = data.ClientName;
+                                  document.getElementById("RetailBillDetails_ClientAddress").value = data.ClientAddress;
+                                  document.getElementById("RetailBillDetails_ClientContact").value = data.ClientContact;
+                                  document.getElementById("RetailBillDetails_ClientEmail").value = data.ClientEmail;
+                                  document.getElementById("SalesPerson").value = data.SalesPersonName;
+
+                                  document.getElementById("RetailBillDetails_SalesPersonAddress").value = data.SalesPersonAddress;
+                                  document.getElementById("RetailBillDetails_SalesPersonContact").value = data.SalesPersonContact;
+                                  document.getElementById("RetailBillDetails_SalesPersonEmail").value = data.SalesPersonEmail;
+                                  document.getElementById("RetailBillDetails_SalesPersonDesignation").value = data.SalesPersonDesignation;
+
+                                  if (data.QuotationNo != null) {
+                                      document.getElementById("QuotationNo").value = data.QuotationNo;
+                                  }
+                                  if (data.SalesOrderNo != null) {
+                                      document.getElementById("SalesOrderNo").value = data.SalesOrderNo;
+                                  }
+                                  if (data.DeliveryChallanNo != null) {
+                                      document.getElementById("ChallanNo").value = data.DeliveryChallanNo;
+                                  }
+
+                                  document.getElementById("ClientName").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientAddress").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientContact").disabled = "true";
+                                  document.getElementById("RetailBillDetails_ClientEmail").disabled = "true";
+
+                                  document.getElementById("TotalAmount").innerHTML = data.TotalAmount;
+                                  document.getElementById("hdnTotalAmount").value = data.TotalAmount;
+                                  document.getElementById("TotalTaxAmount").innerHTML = data.TotalTaxAmount;
+                                  document.getElementById("hdnTotalTaxAmount").value = data.TotalTaxAmount;
+                                  document.getElementById("GrandTotal").innerHTML = data.GrandTotal;
+                                  document.getElementById("hdnGrandTotal").value = data.GrandTotal;
+                                  document.getElementById("Balance").innerHTML = data.Balance;
+                                  document.getElementById("hdnBalance").value = data.Balance;
+
+                                  document.getElementById("PaymentDiv").style.display = 'none';
+                                  document.getElementById("TempCashMemoPaymentDiv").style.display = 'inline';
+                                  document.getElementById("PreviousPayment").innerHTML = data.TotalPayment;
+                                  document.getElementById("hdnPreviousPayment").value = data.TotalPayment;
+
+                                  //if refund to client in temporary cash memo then only we display refund to client
+                                  if (data.RefundToClient != null) {
+                                      document.getElementById("TempCashMemoRefundToClientDiv").style.display = 'inline';
+                                      document.getElementById("RefundToClient").innerHTML = data.RefundToClient;
+                                      document.getElementById("hdnRefundToClient").value = data.RefundToClient;
+                                  }
+                              });
+
+
+                    //GET TEMPORARY CASH MEMO ITEMS
+                    $.ajax({
+                        url: "/RetailBill/GetTempCashMemoItemsWithSellingPrice",
+                        data: { TempCashMemoNo: tempcashmemono },
+                        type: "GET",
+                        success: function (data) {
+                            document.getElementById("DynamicRowsDiv").innerHTML = "";
+                            document.getElementById("DynamicRowsDiv").style.display = 'none';
+                            $("#LoadList").html(data);
+                        }
+                    })
+
+                    document.getElementById("NonInvButton").style.display = 'none';
+                    document.getElementById("Submit").disabled = false;
+                    //var shopcode = document.getElementById("ShopCode").value;
+                    //document.getElementById("AddTaxes").style.display = "inline";
+
+                    $.getJSON("/RetailBill/GetTaxFromTemporaryCashMemo", { TempCashMemoNo: tempcashmemono },
+                    function (data) {
+                        if (data != "") {
+                            //CREATE DYNAMIS TAX SUMMARY
+                            $.each(data, function (index, itemtax) {
+                                if (index + 1 == 1) {
+                                    document.getElementById("AddTaxes").style.display = "inline";
+                                    $("#AddedAmount1").html("<i class='fa fa-inr'></i>" + itemtax.Amount);
+                                    $("#AddedAmounthdn1").val(itemtax.Amount);
+                                    $("#AddedTax1").text(itemtax.Tax + "%");
+                                    $("#ItemTaxNumber1").val(itemtax.Tax);
+                                    $("#AddedTaxAmount1").html("<i class='fa fa-inr'></i>" + itemtax.TaxAmount);
+                                    $("#AddedTaxAmounthdn1").val(itemtax.TaxAmount);
+                                }
+                                else {
+                                    var taxno = "ItemTaxNumber" + (+index + 1);
+                                    var hiddendata = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + itemtax.Tax + "' />";
+                                    $("#AllTaxesNumbersValue").append(hiddendata);
+                                    var addedtaxno = "AddedTax" + (+index + 1);
+                                    var addedtaxamount = "AddedTaxAmount" + (+index + 1);
+                                    var addedtaxamounthdn = "AddedTaxAmounthdn" + (+index + 1);
+                                    var addedamount = "AddedAmount" + (+index + 1);
+                                    var addedamounthdn = "AddedAmounthdn" + (+index + 1);
+                                    var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>" + "<i class='fa fa-inr'></i>" + itemtax.Amount + "</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='" + itemtax.Amount + "' /></div>";
+                                    newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + itemtax.Tax + "%" + "</label></div>";
+                                    newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>" + "<i class='fa fa-inr'></i>" + itemtax.TaxAmount + "</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='" + itemtax.TaxAmount + "' /></div></div>";
+                                    $("#AddTaxes").append(newlabel);
+                                    $("#ItemTaxCount").val(+index + 1);
+                                }
+                            });
+                        }
+                        else { document.getElementById("AddTaxes").style.display = "none"; }
+                    });
+
+                }
+            }
+        });
+    });
+</script>
+
+@using (Html.BeginForm("RetailBill", "RetailBill", FormMethod.Post))
+{
+    @Html.ValidationSummary(true)
+
+    <input type="hidden" id="preparedby" value="@HttpContext.Current.Session["UserEmail"]"/>
+            
+    // Hidden variable for cashier payment details
+    <input type="hidden" id="PaymentDetails" name="PaymentDetails" />
+            
+    // Hidden variable for client details
+    <input type="hidden" id="ClientState" name="ClientState" />
+    <input type="hidden" id="ClientType" name="ClientType" />
+    <input type="hidden" id="FormType" name="Formype" />
+    <input type="hidden" id="TaxStatus" name="TaxStatus" />
+    
+    <input type="hidden" id="CashierPaymentType" name="CashierPaymentType" />
+            
+    @Html.HiddenFor(model => model.RetailBillDetails.RetailBillNo)
+    @Html.HiddenFor(model => model.RetailBillDetails.SalesPersonAddress)
+    @Html.HiddenFor(model => model.RetailBillDetails.SalesPersonContact)
+    @Html.HiddenFor(model => model.RetailBillDetails.SalesPersonEmail)
+    @Html.HiddenFor(model => model.RetailBillDetails.SalesPersonDesignation)
+    @Html.HiddenFor(model => model.RetailBillDetails.TotalDiscount)
+            
+    @Html.HiddenFor(model => model.RetailBillDetails.ShopAddress)
+    @Html.HiddenFor(model => model.RetailBillDetails.ShopContactPerson)
+    @Html.HiddenFor(model => model.RetailBillDetails.ShopEmail)
+    @Html.HiddenFor(model => model.RetailBillDetails.ShopName)
+    @Html.HiddenFor(model => model.RetailBillDetails.PreparedBy)
+    @Html.HiddenFor(model => model.CashierReceivableDetails.Refund)
+
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+            
+    <input type="hidden" id="PayType" />
+
+    //HIDDEN VARIABLES FOR TAX VALUE AND TAX AMOUNT
+    <input type="hidden" id="discountType" value="percent" />
+    <div id="AllTaxesNumbersValue">
+        <input type="hidden" id="ItemTaxCount" name="ItemTaxCount" value="1" />
+        <input type="hidden" id="ItemTaxNumber1" name="ItemTaxNumber1" value="0" />
+    </div>
+    <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="1" />
+
+    
+    <div class="col-md-12 col-lg-12">
+
+        <div class="col-md-12 col-lg-12 col-sm-12">
+            <table style="border: 1px double;">
+                <tr>
+                    <td>
+                        <div style="height: 10px;"></div>
+                        <div class="col-md-12 col-lg-12 col-sm-12 form-group">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-4">
+                                    <div class="row">
+                                        <label style="font-size: larger">&nbsp;Client Details:</label><br />
+                                    </div>
+                                    <div style="height: 7px"></div>
+                                    <div class="row">
+                                        <div class="col-md-3 col-lg-3">
+                                            <label>Name</label>
+                                        </div>
+                                        <div class="col-md-9 col-lg-9">
+                                            @Html.TextBoxFor(model => model.RetailBillDetails.ClientName, new { @id = "ClientName", @class = "form-control", @autocomplete = "off", @placeholder = "Name" })
+                                        </div>
+                                    </div>
+                                    <div style="height: 4px"></div>
+                                    <div class="row">
+                                        <div class="col-md-3 col-lg-3">
+                                            <label>Address</label>
+                                        </div>
+                                        <div class="col-md-9 col-lg-9">
+                                            @Html.TextAreaFor(model => model.RetailBillDetails.ClientAddress, new { @class = "form-control", @autocomplete = "off", @placeholder = "Address" })
+                                        </div>
+                                    </div>
+                                    <div style="height: 4px"></div>
+                                    <div class="row">
+                                        <div class="col-md-3 col-lg-3">
+                                            <label>ContactNo</label>
+                                        </div>
+                                        <div class="col-md-9 col-lg-9">
+                                            @Html.TextBoxFor(model => model.RetailBillDetails.ClientContact, new { @class = "form-control", @autocomplete = "off", @placeholder = "Contact" })
+                                        </div>
+                                    </div>
+                                    <div style="height: 4px"></div>
+                                    <div class="row">
+                                        <div class="col-md-3 col-lg-3">
+                                            <label>Email</label>
+                                        </div>
+                                        <div class="col-md-9 col-lg-9">
+                                            @Html.TextBoxFor(model => model.RetailBillDetails.ClientEmail, new { @class = "form-control", @autocomplete = "off", @placeholder = "Email" })
+                                            @Html.ValidationMessageFor(model => model.RetailBillDetails.ClientEmail, null, new { @style = "color:#f00" })
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-lg-4" style="border-left: 1px solid #808080; height: 210px;">
+                                    <div style="height: 5px"></div>
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-12">
+                                            <label style="font-size: 14px;">Sales Person Name:<i style="color: red">*</i></label>
+                                        </div>
+                                    </div>
+                                    <div style="height: 10px"></div>
+                                    <div class="row form-group">
+                                        <div class="col-md-9 col-lg-9">
+                                            @Html.TextBoxFor(model => model.RetailBillDetails.SalesPersonName, new { id = "SalesPerson", @class = "form-control", @autocomplete = "off", @placeholder = "Sales Person Name" })
+                                            @Html.ValidationMessageFor(model => model.RetailBillDetails.SalesPersonName, null, new { @style = "color:#f00" })
+                                        </div>
+                                    </div>
+
+                                </div>
+
+                                <div class="col-lg-4 col-md-4" style="border-left: 1px solid #808080; height: 210px;">
+                                    <div class="col-md-12 col-lg-12">
+                                        @{
+    string Date = DateTime.Now.ToString("dd/MM/yyyy");
+    string RetailNo = Model.RetailBillDetails.RetailBillNo;
+                                        }
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="row">
+                                                    <label style="font-size: 14px;">Date</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-7 col-md-7">
+                                                <div class="row">
+                                                    <label style="font-size: 16px;">@Date</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div style="height: 5px"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="row">
+                                                    <label style="font-size: 14px;">Retail No.</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-7 col-md-7">
+                                                <div class="row">
+                                                    <label style="font-size: 16px;" id="retailno">@RetailNo</label>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div style="height: 5px"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="row">
+                                                    <label style="font-size: 14px;">Quotation No.</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-7 col-md-7">
+                                                <div class="row">
+                                                    @Html.TextBoxFor(model => model.RetailBillDetails.QuotationNo, new { id = "QuotationNo", @placeholder = "Quotation No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div style="height: 5px"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="row">
+                                                    <label style="font-size: 14px;">Sales Order No.</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-7 col-md-7">
+                                                <div class="row">
+                                                    @Html.TextBoxFor(model => model.RetailBillDetails.SalesOrderNo, new { id = "SalesOrderNo", @placeholder = "Order No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div style="height: 5px"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="row">
+                                                    <label style="font-size: 14px;">Challan No.</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-7 col-md-7">
+                                                <div class="row">
+                                                    @Html.TextBoxFor(model => model.RetailBillDetails.DeliveryChallanNo, new { id = "ChallanNo", @placeholder = "Challan No", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div style="height: 5px"></div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="row">
+                                                    <label style="color: blue">Provisional Cash Memo:</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-7 col-md-7">
+                                                <div class="row">
+                                                    @Html.TextBoxFor(model => model.RetailBillDetails.TemporaryCashMemo, new { id = "TempCashMemoNo", @class = "form-control", @autocomplete = "off", @placeholder = "Provisional Cash Memo No." })
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12 col-sm-12">
+                            <div class="row" id="DynamicRowsDiv">
+                                <table class="table" id="AddItemRows" style="border-color: #d2d2d2; border: outset">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center">Sr<br />
+                                                No</th>
+                                            <th style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barcode<b style="color: #f00">*</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                                            <th style="text-align: center">Item<br />
+                                                Code</th>
+                                            <th style="text-align: center">Item<br />
+                                                Name<b style="color: #f00">*</b></th>
+                                            <th style="text-align: center">Narration</th>
+                                            <th style="text-align: center">Stk<br />
+                                                Qty</th>
+                                            <th style="text-align: center">Shop<br />
+                                                Qty</th>
+                                            <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Tran<br />
+                                                Qty<b style="color: #f00">*</b></th>
+                                            <th style="text-align: center">Unit</th>
+                                            <th style="text-align: center">Rate<b style="color: #f00">*</b><br />
+                                                (<i class="fa fa-rupee"></i>)</th>
+                                            <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Disc<br />
+                                                (%)</th>
+                                            <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Disc<br />
+                                                (<i class="fa fa-inr"></i>)</th>
+                                            <th style="text-align: center">Tax<br />
+                                                (%)</th>
+                                            <th style="text-align: center">Amt<br />
+                                                (<i class="fa fa-rupee"></i>)</th>
+                                            <th style="text-align: center"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ItemDetails">
+                                        <tr style="height: 30px;" id="row1">
+                                            <td style="text-align: center">1</td>
+                                            <td class="col-md-1 col-lg-1 col-sm-1">
+                                                <input type="text" id="Barcode1" name="Barcode1" style="text-align: center" class="form-control" onchange="GetItemsByBarcode(1)" autocomplete="off" />
+                                            </td>
+                                            <td>
+                                                <label id="ItemCode1" style="font-weight: normal"></label>
+                                                <input type="hidden" name="ItemCodeVal1" id="ItemCodeVal1" />
+                                            </td>
+                                            <td class="col-md-2 col-lg-2 col-sm-2">
+                                                <input type="text" id="ItemName1" name="ItemName1" style="text-align: center" class="form-control" onchange="GetItemsByItemCode(1)" autocomplete="off" disabled="disabled" />
+                                            </td>
+                                            <td class="col-md-2 col-lg-2 col-sm-2">
+                                                <textarea class="form-control" style="text-align: center" id="Narration1" name="Narration1" disabled="disabled" placeholder="Narration" rows="1"></textarea></td>
+                                            <td style="text-align: center">
+                                                <a href="#" onclick="ShowQuantity(1)" id="StkQty1" style="font-weight: normal"></a>
+                                            </td>
+                                            <td style="text-align: center">
+                                                <a href="#" onclick="ShopRequisition(1)" id="ShopQty1" style="font-weight: normal"></a>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="Quantity1" id="Quantity1" style="text-align: center" class="form-control" onchange="CalculateAmount(1,'quantity')" onkeypress="return AllowDecimal(event,1)" autocomplete="off" disabled="disabled" /></td>
+                                            <td>
+                                                <label id="Unit1" style="font-weight: normal"></label>
+                                                <input type="hidden" name="UnitVal1" id="UnitVal1" />
+                                                <input type="hidden" name="NumberType1" id="NumberType1" />
+                                            </td>
+                                            <td style="text-align: center" class="col-md-1 col-lg-1 col-sm-1">
+                                                <input type="text" id="SellingPrice1" name="SellingPrice1" style="text-align: center" class="form-control" disabled="disabled" />
+                                            </td>
+                                            <td>
+                                                <input type="text" name="DisPer1" id="DisPer1" style="text-align: center" class="form-control" autocomplete="off" onchange="CalculateAmount(1,'percent')" value="0" onclick="PutTheDiscountType('percent')" /></td>
+                                            <td>
+                                                <input type="text" name="DisRs1" id="DisRs1" style="text-align: center" class="form-control" autocomplete="off" onchange="CalculateAmount(1,'rps')" onclick="PutTheDiscountType('rps')" value="0.00" /></td>
+                                            <td>
+                                                <label id="ItemTax1" style="font-weight: normal;"></label>
+                                                <input type="hidden" name="ItemTaxVal1" id="ItemTaxVal1" />
+                                                <input type="hidden" name="ItemTaxAmt1" id="ItemTaxAmt1" />
+                                            </td>
+                                            <td style="text-align: center">
+                                                <label id="Amount1" style="font-weight: normal;">0</label>
+                                                <input type="hidden" name="Amountval1" id="AmountVal1" />
+                                            </td>
+                                            <td>
+                                                <a href='#' onclick="DeleteRow(1)" class='fa fa-trash fa-lg' style='color: red;' />
+                                                <input type="hidden" name="MRP1" id="MRP1" />
+                                                <input type="hidden" name="Size1" id="Size1" />
+                                                <input type="hidden" name="Brand1" id="Brand1" />
+                                                <input type="hidden" name="DesignCode1" id="DesignCode1" />
+                                                <input type="hidden" name="DesignName1" id="DesignName1" />
+                                                <input type="hidden" name="Description1" id="Description1" />
+                                                <input type="hidden" name="Color1" id="Color1" />
+                                                <input type="hidden" name="Material1" id="Material1" />
+                                                <input type="hidden" id="ItemType1" name="ItemType1" value="Inventory" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12">
+                            <div id="LoadList"></div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12" style="text-align: right">
+                            <div class="row">
+                                <button class="btn btn-link" id="NonInvButton" type="button" style="float: right; text-align: right; color: orangered; font-size: small">Non-Inventory Item</button>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div class="row">
+                                <div class="col-md-7 col-lg-7">
+                                    @*TAX SUMMARY WITHOUT QUOTATION*@
+                                    <div id="AddTaxes" style="display: none">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12">
+                                                <label style="font-size: 14px">Tax Summary:</label>
+                                            </div>
+                                        </div>
+                                        <div style="height: 10px"></div>
+                                        <div class="row">
+                                            <div class="col-md-3 col-lg-3">
+                                                <label id="AddedAmount1">0</label>
+                                                <input type="hidden" id="AddedAmounthdn1" name="AddedAmounthdn1" value="0" />
+                                            </div>
+                                            <div class="col-md-2 col-lg-2">
+                                                <label id="AddedTax1"></label>
+                                            </div>
+                                            <div class="col-md-7 col-lg-7">
+                                                <label id="AddedTaxAmount1">0</label>
+                                                <input type="hidden" id="AddedTaxAmounthdn1" name="AddedTaxAmounthdn1" value="0" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-5 col-lg-5">
+                                    <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-lg-6">
+                                                    <label style="font-size: 14px">Total Amount</label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-6" style="text-align: right">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <label id="TotalAmount" style="font-size: 14px">0</label>
+                                                            <input type="hidden" id="hdnTotalAmount" name="hdnTotalAmount" value="0" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-lg-6">
+                                                    <label style="font-size: 14px">Tax Amount</label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-6" style="text-align: right">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <label id="TotalTaxAmount" style="font-size: 14px">0</label>
+                                                            <input type="hidden" id="hdnTotalTaxAmount" name="hdnTotalTaxAmount" value="0" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-lg-6">
+                                                    <label style="font-size: 14px">Grand Total</label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-6" style="text-align: right">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <label id="GrandTotal" style="font-size: 14px;">0</label>
+                                                            <input type="hidden" id="hdnGrandTotal" name="hdnGrandTotal" value="0" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-lg-12 col-sm-12" id="TempCashMemoPaymentDiv" style="display: none">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-lg-6">
+                                                    <label style="font-size: 14px; color: blue">Provision Cash Memo Payment</label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-6" style="text-align: right">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <div style="height: 7px"></div>
+                                                            <label id="PreviousPayment" style="font-size: 14px; color: blue">0</label>
+                                                            <input type="hidden" id="hdnPreviousPayment" name="hdnPreviousPayment" value="0" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                    <div class="col-md-12 col-lg-12 col-sm-12" id="TempCashMemoRefundToClientDiv" style="display: none">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <div class="col-md-6 col-lg-6">
+                                                    <label style="font-size: 14px">Refund To Client</label>
+                                                </div>
+                                                <div class="col-md-6 col-lg-6" style="text-align: right">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <label id="RefundToClient" style="font-size: 14px;">0</label>
+                                                            <input type="hidden" id="hdnRefundToClient" name="hdnRefundToClient" value="0" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12 col-lg-12 col-sm-12 form-group" id="PaymentDiv">
+                                        <div class="col-md-6 col-lg-6">
+                                            <label style="font-size: 14px">Payment</label>
+                                        </div>
+                                        <div class="col-md-6 col-lg-6" style="text-align: right">
+                                            <div class="row">
+                                                <div class="row">
+                                                    @Html.TextBoxFor(model => model.RetailBillDetails.Payment, new { id = "AdvancePayment", @autocomplete = "off", style = "font-weight: normal; text-align: right", @class = "form-control", @onchange = "CheckValidationAndPaymentDetails()", @disabled = "disabled", onkeypress = "return AllowNumbers(event)" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                            <div class="form-group"></div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12 col-sm-12">
+                            <div class="row">
+                                <div class="col-md-7 col-lg-7 col-sm-7"></div>
+                                <div class="col-md-5 col-lg-5 col-sm-5">
+                                    <div class="col-md-12 col-lg-12 col-sm-12">
+                                        <div class="col-md-6 col-lg-6 col-sm-6">
+                                            <label style="font-weight: bold; font-size: 15px;">Balance</label>
+                                        </div>
+                                        <div class="col-md-6 col-lg-6 col-sm-6" style="text-align: right">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <label id="Balance" style="font-size: 14px">0</label>
+                                                    <input type="hidden" id="hdnBalance" name="hdnBalance" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12 col-sm-12">
+                            <div class="row">
+                                <div class="col-lg-2 col-md-2">
+                                    <label style="font-size: larger">In Words</label>
+                                </div>
+                                <div class="col-lg-10 col-md-10">
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="row">
+                                                <label id="Inwords"></label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12" id="verticalline2" style="display: none">
+                            <div style="height: 15px"></div>
+                            <div style="width: 100%; height: 1px; background-color: black"></div>
+                            <div style="height: 10px"></div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12" id="TypeOfPaymentLabel" style="display: none;">
+                            <label style="font-weight: bolder; font-size: larger; color: darkblue">Type Of Payment</label>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12 form-group" id="TypeOfPaymentDiv" style="display: none;">
+                            <div class="col-md-3 col-lg-3">
+                                <input type="radio" name="CashierRadioBtn" id="paymentradiobtn1" onclick="CashierModule('Cash')" />
+                                <label>&nbsp Cash</label>
+                            </div>
+                            <div class="col-md-3 col-lg-3">
+                                <input type="radio" name="CashierRadioBtn" id="paymentradiobtn2" onclick="CashierModule('Card')" />
+                                <label>&nbsp Card</label>
+                            </div>
+                            <div class="col-md-3 col-lg-3">
+                                <input type="radio" name="CashierRadioBtn" id="paymentradiobtn3" onclick="CashierModule('Cheque')" />
+                                <label>&nbsp Cheque</label>
+                            </div>
+                            <div class="col-md-3 col-lg-3">
+                                <input type="radio" name="CashierRadioBtn" id="paymentradiobtn4" onclick="CashierModule('CashCardCheque')" />
+                                <label>&nbsp Cash/Card/Cheque</label>
+                            </div>
+                        </div>
+
+                        <div id="PaymentType"></div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 15px"></div>
+                            <div style="width: 100%; height: 1px; background-color: black"></div>
+                            <div style="height: 10px"></div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12" id="acceptedid">
+                            <div class="row">
+                                <div style="height: 15px"></div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Prepared By</label><br />
+                                    <label id="PreparedByName"></label>
+                                </div>
+                                <div class="col-md-4 col-lg-4">
+                                    <label>Email-Id</label><br />
+                                    <label id="PreparedByEmail" style="font-weight: normal"></label>
+                                </div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Contact No.</label><br />
+                                    <label id="PreparedByContact" style="font-weight: normal"></label>
+                                </div>
+                                @{
+    string preparetimeid = DateTime.Now.ToShortTimeString();
+                                }
+                                <div class="col-md-2 col-lg-2">
+                                    <label>Prepare Time</label><br />
+                                    <label style="font-weight: normal">@preparetimeid</label>
+                                </div>
+                                <div style="height: 70px"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div style="height: 10px"></div>
+        </div>
+
+        <div class="col-lg-offset-5 col-md-offset-5">
+            <button type="button" id="Submit" class="btn btn-success" disabled="disabled">Submit</button>
+            <button type="submit" id="Save" style="display: none">Save</button>
+        </div>
+
+        <div class="row" style="text-align: right">
+            <div class="col-lg-12 col-md-12">
+                <div class="col-lg-12 col-md-12">
+                    <button type="button" class="btn btn-warning" data-toggle="tooltip" title="Edit" id="editbtn"><i class="fa fa-pencil"></i></button>
+                    @*<button type="button" class="btn btn-danger" data-toggle="tooltip" title="Delete" id="deletebtn"><i class="fa fa-trash"></i></button>*@
+                    <button type="button" class="btn btn-primary" data-toggle="tooltip" title="Print" id="printbtn"><i class="fa fa-print"></i></button>
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+   
+}

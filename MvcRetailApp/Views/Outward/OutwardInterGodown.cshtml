@@ -1,0 +1,591 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "OutwardInterGodown";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, obj) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $(obj).parents("tr").remove();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+<script type="text/javascript">
+    //DATE PICKER ON OUTWARD DATE
+    window.onclick = function () {
+        new JsDatePick({
+            useMode: 2,
+            target: "OutwardInterGodownDetails_OutwardDate",
+            dateFormat: "%d/%M/%Y",
+        });
+    };
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+
+        document.getElementById("OutwardInterGodownDetails_GatePass").value = Math.floor(Math.random() * (1001));
+        var refno = $("#OutwardInterGodownDetails_GatePass").val();
+        $.getJSON('/Outward/CheckReferenceNo', { refno: refno }, function (data) {
+            if (data == "true") {
+                document.getElementById("OutwardInterGodownDetails_GatePass").value = Math.floor(Math.random() * (1001));
+            }
+        });
+
+
+        var code = $("#godowncode").val();
+        $("#OutwardInterGodownDetails_FromGodownCode").val(code);
+        $.getJSON("/Outward/GetGodownDetailsByGdCode", { Code: code }, function (data) {
+            if (data != null) {
+                document.getElementById("OutwardInterGodownDetails_FromGodownname").value = data.GodownName;
+                document.getElementById("OutwardInterGodownDetails_FromGodownContactPerson").value = data.EmpName;
+                $("#OutwardInterGodownDetails_FromGodownContactNo").val(data.ContactNo1);
+                $("#OutwardInterGodownDetails_FromGodownEmail").val(data.GodownEmail);
+            }
+        });
+
+
+        $("#ddltogodownnames").change(function () {
+            var data = $(this).val();
+
+            if (data == code) {
+                alertbox("Invalid Godown Name");
+                $("#ddltogodownnames").val("").attr("selected", "selected");
+                return false;
+            }
+
+            if (data != "") {
+                document.getElementById("Godown_Addressess").style.display = "inline";
+                $.getJSON("/Outward/GetGodownAddresses", { code: data },
+                function (data) {
+                    document.getElementById("OutwardInterGodownDetails_ToGodownname").value = data.gdname;
+                    var select = $("#ddltogodownaddresses");
+                    select.empty();
+                    select.append($('<option/>', {
+                        text: "Addresses",
+                        value: "",
+                    }));
+                    $.each(data.addresslist, function (index, itemdata) {
+                        select.append($('<option/>', {
+                            text: itemdata.Text,
+                            value: itemdata.Value,
+                        }));
+                    });
+                });
+            }
+            else {
+                document.getElementById("Godown_Addressess").style.display = "none";
+                document.getElementById("godown2details").style.display = "none";
+                document.getElementById("add").style.display = "none";
+            }
+        });
+
+        //GET GODOWN ADDRESS DETAILS
+        $("#ddltogodownaddresses").change(function () {
+            var dat = $(this).val();
+            if (dat != "") {
+                document.getElementById("godown2details").style.display = "inline";
+                document.getElementById("add").style.display = "inline";
+                $.getJSON("/Outward/GetGodownDetails", { area: dat },
+                    function (data) {
+                        document.getElementById("toaddress").innerHTML = data.Address;
+                        document.getElementById("gd_Person").innerHTML = data.EmpName;
+                        document.getElementById("gd_Contact").innerHTML = data.ContactNo1;
+                        document.getElementById("gd_Email").innerHTML = data.GodownEmail;
+                        document.getElementById("store").style.display = "inline";
+                        document.getElementById("prepareby").style.display = "inline";
+                        document.getElementById("OutwardInterGodownDetails_ToDeliveryAt").value = data.Address;
+                        document.getElementById("OutwardInterGodownDetails_ToGodownContactPerson").value = data.EmpName;
+                        $("#OutwardInterGodownDetails_ToGodownContactNo").val(data.ContactNo1);
+                        $("#OutwardInterGodownDetails_ToGodownEmail").val(data.GodownEmail);
+
+                        $.ajax({
+                            url: "/Outward/GetItemsFromStockDistribtn",
+                            data: { GodownCode: code },
+                            type: "GET",
+                            success: function (data) {
+                                $("#LoadItemList").html(data);
+                            }
+                        });
+
+                        $("#Submit").attr("disabled", false);
+                        document.getElementById("narration").style.display = "inline";
+
+                    });
+            }
+            else {
+                document.getElementById("godown2details").style.display = "none";
+            }
+        });
+
+
+    });
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#EmpName").autocomplete({
+            source: "/Outward/GetEmployee",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#EmpName").val(ui.item.value);
+
+                    var employeename = document.getElementById("EmpName").value;
+                    $.getJSON("/Outward/GetEmployeeDetails", { name: employeename },
+                   function (data) {
+
+                       document.getElementById("Designation").innerHTML = data.Designation;
+                       document.getElementById("Email").innerHTML = data.Email;
+                       document.getElementById("MobileNo").innerHTML = data.MobileNo;
+                       $("#OutwardInterGodownDetails_FromGodownStoreKeeperDesignation").val(data.Designation);
+                       $("#OutwardInterGodownDetails_FromGodownStoreKeeperEmail").val(data.Email);
+                       $("#OutwardInterGodownDetails_FromGodownStoreKeeperContactNo").val(data.MobileNo);
+                   });
+                }
+            }
+        });
+
+        var email = $("#preparedby").val();
+        $.getJSON("/Inward/GetEmployeeDetails", { Email: email },
+                function (data) {
+                    document.getElementById("name").innerHTML = data.Name;
+                    document.getElementById("emailid").innerHTML = email;
+                    document.getElementById("contactnoid").innerHTML = data.MobileNo;
+                    $("#OutwardInterGodownDetails_PrepareBy").val(data.Name);
+                    $("#OutwardInterGodownDetails_PrepareByEmail").val(email);
+                    $("#OutwardInterGodownDetails_PrepareByContactNo").val(data.MobileNo);
+                });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Submit").click(function () {
+
+            if (document.getElementById("ddltogodownnames").value != "")
+                if (document.getElementById("ddltogodownaddresses").value == "") {
+                    alertbox("Please Fill Address Field Of 'To Godown'");
+                    return false;
+                }
+
+            var count = document.getElementById("TotalItems").value;
+            var error = 0;
+            for (var i = 1; i <= count; i++) {
+                var intertransfer = "InterTransfer" + i;
+                if (document.getElementById(intertransfer).value == "" || document.getElementById(intertransfer).value == "0") {
+                    error++;
+                }
+            }
+            if (error == count) {
+                alertbox("Please Enter Transfer Quantity For Atleast One Item");
+                return false;
+            }
+        });
+
+        $("#Print").click(function () {
+            window.location.assign("/Outward/OutwardInterGodownPrint");
+        });
+        $("#Delete").click(function () {
+            window.location.assign("/Outward/OutwardInterGodownDelete");
+        });
+    });
+</script>
+
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- End: Sidebar -->
+
+        @using (Html.BeginForm("InterGodown", "Outward", FormMethod.Post))
+        {
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.OutwardId)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownCode)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownContactNo)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownContactPerson)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownEmail)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownname)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.OutwardDate)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.OutwardCode)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.ToDeliveryAt)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.ToGodownContactNo)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.ToGodownContactPerson)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.ToGodownEmail)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.ToGodownname)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.PrepareBy)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.PrepareByEmail)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.PrepareByContactNo)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperContactNo)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperEmail)
+            @Html.HiddenFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperDesignation)
+            
+            <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                <source src="" type="audio/ogg" />
+            </audio>
+            <input type="hidden" id="preparedby" value="@HttpContext.Current.Session["UserEmail"]"/>
+            
+            @Html.Partial("../Shared/LeftMenu")
+
+            <!-- Start: Content -->
+
+            <div class="mainpanel">
+                <div class="col-lg-12 col-md-12">
+                    <br />
+
+                    <h2>Outward Inter Godown</h2>
+
+                    @{
+            string godowncode = string.Empty;
+            if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+            {
+                if (Session["LOGINSHOPGODOWNCODEOWGG"] != null)
+                {
+                    godowncode = Session["LOGINSHOPGODOWNCODEOWGG"].ToString();
+
+                        <input type="hidden" id="godowncode" value="@godowncode"/>
+                                
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAMEOWGG"].ToString()</label>
+                        </div>
+                }
+            }
+                    }
+
+                    <div class="col-lg-12 col-md-12">
+                        <table style="border: 1px double; width: 100%">
+                            <tr>
+                                <td>
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12">
+
+                                            <div class="col-lg-5 col-md-5" style="height: 155px;">
+                                                <div style="height: 10px"></div>
+                                                <div class="col-md-12 col-lg-12">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <div class="col-lg-12 col-md-12">
+                                                                <label style="font-size: large">Godown Details</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-lg-6 col-md-6">
+                                                            <div class="row">
+                                                                <label>Godown Name<label style="color: red">*</label></label><br />
+                                                                @Html.DropDownListFor(model => model.OutwardInterGodownDetails.ToGodownCode, new SelectList(Model.GodownMasterList, "GdCode", "GodownName"), "Select Godown", new { id = "ddltogodownnames", @class = "form-control" })
+                                                                @Html.ValidationMessageFor(model => model.OutwardInterGodownDetails.ToGodownCode, null, new { style = "color:red" })
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="col-md-6 col-lg-6" style="display: none" id="Godown_Addressess">
+                                                            <label>Godown Area<label style="color: red">*</label></label>
+                                                            @Html.DropDownListFor(model => model.GodownAddressDetails.AreaName, Enumerable.Empty<SelectListItem>(), "Address", new { id = "ddltogodownaddresses", @class = "form-control" })
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="row">
+                                                        <div class="col-md-12 col-lg-12" id="godown2details" style="display: none">
+                                                            <div style="height: 10px"></div>
+                                                            <label>Address: &nbsp</label><label id="toaddress" style="font-weight: normal"></label><br />
+                                                            <label>Email: &nbsp</label><label id="gd_Email" style="font-weight: normal"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-3 col-lg-3">
+                                                <div id="add" style="display: none">
+                                                    <div style="height: 40px"></div>
+                                                    <div class="col-lg-6 col-md-6">
+                                                        <div class="row">
+                                                            <div class="row">
+                                                                <label>Contact Person: &nbsp</label><br />
+                                                                <div style="height:10px"></div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row">
+                                                            <div class="row">
+                                                                <label id="gd_Person" style="font-weight: normal"></label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-lg-6 col-md-6">
+                                                        <label>Contact No: &nbsp</label>
+                                                        <div style="height:10px"></div>
+                                                        <label id="gd_Contact" style="font-weight: normal"></label><br />
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-4 col-md-4" style="border-left: 1px solid #999; height: 150px">
+                                                <div class="col-md-12 col-lg-12">
+                                                    @{
+            string outwardcode = Model.OutwardInterGodownDetails.OutwardCode;
+                                                    }
+                                                    <div style="height: 15px"></div>
+                                                    <div class="row">
+                                                        <div class="col-lg-5 col-md-5">
+                                                            <label>Date:</label>
+                                                        </div>
+                                                        <div class="col-lg-7 col-md-7">
+                                                            <div class="row">
+                                                                <label id="date">@DateTime.Now.ToString("MM/dd/yyyy")</label>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-lg-5 col-md-5">
+                                                            <div style="height: 15px"></div>
+                                                            <label>Outward No:</label>
+                                                        </div>
+
+                                                        <div class="col-lg-7 col-md-7">
+                                                            <div style="height: 15px"></div>
+                                                            <div class="row">
+                                                                <label>@outwardcode</label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="row">
+                                                        <div class="col-lg-5 col-md-5">
+                                                            <div style="height: 15px"></div>
+                                                            <label>Reference No. :</label>
+                                                        </div>
+
+                                                        <div class="col-lg-7 col-md-7">
+                                                            <div style="height: 15px"></div>
+                                                            <div class="row">
+                                                                @Html.TextBoxFor(model => model.OutwardInterGodownDetails.GatePass, new { @class = "form-control", @autocomplete = "off", @placeholder = "Reference No.", @readonly = "readonly" })
+                                                                @Html.ValidationMessageFor(model => model.OutwardInterGodownDetails.GatePass, null, new { @style = "color:red" })
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-12">
+                                            <div id="LoadItemList"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-12" id="store" style="display: none">
+                                            <div style="height: 15px"></div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <label>Store Keeper Name<i style="color: red">*</i></label><br />
+                                                @Html.TextBoxFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperName, new { id = "EmpName", @placeholder = "Store Keeper Name", @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperName, null, new { style = "color:red" })
+                                            </div>
+                                            <div class="col-md-4 col-lg-4">
+                                                <label>Designation</label><br />
+                                                <label id="Designation" style="font-weight: normal"></label>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <label>Email-Id</label><br />
+                                                <label id="Email" style="font-weight: normal"></label>
+                                            </div>
+                                            <div class="col-md-2 col-lg-2">
+                                                <label>Contact No.</label><br />
+                                                <label id="MobileNo" style="font-weight: normal"></label>
+                                            </div>
+                                            <div style="height: 70px"></div>
+                                        </div>
+                                    </div>
+
+                                    <div id="prepareby" style="display: none">
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div style="height: 15px"></div>
+                                                <div class="col-md-3 col-lg-3">
+                                                    <label>Prepared By</label><br />
+                                                    <label id="name" style="font-weight: normal"></label>
+                                                </div>
+                                                <div class="col-md-4 col-lg-4">
+                                                    <label>Email-Id</label><br />
+                                                    <label id="emailid" style="font-weight: normal"></label>
+                                                </div>
+                                                <div class="col-md-3 col-lg-3">
+                                                    <label>Contact No.</label><br />
+                                                    <label id="contactnoid" style="font-weight: normal"></label>
+                                                </div>
+                                                @{
+            string preparetimeid = DateTime.Now.ToShortTimeString();
+                                                }
+                                                <div class="col-md-2 col-lg-2">
+                                                    <label>Prepare Time</label><br />
+                                                    <label style="font-weight: normal">@preparetimeid</label>
+                                                </div>
+                                                <div style="height: 70px"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <br />
+
+                                    <div class="col-lg-12 col-md-12" id="narration" style="display: none">
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="row">
+                                                <label>Narration</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-9 col-md-9">
+                                            @Html.TextBoxFor(model => model.OutwardInterGodownDetails.Narration, new { @class = "form-control", @autocomplete = "off", @placeholder = "Narration" })
+                                            <div style="height: 9px"></div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-lg-9 col-md-9" style="text-align: center">
+                            <div style="height: 9px"></div>
+                            <button type="submit" id="Submit" disabled="disabled" class="btn btn-success">Save</button>
+                        </div>
+                        <div class="col-lg-3 col-md-3" style="text-align: right">
+                            <div style="height: 10px"></div>
+                            <button type="button" id="Delete" class="btn btn-danger" data-toggle="tooltip" title="Delete"><i class="fa fa-trash" title="Delete"></i></button>
+                            <button type="button" id="Print" class="btn btn-primary" data-toggle="tooltip" title="Print"><i class="fa fa-print" title="Print"></i></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>
+

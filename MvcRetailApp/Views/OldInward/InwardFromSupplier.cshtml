@@ -1,0 +1,435 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "InwardFromSupplier";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+<script type="text/javascript">
+    $(function () {
+        new JsDatePick({
+            useMode: 2,
+            target: "Challan_Date",
+            dateFormat: "%d/%M/%Y",
+        });
+
+        $("#InwardFromSupplier_SupplierName").autocomplete({
+            source: "/Supplier/GetSupplierNames",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#InwardFromSupplier_SupplierName").val(ui.item.value);
+                    var idmodel = document.getElementById("InwardFromSupplier_SupplierName").value;
+                    $("#InwardFromSupplier_SupplierName").change(function () {
+                        if (document.getElementById("InwardFromSupplier_SupplierName").value == "") {
+                            document.getElementById("PO_Details").style.display = "none";
+                            document.getElementById("SupplierDetails").style.display = "none";
+                            document.getElementById("Delivery_Details").style.display = "none";
+                            document.getElementById("ReceivedAt").style.display = "none";
+                            document.getElementById("AddingRows").style.display = "none";
+                            document.getElementById("TotalQuantityDetails").style.display = "none";
+                            document.getElementById("Submit").disabled = true;
+                        }
+                    });
+                    $.getJSON("/Inward/GetSupplierDetails", { name: idmodel },
+                    function (data) {
+                        document.getElementById("SupplierDetails").style.display = "inline";
+                        document.getElementById("SupplierName").innerHTML = data.SupplierName;
+                        document.getElementById("SupplierAddress").innerHTML = data.Address;
+                        document.getElementById("SupplierContactNo").innerHTML = data.ContactNo1;
+                        document.getElementById("SupplierEmail").innerHTML = data.Email;
+                        document.getElementById("SupplierDistrict").innerHTML = data.district;
+                        $("#InwardFromSupplier_SupplierAddress").val(data.Address);
+                        $("#InwardFromSupplier_SupplierContactNo").val(data.ContactNo1);
+                        $("#InwardFromSupplier_SupplierEmail").val(data.Email);
+                        $("#InwardFromSupplier_SupplierDistrict").val(data.district);
+                        document.getElementById("PO_Details").style.display = "inline";
+                        var select = $("#ddlponos");
+                        select.empty();
+                        select.append($('<option/>', {
+                            text: "PO Nos",
+                            value: "",
+                        }));
+                        $.each(data.ponos, function (index, itemdata) {
+                            select.append($('<option/>', {
+                                text: itemdata.Text,
+                                value: itemdata.Value,
+                            }));
+                        });
+                    });
+                }
+            }
+        });
+
+        $("#ddlponos").change(function () {
+            document.getElementById("Submit").disabled = false;
+            var pono = $(this).val();
+            if (pono != "") {
+                $.getJSON("/Inward/GetPODetails", { pono: pono },
+                    function (data) {
+                        document.getElementById("Delivery_Details").style.display = "inline";
+                        document.getElementById("ReceivedAt").style.display = "inline";
+                        document.getElementById("Received_At_Address").innerHTML = data.DelAt;
+                        var msg = data.msg;
+                        var remarkscolor = data.remarks;
+                        var search = remarkscolor.search("earlier");
+                        if (data.remarks != "") {
+                            document.getElementById("RemarksDetails").style.display = "inline";
+                            if (search != -1) {
+                                document.getElementById("RemarksEarlier").style.display = "inline";
+                                document.getElementById("RemarksDelay").style.display = "none";
+                                document.getElementById("RemarksEarlier").innerHTML = data.remarks;
+                            }
+                            else {
+                                document.getElementById("RemarksEarlier").style.display = "none";
+                                document.getElementById("RemarksDelay").style.display = "inline";
+                                document.getElementById("RemarksDelay").innerHTML = data.remarks;
+                            }
+                        }
+                        else { document.getElementById("RemarksDetails").style.display = "none"; }
+                        $("#InwardFromSupplier_PoDate").val(data.PODate);
+                        $("#InwardFromSupplier_DelDate").val(data.DelDate);
+
+                        var DelDate = data.DelDate
+                        var PODate = data.PODate;
+                        var receivingdate = document.getElementById("receivingdate").value;
+
+                        var dat = new Date(DelDate);
+                        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+                        document.getElementById('Delivery_Date').innerHTML = data;
+
+                        var dat = new Date(PODate);
+                        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+                        document.getElementById('PO_Date').innerHTML = data;
+
+
+                        var dat = new Date(receivingdate);
+                        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+                        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+                        document.getElementById('Receiving_Date').innerHTML = data;
+
+
+                        $.getJSON("/Inward/GetItemsList", { pono: pono, msg: msg },
+                             function (data) {
+                                 if (msg == "From PO") {
+                                     document.getElementById("itemData").innerHTML = "";
+                                     document.getElementById("AddingRows").style.display = "inline";
+                                     document.getElementById("ItemsFromPO").style.display = "inline";
+                                     var list = $("#itemData");
+                                     var rowid = 1;
+                                     $.each(data, function (index, itemdata) {
+                                         var row = "row" + rowid;
+                                         var itemname = "item" + rowid;
+                                         var description = "description" + rowid;
+                                         var orderedquantity = "orderedquantity" + rowid;
+                                         var receivedquantity = "receivedquantity" + rowid;
+                                         var balance = "balance" + rowid;
+                                         var unit = "unit" + rowid;
+                                         var itemrows;
+                                         itemrows += "<tr id='" + row + "'>";
+                                         itemrows += "<td>" + rowid + "</td>";
+                                         itemrows += "<td><label id='" + itemname + "' style='text-align:center;width:100%;font-weight:normal'>" + itemdata.Item + "</label></td>";
+                                         itemrows += "<td><label id='" + description + "'  style='text-align:center;width:100%;font-weight:normal'>" + itemdata.Description + "</label></td>"
+                                         itemrows += "<td><label id='" + orderedquantity + "'  style='text-align:center;width:100%;'>" + (+itemdata.Quantity).toFixed(3) + "</label></td>"
+                                         itemrows += "<td><input id='" + receivedquantity + "' name='" + receivedquantity + "' type='text' class='form-control' style='text-align:center;width:100%;' value='" + (+itemdata.Quantity).toFixed(3) + "' onchange='CalculateBalance(" + rowid + ")'/></td>";
+                                         itemrows += "<td><label id='" + balance + "' style='text-align:center;width:100%;'> 0.000 </label></td>";
+                                         itemrows += "<td><label id='" + unit + "' style='text-align:center;width:100%;font-weight:normal'>" + itemdata.Unit + "</label></td>";
+                                         itemrows += "<td><input type='button' value='Delete Row' onclick='DeleteRow(" + rowid + ")' class='btn btn-link' style='color:blue;font-size:small' /></td></tr>"
+                                         document.getElementById("hdnRowCount").value = rowid;
+                                         rowid = +rowid + 1;
+                                         list.append(itemrows);
+                                     });
+                                     CalculateTotalQuantity();
+                                 }
+                                 else {
+                                     document.getElementById("itemData").innerHTML = "";
+                                     document.getElementById("AddingRows").style.display = "inline";
+                                 }
+                             });
+                    });
+            }
+            else {
+                document.getElementById("Delivery_Details").style.display = "none";
+                document.getElementById("ReceivedAt").style.display = "none";
+                document.getElementById("AddingRows").style.display = "none";
+                document.getElementById("TotalQuantityDetails").style.display = "none";
+                document.getElementById("Submit").disabled = true;
+            }
+        });
+    });
+
+    function DeleteRow(id) {
+        var row = "row" + id;
+        var agree = confirm("Are you sure you wish to delete this row?");
+        if (agree) {
+            $("#" + row).remove();
+        }
+
+        CalculateTotalQuantity();
+    }
+
+    function CalculateBalance(count) {
+        var row = "row" + count;
+        var orderedquantity = "orderedquantity" + count;
+        var receivedquantity = "receivedquantity" + count;
+        var balance = "balance" + count;
+        document.getElementById(receivedquantity).value = (+document.getElementById(receivedquantity).value).toFixed(3);
+        document.getElementById(balance).innerHTML = ((+document.getElementById(receivedquantity).value) - (+document.getElementById(orderedquantity).innerHTML)).toFixed(3);
+
+        CalculateTotalQuantity();
+    };
+
+    function CalculateTotalQuantity() {
+
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalquantity = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var row = "row" + i;
+            var orderedquantity = "orderedquantity" + i;
+            var receivedquantity = "receivedquantity" + i;
+            if (document.getElementById(row) != null) {
+                totalquantity = (+totalquantity) + (+document.getElementById(receivedquantity).value);
+            }
+        }
+        if (totalquantity != 0) {
+            document.getElementById("TotalQuantityDetails").style.display = "inline";
+            document.getElementById("Total_Quantity").innerHTML = totalquantity.toFixed(3);
+        }
+        else {
+            document.getElementById("TotalQuantityDetails").style.display = "none";
+            document.getElementById("AddingRows").style.display = "none";
+            document.getElementById("Submit").disabled = true;
+        }
+
+    };
+</script>
+<style type="text/css">
+    #Headings {
+        text-align: center;
+        width: 100%;
+    }
+</style>
+<style type="text/css">
+    #DescriptionHeadings {
+        text-align: center;
+        width: 100%;
+    }
+</style>
+
+<input type="hidden" id="hdnRowCount" name="hdnRowCount" />
+ @Html.HiddenFor(model => model.InwardFromSupplier.SupplierAddress)
+ @Html.HiddenFor(model => model.InwardFromSupplier.SupplierContactNo)
+ @Html.HiddenFor(model => model.InwardFromSupplier.SupplierEmail)
+ @Html.HiddenFor(model => model.InwardFromSupplier.SupplierDistrict)
+ @Html.HiddenFor(model=>model.InwardFromSupplier.DelDate)
+ @Html.HiddenFor(model=>model.InwardFromSupplier.PoDate)
+@using (Html.BeginForm("InwardFromSupplier", "Inward", FormMethod.Post))
+{
+    <table style="border: 1px double; width: 100%">
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="row">
+                            <div class="form-group"></div>
+                            <div class="col-md-3 col-lg-3">
+                                <div class="col-md-12 col-lg-12">
+                                    @Html.TextBoxFor(model => model.InwardFromSupplier.SupplierName, new { @placeholder = "Supplier Name", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.InwardFromSupplier.SupplierName, null, new { style = "color:red" })<br />
+                                    <div style="display: none" id="SupplierDetails">
+                                        <label>Name: &nbsp</label><label style="font-weight: normal" id="SupplierName"></label><br />
+                                        <label>Address: &nbsp</label><label style="font-weight: normal" id="SupplierAddress"></label><br />
+                                        <label>District: &nbsp</label><label style="font-weight: normal" id="SupplierDistrict"></label><br />
+                                        <label>Contact Number: &nbsp</label><label style="font-weight: normal" id="SupplierContactNo"></label><br />
+                                        <label>Email: &nbsp</label><label style="font-weight: normal" id="SupplierEmail"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-lg-4">
+                                <div style="float: left; min-height: 190px; width: 1px; background-color: GrayText;"></div>
+                                <div class="col-md-11 col-lg-11">
+                                    <div class="row">
+                                        <div class="row" id="PO_Details" style="display: none">
+                                            <div class="col-md-4 col-lg-4">
+                                                <div style="height: 3px"></div>
+                                                <label style="font-size: 18px">PO No</label>
+                                            </div>
+                                            <div class="col-md-5 col-lg-5">
+                                                <div class="form-group row">
+                                                    @Html.DropDownListFor(model => model.InwardFromSupplier.PoNo, Enumerable.Empty<SelectListItem>(), "Godown Name", new { id = "ddlponos", @class = "form-control" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row" id="Delivery_Details" style="display: none">
+                                        <label>Delivery Date: &nbsp</label><label id="Delivery_Date" style="font-weight: normal"></label><br />
+                                        <label>PO Date: &nbsp</label><label id="PO_Date" style="font-weight: normal"></label><br />
+                                        <label>Receiving Date: &nbsp</label><label id="Receiving_Date" style="font-weight: normal"></label><br />
+                                        <div id="RemarksDetails" style="display: none">
+                                            <label>Remarks: &nbsp</label>
+                                            <label id="RemarksEarlier" style="font-weight: normal; color: darkgreen; display: none"></label>
+                                            <label id="RemarksDelay" style="font-weight: normal; color: red; display: none"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-lg-3">
+                                <div style="float: left; min-height: 190px; width: 1px; background-color: GrayText;"></div>
+                                <div class="row">
+                                    <div class="col-md-11 col-lg-11">
+                                        @{
+                                            string dt = DateTime.Now.ToString("dd/MM/yyyy");
+                                            string receivingdate = DateTime.Now.ToString("MM/dd/yyyy");
+                                            string inwardno = Model.InwardCode;
+                                        }
+                                        <table>
+                                            <tr>
+                                                <td style="width: 45%">
+                                                    <div style="height: 2px"></div>
+                                                   <label> Date</label>
+                                                </td>
+                                                <td>
+
+                                                    <label id="date" style="font-size: 16px;">@dt</label>
+                                                    <input type="hidden" id="receivingdate" value="@receivingdate" /></td>
+                                            </tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                   <label> Inward No</label>
+                                                </td>
+                                                <td>
+                                                    <label id="pono" style="font-size: 15px;">@inwardno</label>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="2">
+                                                 
+                                                    <table id="ReceivedAt" style="display: none; border-spacing: 0px; padding:0px;" cellspacing="0" cellpadding="0">
+                                                        <tr style="border-spacing: 0px; padding:0px;">
+                                                            <td style="width:45%; border-spacing: 0px; padding:0px;">
+                                                                <label >Received At </label>
+                                                            </td>
+                                                            <td>
+                                                                <label id="Received_At_Address" style="font-weight:normal"></label>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td style="border-spacing: 0px; padding:0px;">
+                                                                <div style="height: 8px"></div>
+                                                                <label>Challan No</label>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" id="Challan_No" name="Challan_No" placeholder="ChallanNo" class="form-control" />
+                                                            </td>
+                                                        </tr>
+                                                        <tr><td>&nbsp;</td></tr>
+                                                        <tr>
+                                                            <td style="border-spacing: 0px; padding:0px;">
+                                                                <div style="height: 8px"></div>
+                                                                <label>Challan Date</label>
+                                                            </td>
+                                                            <td>
+                                                                <input type="text" style="text-align:center" id="Challan_Date" name="Challan_Date" placeholder="Date" class="form-control" />
+                                                            </td>
+                                                        </tr>
+
+                                                    </table>
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group row">
+                            <div class="col-md-12 col-lg-12" id="AddingRows" style="display: none;">
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="width: 100%; height: 2px; background-color: gray;"></div>
+                                </div>
+                                <br />
+                                <div class="col-md-12 col-lg-12">
+                                    <table class="table" id="ItemsFromPO" style="display:none">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <label>S.N.</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Item</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Ordered Quantity</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Received Quantity</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Balance</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label id="Headings">Unit</label></th>
+                                                <th class="col-md-1 col-lg-1"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemData"></tbody>
+                                    </table>
+                                    <table class="table" id="ItemsFromInward" style="display:none">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <label>S.N.</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Item</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Ordered Quantity</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Received Quantity</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="Headings">Balance</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label id="Headings">Unit</label></th>
+                                                <th class="col-md-1 col-lg-1"></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="itemDataInward"></tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row" id="TotalQuantityDetails" style="display: none">
+                            <div class="col-md-12 col-lg-12">
+                                
+                                    <div style="width: 100%; height: 2px; background-color: gray;"></div>
+                                    <br />
+                               
+                            </div>
+                            <div class="col-md-11 col-lg-11">
+                                <div class="col-md-6 col-lg-6"></div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label style="font-size: larger">Total Received Quantity</label>
+                                </div>
+                                <div class="col-md-2 col-lg-2">
+                                    <label id="Total_Quantity" style="font-size: larger"></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <input type="submit" id="Submit" value="Save" disabled="disabled" class="col-md-offset-5 col-lg-offset-5 btn btn-success" />
+    }

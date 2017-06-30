@@ -1,0 +1,459 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodeFirstData</RootNamespace>
+    <AssemblyName>CodeFirstData</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.5.0.0\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.Web">
+      <Private>True</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="CodeFirstContext.cs" />
+    <Compile Include="DbInteractions\DBFactory.cs" />
+    <Compile Include="DbInteractions\Disposable.cs" />
+    <Compile Include="DbInteractions\EntityRepositoryBase.cs" />
+    <Compile Include="DbInteractions\IDBFactory.cs" />
+    <Compile Include="DbInteractions\IEntityRepository.cs" />
+    <Compile Include="DbInteractions\IUnitOfWork.cs" />
+    <Compile Include="DbInteractions\UnitOfWork.cs" />
+    <Compile Include="EntityRepositories\BackUpDatabaseRepository.cs" />
+    <Compile Include="EntityRepositories\BalanceCarryForwardRepository.cs" />
+    <Compile Include="EntityRepositories\BankRepository.cs" />
+    <Compile Include="EntityRepositories\BankAccountTypeRepository.cs" />
+    <Compile Include="EntityRepositories\BankNameRepository.cs" />
+    <Compile Include="EntityRepositories\BarcodeNumberRepository.cs" />
+    <Compile Include="EntityRepositories\BarcodeTempDetailRepository.cs" />
+    <Compile Include="EntityRepositories\BloodGroupRepository.cs" />
+    <Compile Include="EntityRepositories\BrandMasterRepository.cs" />
+    <Compile Include="EntityRepositories\CardChequeHandoverRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EntityRepositories\CashHandoverRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EntityRepositories\CashierPayableRepository.cs" />
+    <Compile Include="EntityRepositories\CashierSalesBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\CashierSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\CashierReceivableRepository.cs" />
+    <Compile Include="EntityRepositories\CashierRetailBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\CashierRetailBillRepository.cs" />
+    <Compile Include="EntityRepositories\CashierSalesOrderItemRepository.cs" />
+    <Compile Include="EntityRepositories\CashierSalesOrderRepository.cs" />
+    <Compile Include="EntityRepositories\CashierTemporaryCashMemoItemRepository.cs" />
+    <Compile Include="EntityRepositories\CashierTemporaryCashMemoRepository.cs" />
+    <Compile Include="EntityRepositories\CatalogueRepository.cs" />
+    <Compile Include="EntityRepositories\CityRepository.cs" />
+    <Compile Include="EntityRepositories\ClientBankDetailReposirtory.cs" />
+    <Compile Include="EntityRepositories\ClientMasterRepository.cs" />
+    <Compile Include="EntityRepositories\ColorCodeRepository.cs" />
+    <Compile Include="EntityRepositories\CommissionProductRepository.cs" />
+    <Compile Include="EntityRepositories\CommissionRepository.cs" />
+    <Compile Include="EntityRepositories\CompanyBankDetailsRepository.cs" />
+    <Compile Include="EntityRepositories\CostCodeCreationRepository.cs" />
+    <Compile Include="EntityRepositories\ICatalogueRepository.cs" />
+    <Compile Include="EntityRepositories\IItemNameRepository.cs" />
+    <Compile Include="EntityRepositories\IPurchaseInventoryTaxRepository.cs" />
+    <Compile Include="EntityRepositories\IPurchaseItemTaxRepository.cs" />
+    <Compile Include="EntityRepositories\ItemNameRepository.cs" />
+    <Compile Include="EntityRepositories\IUniversalBarcodeNumberRepository.cs" />
+    <Compile Include="EntityRepositories\PurchaseInventoryTaxRepository.cs" />
+    <Compile Include="EntityRepositories\PurchaseItemTaxRepository.cs" />
+    <Compile Include="EntityRepositories\RetailBillCreditNoteItemRepository.cs" />
+    <Compile Include="EntityRepositories\RetailBillCreditNoteRepository.cs" />
+    <Compile Include="EntityRepositories\DebitNoteItemRepository.cs" />
+    <Compile Include="EntityRepositories\DebitNoteRepository.cs" />
+    <Compile Include="EntityRepositories\DiscountMasterItemRepository.cs" />
+    <Compile Include="EntityRepositories\DiscountMasterRepository.cs" />
+    <Compile Include="EntityRepositories\EmployeesCompanyRepository.cs" />
+    <Compile Include="EntityRepositories\CompanyRepository.cs" />
+    <Compile Include="EntityRepositories\CountryRepository.cs" />
+    <Compile Include="EntityRepositories\CreateDynamicDbRepository.cs" />
+    <Compile Include="EntityRepositories\CurrencyRepository.cs" />
+    <Compile Include="EntityRepositories\CustomerDetailRepository.cs" />
+    <Compile Include="EntityRepositories\DeliveryChallanItemRepository.cs" />
+    <Compile Include="EntityRepositories\DeliveryChallanRepository.cs" />
+    <Compile Include="EntityRepositories\DepertmentRepository.cs" />
+    <Compile Include="EntityRepositories\DesignationMasterRepository.cs" />
+    <Compile Include="EntityRepositories\DesignRepository.cs" />
+    <Compile Include="EntityRepositories\DistrictRepository.cs" />
+    <Compile Include="EntityRepositories\EmployeeMasterRepository.cs" />
+    <Compile Include="EntityRepositories\EntryStockItemRepository.cs" />
+    <Compile Include="EntityRepositories\EntryStockRepository.cs" />
+    <Compile Include="EntityRepositories\GenerateItemCodeRepository.cs" />
+    <Compile Include="EntityRepositories\GetAllItemsFromStkDistrbtnRepository.cs" />
+    <Compile Include="EntityRepositories\GetCashRowsBySORepository.cs" />
+    <Compile Include="EntityRepositories\GetItemCodesByQuotAndItemCodeRepository.cs" />
+    <Compile Include="EntityRepositories\GetItemsByQuotOrOrderNoRepository.cs" />
+    <Compile Include="EntityRepositories\GetItemsFromItemMasterRepository.cs" />
+    <Compile Include="EntityRepositories\GetPOListByPaymentStatusAndSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\GetUsersEmailRepository.cs" />
+    <Compile Include="EntityRepositories\GodownAddressRepository.cs" />
+    <Compile Include="EntityRepositories\GodownRepository.cs" />
+    <Compile Include="EntityRepositories\IBackUpDatabaseRepository.cs" />
+    <Compile Include="EntityRepositories\IBalanceCarryForwardRepository.cs" />
+    <Compile Include="EntityRepositories\IBankAccountTypeRepository.cs" />
+    <Compile Include="EntityRepositories\IBankNameRepository.cs" />
+    <Compile Include="EntityRepositories\IBankRepository.cs" />
+    <Compile Include="EntityRepositories\IBarcodeNumberRepository.cs" />
+    <Compile Include="EntityRepositories\IBarcodeTempDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IBloodGroupRepository.cs" />
+    <Compile Include="EntityRepositories\IBrandMasterRepository.cs" />
+    <Compile Include="EntityRepositories\ICardChequeHandoverRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EntityRepositories\ICashHandoverRepository.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EntityRepositories\ICashierPayableRepository.cs" />
+    <Compile Include="EntityRepositories\IBillPaymentItemRepository.cs" />
+    <Compile Include="EntityRepositories\IBillPaymentRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierSalesBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierReceivableRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierRetailBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierRetailBillRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierSalesOrderItemRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierSalesOrderRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierTemporaryCashMemoItemRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierTemporaryCashMemoRepository.cs" />
+    <Compile Include="EntityRepositories\ICityRepository.cs" />
+    <Compile Include="EntityRepositories\IClientBankDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IClientMasterRepository.cs" />
+    <Compile Include="EntityRepositories\IColorCodeRepository.cs" />
+    <Compile Include="EntityRepositories\IComapnyBankDetailsRepository.cs" />
+    <Compile Include="EntityRepositories\ICommissionProductRepository.cs" />
+    <Compile Include="EntityRepositories\ICommissionRepository.cs" />
+    <Compile Include="EntityRepositories\ICostCodeCreationRepository.cs" />
+    <Compile Include="EntityRepositories\IRetailBillCreditNoteItemRepository.cs" />
+    <Compile Include="EntityRepositories\IRetailBillCreditNoteRepository.cs" />
+    <Compile Include="EntityRepositories\IDebitNoteItemRepository.cs" />
+    <Compile Include="EntityRepositories\IDebitNoteRepository.cs" />
+    <Compile Include="EntityRepositories\IDesignationMasterRepository.cs" />
+    <Compile Include="EntityRepositories\IDiscountMasterItemRepository.cs" />
+    <Compile Include="EntityRepositories\IDiscountMasterRepository.cs" />
+    <Compile Include="EntityRepositories\IEmployeesCompanyRepository.cs" />
+    <Compile Include="EntityRepositories\ICompanyRepository.cs" />
+    <Compile Include="EntityRepositories\ICountryRepository.cs" />
+    <Compile Include="EntityRepositories\ICreateDynamicDbRepository.cs" />
+    <Compile Include="EntityRepositories\ICurrencyRepository.cs" />
+    <Compile Include="EntityRepositories\ICustomerDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IDeliveryChallanItemRepository.cs" />
+    <Compile Include="EntityRepositories\IDeliveryChallanRepository.cs" />
+    <Compile Include="EntityRepositories\IDepartmentRepository.cs" />
+    <Compile Include="EntityRepositories\IDesignReposirory.cs" />
+    <Compile Include="EntityRepositories\IDistrictRepository.cs" />
+    <Compile Include="EntityRepositories\IEmployeeMasterRepository.cs" />
+    <Compile Include="EntityRepositories\IEntryStockItemRepository.cs" />
+    <Compile Include="EntityRepositories\IEntryStockRepository.cs" />
+    <Compile Include="EntityRepositories\IGenerateItemCodeRepository.cs" />
+    <Compile Include="EntityRepositories\IGetAllItemsFromStkDistrbtnRepository.cs" />
+    <Compile Include="EntityRepositories\IGetCashRowsBySORepository.cs" />
+    <Compile Include="EntityRepositories\IGetItemCodesByQuotAndItemCodeRepository.cs" />
+    <Compile Include="EntityRepositories\IGetItemsByQuotOrOrderNoRepository.cs" />
+    <Compile Include="EntityRepositories\IGetItemsFromItemMasterRepository.cs" />
+    <Compile Include="EntityRepositories\IGetPOListByPaymentStatusAndSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\IGetUsersEmailRepository.cs" />
+    <Compile Include="EntityRepositories\IGodownAddressRepository.cs" />
+    <Compile Include="EntityRepositories\IGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IIncomeExpenseVoucherRepository.cs" />
+    <Compile Include="EntityRepositories\IInventoryTaxRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardFromGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardFromShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardFromStkDistRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardFromSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardFromTailorItemRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardFromTailorRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardInterGodownItemRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardInterGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardInterShopItemRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardInterShopRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardItemFromGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardItemFromShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardItemFromStockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardItemsFromSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardToTailorItemRepository.cs" />
+    <Compile Include="EntityRepositories\IInwardToTailorRepository.cs" />
+    <Compile Include="EntityRepositories\IItemCategoryRepository.cs" />
+    <Compile Include="EntityRepositories\IItemRepository.cs" />
+    <Compile Include="EntityRepositories\IItemSubCategoryRepository.cs" />
+    <Compile Include="EntityRepositories\IItemTaxRepository.cs" />
+    <Compile Include="EntityRepositories\IItemTempDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IItemTruncateRepository.cs" />
+    <Compile Include="EntityRepositories\IJobWorkerRepository.cs" />
+    <Compile Include="EntityRepositories\IJobWorkItemRepository.cs" />
+    <Compile Include="EntityRepositories\IJobWorkPaymentRepository.cs" />
+    <Compile Include="EntityRepositories\IJobWorkTypeRepository.cs" />
+    <Compile Include="EntityRepositories\ILabRepository.cs" />
+    <Compile Include="EntityRepositories\IListOfItemCodeRepository.cs" />
+    <Compile Include="EntityRepositories\IlogindetailRepository.cs" />
+    <Compile Include="EntityRepositories\IModuleRepository.cs" />
+    <Compile Include="EntityRepositories\IMonthExperienceRepository.cs" />
+    <Compile Include="EntityRepositories\IncomeExpenseVoucherRepository.cs" />
+    <Compile Include="EntityRepositories\INonInventoryItemRepository.cs" />
+    <Compile Include="EntityRepositories\InventoryTaxRepository.cs" />
+    <Compile Include="EntityRepositories\InwardFromGodownRepository.cs" />
+    <Compile Include="EntityRepositories\InwardFromShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\InwardFromStkDistRepository.cs" />
+    <Compile Include="EntityRepositories\InwardFromTailorIItemRepository.cs" />
+    <Compile Include="EntityRepositories\InwardFromTailorRepository.cs" />
+    <Compile Include="EntityRepositories\InwardInterGodownItemRepository.cs" />
+    <Compile Include="EntityRepositories\InwardInterGodownRepository.cs" />
+    <Compile Include="EntityRepositories\InwardInterShopItemRepository.cs" />
+    <Compile Include="EntityRepositories\InwardInterShopRepository.cs" />
+    <Compile Include="EntityRepositories\InwardItemFromGodownRepository.cs" />
+    <Compile Include="EntityRepositories\InwardItemFromShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\InwardItemFromStockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\InwardItemsFromSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\InwardToTailorItemRepository.cs" />
+    <Compile Include="EntityRepositories\InwardToTailorRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardInterGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardInterShopRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardItemInterGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardItemInterShopRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardItemShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardItemStockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardStockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardToShopRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardItemToShopRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardItemToClientRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardToClientRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardToTailorItemRepository.cs" />
+    <Compile Include="EntityRepositories\IOutwardToTailorRepository.cs" />
+    <Compile Include="EntityRepositories\IPhysicalStockTakingRepository.cs" />
+    <Compile Include="EntityRepositories\IPurchaseItemDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IPurchaseOrderDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IPurchaseReturnItemRepository.cs" />
+    <Compile Include="EntityRepositories\IPurchaseReturnRepository.cs" />
+    <Compile Include="EntityRepositories\IQuotationItemRepository.cs" />
+    <Compile Include="EntityRepositories\IQuotationRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierRefundOrderItemRepository.cs" />
+    <Compile Include="EntityRepositories\ICashierRefundOrderRepository.cs" />
+    <Compile Include="EntityRepositories\IRequisitionForGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IRequisitionForNewItemRepository.cs" />
+    <Compile Include="EntityRepositories\IRequisitionForShopRepository.cs" />
+    <Compile Include="EntityRepositories\IRequisitionOfPoRepository.cs" />
+    <Compile Include="EntityRepositories\IResetRetailBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IResetRetailBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\IResetRetailBillRepository.cs" />
+    <Compile Include="EntityRepositories\IResetSalesBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IResetSalesBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\IResetSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\IRetailBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\IRetailBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\IRetailBillRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesBillCreditNoteItemRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesBillCreditNoteRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesIncentiveRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesOrderItemRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesOrderRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesReturnItemRepository.cs" />
+    <Compile Include="EntityRepositories\ISalesReturnRepository.cs" />
+    <Compile Include="EntityRepositories\IShopRepository.cs" />
+    <Compile Include="EntityRepositories\IShopRequisitionGodownItemRepository.cs" />
+    <Compile Include="EntityRepositories\IShopRequisitionGodownItemSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\IShopRequisitionGodownRepository.cs" />
+    <Compile Include="EntityRepositories\IGodownStockRepository.cs" />
+    <Compile Include="EntityRepositories\IShopRequisitionGodownSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\IShopStockRepository.cs" />
+    <Compile Include="EntityRepositories\IStateRepository.cs" />
+    <Compile Include="EntityRepositories\IOpeningStockRepository.cs" />
+    <Compile Include="EntityRepositories\IStockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\IStockItemDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\ISubTaxMasterRepository.cs" />
+    <Compile Include="EntityRepositories\ISupplierBankDetailRepository.cs" />
+    <Compile Include="EntityRepositories\ISuppliersMasterRepository.cs" />
+    <Compile Include="EntityRepositories\IJobWorkStockRepository.cs" />
+    <Compile Include="EntityRepositories\IJobWorkOutwardToClientRepository.cs" />
+    <Compile Include="EntityRepositories\ITaxMasterRepository.cs" />
+    <Compile Include="EntityRepositories\ITaxSessionRepository.cs" />
+    <Compile Include="EntityRepositories\ItemCategoryRepository.cs" />
+    <Compile Include="EntityRepositories\ITemporaryCashMemoAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\ITemporaryCashMemoItemRepository.cs" />
+    <Compile Include="EntityRepositories\ITemporaryCashMemoRepository.cs" />
+    <Compile Include="EntityRepositories\ItemRepository.cs" />
+    <Compile Include="EntityRepositories\ItemSubCategoryRepository.cs" />
+    <Compile Include="EntityRepositories\ItemTempDetailRepository.cs" />
+    <Compile Include="EntityRepositories\ItemTruncateRepository.cs" />
+    <Compile Include="EntityRepositories\ITransportBankDetailRepository.cs" />
+    <Compile Include="EntityRepositories\ITransportMasterRepository.cs" />
+    <Compile Include="EntityRepositories\ITruncateTableRepository.cs" />
+    <Compile Include="EntityRepositories\ITypeOfMaterialRepository.cs" />
+    <Compile Include="EntityRepositories\ITypeOfSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\IUnitConversionRepository.cs" />
+    <Compile Include="EntityRepositories\IUnitRepository.cs" />
+    <Compile Include="EntityRepositories\IUpdateDynamicDbRepository.cs" />
+    <Compile Include="EntityRepositories\IUserCredentialRepository.cs" />
+    <Compile Include="EntityRepositories\IUserRepository.cs" />
+    <Compile Include="EntityRepositories\IValidationCompanyRepository.cs" />
+    <Compile Include="EntityRepositories\IYearExperienceRepository.cs" />
+    <Compile Include="EntityRepositories\JobWorkerRepository.cs" />
+    <Compile Include="EntityRepositories\JobWorkItemRepository.cs" />
+    <Compile Include="EntityRepositories\JobWorkPaymentRepository.cs" />
+    <Compile Include="EntityRepositories\JobWorkTypeRepository.cs" />
+    <Compile Include="EntityRepositories\LabRepository.cs" />
+    <Compile Include="EntityRepositories\ListOfItemCodeRepository.cs" />
+    <Compile Include="EntityRepositories\logindetailRepository.cs" />
+    <Compile Include="EntityRepositories\ModuleRepository.cs" />
+    <Compile Include="EntityRepositories\MonthExperienceRepository.cs" />
+    <Compile Include="EntityRepositories\NonInventoryItemRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardInterGodownRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardInterShopRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardItemInterGodownRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardItemInterShopRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardItemShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardItemStockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardShopToGodownRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardStockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardToShopRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardItemToShopRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardItemToClientRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardToClientRepository.cs" />
+    <Compile Include="EntityRepositories\InwardFromSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardToTailorItemRepository.cs" />
+    <Compile Include="EntityRepositories\OutwardToTailorRepository.cs" />
+    <Compile Include="EntityRepositories\PhysicalStockTakingRepository.cs" />
+    <Compile Include="EntityRepositories\PurchaseItemDetailRepository.cs" />
+    <Compile Include="EntityRepositories\PurchaseOrderDetailRepository.cs" />
+    <Compile Include="EntityRepositories\BillPaymentItemRepository.cs" />
+    <Compile Include="EntityRepositories\BillPaymentRepository.cs" />
+    <Compile Include="EntityRepositories\PurchaseReturnItemRepository.cs" />
+    <Compile Include="EntityRepositories\PurchaseReturnRepository.cs" />
+    <Compile Include="EntityRepositories\QuotationItemRepository.cs" />
+    <Compile Include="EntityRepositories\QuotationRepository.cs" />
+    <Compile Include="EntityRepositories\CashierRefundOrderItemRepository.cs" />
+    <Compile Include="EntityRepositories\CashierRefundOrderRepository.cs" />
+    <Compile Include="EntityRepositories\RequisitionForGodownRepository.cs" />
+    <Compile Include="EntityRepositories\RequisitionForNewItemRepository.cs" />
+    <Compile Include="EntityRepositories\RequisitionForShopRepository.cs" />
+    <Compile Include="EntityRepositories\RequisitionOfPoRepository.cs" />
+    <Compile Include="EntityRepositories\ResetRetailBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\ResetRetailBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\ResetRetailBillRepository.cs" />
+    <Compile Include="EntityRepositories\ResetSalesBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\ResetSalesBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\ResetSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\RetailBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\RetailInvoiceItemRepository.cs" />
+    <Compile Include="EntityRepositories\RetailInvoiceMasterRepository.cs" />
+    <Compile Include="EntityRepositories\SalesBillAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\SalesBillCreditNoteItemRepository.cs" />
+    <Compile Include="EntityRepositories\SalesBillCreditNoteRepository.cs" />
+    <Compile Include="EntityRepositories\SalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\SalesBillItemRepository.cs" />
+    <Compile Include="EntityRepositories\SalesIncentiveRepository.cs" />
+    <Compile Include="EntityRepositories\SalesOrderItemRepository.cs" />
+    <Compile Include="EntityRepositories\SalesOrderRepository.cs" />
+    <Compile Include="EntityRepositories\SalesReturnItemRepository.cs" />
+    <Compile Include="EntityRepositories\SalesReturnRepository.cs" />
+    <Compile Include="EntityRepositories\ShopRepository.cs" />
+    <Compile Include="EntityRepositories\ShopRequisitionGodownItemRepository.cs" />
+    <Compile Include="EntityRepositories\ShopRequisitionGodownItemSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\ShopRequisitionGodownRepository.cs" />
+    <Compile Include="EntityRepositories\GodownStockRepository.cs" />
+    <Compile Include="EntityRepositories\ShopRequisitionGodownSalesBillRepository.cs" />
+    <Compile Include="EntityRepositories\ShopStockRepository.cs" />
+    <Compile Include="EntityRepositories\StateRepository.cs" />
+    <Compile Include="EntityRepositories\OpeningStockRepository.cs" />
+    <Compile Include="EntityRepositories\StockDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\StockItemDistributionRepository.cs" />
+    <Compile Include="EntityRepositories\SubTaxMasterRepository.cs" />
+    <Compile Include="EntityRepositories\SupplierBankDetailRepository.cs" />
+    <Compile Include="EntityRepositories\SuppliersMasterRepository.cs" />
+    <Compile Include="EntityRepositories\ItemTaxRepository.cs" />
+    <Compile Include="EntityRepositories\JobWorkStockRepository.cs" />
+    <Compile Include="EntityRepositories\JobWorkOutwardToClientRepository.cs" />
+    <Compile Include="EntityRepositories\TaxMasterRepository.cs" />
+    <Compile Include="EntityRepositories\TaxSessionRepository.cs" />
+    <Compile Include="EntityRepositories\TemporaryCashMemoAdjAmtDetailRepository.cs" />
+    <Compile Include="EntityRepositories\TemporaryCashMemoItemRepository.cs" />
+    <Compile Include="EntityRepositories\TemporaryCashMemoRepository.cs" />
+    <Compile Include="EntityRepositories\TransportBankDetailRepository.cs" />
+    <Compile Include="EntityRepositories\TransportMasterRepository.cs" />
+    <Compile Include="EntityRepositories\TruncateTableRepository.cs" />
+    <Compile Include="EntityRepositories\TypeOfMaterialRepository.cs" />
+    <Compile Include="EntityRepositories\TypeOfSupplierRepository.cs" />
+    <Compile Include="EntityRepositories\UnitConversionRepository.cs" />
+    <Compile Include="EntityRepositories\UnitRepository.cs" />
+    <Compile Include="EntityRepositories\UniversalBarcodeNumberRepository.cs" />
+    <Compile Include="EntityRepositories\UpdateDynamicDbRepository.cs" />
+    <Compile Include="EntityRepositories\UserCredentialRepository.cs" />
+    <Compile Include="EntityRepositories\UserRepository.cs" />
+    <Compile Include="EntityRepositories\ValidationCompanyRepository.cs" />
+    <Compile Include="EntityRepositories\YearExperienceRepository.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeFirstEntities\CodeFirstEntities.csproj">
+      <Project>{584ba352-0884-4ac5-99b1-eeab55edfd16}</Project>
+      <Name>CodeFirstEntities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Scripts\bootstrap.js" />
+    <Content Include="Scripts\bootstrap.min.js" />
+    <Content Include="Scripts\jquery-1.9.1.intellisense.js" />
+    <Content Include="Scripts\jquery-1.9.1.js" />
+    <Content Include="Scripts\jquery-1.9.1.min.js" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="packages.config" />
+    <None Include="Scripts\jquery-1.9.1.min.map" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

@@ -1,0 +1,111 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "ItemDetails";
+}
+
+@Html.HiddenFor(model => model.ItemDetails.itemId)
+
+
+<div class="row">
+    <div class="row">
+        <div class="row">
+            <h2>Item Details</h2>
+            <div class="col-md-8 col-lg-8">
+                <label>Item Code : </label>
+                @Html.DisplayFor(model => model.ItemDetails.itemCode)<br />
+                <label>Item Name : </label>
+                @Html.DisplayFor(model => model.ItemDetails.itemName)
+            </div>
+        </div>
+    </div>
+</div>
+
+<br />
+<div class="row">
+    <div class="row">
+        <div class="row form-group">
+            <div class="col-lg-4 col-md-4">
+                <label>Item Description</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.description)
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label>Size</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.size)
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label>Cost Price</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.costprice)
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-lg-4 col-md-4">
+                <label>Type Of Material</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.typeOfMaterial)
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label>Design Code</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.designCode)
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label>Selling Price</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.sellingprice)
+            </div>
+        </div>
+
+        <div class="row form-group">
+            <div class="col-lg-4 col-md-4">
+                <label>Color Code</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.colorCode)
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label>Brand Name</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.brandName)
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label>MRP</label><br />
+                @Html.DisplayFor(model => model.ItemDetails.mrp)
+            </div>
+
+        </div>
+
+        <div class="row form-group">
+            <div class="col-lg-4 col-md-4">
+                <label>Percent Commission</label><br />
+                @{
+                    if (Model.ItemDetails.CommissionInPercent != 0)
+                    {
+                        @Html.DisplayFor(model => model.ItemDetails.CommissionInPercent)
+                    }
+                    else
+                    {
+                    <label style="font-weight:normal">----</label>
+                    }
+                    }
+                
+            </div>
+
+            <div class="col-lg-4 col-md-4">
+                <label>Rupees Commission</label><br />
+                @{
+                    if (Model.ItemDetails.CommissionInRupees != 0)
+                    {
+                        @Html.DisplayFor(model => model.ItemDetails.CommissionInRupees)
+                    }
+                    else
+                    {
+                    <label style="font-weight:normal">----</label>
+                    }
+                    }
+            </div>
+        </div>
+
+    </div>
+</div>

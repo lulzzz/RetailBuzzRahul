@@ -1,0 +1,53 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PrintBarcode";
+}
+
+<table style="border: 1px double;">
+    <tr style="text-align:center; font-weight:bold">
+        <td>
+           <label>A To Z Dadar T.T.</label>
+        </td>
+    </tr>
+    <tr style="text-align:center; font-size:x-small">
+        <td>
+            <label>Broadway Shopping Centre,Dadar T.T.,<br />Dadar East,Mumbai - 400014</label>
+        </td>
+    </tr>
+    <tr style="font-size:x-small">
+        <td>
+            <label style="font-weight:bold">Size:</label>
+            @Html.DisplayFor(model=>model.OpeningStockDetails.Size)
+        </td>
+    </tr>
+    <tr style="font-size:x-small">
+        <td>
+            <label style="font-weight:bold">Color:</label>
+            @Html.DisplayFor(model=>model.OpeningStockDetails.Color)
+        </td>
+    </tr>
+    <tr style="font-size:x-small">
+        <td>
+            <label style="font-weight:bold">MRP Rs.</label>
+            @Html.DisplayFor(model=>model.OpeningStockDetails.MRP)<label>/-&nbsp&nbsp(Inclusive of all taxes)</label>
+        </td>
+    </tr>
+    <tr>
+        <td style="text-align: center">
+            @{
+                string barcode = string.Empty;
+                barcode = Model.OpeningStockDetails.Barcode;
+                var base64 = Convert.ToBase64String(Model.BarcodeDetails.BarcodeImage);
+                var imgsrc = String.Format("data:image/png;base64,{0}", base64);
+            }
+            <img src="@imgsrc" title="" width="150" height="40"/>
+        </td>
+    </tr>
+    <tr style="font-size:x-small">
+        <td>
+            <label style="font-weight:bold">Email_ID:</label>
+            <label>atoz@gmail.com</label>
+        </td>
+    </tr>
+</table>
+          

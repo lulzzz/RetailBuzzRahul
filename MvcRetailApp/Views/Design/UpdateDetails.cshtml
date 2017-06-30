@@ -1,0 +1,110 @@
+﻿@model CodeFirstEntities.DesignMaster
+@{
+    ViewBag.Title = "UpdateDetails";
+}
+<!--code for on hover image-->
+<link href="~/Content/popup.css" rel="stylesheet" />
+<!--code for on hover image-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        var bndry = document.getElementById("NumberOfRows").value;
+        var type = document.getElementById("ViewType").value;
+        if (type == "Edit") {
+            for (var i = 1; i <= bndry; i++) {
+                DesignEditId = "EditId" + i;
+                DesignDeleteId = "DeleteId" + i;
+                if (document.getElementById(DesignEditId) != null) {
+                    document.getElementById(DesignEditId).disabled = false;
+                }
+            }
+        }
+        else {
+            for (var i = 1; i <= bndry; i++) {
+                DesignDeleteId = "DeleteId" + i;
+                if (document.getElementById(DesignDeleteId) != null) {
+                    document.getElementById(DesignDeleteId).disabled = false;
+                }
+            }
+        }
+    });
+</script>
+@{
+    string type = TempData["ViewType"].ToString();
+    TempData["ViewType"] = type;
+    <input type="hidden" id="ViewType" value="@type" />
+}
+
+
+<div class="row">
+    <h2><strong>Design</strong>&nbsp Details</h2>
+</div>
+<div class="col-md-12 col-lg-12">
+
+    @{
+        string photo = string.Empty;
+        photo = "../../DesignPhotos/" + Model.DesignPhoto;
+    }
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Code</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            @Html.DisplayFor(model => model.DesignCode)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Name</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            @Html.DisplayFor(model => model.DesignName)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Description</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            @Html.DisplayFor(model => model.DesignDescription)
+        </div>
+    </div>
+
+    @* <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Size</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            @Html.DisplayFor(model => model.DesignSize)
+        </div>
+    </div>*@
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Photograph</label>
+        </div>
+        <!--code for on hover image-->
+
+        <div class="form-group col-md-5 col-lg-5">
+            @{
+                if (Model.DesignPhoto == "../../DesignPhotos/")
+                {
+                <label style="text-align: center">----</label>
+                }
+                else
+                {
+                <div id="picture">
+                    <a class="small" href="#" title="">
+                        <img src="@photo" title="" width="120" height="120"/>
+                        <img class="large" src="@photo" title="" /></a>
+                </div>
+                }
+            }
+
+        </div>
+        <!--code for on hover image-->
+
+    </div>
+</div>

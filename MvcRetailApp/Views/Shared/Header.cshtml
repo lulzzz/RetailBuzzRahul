@@ -1,0 +1,75 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "Header";
+}
+@Html.HiddenFor(model => model.CompanyCode)
+@Html.HiddenFor(model => model.CompanyName)
+@Html.HiddenFor(model => model.FinancialYear)
+<header class="navbar navbar-fixed-top" style="float: left">
+    
+    <div class="headerwrapper">
+        <div class="header-left">
+            <a href='@Url.Content("~/Dashboard/Dashboard")'>
+                <img src="~/Images/retail-logo.jpg" class="img-responsive" alt="logo" style="max-width: 105px; margin-left: 65px;margin-top: 10px;" />
+            </a>
+            <div class="pull-right">
+                <a href="#" class="menu-collapse">
+                    <i class="fa fa-bars"></i>
+                </a>
+            </div>
+        </div>
+        <!-- header-left -->
+        <label style="font-size: medium; color: #FFF;letter-spacing:1px; float: left;padding-left:10px; text-shadow: #FFF 0px 1px 2px; padding-top: 13px; font-family: 'Good Times'">@Html.DisplayFor(model => model.CompanyName)</label>
+        <div class="header-right">
+
+            <div class="pull-right header-btns">
+                <div class="btn-group user-menu">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicons glyphicons-user"></span><b>@HttpContext.Current.Session["UserName"]</b></button>
+                    <button type="button" class="btn btn-sm dropdown-toggle padding-none" data-toggle="dropdown">
+                        <img src="/Images/avatars/header/header-login.png" alt="user avatar" width="28" height="28">
+                    </button>
+                    <ul class="dropdown-menu checkbox-persist" role="menu">
+                        <li class="menu-arrow">
+                            <div class="menu-arrow-up"></div>
+                        </li>
+                        <li class="dropdown-header">Your Account <span class="pull-right glyphicons glyphicons-user"></span></li>
+                        <li>
+                            <ul class="dropdown-items">
+                                <li>
+                                    <div class="item-icon"><i class="fa fa-envelope-o"></i></div>
+                                    <a class="item-message" href="#">Messages</a> </li>
+                                <li>
+                                    <div class="item-icon"><i class="fa fa-calendar"></i></div>
+                                    <a class="item-message" href="calendar.html">Calendar</a> </li>
+                                <li class="border-bottom-none">
+                                    <div class="item-icon"><i class="fa fa-cog"></i></div>
+                                    <a class="item-message" href="customizer.html">Settings</a> </li>
+                                <li class="padding-none">
+                                    <div class="dropdown-lockout"><i class="fa fa-lock"></i><a href="screen-lock.html">Screen Lock</a></div>
+                                    <div class="dropdown-signout"><i class="fa fa-sign-out"></i><a href="/User/Login">Sign Out</a></div>
+                                </li>
+                            </ul>
+                        </li>
+                    </ul>
+                </div>
+                <div class="alerts-menu">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicons glyphicons-bell"></span><b>@Convert.ToDateTime(DateTime.Now).ToString("dd/MM/yyyy")</b> </button>
+
+                </div>
+                <div class="tasks-menu">
+                    <button type="button" class="btn btn-sm dropdown-toggle" data-toggle="dropdown"><span class="glyphicons glyphicons-tag"></span><b>7</b> </button>
+                    <ul class="dropdown-menu dropdown-checklist checkbox-persist" role="menu">
+                        <li class="menu-arrow"></li>
+                    </ul>
+                </div>
+
+            </div>
+            <!-- btn-group -->
+             <label style="font-size: medium; font-weight:bolder; float: right; color: #FFF; padding-top: 3px;padding-right:10px; font-family: Castellar;letter-spacing:2px">@Html.DisplayFor(model => model.FinancialYear)</label>
+        </div>
+        <!-- pull-right -->
+
+    </div>
+   
+    <!-- headerwrapper -->
+</header>

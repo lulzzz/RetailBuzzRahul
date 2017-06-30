@@ -1,0 +1,1005 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "OutwardToClient";
+}
+
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, obj) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + obj).remove();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        document.getElementById("OutwardToClientDetails_GatePass").value = Math.floor(Math.random() * (1001));
+
+        var refno = $("#OutwardToClientDetails_GatePass").val();
+        $.getJSON('/Outward/CheckReferenceNo', { refno: refno }, function (data) {
+            if (data == "true") {
+                document.getElementById("OutwardToClientDetails_GatePass").value = Math.floor(Math.random() * (1001));
+            }
+        });
+
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+
+        var code = document.getElementById("code").value;
+        if (code.charAt(0) == "G") {
+            $("#ddlgodownnames").val(code).attr("selected", true);
+            $("#ddlgodownnames").attr("readonly", true);
+            $("#ShopCodeid").attr("readonly", true);
+
+            $.getJSON("/Outward/GetGodownAddresses", { code: code },
+            function (data) {
+                document.getElementById("Godown_Addresses").style.display = "inline";
+                document.getElementById("ShopCodeid").disabled = true;
+                document.getElementById("OutwardToClientDetails_GodownName").value = data.gdname;
+
+                var select = $("#ddlgodownaddresses");
+                select.empty();
+                select.append($('<option/>', {
+                    text: "Addresses",
+                    value: "",
+                }));
+                $.each(data.addresslist, function (index, itemdata) {
+                    select.append($('<option/>', {
+                        text: itemdata.Text,
+                        value: itemdata.Value,
+                    }));
+                });
+            });
+            $.getJSON("/Outward/GetItemListFromStockDistribution", { GodownCode: code },
+            function (data) {
+
+                var select = $("#ItemCode1");
+                select.empty();
+                select.append($('<option/>', {
+                    text: "Select Item",
+                    value: "",
+                }));
+                $.each(data, function (index, itemdata) {
+                    select.append($('<option/>', {
+                        text: itemdata.Text + " " + itemdata.Value,
+                        value: itemdata.Value,
+                    }));
+                });
+            });
+        }
+        $("#ddlgodownaddresses").change(function () {
+            var data = $(this).val();
+            if (data != "") {
+                $("#ddlgodownaddresses").attr("readonly", true);
+                $.getJSON("/Outward/GetGodownDetails", { area: data },
+                    function (data) {
+                        document.getElementById("godowndetails").style.display = "inline";
+                        document.getElementById("ItemCode1").disabled = false;
+                        document.getElementById("Godown_Address").innerHTML = data.Address;
+                        document.getElementById("Godown_Person").innerHTML = data.EmpName;
+                        document.getElementById("Godown_Contact").innerHTML = data.ContactNo1;
+                        document.getElementById("Godown_Email").innerHTML = data.GodownEmail;
+                        document.getElementById("OutwardToClientDetails_GodownAddress").value = data.Address;
+                        document.getElementById("OutwardToClientDetails_GodownContactPerson").value = data.EmpName;
+                        $("#OutwardToClientDetails_GodownContactNo").val(data.ContactNo1);
+                        $("#OutwardToClientDetails_GodownEmail").val(data.GodownEmail);
+                    });
+            }
+        });
+    });
+</script>
+
+@*GET SHOP DETAILS BY SHOP NAME*@
+<script type="text/javascript">
+    $(function () {
+
+        var email = $("#preparedby").val();
+        $.getJSON("/Inward/GetEmployeeDetails", { Email: email },
+            function (data) {
+                document.getElementById("emailid").innerHTML = email;
+                document.getElementById("contactnoid").innerHTML = data.MobileNo;
+                document.getElementById("OutwardToClientDetails_PrepareBy").value = data.Name;
+                $("#name").text(data.Name);
+            });
+
+        var code = document.getElementById("code").value;
+        if (code.charAt(0) == "S") {
+            var ShopCode = document.getElementById("code").value;
+
+            $("#ShopCodeid").val(ShopCode).attr("selected", true);
+            $("#ShopCodeid").attr("readonly", true);
+
+            $.getJSON("/Outward/GetShopDetails", { code: ShopCode },
+            function (data) {
+                document.getElementById("ddlgodownnames").disabled = true;
+                document.getElementById("ShopDetails").style.display = "inline";
+                document.getElementById("ItemCode1").disabled = false;
+                document.getElementById("Shop_Address").innerHTML = data.ShopAddress;
+                document.getElementById("Shop_Person").innerHTML = data.EmpName;
+                document.getElementById("Shop_Contact").innerHTML = data.ShopContactNo;
+                document.getElementById("Shop_Email").innerHTML = data.ShopEmail;
+                document.getElementById("OutwardToClientDetails_ShopAddress").value = data.ShopAddress;
+                document.getElementById("OutwardToClientDetails_ShopEmail").value = data.ShopEmail;
+                document.getElementById("OutwardToClientDetails_ShopContactNo").value = data.ShopContactNo;
+                document.getElementById("OutwardToClientDetails_ShopContactPerson").value = data.EmpName;
+            });
+
+            //GET ITEMS LIST FROM SHOP STOCK
+            $.getJSON("/Outward/GetItemListFromShopStock", { shopcode: ShopCode },
+            function (data) {
+                var select = $("#ItemCode1");
+                select.empty();
+                select.append($('<option/>', {
+                    text: "Select Item",
+                    value: "",
+                }));
+                $.each(data, function (index, itemdata) {
+                    select.append($('<option/>', {
+                        text: itemdata.Text + " " + itemdata.Value,
+                        value: itemdata.Value,
+                    }));
+                });
+            });
+        }
+    });
+</script>
+
+
+@*GET ITEM DETAILS ON ITEM NAME DDL*@
+<script type="text/javascript">
+    $(function () {
+        $("#ItemCode1").change(function () {
+
+            document.getElementById("OutwardQuantity1").disabled = false;
+            var itemcode = $(this).val();
+            var godowncode = document.getElementById("ddlgodownnames").value;
+            var shopcode = document.getElementById("ShopCodeid").value;
+
+            if (godowncode != "") {
+                //Get item details when we select godown DDL
+                $.getJSON("/outward/GetStockDistributionItemdetails", { ItemCode: itemcode, GodownCode: godowncode },
+                   function (data) {
+                       document.getElementById("ddlgodownnames").disabled = true;
+                       document.getElementById("ddlgodownaddresses").disabled = true;
+                       document.getElementById("Description1").innerHTML = data.ItemDescription;
+                       document.getElementById("StockQuantity1").innerHTML = data.Quantity;
+                       $("#DescriptionValue1").val(data.ItemDescription);
+                       $("#StockQuantityValue1").val(data.Quantity);
+                       $("#ItemName1").val(data.ItemName);
+                       $("#Barcode1").val(data.barcode);
+                       $("#Color1").val(data.Color);
+                       $("#Material1").val(data.Material);
+                       $("#DesignName1").val(data.DesignName);
+                       $("#Unit1").val(data.Unit);
+                       $("#SellingPrice1").val(data.SellingPrice);
+                       $("#MRP1").val(data.MRP);
+                   });
+            }
+            else {
+                //Get item details when we select shop DDL
+                $.getJSON("/outward/GetShopStockItemdetails", { ItemCode: itemcode, ShopCode: shopcode },
+                   function (data) {
+                       document.getElementById("ShopCodeid").disabled = true;
+                       document.getElementById("Description1").innerHTML = data.Description;
+                       document.getElementById("StockQuantity1").innerHTML = data.Quantity;
+                       $("#DescriptionValue1").val(data.Description);
+                       $("#StockQuantityValue1").val(data.Quantity);
+                       $("#ItemName1").val(data.ItemName);
+                       $("#Barcode1").val(data.Barcode);
+                       $("#Color1").val(data.Color);
+                       $("#Material1").val(data.Material);
+                       $("#DesignName1").val(data.DesignName);
+                       $("#Unit1").val(data.Unit);
+                       $("#SellingPrice1").val(data.SellingPrice);
+                       $("#MRP1").val(data.MRP);
+                   });
+            }
+
+        });
+    });
+</script>
+
+
+@*CREATE DYNAMIC ROWS ON ENTER BUTTON CLICK*@
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+
+            var godowncode = document.getElementById("ddlgodownnames").value;
+            var shopcode = document.getElementById("ShopCodeid").value;
+
+            var rowid = document.getElementById("hdnRowCount").value;
+
+            //VALIDATIONS ON QUANTITY OR ITEM IS EMPTY
+            var preitem = "ItemCode" + rowid;
+            var outquantity = "OutwardQuantity" + rowid;
+            var items = $("#" + preitem).val();
+            var quantity = $("#" + outquantity).val();
+
+            if (items == "") {
+                alertbox("Please Select The Item");
+                return false;
+            }
+            else if (quantity == "") {
+                alertbox("Please Enter The Quantity");
+                return false;
+            }
+            else {
+                //DISABLED THE PREVIOUS ROW
+                if (document.getElementById(preitem) != null) {
+                    document.getElementById(preitem).disabled = true;
+                    document.getElementById(outquantity).disabled = true;
+                }
+
+                rowid = +rowid + 1;
+                var item = "ItemCode" + rowid;
+                description = "Description" + rowid;
+                stockquantity = "StockQuantity" + rowid;
+                outwardquantity = "OutwardQuantity" + rowid;
+                balance = "balance" + rowid;
+                descriptionvalue = "DescriptionValue" + rowid;
+                stockquantityvalue = "StockQuantityValue" + rowid;
+                balancevalue = "BalanceValue" + rowid;
+                itemName = "ItemName" + rowid;
+                color = "Color" + rowid;
+                material = "Material" + rowid;
+                design = "DesignName" + rowid;
+                unit = "Unit" + rowid;
+                sellingprice = "SellingPrice" + rowid;
+                mrp = "MRP" + rowid;
+                var unorderlist = $("#DynamicRows");
+
+                //if we select godowncode then fill item details using stock distribution database
+
+                var code = document.getElementById("code").value;
+                if (code.charAt(0) == "G") {
+
+                    //GET ITEMS LIST FROM STOCK DISTRIBUTION
+                    var data = $("#ddlgodownnames").val();
+                    $.getJSON("/Outward/GetItemListFromStockDistribution", { GodownCode: data },
+                    function (data) {
+                        var select = $("#" + item);
+                        select.empty();
+                        select.append($('<option/>', {
+                            text: "Select Item",
+                            value: "",
+                        }));
+                        $.each(data, function (index, itemdata) {
+                            select.append($('<option/>', {
+                                text: itemdata.Text + " " + itemdata.Value,
+                                value: itemdata.Value,
+                            }));
+                        });
+                    });
+
+                    unorderlist.append(
+                        "<tr id='row" + rowid + "'>" +
+                        "<td style='text-align:center'>" + rowid + "</td>" +
+                        "<td style='text-align:center'><select id='" + item + "' name='" + item + "' class='form-control'><option>Select Item</option></select><input type='hidden' id='" + itemName + "' name='" + itemName + "' /></td>" +
+                        "<td style='text-align:center'><label id='" + description + "' name='" + description + "' style='font-weight:normal'>----</label><input type='hidden' id='" + descriptionvalue + "' name='" + descriptionvalue + "'/></td>" +
+                        "<td style='text-align:center'><label  id='" + stockquantity + "' name='" + stockquantity + "' style='font-weight:normal'>----</label><input type='hidden' id='" + stockquantityvalue + "' name='" + stockquantityvalue + "'/></td>" +
+                        "<td><input type='text' class='form-control' name='" + outwardquantity + "' id='" + outwardquantity + "' autocomplete='off' onchange='CalculateDynamicBalance(" + rowid + ")' style='text-align:center' disabled='disabled' placeholder='Qty' /></td>" +
+                        "<td style='text-align:center'><label  id='" + balance + "' name='" + balance + "' style='font-weight:normal'>----</label><input type='hidden' id='" + balancevalue + "' name='" + balancevalue + "'/><input type='hidden' id='Barcode" + rowid + "' name='Barcode" + rowid + "'/></td>" +
+                        "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + rowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td>" +
+                        "<input type='hidden' id='" + color + "' name='" + color + "'/><input type='hidden' id='" + material + "' name='" + material + "'/><input type='hidden' id='" + design + "' name='" + design + "'/><input type='hidden' id='" + sellingprice + "' name='" + sellingprice + "'/><input type='hidden' id='" + mrp + "' name='" + mrp + "'/><input type='hidden' id='" + unit + "' name='" + unit + "'/></tr>"
+                    );
+
+                    //GET STOCK DISTRIBUTION DETAILS FROM ITEMNAME
+                    $("#" + item).change(function () {
+                        $("#" + outwardquantity).attr("disabled", false);
+                        var godowncode = document.getElementById("ddlgodownnames").value;
+                        var itemcode = document.getElementById(item).value;
+
+                        //CHECK IF SAME ITEM IS ALREADY SELECTED THEN ENABLES PREVIOUS ROW
+                        var rowcount = document.getElementById("hdnRowCount").value;
+                        var counter = 0;
+                        for (i = 1; i < rowcount; i++) {
+                            var ITEM = "ItemCode" + i;
+                            var QUANTITY = "OutwardQuantity" + i;
+                            //IF ROW IS DELETED THEN CURRENT ITEM WON'T GET COMPARED
+                            if (document.getElementById(ITEM) != null) {
+                                if ($("#" + ITEM).val() == itemcode) {
+                                    alertbox("The Item Is Already Selected Plese Change The Quantity..");
+                                    $("#ItemCode" + rowid).val("").attr("selected", true);
+                                    document.getElementById(QUANTITY).disabled = false;
+                                    counter = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //IF COUNTER IS 0 THAT MEANS CURRENT ITEM IS NOT SELECED IN PREVIOUS ROWS
+                        if (counter == 0) {
+                            //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+                            for (i = 1; i < rowcount; i++) {
+                                var QUANTITY = "OutwardQuantity" + i;
+                                //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                                if (document.getElementById(QUANTITY) != null) {
+                                    document.getElementById(QUANTITY).disabled = true;
+                                }
+                            }
+                            $.getJSON("/Outward/GetStockDistributionItemdetails", { ItemCode: itemcode, GodownCode: godowncode },
+                               function (data) {
+                                   $("#" + description).text(data.ItemDescription);
+                                   $("#" + stockquantity).text(data.Quantity);
+                                   $("#" + descriptionvalue).val(data.ItemDescription);
+                                   $("#" + stockquantityvalue).val(data.Quantity);
+                                   $("#" + itemName).val(data.ItemName);
+                                   $("#" + color).val(data.Color);
+                                   $("#" + material).val(data.Material);
+                                   $("#" + design).val(data.DesignName);
+                                   $("#" + unit).val(data.Unit);
+                                   $("#" + sellingprice).val(data.SellingPrice);
+                                   $("#" + mrp).val(data.MRP);
+                                   $("#Barcode" + rowid).val(data.barcode);
+                               });
+                        }
+                    });
+                }
+
+                    //if we select godowncode then fill item details using stock distribution database
+                else {
+                    //GET ITEMS LIST FROM SHOP STOCK
+                    $.getJSON("/Outward/GetItemListFromShopStock", { shopcode: code },
+                    function (data) {
+                        var select = $("#" + item);
+                        select.empty();
+                        select.append($('<option/>', {
+                            text: "Select Item",
+                            value: "",
+                        }));
+                        $.each(data, function (index, itemdata) {
+                            select.append($('<option/>', {
+                                text: itemdata.Text + " " + itemdata.Value,
+                                value: itemdata.Value,
+                            }));
+                        });
+                    });
+                    unorderlist.append(
+                        "<tr id='row" + rowid + "'>" +
+                        "<td style='text-align:center'>" + rowid + "</td>" +
+                        "<td style='text-align:center'><select id='" + item + "' name='" + item + "' class='form-control'><option>Select Item</option></select><input type='hidden' id='" + itemName + "' name='" + itemName + "' /></td>" +
+                        "<td style='text-align:center'><label id='" + description + "' name='" + description + "' style='font-weight:normal'></label><input type='hidden' id='" + descriptionvalue + "' name='" + descriptionvalue + "'/></td>" +
+                        "<td style='text-align:center'><label  id='" + stockquantity + "' name='" + stockquantity + "' style='font-weight:normal'></label><input type='hidden' id='" + stockquantityvalue + "' name='" + stockquantityvalue + "'/></td>" +
+                        "<td><input type='text' class='form-control' name='" + outwardquantity + "' id='" + outwardquantity + "' autocomplete='off' onchange='CalculateDynamicBalance(" + rowid + ")' style='text-align:center' disabled='disabled' placeholder='Qty' /></td>" +
+                        "<td style='text-align:center'><label  id='" + balance + "' name='" + balance + "' style='font-weight:normal'></label><input type='hidden' id='" + balancevalue + "' name='" + balancevalue + "'/><input type='hidden' id='Barcode" + rowid + "' name='Barcode" + rowid + "'/></td>" +
+                        "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + rowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td>" +
+                        "<input type='hidden' id='" + color + "' name='" + color + "'/><input type='hidden' id='" + material + "' name='" + material + "'/><input type='hidden' id='" + design + "' name='" + design + "'/><input type='hidden' id='" + sellingprice + "' name='" + sellingprice + "'/><input type='hidden' id='" + mrp + "' name='" + mrp + "'/><input type='hidden' id='" + unit + "' name='" + unit + "'/></tr>"
+                    );
+
+                    //GET SHOP STOCK DETAILS FROM ITEMNAME
+                    $("#" + item).change(function () {
+                        $("#" + outwardquantity).attr("disabled", false);
+                        var itemcode = document.getElementById(item).value;
+
+                        //CHECK IF SAME ITEM IS ALREADY SELECTED THEN ENABLES PREVIOUS ROW
+                        var rowcount = document.getElementById("hdnRowCount").value;
+                        var counter = 0;
+                        for (i = 1; i < rowcount; i++) {
+                            var ITEM = "ItemCode" + i;
+                            var QUANTITY = "OutwardQuantity" + i;
+                            //IF ROW IS DELETED THEN CURRENT ITEM WON'T GET COMPARED
+                            if (document.getElementById(ITEM) != null) {
+                                if ($("#" + ITEM).val() == itemcode) {
+                                    alertbox("The Item Is Already Selected Plese Change The Quantity..");
+                                    document.getElementById(QUANTITY).disabled = false;
+                                    $("#ItemCode" + rowid).val("").attr("selected", true);
+                                    counter = i;
+                                    break;
+                                }
+                            }
+                        }
+
+                        //IF COUNTER IS 0 THAT MEANS CURRENT ITEM IS NOT SELECED IN PREVIOUS ROWS
+                        if (counter == 0) {
+                            //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+                            for (i = 1; i < rowcount; i++) {
+                                var QUANTITY = "OutwardQuantity" + i;
+                                //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                                if (document.getElementById(QUANTITY) != null) {
+                                    document.getElementById(QUANTITY).disabled = true;
+                                }
+                            }
+                            $.getJSON("/Outward/GetShopStockItemdetails", { ItemCode: itemcode, ShopCode: shopcode },
+                                function (data) {
+                                    $("#" + description).text(data.Description);
+                                    $("#" + stockquantity).text(data.Quantity);
+                                    $("#" + descriptionvalue).val(data.Description);
+                                    $("#" + stockquantityvalue).val(data.Quantity);
+                                    $("#" + itemName).val(data.ItemName);
+                                    $("#" + color).val(data.Color);
+                                    $("#" + material).val(data.Material);
+                                    $("#" + design).val(data.DesignName);
+                                    $("#" + unit).val(data.Unit);
+                                    $("#" + sellingprice).val(data.SellingPrice);
+                                    $("#" + mrp).val(data.MRP);
+                                    $("#Barcode" + rowid).val(data.Barcode);
+                                });
+                        }
+                    });
+                }
+                $("#hdnRowCount").val(rowid);
+            }
+        }
+    })
+</script>
+
+@*DELETE ROW*@
+<script type="text/javascript">
+    function DeleteRow(id) {
+        var row = "row" + id;
+        confirmbox("Do you want to delete this row?", row);
+    }
+
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+</script>
+
+
+@*GET CLIENT DETAILS BY CLIENT NAME*@
+<script type="text/javascript">
+    $(function () {
+        $("#ClientName").change(function () {
+            var clientname = $(this).val();
+            $.getJSON("/Outward/GetClientDetails", { name: clientname },
+            function (data) {
+                document.getElementById("clientadd").innerHTML = data.Address;
+                document.getElementById("clientemail").innerHTML = data.Email;
+                document.getElementById("clientcontact").innerHTML = data.ContactNo1;
+                document.getElementById("OutwardToClientDetails_ClientAddress").value = data.Address;
+                document.getElementById("OutwardToClientDetails_ClientContactNo").value = data.ContactNo1;
+                document.getElementById("OutwardToClientDetails_ClientEmail").value = data.Email;
+                document.getElementById("OutwardToClientDetails_ClientState").value = data.State;
+            });
+        });
+    });
+</script>
+
+@*CALCULATE BALANCE*@
+<script type="text/javascript">
+    function CalculateBalance() {
+        var stkquan = (+document.getElementById("StockQuantity1").innerHTML);
+        var outquan = (+document.getElementById("OutwardQuantity1").value);
+        // validation on outward quantity > stock quantity
+        if (outquan > stkquan) {
+            alertbox("Cannot exceed above Stock Quantity");
+            document.getElementById("OutwardQuantity1").value = document.getElementById("StockQuantity1").innerHTML;
+        }
+        var balance = (document.getElementById("StockQuantity1").innerHTML) - (document.getElementById("OutwardQuantity1").value);
+        document.getElementById("balance1").innerHTML = balance;
+        document.getElementById("BalanceValue1").value = balance;
+    }
+
+    function CalculateDynamicBalance(count) {
+        var stockquantity = "StockQuantity" + count;
+        var outwardquantity = "OutwardQuantity" + count;
+        var balance = "balance" + count;
+        var balval = "BalanceValue" + count;
+
+        // validation on outward quantity > stock quantity
+        var stkquan = (+document.getElementById(stockquantity).innerHTML);
+        var outquan = (+document.getElementById(outwardquantity).value);
+        if (outquan > stkquan) {
+            alertbox("Cannot exceed above Stock Quantity");
+            document.getElementById(outwardquantity).value = document.getElementById(stockquantity).innerHTML;
+        }
+
+        var dynamicbalance = (+document.getElementById(stockquantity).innerHTML) - (+document.getElementById(outwardquantity).value);
+        document.getElementById(balance).innerHTML = dynamicbalance;
+        document.getElementById(balval).value = dynamicbalance;
+    }
+</script>
+
+@*ENABLED DYNAMIC ROWS*@
+<script type="text/javascript">
+    $(function () {
+        $("#Submit").click(function () {
+
+            var count = document.getElementById("hdnRowCount").value;
+            var lastitem = "ItemCode" + count;
+            var lastquantity = "OutwardQuantity" + count;
+
+            if (document.getElementById(lastitem) != null) {
+                // IF LAST ROW DATA IS EMPTY AND CLICK ON SAVE BUTTON..
+                if ($("#" + lastitem).val() == "") {
+                    alertbox("Please Select The Item");
+                    return false;
+                }
+                else if ($("#" + lastquantity).val() == "") {
+                    alertbox("Please Enter The Quantity");
+                    return false;
+                }
+
+                    // IF ALL DATA IS FILLED PROPERLY THEN SAVE ROWS..
+                else {
+                    for (var i = 1; i <= count; i++) {
+                        var item = "ItemCode" + i;
+                        var outquantity = "OutwardQuantity" + i;
+                        if (document.getElementById(item) != null) {
+                            document.getElementById(item).disabled = false;
+                            document.getElementById(outquantity).disabled = false;
+                        }
+                    }
+                }
+            }
+                // IF LAST ROW IS DELETED THEN SAVE ROWS AS IT IS..
+            else {
+                for (var i = 1; i <= count; i++) {
+                    var item = "ItemCode" + i;
+                    var outquantity = "OutwardQuantity" + i;
+                    if (document.getElementById(item) != null) {
+                        document.getElementById(item).disabled = false;
+                        document.getElementById(outquantity).disabled = false;
+                    }
+                }
+            }
+
+            var godowncode = document.getElementById("ddlgodownnames").value;
+            var shopcode = document.getElementById("ShopCodeid").value;
+
+            //enable godowncode or shopcode
+            if (godowncode == "") {
+                document.getElementById("ShopCodeid").disabled = false;
+            }
+            else {
+                document.getElementById("ddlgodownnames").disabled = false;
+                document.getElementById("ddlgodownaddresses").disabled = false;
+            }
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#Print").click(function () {
+            window.location.assign('/Outward/OutwardToClientPrint')
+        });
+    });
+</script>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- End: Sidebar -->
+        @using (Html.BeginForm("OutwardToClient", "Outward", FormMethod.Post))
+        {
+            <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="1" /> 
+            @Html.HiddenFor(model => model.OutwardToClientDetails.OutwardCode)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ClientAddress)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ClientContactNo)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ClientEmail)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ClientState)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.GodownName)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.GodownAddress)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.GodownContactPerson)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.GodownContactNo)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.GodownEmail)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ShopAddress)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ShopContactNo)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ShopContactPerson)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.ShopEmail)
+            @Html.HiddenFor(model => model.OutwardToClientDetails.PrepareBy)
+            
+            <input type="hidden" id="preparedby" value="@HttpContext.Current.Session["UserEmail"]"/>
+            
+            @Html.Partial("../Shared/LeftMenu")
+
+            <!-- Start: Content -->
+
+            <div class="mainpanel">
+                <div class="col-lg-12 col-md-12">
+
+                    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                        <source src="" type="audio/ogg" />
+                    </audio>
+
+                    <br />
+                    <h2>Outward To Client</h2>
+
+                    @{
+            string code = string.Empty;
+            if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+            {
+                if (Session["LOGINSHOPGODOWNCODEOWC"] != null)
+                {
+                    code = Session["LOGINSHOPGODOWNCODEOWC"].ToString();
+
+                        <input type="hidden" id="code" name="code" value="@code"/>
+                                
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAMEOWC"].ToString()</label>
+                        </div>
+                }
+            }
+                    }
+
+                    <table style="border: 1px double; width: 100%">
+                        <tr>
+                            <td>
+                                <div class="col-lg-12 col-md-12">
+
+                                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 235px;">
+                                        <div style="height: 10px"></div>
+                                        <div class="col-md-12 col-lg-12">
+                                            <div class="form-group row">
+                                                <div class="row" id="Godown_Details">
+                                                    <div class="col-md-6 col-lg-6">
+                                                        <div class="row">
+                                                            <label>Godown Name</label>
+                                                            @Html.DropDownListFor(model => model.OutwardToClientDetails.GodownCode, new SelectList(Model.GodownMasterList, "GdCode", "GodownName"), "Select Godown", new { id = "ddlgodownnames", @class = "form-control" })
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-6 col-lg-6" style="display: none" id="Godown_Addresses">
+                                                        <label>Godown Area<i style="color: red">*</i></label>
+                                                        @Html.DropDownListFor(model => model.GodownAddressDetails.AreaName, Enumerable.Empty<SelectListItem>(), "Address", new { id = "ddlgodownaddresses", @class = "form-control" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-12 col-lg-12" id="godowndetails" style="display: none">
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <label>Address: &nbsp</label><label id="Godown_Address" style="font-weight: normal"></label><br />
+                                                            <label>Contact Person: &nbsp</label><label id="Godown_Person" style="font-weight: normal"></label><br />
+                                                            <label>Contact Number: &nbsp</label><label id="Godown_Contact" style="font-weight: normal"></label><br />
+                                                            <label>Email: &nbsp</label><label id="Godown_Email" style="font-weight: normal"></label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 235px;">
+                                        <div style="height: 10px"></div>
+                                        <div class="col-md-12 col-lg-12">
+                                            <div class="row">
+                                                <div class="col-lg-8 col-md-8">
+                                                    <label>Shop Name</label><br />
+                                                    @Html.DropDownListFor(model => model.OutwardToClientDetails.ShopCode, new SelectList(Model.ShopList, "ShopCode", "ShopName"), "Select Shop", new { @class = "form-control", id = "ShopCodeid" })
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-12 col-lg-12" id="ShopDetails" style="display: none">
+                                                    <div style="height: 10px"></div>
+                                                    <label>Address: &nbsp</label><label id="Shop_Address" style="font-weight: normal"></label><br />
+                                                    <label>Contact Person: &nbsp</label><label id="Shop_Person" style="font-weight: normal"></label><br />
+                                                    <label>Contact Number: &nbsp</label><label id="Shop_Contact" style="font-weight: normal"></label><br />
+                                                    <label>Email: &nbsp</label><label id="Shop_Email" style="font-weight: normal"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-4">
+                                        <div class="col-md-12 col-lg-12">
+                                            @{
+            string date = DateTime.Now.ToString("MM/dd/yyyy");
+            string outwardcode = Model.OutwardToClientDetails.OutwardCode;
+                                            }
+                                            <div style="height: 10px"></div>
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px;">Date:</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <label id="date">@date</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="height: 7px"></div>
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px;">Outward No :</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            <label>@outwardcode</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div style="height: 7px"></div>
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px;">Reference No : </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                        <div class="row">
+                                                            @Html.TextBoxFor(model => model.OutwardToClientDetails.GatePass, new { @class = "form-control", @placeholder = "Reference No", @autocomplete = "off", @readonly = "readonly" })
+                                                            @Html.ValidationMessageFor(model => model.OutwardToClientDetails.GatePass, null, new { @style = "color:red" })
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <br />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <table class="table" id="DynamicRows" style="border-color: #d2d2d2; border: outset">
+                                    <tr>
+                                        <th class="col-lg-1 col-md-1">
+                                            <label style="text-align: center; width: 100%">S.No.</label></th>
+                                        <th class="col-lg-3 col-md-3">
+                                            <label style="text-align: center; width: 100%">Item<label style="color: red">*</label></label></th>
+                                        <th>
+                                            <label style="text-align: center; width: 100%">Description</label></th>
+                                        <th>
+                                            <label style="text-align: center; width: 100%">Stock Qty</label></th>
+                                        <th class="col-lg-1 col-md-1">
+                                            <label style="text-align: center; width: 100%">Outward Qty<label style="color: red">*</label></label></th>
+                                        <th>
+                                            <label style="text-align: center; width: 100%">Current Bal</label></th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <td class="col-lg-1 col-md-1" style="text-align: center">
+                                            <label style="font-weight: normal">1</label>
+                                        </td>
+                                        <td class="col-lg-3 col-md-3" style="text-align: center">
+                                            <select id="ItemCode1" name="ItemCode1" class="form-control" disabled="disabled">
+                                                <option value="">Select Item </option>
+                                            </select>
+                                            <input type="hidden" id="ItemName1" name="ItemName1" />
+                                        </td>
+                                        <td style="text-align: center">
+                                            <label id="Description1" style="font-weight: normal"></label>
+                                            <input type="hidden" id="DescriptionValue1" name="DescriptionValue1" />
+                                        </td>
+                                        <td class="col-lg-1 col-md-1" style="text-align: center">
+                                            <label id="StockQuantity1" style="font-weight: normal"></label>
+                                            <input type="hidden" id="StockQuantityValue1" name="StockQuantityValue1" />
+                                        </td>
+                                        <td class="col-lg-1 col-md-1" style="text-align: center">
+                                            <input type="text" class="form-control" style="text-align: center" id="OutwardQuantity1" name="OutwardQuantity1" onchange="CalculateBalance()" disabled="disabled" placeholder="Qty" onkeypress="return AllowNumbers(event)" autocomplete="off" />
+                                        </td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="balance1"></label>
+                                            <input type="hidden" id="BalanceValue1" name="BalanceValue1" />
+                                            <input type="hidden" id="Barcode1" name="Barcode1" />
+                                            <input type="hidden" id="Color1" name="Color1" />
+                                            <input type="hidden" id="DesignName1" name="DesignName1" />
+                                            <input type="hidden" id="SellingPrice1" name="SellingPrice1" />
+                                            <input type="hidden" id="MRP1" name="MRP1" />
+                                            <input type="hidden" id="Unit1" name="Unit1" />
+                                            <input type="hidden" id="Material1" name="Material1" />
+                                        </td>
+                                        <td></td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        @*CLIENT DETAILS*@
+                        <tr>
+                            <td>
+                                <table class="table" style="border-color: #d2d2d2; border: outset">
+                                    <div style="height: 18px"></div>
+                                    <tr>
+                                        <td>
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="row">
+                                                    <div style="height: 15px"></div>
+                                                    <div class="col-md-3 col-lg-3">
+                                                        <label>Client Name<label style="color: red">*</label></label><br />
+                                                        @Html.DropDownListFor(model => model.OutwardToClientDetails.ClientName, new SelectList(Model.ClientList, "ClientName", "ClientName"), "Select Client Name", new { @class = "form-control", id = "ClientName" })
+                                                        @Html.ValidationMessageFor(model => model.OutwardToClientDetails.ClientName, null, new { style = "color:red" })
+                                                    </div>
+                                                    <div class="col-md-4 col-lg-4">
+                                                        <label>Address</label><br />
+                                                        <label id="clientadd" style="font-weight: normal"></label>
+                                                    </div>
+                                                    <div class="col-md-3 col-lg-3">
+                                                        <label>Email-Id</label><br />
+                                                        <label id="clientemail" style="font-weight: normal"></label>
+                                                    </div>
+                                                    <div class="col-md-2 col-lg-2">
+                                                        <label>Contact No.</label><br />
+                                                        <label id="clientcontact" style="font-weight: normal"></label>
+                                                    </div>
+                                                    <div style="height: 70px"></div>
+                                                </div>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="col-md-12 col-lg-12">
+                                    <div style="height: 15px"></div>
+                                    <div class="col-md-3 col-lg-3">
+                                        <label>Prepare By</label><br />
+                                        <label id="name" style="font-weight: normal"></label>
+                                    </div>
+                                    <div class="col-md-4 col-lg-4">
+                                        <label>Email-Id</label><br />
+                                        <label id="emailid" style="font-weight: normal"></label>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3">
+                                        <label>Contact No.</label><br />
+                                        <label id="contactnoid" style="font-weight: normal"></label>
+                                    </div>
+                                    @{
+            string preparetimeid = DateTime.Now.ToShortTimeString();
+                                    }
+                                    <div class="col-md-2 col-lg-2">
+                                        <label>Prepare Time</label><br />
+                                        <label style="font-weight: normal">@preparetimeid</label>
+                                    </div>
+                                    <div style="height: 70px"></div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="col-lg-3 col-md-3">
+                                        <label>Narration</label>
+                                    </div>
+                                    <div class="col-lg-9 col-md-9">
+                                        @Html.TextBoxFor(model => model.OutwardToClientDetails.Narration, new { @class = "form-control", @autocomplete = "off", @placeholder = "Narration" })
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </table>
+                    <div style="height: 5px"></div>
+                    <div style="text-align: center">
+                        <button type="submit" id="Submit" class="btn btn-success">Save</button>
+                    </div>
+                    <div style="text-align: right">
+                        <button type="button" id="Print" class="btn btn-primary" data-toggle="tooltip" title="Print"><i class="fa fa-print" title="Print"></i></button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

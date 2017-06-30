@@ -1,0 +1,272 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "PrintOutwardShopToGodown";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+
+    });
+</script>
+
+<table style="border: 1px double; width: 100%;">
+    <tr>
+        <td>
+            <table style="width: 100%">
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <label><b>A To Z DADAR T.T.</b></label><br />
+                        <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center">
+                        <label style="font-size: x-large;"><b>Outward From Shop To Godown</b></label>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table style="border: 1px double; width: 100%">
+                <tr>
+                    <td style="width: 34%; border-right: 1px solid;">
+                        <table class="table">
+                            <tr>
+                                <td>
+                                    <label style="font-size: larger; font-weight: bold">Godown Details</label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Name: &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownName)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Address: &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownAddress)</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Contact Number: &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownContactNo)</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Email : &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GodownEmail)</td>
+                            </tr>
+                        </table>
+
+                    </td>
+
+
+                    <td style="width: 33%; position: absolute; margin-top: 0px">
+                        <table style="width: 100%; top: 0px">
+                            <tr>
+                                <td>
+                                    <label style="font-size: large; font-weight: bold">StoreKeeper Details</label></td>
+                            </tr>
+
+                            <tr>
+                                <td>
+                                    <label><b>Name: &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperName)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Designation: &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperDesignation)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Contact Number: &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperContactNo)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Email: &nbsp</b></label>@Html.DisplayFor(model => model.OutwardShopToGodownDetails.StoreKeeperEmail)
+                                </td>
+                            </tr>
+                        </table>
+
+                    </td>
+                    <td style="width: 32%; border-left: 1px solid">
+                        <table style="width: 100%; top: 0px;" class="table">
+                            <tr>
+                                <td><b>Date: &nbsp</b></td>
+                                <td>
+                                    @{
+                                        var date = Convert.ToDateTime(Model.OutwardShopToGodownDetails.Date).ToString("MM/dd/yyyy");
+                                    }
+                                    <label id="date" style="font-weight: normal">@date</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Outward No.: &nbsp</b></td>
+                                <td>
+                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.OutwardCode)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Reference No : &nbsp</b></td>
+                                <td>
+                                    <label style="font-size: 18px; font-weight: bold">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.GatePass)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="height: 59px"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+            <div class="form-group row">
+                <div style="height: 10px"></div>
+                <label style="font-size: 18px"><b>Item Details</b></label>
+                <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                <label>S.No.</label></th>
+                            <th style="text-align: center">
+                                <label>Item</label></th>
+                            <th style="text-align: center">
+                                <label>Description</label></th>
+                            <th style="text-align: center">
+                                <label>Design</label></th>
+                            <th style="text-align: center">
+                                <label>Unit</label></th>
+                            <th style="text-align: center">
+                                <label>Color</label></th>
+                            <th style="text-align: center">
+                                <label>Stock Quantity</label></th>
+                            <th style="text-align: center">
+                                <label>Quantity</label></th>
+                            <th style="text-align: center">
+                                <label>Balance</label></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.OutwardItemShopToGodownList != null && Model.OutwardItemShopToGodownList.Any())
+                            {
+                                int count = 1;
+                                foreach (var data in Model.OutwardItemShopToGodownList)
+                                {
+                                    var stock = Convert.ToDouble(@data.StockQuantity).ToString("#,###.00##");
+                                    var quantity = Convert.ToDouble(@data.OutwardQuantity).ToString("#,###.00##");
+                                    var balance = Convert.ToDouble(@data.CurrentBalance).ToString("#,###.00##");
+                            <tr>
+                                <td>
+                                    <label style="font-weight: normal">&nbsp;@count</label>
+                                </td>
+                                <td>
+                                    <label style="font-weight: normal">&nbsp;@data.ItemName</label>
+                                </td>
+                                <td>
+                                    <label style="font-weight: normal">&nbsp;@data.ItemDescription</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">@data.DesignName&nbsp;</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">@data.Unit&nbsp;</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">@data.Color&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@stock &nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@quantity&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@balance&nbsp;</label>
+                                </td>
+                            </tr>
+                                    count++;
+                                }
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="col-md-12 col-lg-12 form-group">
+                <div style="height: 20px"></div>
+                <div class="col-lg-12 col-md-12" style="font-size: 18px">
+                    <b>Sales Person Details</b>
+                </div>
+                <br />
+                <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                <label>Name</label></th>
+                            <th style="text-align: center">
+                                <label>Designation</label></th>
+                            <th style="text-align: center">
+                                <label>Email</label></th>
+                            <th style="text-align: center">
+                                <label>Contact No</label></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td style="text-align: left">
+                                @Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanName)
+                            </td>
+                            <td style="text-align: left">
+                                @Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanDesignation)
+                            </td>
+                            <td style="text-align: left">
+                                @Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanEmail)
+                            </td>
+                            <td style="text-align: right">
+                                @Html.DisplayFor(model => model.OutwardShopToGodownDetails.SalesmanContactNo)
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div style="height: 10px"></div>
+            <div class="col-lg-12 col-md-12">
+                <div style="background-color: lightgray; height: 1px; width: 100%"></div>
+            </div>
+
+            <div style="height: 20px"></div>
+
+            <div style="text-align: right">
+                <label style="font-size: 16px"><b>Prepared By</b></label><br />
+                <label style="font-weight: normal">@Html.DisplayFor(model => model.OutwardShopToGodownDetails.PreparedBy)</label>
+            </div>
+
+            @{
+                if (Model.OutwardShopToGodownDetails.Narration != null)
+                {
+                <label style="font-weight: bold">Narration : </label>
+                @Html.DisplayFor(model => model.OutwardShopToGodownDetails.Narration)        
+                }
+            }
+            <div style="height: 40px"></div>
+        </td>
+    </tr>
+</table>

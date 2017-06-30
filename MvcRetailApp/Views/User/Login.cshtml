@@ -1,0 +1,151 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "Login";
+}
+<script src="~/Scripts/CapsLock.compressed.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+<script type="text/javascript">
+    $(function () {
+        $("#user_UserName").focus();
+        CapsLock.addListener(
+    function (status) {
+        if (status) alert('WARNING: you have turned caps lock ON');
+    });
+
+    });
+</script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+@*REDIRECT TO USER CREATE PAGE*@
+<script type="text/javascript">
+    function UserCreate() {
+        document.getElementById("ChooseView").value = "CreateUser";
+        $("#Save").trigger('click');
+    }
+</script>
+
+@{
+    if (ViewData["NotEnoughRights"] != null)
+    {
+    <script type="text/javascript">
+        alertbox("Not Enough Rights To Access This Company");
+    </script>
+    }
+}
+
+@using (Html.BeginForm("Login", "User", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true)
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+        <meta name="description" content="" />
+        <meta name="author" content="" />
+
+        <title>Retail Login</title>
+        <link type="text/css" href="~/Content/font-awesome.css" rel="stylesheet" />
+        <link type="text/css" href="~/Content/style.default.css" rel="stylesheet" />
+        <link type="text/css" href="~/Content/bootstrap.min.css" rel="stylesheet" />
+        @* <link href="http://maxcdn.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css" rel="stylesheet">*@
+    </head>
+
+    <body class="signin">
+        <section>
+            <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                <source src="" type="audio/ogg" />
+            </audio>
+            <div class="panel-signin">
+                <div class="panel-body">
+                    <div class="logo text-center">
+                        <img src="~/images/retail-logo.png" style="height:100px;width:100px">
+                    </div>
+                    <h4 class="text-center mb5" style="color:#FF0000;font-size:18px;font-weight:bold">Already a Member?</h4>
+                    <p class="text-center" style="color:#000;font-size:14px;font-weight:bold">Sign in to your account</p>
+                    <div class="mb30"></div>
+                    <div style="width: 50%;margin: 0 auto;">
+                        <div class="input-group mb15">
+                            <span class="input-group-addon"><i class="fa fa-user"></i></span>
+                            @Html.TextBoxFor(model => model.user.UserName, new { @class = "form-control", @placeholder = "Username", @required = "", @autocomplete = "off" })<br />
+
+                        </div>
+                        <!-- input-group -->
+                        <font style="color: red"> @Html.ValidationMessageFor(model => model.user.UserName)</font>
+
+                        <div class="input-group mb15">
+                            <span class="input-group-addon"><i class="fa fa-lock"></i></span>
+                            @Html.PasswordFor(model => model.user.Password, new { @class = "form-control", @placeholder = "Password" })<br />
+
+                        </div>
+                        <!-- input-group -->
+                        <font style="color: red">@Html.ValidationMessageFor(model => model.user.Password)</font>
+
+                        <div>
+                            @if (ViewBag.errormsg != null)
+                            {
+                                <font size="2" color="red">@Html.Raw(ViewBag.errormsg)</font>
+                            }
+                        </div>
+                        <div>
+                            @if (ViewBag.msg != null)
+                            {
+                                <script type="text/javascript">
+                                    alertbox("Only SuperAdmin Can Create Users")
+                                </script>
+                            }
+                        </div>
+
+                        <!-- <div class="clearfix">-->
+                        <div class="pull-left">
+                            <div class="ckbox ckbox-primary mt10">
+                                <a href="#" onclick="UserCreate()" style="text-align: left; font-size: 15px; color: #f00; text-shadow: 2px 2px 5px #333"><i class="fa fa-user"></i>Create User</a>
+                                <input type="submit" id="Save" style="display: none" />
+                            </div>
+                            
+                        </div>
+                        <button class="pull-right button_bg_transparent">
+				                <img src="~/images/goldenkey.png" style="width:70px"><br>
+                                <p class="text-center" style="color:#000;font-size:18px;font-weight:bold">Sign In</p>
+                            </button>
+                        <!-- <div class="submit">-->
+                        @*<button type="submit" name="button" id="button" value="Submit" class="pull-right button_bg_transparent">
+                            <img src="~/images/button2.png"  style="width:100px"></button><br />*@
+                        <br />
+                        <br />
+                        <input type="hidden" id="ChooseView" name="ChooseView" value="Company" />
+                    </div>
+                </div>
+                <!-- panel-body -->
+            </div>
+            <!-- panel -->
+        </section>
+    </body>
+    </html>
+}
+
+@{
+    if (ViewData["NotEnoughRights"] != null)
+    {
+    <script type="text/javascript">
+        alertbox("Contact SuperAdmin To Gain Rights");
+    </script>
+    }
+}

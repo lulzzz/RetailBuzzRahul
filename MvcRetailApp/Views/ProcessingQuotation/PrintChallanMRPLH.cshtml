@@ -1,0 +1,296 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PrintChallanMRPLH";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<script type="text/javascript">
+    $(function () {
+        document.getElementById("Inwords").innerHTML = NumberToWords();
+    });
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+    function NumberToWords() {
+        var junkVal = (+removeCommas(document.getElementById('Grand_Total').innerHTML));
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+            //do nothing
+        }
+        else if (Number(junkVal) == 0) {
+            //document.getElementById('container').innerHTML = obStr + '' + 'Rupees Zero Only';
+            return 'Rupees Zero Only';
+        }
+        else {
+            alert('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alert('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+        var count = +document.getElementById("ItemCount").value;
+        var TotalAmount = 0;
+        var TotalDiscount = 0;
+        for (i = 1; i < count; i++) {
+            var amount = "ItemAmount" + i;
+            var discountrps = "disrps" + i;
+            var amountval = +removeCommas(document.getElementById(amount).innerHTML);
+            TotalAmount = TotalAmount + amountval;
+            TotalDiscount = TotalDiscount + +document.getElementById(discountrps).value;
+        }
+        document.getElementById("TotalDiscount").innerHTML = TotalDiscount.toFixed(2);
+        document.getElementById("TotalAmount").innerHTML = TotalAmount.toFixed(2);
+        var PackandForwd = +removeCommas(document.getElementById("Grand_Total").innerHTML) - (+removeCommas(document.getElementById("TotalAmount").innerHTML));
+        document.getElementById("PackAndForwd").innerHTML = addCommas(PackandForwd.toFixed(2));
+    });
+</script>
+<table style="width: 100%;">
+    <tr>
+        <td style="width: 15%;"></td>
+        <td style="width: 85%;">
+            <table style="width: 100%">
+                <tr style="border: 1px solid">
+                    <td>
+                        <table style="width: 100%">
+                            <tr>
+                                <td colspan="2">
+                                    <header style="height: 3.3cm;"></header>
+                                </td>
+                            </tr>
+                            <tr style="min-height: 2.3cm; max-height: 2.3cm">
+                                <td colspan="2">
+                                    <label></label>
+                                    <label style="padding-left: 0.7cm">@Model.DeliveryChallanDetails.ClientName</label><br />
+                                    @*<label style="padding-left: 0.8cm">@Model.DeliveryChallanDetails.ClientAddress</label><br />
+                                    <label style="padding-left: 0.8cm">@Model.DeliveryChallanDetails.ClientContactNo</label><br />*@
+                                    <div style="height: 35px"></div>
+                                </td>
+                            </tr>
+                            <tr style="height: 1cm">
+                                <td style="width: 226.77px">
+                                    <label></label>
+                                    <label style="padding-left: 2.4cm; font-size: 12px">@Model.DeliveryChallanDetails.ChallanNo</label>
+                                </td>
+                                <td>
+                                    <label></label>
+                                    <label id="date" style="padding-left: 0.6cm; font-size: 12px">@Convert.ToDateTime(Model.DeliveryChallanDetails.ChallanDate).ToString("dd/MM/yyyy")</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table style="height: 0.5cm"></table>
+            <table style="width: 100%; min-height: 404.41px; max-height: 404.41px">
+                <tr>
+                    <td colspan="5" style="height: 0.6cm"></td>
+                </tr>
+                @{
+                    var totalamount = Convert.ToDouble(Model.DeliveryChallanDetails.TotalAmount).ToString("#,###.00##");
+                    var totaldiscount = Convert.ToDouble(Model.DeliveryChallanDetails.TotalDiscount).ToString("#,###.00##");
+                    var packandforwd = Convert.ToDouble(Model.DeliveryChallanDetails.PackAndForwd).ToString("#,###.00##");
+                    var grandtotal = Convert.ToDouble(Model.DeliveryChallanDetails.GrandTotal).ToString("#,###.00##");
+                    if (Model.DeliveryChallanItemList != null && Model.DeliveryChallanItemList.Any())
+                    {
+                        int count = 1;
+                        int ListCount = Model.DeliveryChallanItemList.Count();
+                        foreach (var data in Model.DeliveryChallanItemList)
+                        {
+                            string discountrps = "disrps" + count;
+                            var itemamount = "ItemAmount" + count;
+                            var rt = Convert.ToDouble(@data.MRP);
+                            var rate = rt.ToString("#,###.00##");
+                            var amt = Convert.ToDouble(data.MRP * Convert.ToDouble(data.Quantity)).ToString("#,###.00##");
+                            var discountonmrp = (data.MRP * Convert.ToDouble(data.Quantity)) * data.DiscountPercent / 100;
+                            amt = Convert.ToDouble(data.MRP * Convert.ToDouble(data.Quantity) - discountonmrp).ToString("#,###.00##");
+                    <tr style="vertical-align: top">
+                        <td style="width: 45px; height: 10px">
+                            <label style="font-weight: normal">&nbsp;@count</label>
+                        </td>
+                        <td style="width: 257px">
+                            <table>
+                                <tr>
+                                    <td style="width: 100px">
+                                        <label style="font-weight: normal">&nbsp;@data.ItemName</label></td>
+                                    <td style="width: 150px">
+                                        <label style="font-weight: normal">&nbsp;@data.Narration </label>
+                                    </td>
+                                    <td>
+                                        <label style="font-weight: normal; text-align: right">@data.DiscountPercent&nbsp;</label></td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="text-align: right; width: 106px">
+                            <label style="font-weight: normal">@data.Quantity&nbsp;</label>
+                        </td>
+                        <td style="text-align: right; width: 95px">
+                            <label style="font-weight: normal">@rate&nbsp;</label>
+                        </td>
+                        <td style="text-align: right; width: 144px">
+                            <label style="font-weight: normal" id="@itemamount">@amt&nbsp;</label>
+                            <input type="hidden" id="@discountrps" value="@discountonmrp" />
+                        </td>
+                    </tr>
+                            count++;
+                        }
+                    <input type="hidden" id="ItemCount" name="ItemCount" value="@count"/>
+                    }
+                    <tr style="vertical-align: bottom">
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td style="text-align: right">
+                            <label><b>Total Amt</b></label><br />
+                            <label><b>Total Disc</b></label><br />
+                            <label><b>Pck & Forw.</b></label><br />
+                            <label><b>Grand Total</b></label>
+                        </td>
+                        <td style="text-align: right">
+                            <label id="TotalAmount">@totalamount</label><br />
+                            <label id="TotalDiscount">@totaldiscount</label><br />
+                            <label id="PackAndForwd">@packandforwd</label><br />
+                            <label id="Grand_Total"><i class="fa fa-inr"></i>@grandtotal</label><br />
+                        </td>
+                    </tr>
+                }
+            </table>
+            <table>
+                <tr style="height: 0.8cm">
+                    <td style="height: 10px">
+                        <label style="padding-left: 3cm" id="Inwords"></label>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        <footer style="height: 4.1cm;"></footer>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

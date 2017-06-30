@@ -1,0 +1,242 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CreateItemSubCategory";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+
+</script>
+
+
+<script type="text/javascript">
+    $(function () {
+
+        $("#ItemDetails_itemCategory").autocomplete({
+            source: "/Item/GetCategory",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#ItemDetails_itemCategory").val(ui.item.value);
+                    var idModel = document.getElementById("ItemDetails_itemCategory").value;
+                    $.getJSON("/Item/LoadSubCategoryByCategory", { id: idModel },
+           function (stateData) {
+               var select = $("#itemShortName");
+               select.empty();
+               select.append($('<option/>', {
+                   value: 0,
+                   text: "Select SubCategory"
+               }));
+               $.each(stateData, function (index, itemData) {
+
+                   select.append($('<option/>', {
+                       value: itemData.Value,
+                       text: itemData.Text
+                   }));
+               });
+           });
+
+
+                }
+            }
+        });
+
+            });
+</script>
+
+
+@*Auto complete Sub Category*@
+<script type="text/javascript">
+    $(function () {
+        $("#ItemSubCategoryDetails_subCategoryName").autocomplete({
+            source: "/Item/GetSubCategoryList",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#ItemSubCategoryDetails_subCategoryName").val(ui.item.value);
+                }
+            }
+        });
+
+        $("#ItemSubCategoryDetails_subCategoryName").change(function () {
+            document.getElementById("Save").disabled = false;
+            var txt = document.getElementById("ItemSubCategoryDetails_subCategoryName").value;
+            txt = txt.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            document.getElementById("ItemSubCategoryDetails_subCategoryName").value = txt;
+        });
+    });
+</script>
+
+<script type="text/ecmascript">
+    $(document).ready(function () {
+        $("#Save").click(function () {
+            document.getElementById("Save").disabled = true;
+            $("#Submit").trigger('click');
+        })
+    })
+</script>
+
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- Start: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+
+        <!-- Start: Content -->
+        @using (Html.BeginForm())
+        {
+            <form action="CreateItemSubCategory" method="post">
+
+                @Html.HiddenFor(model => model.ItemSubCategoryDetails.ItemSubCategoryCode)
+                @Html.ValidationSummary(true)
+                <input type="hidden" id="hdnRowCount" name="hdnRowCount" />
+
+                    <div class="mainpanel">
+                        <div class="col-md-12 col-lg-12">
+
+                            <br />
+
+                            <h2><strong>Item SubCategory </strong>Details</h2>
+
+                            <div class="tile-body">
+                                <br />
+
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="row">
+                                            <div class="form-group col-md-3 col-lg-3">
+                                                <label>Category Name<label style="color: red">*</label></label>
+                                            </div>
+
+                                            <div class="form-group col-md-3 col-lg-3">
+                                                @Html.DropDownListFor(model => model.ItemSubCategoryDetails.categoryName, new SelectList(Model.ItemCategoryList, "CategoryName", "CategoryName"), "Select", new { @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.ItemSubCategoryDetails.categoryName, null, new { style = "color:red" })
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="form-group col-md-3 col-lg-3">
+                                                <label for="exampleInputname">Sub Category Name<label style="color: red">*</label></label>
+                                            </div>
+
+                                            <div class="form-group col-md-3 col-lg-3">
+                                                @Html.TextBoxFor(model => model.ItemSubCategoryDetails.subCategoryName, new { @class = "form-control", @placeholder = "SubCatagory Name" })
+                                                @Html.ValidationMessageFor(model => model.ItemSubCategoryDetails.subCategoryName, null, new { style = "color:red" })
+                                                @{
+            if (ViewBag.error != null)
+            {
+                                                    <font color="red">@Html.Raw(ViewBag.error) </font>
+            }
+                                                }
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-offset-2 col-lg-offset-2">
+                                                @*<button type="submit" class="btn btn-success">Create</button>*@
+                                                <button type="button" class="btn btn-success" id="Save">Create</button>
+                                                <button type="submit" class="btn btn-success" id="Submit" style="display: none;">Create</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+            </form>
+        }
+    </div>
+</section>
+<!-- End: Main -->
+
+
+
+

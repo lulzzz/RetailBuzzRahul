@@ -1,0 +1,271 @@
+
+
+@import url('bootstrap.min.css');
+
+
+/********** 2. RESET STYLES **********/
+/*************************************/
+
+body {
+    font-size: 13px;
+    color: #636E7B;
+    background-color: #fff;
+}
+
+a {
+    outline: none !important;
+}
+
+a:hover,
+a:active,
+a:focus {
+    text-decoration: none;
+}
+.submit{
+	float:right;
+		margin-right:27px;
+		margin-top:-12px;
+		
+}
+.button_bg_transparent
+{
+	background-color:transparent !important;
+	border-color:transparent !important;
+}
+
+.button{
+	z-index:1120;
+	margin:15px -70px 0px 20px;
+	float:right;
+}
+.key{
+	float:right;
+	margin-right:-78px;
+}
+.circle{
+	float:right;
+	margin:-5px -56px 0px 0px;
+}
+.lock{
+	float:left;
+}
+.head{
+	margin: 80px 0px 0px 477px;
+}
+/***** 9.7 SIGN IN/UP PAGE *****/
+
+body.signin {
+    background-image:url(../images/back.jpg);
+    background-size: cover;
+}
+
+.panel-signin,
+.panel-signup {
+    margin: 10% auto 0 auto;
+}
+
+.panel-signin {
+    width:  700px;
+	height:450px;
+	background-image:url(../images/panel_bg.png);
+}
+.panel-signup {
+    width: 600px;
+}
+
+.panel-signin .panel-body,
+.panel-signup .panel-body {
+    padding: 20px 40px 0px 40px;
+	
+}
+
+.panel-signin .panel-footer,
+.panel-signup .panel-footer {
+    padding-left: 40px;
+    padding-right: 40px;
+}
+/********** 12. CUSTOM STYLES **********/
+/***************************************/
+
+
+.mt0 { margin-top: 0 !important; }
+.mt5 { margin-top: 5px !important; }
+.mt10 { margin-top: 10px !important; }
+.mt20 { margin-top: 20px !important; }
+.mr10 { margin-right: 10px !important; }
+.mr20 { margin-right: 20px !important; }
+.ml5 { margin-left: 5px !important; }
+.ml10 { margin-left: 10px !important; }
+.mr5 { margin-right: 5px !important; }
+.mr10 { margin-right: 10px !important; }
+.mr15 { margin-right: 15px !important; }
+.mr20 { margin-right: 20px !important; }
+.mr30 { margin-right: 30px !important; }
+.mb5 { margin-bottom: 5px; }
+.mb8 { margin-bottom: 8px; }
+.mb9 { margin-bottom: 9px; }
+.mb10 { margin-bottom: 10px; }
+.mb15 { margin-bottom: 15px; }
+.mb20 { margin-bottom: 20px; }
+.mb30 { margin-bottom: 30px; }
+.nomargin { margin: 0; }
+.nopadding { padding: 0; }
+.padding10 { padding: 10px; }
+.padding15 { padding: 15px; }
+.padding20 { padding: 20px; }
+.noborder { border: 0; }
+.height200 { height: 200px; }
+.height300 { height: 300px; }
+.width100p { width: 100%; }
+.width300 { width: 300px; }
+
+.text-black { color: #000; }
+
+.inline-block { display: inline-block; }
+
+
+
+/********** 13. MEDIA QUERIES **********/
+/***************************************/
+
+
+@media screen and (max-width: 1024px) {
+    
+    body {
+        width: 100%;
+        overflow-x: hidden;
+    }
+    
+    /* indicator that page is 1024 */
+    .logo {
+        position: relative;
+    }
+    
+    /* dashboard */
+    .row-dashboard .col-md-6 {
+        float: none;
+        width: auto;
+    }
+    
+    /* wizard */
+    .contentpanel-wizard .row .col-md-6 {
+        float: none;
+        width: auto;
+    }
+	
+
+@media screen and (max-width: 768px) {
+    
+    body {
+        position: relative;
+    }
+
+    .logo {
+        position: static;
+    }
+    
+    
+    
+}
+
+@media screen and (max-width: 640px) {
+
+   
+    
+    .panel-signin {
+        margin: 20px auto;
+    }
+    
+    .panel-signup {
+        margin: 20px;
+        width: auto;
+    }
+    
+    
+}
+
+
+@media screen and (max-width: 480px) {
+
+   
+}
+
+@media screen and (max-width: 360px) {
+    
+    .pageheader h4 {
+        font-size: 24px;
+    }
+    
+    .form-search {
+        position: relative;
+    }
+    
+    .headerwrapper .header-right .form-search {
+        display: none;
+    }
+    
+    .leftpanel .form-search {
+        margin: 10px 10px 10px 10px;
+    }
+    
+    .headerwrapper .header-right .btn-group-notification .dropdown-menu {
+        min-width: 340px;
+        margin-right: -103px;
+    }
+    
+    .headerwrapper .header-right .btn-group-messages .dropdown-menu {
+        min-width: 340px;
+        margin-right: -41px;
+    }
+    
+    .headerwrapper .header-right .btn-group-notification .dropdown-menu:after {
+        right: 115px;
+    }
+    
+    .headerwrapper .header-right .btn-group-messages .dropdown-menu:after {
+        right: 50px;
+    }
+    
+    /* messages */
+    .msg-list > li .sender {
+        line-height: normal;
+    }
+    
+    
+    .panel-signin {
+        width: auto;
+        margin: 20px;
+    }
+    
+    .panel-signin .panel-footer {
+        padding-left: 20px;
+        padding-right: 20px;
+    }
+    
+    .panel-signin .panel-footer .btn {
+        font-size: 13px;
+    }
+    
+    .panel-signup .pull-left,
+    .panel-signup .pull-right {
+        float: none !important;
+    }
+    
+    .panel-signup .btn.btn-success {
+        width: 100%;
+    }
+}
+
+@media screen and (max-width: 320px) {
+    .panel-signin .panel-footer .btn {
+        font-size: 11px;
+    }
+    
+    .panel-signin .panel-body,
+    .panel-signup .panel-body {
+        padding: 30px 20px;
+    }
+
+}
+
+

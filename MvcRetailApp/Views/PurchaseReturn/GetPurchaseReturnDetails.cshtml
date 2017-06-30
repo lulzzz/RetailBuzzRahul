@@ -1,0 +1,276 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetPurchaseReturnDetails";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    function confirmbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $.getJSON("/PurchaseReturn/EncodeId", { id: document.getElementById("PurchaseReturnDetails_Id").value },
+                     function (data) {
+                         window.open("/PurchaseReturn/PrintPurchaseReturn?id=" + data, "_target", "width=770,height=842,top=200px,left=300px")
+                     });
+		     }
+		     else {
+		         window.location.reload();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $(".modal").height(205);
+
+        $("#Print").click(function () {
+            confirmbox("Do you want to print Purchase Returns");
+        });
+
+        $("#DebitPrint").click(function () {
+            SellingPriceCustomBox("Do you want to print Purchase Returns");
+
+
+
+            function SellingPriceCustomBox(message) {
+                var sample = document.getElementById("audio");
+                sample.src = '../../Audio/tone1.ogg';
+
+                sample.load();
+                sample.muted = false;
+                sample.play();
+                bootbox.classes('printConfirmClass');
+                bootbox.dialog(message,
+                    [
+                        {
+                            "label": "Cancel",
+                            "class": "btn-danger",
+                            "callback": function () {
+                                window.location.assign("/PurchaseReturn/PurchaseReturn");
+                            }
+                        },
+                        {
+                            "label": "Letter Head",
+                            "class": "btn-primary",
+                            "callback": function () {
+                                $.getJSON("/PurchaseReturn/EncodeId", { id: document.getElementById("PurchaseReturnDetails_Id").value },
+                                function (encodevalue) {
+                                    window.open("/ReportEngine/DebitNoteLetterHead.aspx?id=" + encodevalue, "_target", "width=722,height=960,top=200px,left=200px");
+                                });
+                            }
+                        },
+                        {
+                            "label": "PrePrinted",
+                            "class": "btn-success",
+                            "callback": function () {
+                                $.getJSON("/PurchaseReturn/EncodeId", { id: document.getElementById("PurchaseReturnDetails_Id").value },
+                                function (encodevalue) {
+                                    window.open("/ReportEngine/DebitNotePrePrinted.aspx?id=" + encodevalue, "_target", "width=722,height=960,top=200px,left=200px");
+                                });
+                            }
+                        }, ]
+                );
+            }
+
+
+
+
+
+
+        });
+    });
+</script>
+
+
+
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+    <source src="" type="audio/ogg" />
+</audio>
+@Html.HiddenFor(model => model.PurchaseReturnDetails.Id)
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <table style="border: 1px double;">
+                <tr>
+                    <td>
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row">
+                                <div class="form-group"></div>
+                                <div class="col-md-4 col-lg-4">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="row">
+                                            <label style="font-size: 15px">Supplier Details</label><br />
+                                        </div>
+                                        <label>Name: &nbsp</label>@Html.DisplayFor(model => model.PurchaseReturnDetails.SupplierName)<br />
+                                        <label>Contact Number: &nbsp</label>@Html.DisplayFor(model => model.PurchaseReturnDetails.SupplierContact)<br />
+                                        <div class="row">
+                                            @{
+                                                if (Model.PurchaseReturnDetails.PoNo != "NoPO")
+                                                {
+                                                <label>Po No: &nbsp</label>@Html.DisplayFor(model => model.PurchaseReturnDetails.PoNo)
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3 col-lg-3"></div>
+                                <div class="col-md-5 col-lg-5">
+                                    @{
+                                        string date = DateTime.Now.ToString("dd/MM/yyyy");
+                                    }
+                                    <div class="col-md-12 col-lg-12">
+                                        <table>
+                                            <tr >
+                                                <td>
+                                                    <label style="font-size: 14px">Date:&nbsp;&nbsp;</label></td>
+                                                <td>
+                                                    <label style="font-size: 14px">@date</label></td>
+                                            </tr>
+                                            <tr >
+                                                <td>
+                                                    <label style="font-size: 14px">Purchase Return No:&nbsp;&nbsp;</label></td>
+                                                <td>
+                                                    <label style="font-size: 14px">@Model.PurchaseReturnDetails.PurchaseReturnNo</label></td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="row form-group">
+                                <table border="1" style="border-collapse: collapse;" cellpadding="0" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center">
+                                                <label>S.No.</label></th>
+                                            <th style="text-align: center" class="col-md-2 col-lg-2">
+                                                <label>Item</label></th>
+                                            <th style="text-align: center" class="col-md-2 col-lg-2">
+                                                <label>Description</label></th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>Material</label></th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>Colour</label></th>
+                                            <th style="text-align: center" class="col-md-2 col-lg-2">
+                                                <label>Design</label></th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>Qty</label></th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>Unit</label></th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>
+                                                    Rate<br />
+                                                    (<i class='fa fa-inr'></i>)</label></th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>
+                                                    Disc<br />
+                                                    (%)</label>
+                                            </th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>
+                                                    Tax<br />
+                                                    (%)</label>
+                                            </th>
+                                            <th style="text-align: center" class="col-md-1 col-lg-1">
+                                                <label>
+                                                    Amt<br />
+                                                    (<i class='fa fa-inr'></i>)</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+                                            if (Model.PurchaseReturnItemList != null && Model.PurchaseReturnItemList.Any())
+                                            {
+                                                int count = 1;
+                                                foreach (var data in Model.PurchaseReturnItemList)
+                                                {
+                                                    if (data.Quantity != 0)
+                                                    {                                                               
+                                            <tr>
+                                                @{
+                                                        string qty = Convert.ToDouble(data.Quantity).ToString("#,###.00##");
+                                                        string rate = Convert.ToDouble(data.CostPrice).ToString("#,###.00##");
+                                                        string amt = Convert.ToDouble(data.Amount).ToString("#,###.00##");
+                                                }
+                                                <td style="text-align: center">
+                                                    <label style="font-weight: normal">@count</label></td>
+                                                <td class="col-md-2 col-lg-2" style="text-align: left">
+                                                    <label style="font-weight: normal">&nbsp;@data.ItemName</label></td>
+                                                <td class="col-md-2 col-lg-2" style="text-align: left">
+                                                    <label style="font-weight: normal">&nbsp;@data.Description</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: left">
+                                                    <label style="font-weight: normal">&nbsp;@data.Material</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: left">
+                                                    <label style="font-weight: normal">&nbsp;@data.Color</label></td>
+                                                <td class="col-md-2 col-lg-2" style="text-align: left">
+                                                    <label style="font-weight: normal">&nbsp;@data.DesignName</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                    <label style="font-weight: normal">@qty&nbsp</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: left">
+                                                    <label style="font-weight: normal">&nbsp;@data.Unit</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                    <label style="font-weight: normal">@rate&nbsp</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                    <label style="font-weight: normal">@data.DisPer&nbsp</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                    <label style="font-weight: normal">@data.ItemTax&nbsp</label></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                    <label style="font-weight: normal">@amt&nbsp</label></td>
+                                            </tr>
+                                                        count += 1;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div style="height: 5px"></div>
+                            <div class="row">
+                                <div class="col-md-5 col-lg-5"></div>
+                                <div class="col-md-7 col-lg-7">
+                                    <div class="col-md-4 col-lg-4"></div>
+                                    <div class="col-md-4 col-lg-4" style="text-align: left">
+                                        <div class="row">
+                                            <label style="font-size: 14px">Grand Total</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 col-lg-4" style="text-align: right">
+                                        <div class="row">
+                                            @{
+                                                var grandtotal = Convert.ToDouble(@Model.PurchaseReturnDetails.DebitNoteAmount).ToString("#,###.00##");   
+                                            }
+                                            <i class="fa fa-rupee" style="font-size: 14px"></i>
+                                            <label style="font-size: 14px" id="GrandTotal">@grandtotal</label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+            <div style="height: 5px"></div>
+            <div class="row">
+                <input type="button" id="Print" class="col-md-offset-5 col-lg-offset-5 btn btn-blue" value="Print" />
+                <button type="button" id="DebitPrint" class="btn btn-warning">Print Debit Note</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+

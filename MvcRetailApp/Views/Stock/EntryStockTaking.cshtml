@@ -1,0 +1,93 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EntryStockTaking";
+}
+
+@*GET SUBCATEGORY BY CATEGORY*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLCategory").change(function () {
+
+            if ($("#DDLCategory").val() != "") {
+                document.getElementById("DDLSubCategory").disabled = false;
+
+                var Category = $(this).val();
+                $.getJSON("/Stock/LoadSubCategoryByCategory", { cat: Category },
+                function (stateData) {
+                    var select = $("#DDLSubCategory");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "Select SubCategory"
+                    }));
+                    $.each(stateData, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                });
+            }
+            else {
+                document.getElementById("AddingRows").innerHTML = "";
+                document.getElementById("Submit").style.display = "none";
+                var select = $("#DDLSubCategory");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select SubCategory"
+                }));
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLSubCategory").change(function () {
+            var SubCat = $(this).val();
+
+            $.ajax({
+                url: "/Stock/GetEntryStockItems",
+                data: { subcat: SubCat },
+                type: "GET",
+                success: function (data) {
+                    $("#LoadList").html(data);
+                    document.getElementById("Submit").style.display = 'inline';
+                }
+            });
+
+        });
+    });
+</script>
+
+<div class="table table-bordered">
+    <div class="row">
+        <div style="height: 10px"></div>
+        <div class="col-md-12 col-lg-12">
+            <div class="col-md-4 col-lg-4">
+                <label>Item Category<i style="color: red">*</i></label>
+                @Html.DropDownListFor(model => model.ItemCategoryDetails.CategoryName, new SelectList(Model.ItemCategoryList, "CategoryName", "CategoryName"), "Select Category", new { id = "DDLCategory", @class = "form-control" })
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <label>Item SubCategory<i style="color: red">*</i></label>
+                @Html.DropDownListFor(model => model.ItemSubCategoryDetails.subCategoryName, Enumerable.Empty<SelectListItem>(), "Select SubCategory", new { id = "DDLSubCategory", @class = "form-control", @disabled = "disabled" })
+            </div>
+            <div class="col-md-4 col-lg-4"></div>
+        </div>
+        <div style="height: 55px"></div>
+        <div class="form-group"></div>
+    </div>
+</div>
+<div style="height: 15px"></div>
+
+<div id="LoadList"></div>
+
+<div class="col-md-12 col-lg-12">
+    <div style="height: 10px"></div>
+</div>
+
+<div class="col-md-12 col-lg-12" style="text-align: center">
+    <button type="submit" id="Submit" class="btn btn-success" style="display: none">Save</button>
+</div>
+

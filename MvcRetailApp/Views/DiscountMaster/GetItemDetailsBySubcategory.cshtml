@@ -1,0 +1,255 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetItemDetailsBySubcategory";
+}
+
+<script type="text/javascript">
+    //SELECT ALL CHECKBOXES ON SELECT ALL CHECKBOX BUTTON
+    function SelectAllCheckbox() {
+        var count = document.getElementById("ItemList").value;
+        if ($("#SelectAllId").prop("checked")) {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                var discinper = "DiscInPer" + i;
+                var discinrs = "DiscInRs" + i;
+                var chkboxdisabled = "CheckBoxDisabled" + i;
+
+                var chkboxdisabledval = document.getElementById(chkboxdisabled).value;
+                if (chkboxdisabledval == "No") {
+                    $("#" + chkbox).attr("checked", true);
+                    document.getElementById(chkbox).value = "Yes";
+                    document.getElementById(discinper).disabled = false;
+                    document.getElementById(discinrs).disabled = false;
+                }
+            }
+        }
+        else {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                var discinper = "DiscInPer" + i;
+                var discinrs = "DiscInRs" + i;
+                var chkboxdisabled = "CheckBoxDisabled" + i;
+
+                var chkboxdisabledval = document.getElementById(chkboxdisabled).value;
+                if (chkboxdisabledval == "No") {
+                    $("#" + chkbox).attr("checked", false);
+                    document.getElementById(chkbox).value = "No";
+                    document.getElementById(discinper).value = 0;
+                    document.getElementById(discinrs).value = 0;
+                    document.getElementById(discinper).disabled = true;
+                    document.getElementById(discinrs).disabled = true;
+                }
+            }
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function CheckCheckboxValue(Count) {
+        var checkbox = "CheckBox" + Count;
+        var discinper = "DiscInPer" + Count;
+        var discinrs = "DiscInRs" + Count;
+
+        if ($("#" + checkbox).prop("checked")) {
+            document.getElementById(checkbox).value = "Yes";
+            document.getElementById(discinper).disabled = false;
+            document.getElementById(discinrs).disabled = false;
+        }
+        else {
+            document.getElementById(discinper).value = 0;
+            document.getElementById(discinrs).value = 0;
+
+            document.getElementById(checkbox).value = "No";
+            document.getElementById(discinper).disabled = true;
+            document.getElementById(discinrs).disabled = true;
+        }
+    }
+</script>
+
+@*CALCULATE DISC RS USING PERCENTAGE*@
+<script type="text/javascript">
+
+    function CalcDiscRs(Count) {
+        var discinper = "DiscInPer" + Count;
+        var discinrs = "DiscInRs" + Count;
+        var mrp = "MRP" + Count;
+
+        // (PerAmount= Rate * (Percentage/100))
+        var calcobj = (+document.getElementById(discinper).value) / 100;
+        var ans = (+document.getElementById(mrp).value) * calcobj;
+        document.getElementById(discinrs).value = ans.toFixed(2);
+    }
+</script>
+
+@*CALCULATE DISC PER USING RS*@
+<script type="text/javascript">
+    function CalcDiscPer(Count) {
+        var discinper = "DiscInPer" + Count;
+        var discinrs = "DiscInRs" + Count;
+        var mrp = "MRP" + Count;
+
+        var calcobj = (+document.getElementById(discinrs).value) / (+document.getElementById(mrp).value);
+        var ans = calcobj * 100;
+        document.getElementById(discinper).value = ans.toFixed(2);
+    }
+</script>
+
+@*DISABLED CHECKBOX FOR THOSE ITEMS WHICH ALREADY HAVE DISCOUNT *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var itemlist = document.getElementById("ItemList").value;
+        var count = itemlist - 1;
+        for (i = 1; i <= count; i++) {
+            CheckDiscountItem(i);
+        }
+    })
+</script>
+
+@*we write ajax in function becoz if we write this ajax inside for loop then its create issue(for loop ended before ajax call),
+solve this problem using function(write ajax in function and write function inside the for loop then this function store in stack
+and this gives proper result)*@
+<script type="text/javascript">
+    function CheckDiscountItem(count) {
+        var checkbox = "CheckBox" + count;
+        var itemcode = "ItemCode" + count;
+        var chkboxdisabled = "CheckBoxDisabled" + count;
+
+        var ItemCodeValue = document.getElementById(itemcode).value;
+        var FromDate = document.getElementById("FromDate").value;
+        $.getJSON("/DiscountMaster/GetDiscountItem", { itemcode: ItemCodeValue, fromdate: FromDate },
+             function (data) {
+                 if (data.msg == "ItemPresent") {
+                     document.getElementById(checkbox).disabled = true;
+                     document.getElementById(chkboxdisabled).value = "Yes";
+                 }
+                 if (data.msg == "ItemAbsent") {
+                     document.getElementById(chkboxdisabled).value = "No";
+                 }
+             })
+    }
+</script>
+
+<table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr>
+            <th style="text-align: center">SelectAll<br />
+                <input type="checkbox" id="SelectAllId" onclick="SelectAllCheckbox()" style="width: 17px; height: 17px;" />
+            </th>
+            <th style="text-align: center">Item Code</th>
+            <th style="text-align: center">Item Name</th>
+            <th style="text-align: center">Design</th>
+            <th style="text-align: center">Size</th>
+            <th style="text-align: center">Unit</th>
+            <th style="text-align: center">Cost<br />
+                Price</th>
+            <th style="text-align: center">Selling<br />
+                Price</th>
+            <th style="text-align: center">MRP</th>
+            <th style="text-align: center; color: red" class="col-lg-1 col-md-1">Disc(%)</th>
+            <th style="text-align: center; color: red" class="col-lg-1 col-md-1">Disc(<i class="fa fa-rupee"></i>)</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int invCount = 1;
+            int noninvCount;
+            if (Model.ItemList != null)
+            {
+                foreach (var data in Model.ItemList)
+                {
+                    string checkbox = "CheckBox" + invCount;
+                    string chkboxdisabled = "CheckBoxDisabled" + invCount;
+                    string itemcode = "ItemCode" + invCount;
+                    string itemname = "ItemName" + invCount;
+                    string discinper = "DiscInPer" + invCount;
+                    string discinrs = "DiscInRs" + invCount;
+                    string unit = "Unit" + invCount;
+                    string size = "Size" + invCount;
+                    string designname = "DesignnName" + invCount;
+                    string costprice = "CostPrice" + invCount;
+                    string sellingprice = "SellingPrice" + invCount;
+                    string mrp = "MRP" + invCount;
+            <tr>
+                @{
+                    double costval = Convert.ToDouble(@data.costprice);
+                    var CostPrice = costval.ToString("#,###.00##");
+                    double sellval = Convert.ToDouble(@data.sellingprice);
+                    var SellingPrice = sellval.ToString("#,###.00##");
+                    double mrpval = Convert.ToDouble(@data.mrp);
+                    var MRP = mrpval.ToString("#,###.00##");
+                }
+                <td style="text-align: center">
+                    <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px" value="No" onchange="CheckCheckboxValue(@invCount)"/>
+                    <input type="hidden" id="@chkboxdisabled" name="@chkboxdisabled"/>
+                </td>
+                <td style="text-align: center">@data.itemCode<input type="hidden" id="@itemcode" name="@itemcode" value="@data.itemCode"/></td>
+                <td style="text-align: center">@data.itemName<input type="hidden" id="@itemname" name="@itemname" value="@data.itemName"/></td>
+                <td style="text-align: center">@data.designName<input type="hidden" id="@designname" name="@designname" value="@data.designName"/></td>
+                <td style="text-align: center">@data.size<input type="hidden" id="@size" name="@size" value="@data.size"/></td>
+                <td style="text-align: center">@data.unit<input type="hidden" id="@unit" name="@unit" value="@data.unit"/></td>
+                <td style="text-align: center">@CostPrice<input type="hidden" id="@costprice" name="@costprice" value="@data.costprice"/></td>
+                <td style="text-align: center">@SellingPrice<input type="hidden" id="@sellingprice" name="@sellingprice" value="@data.sellingprice"/></td>
+                <td style="text-align: center">@MRP<input type="hidden" id="@mrp" name="@mrp" value="@data.mrp"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center; color:red" id="@discinper" name="@discinper" onchange="CalcDiscRs(@invCount)" disabled="disabled" class="form-control" placeholder="Amount" value="0"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center; color:red" id="@discinrs" name="@discinrs" onchange="CalcDiscPer(@invCount)" disabled="disabled" class="form-control" placeholder="Amount" value="0"/></td>
+                @{invCount++;}
+            </tr>
+                }
+            }
+
+            noninvCount=invCount;
+
+            if (Model.NonInventoryItemList != null)
+            {
+                foreach (var data in Model.NonInventoryItemList)
+                {
+                    string checkbox = "CheckBox" + noninvCount;
+                    string chkboxdisabled = "CheckBoxDisabled" + noninvCount;
+                    string itemcode = "ItemCode" + noninvCount;
+                    string itemname = "ItemName" + noninvCount;
+                    string discinper = "DiscInPer" + noninvCount;
+                    string discinrs = "DiscInRs" + noninvCount;
+                    string unit = "Unit" + noninvCount;
+                    string size = "Size" + noninvCount;
+                    string designname = "DesignnName" + noninvCount;
+                    string costprice = "CostPrice" + noninvCount;
+                    string sellingprice = "SellingPrice" + noninvCount;
+                    string mrp = "MRP" + noninvCount;
+            <tr>
+                @{
+                    double costval = Convert.ToDouble(@data.costprice);
+                    var CostPrice = costval.ToString("#,###.00##");
+                    double sellval = Convert.ToDouble(@data.sellingprice);
+                    var SellingPrice = sellval.ToString("#,###.00##");
+                    double mrpval = Convert.ToDouble(@data.mrp);
+                    var MRP = mrpval.ToString("#,###.00##");
+                }
+                <td style="text-align: center">
+                    <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px" value="No" onchange="CheckCheckboxValue(@noninvCount)"/>
+                    <input type="hidden" id="@chkboxdisabled" name="@chkboxdisabled"/>
+                </td>
+                <td style="text-align: center">@data.itemCode<input type="hidden" id="@itemcode" name="@itemcode" value="@data.itemCode"/></td>
+                <td style="text-align: center">@data.itemName<input type="hidden" id="@itemname" name="@itemname" value="@data.itemName"/></td>
+                <td style="text-align: center">@data.designName<input type="hidden" id="@designname" name="@designname" value="@data.designName"/></td>
+                <td style="text-align: center">@data.size<input type="hidden" id="@size" name="@size" value="@data.size"/></td>
+                <td style="text-align: center">@data.unit<input type="hidden" id="@unit" name="@unit" value="@data.unit"/></td>
+                <td style="text-align: center">@CostPrice<input type="hidden" id="@costprice" name="@costprice" value="@data.costprice"/></td>
+                <td style="text-align: center">@SellingPrice<input type="hidden" id="@sellingprice" name="@sellingprice" value="@data.sellingprice"/></td>
+                <td style="text-align: center">@MRP<input type="hidden" id="@mrp" name="@mrp" value="@data.mrp"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center; color:red" id="@discinper" name="@discinper" onchange="CalcDiscRs(@noninvCount)" disabled="disabled" class="form-control" placeholder="Amount" value="0"/></td>
+                <td style="text-align: center">
+                    <input type="text" style="text-align:center; color:red" id="@discinrs" name="@discinrs" onchange="CalcDiscPer(@noninvCount)" disabled="disabled" class="form-control" placeholder="Amount" value="0"/></td>
+                @{noninvCount++;}
+            </tr>
+                }
+            }
+            
+            <input type="hidden" id="ItemList" value="@noninvCount" name="ItemList"/>
+        }
+    </tbody>
+</table>
+

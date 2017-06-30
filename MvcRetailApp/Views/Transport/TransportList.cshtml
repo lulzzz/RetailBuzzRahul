@@ -1,0 +1,166 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "TransportList";
+}
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("table.tablesorter").tablesorter({ widthFixed: true, sortList: [[0, 0]] })
+       .tablesorterPager({ container: $("#pager"), size: $(".pagesize option:selected").val() });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("textarea").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+
+<div class="col-md-11 col-lg-11">
+    <div class="row">
+        <div class="row">
+            <div class="row">
+                <table class="tablesorter table">
+                    <thead>
+                        <tr>
+                            <th class="col-md-1 col-lg-1">
+                                <label style="color: royalblue">Code</label></th>
+                            <th class="col-md-6 col-lg-6">
+                                <label style="color: royalblue">Transport</label></th>
+                            <th class="col-md-5 col-lg-5">
+                                <label style="color: royalblue">Options</label></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.TransportList != null && Model.TransportList.Any())
+                            {
+
+                                int cnt = Model.TransportList.Count();
+                                int count = 1;
+                                string type = TempData["ViewType"].ToString();
+                                TempData["ViewType"] = type;
+                                if (type == "Edit")
+                                {
+                                    string editId = string.Empty;
+                                    string rowId = string.Empty;
+                                    string labelEditId = string.Empty;
+                                    string transportnames = string.Empty;
+                                    foreach (var item in Model.TransportList)
+                                    {
+                                        editId = "editId" + count;
+                                        rowId = "rowId" + count;
+                                        labelEditId = "labelEditId" + count;
+                                        transportnames = "transportname" + count;
+                
+                            <tr id="@rowId">
+                                <td class="col-md-1 col-lg-1">@Html.DisplayFor(modelitem => item.TransportCode)</td>
+                                <td class="col-md-7 col-lg-7">@{var transnames = item.TransportName;}
+                                    <label id="@transportnames" style="font-weight:normal">@transnames</label>
+                                </td>
+                                <td class="col-md-4 col-lg-4"><a href="#" onclick="EditRow(@item.TransportId, @cnt, @count)" id="@editId">Edit</a>
+                                    <label id="@labelEditId" style="display:none;font-weight:normal;color:gray;">Edit</label>
+                                </td>
+                            </tr>
+                
+                                                                count = count + 1;
+                                    }
+                                }
+                                else
+                                {
+                                    string deleteId = string.Empty;
+                                    string rowId = string.Empty;
+                                    string labelDeleteId = string.Empty;
+                                    string transportnames = string.Empty;
+                                    foreach (var item in Model.TransportList)
+                                    {
+                                        deleteId = "deleteId" + count;
+                                        rowId = "rowId" + count;
+                                        labelDeleteId = "labelDeleteId" + count;
+                                        transportnames = "transportname" + count;
+                
+                            <tr id="@rowId">
+                                <td class="col-md-1 col-lg-1">@Html.DisplayFor(modelitem => item.TransportCode)</td>
+                                <td class="col-md-6 col-lg-6">@{var transnames = item.TransportName;}
+                                    <label id="@transportnames" style="font-weight:normal">@transnames</label>
+                                </td>
+                                <td class="col-md-5 col-lg-5">
+                                    <a href="#" onclick="DeleteRow(@item.TransportId, @cnt,@count)" id="@deleteId">Delete</a>
+                                    <label id="@labelDeleteId" style="display:none;font-weight:normal;color:gray;">Delete</label>
+                                </td>
+                            </tr>
+                                                                count = count + 1;
+                                    }
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+                <br />
+                <div id="pager">
+                    <form>
+                        <img src="../Images/first.png" class="first" />
+                        <img src="../Images/prev.png" class="prev" />
+                        <input type="text" class="pagedisplay" id="pagertextbox" style="width: 170px" />
+                        <img src="../Images/next.png" class="next" />
+                        <img src="../Images/last.png" class="last" />
+                        <select class="pagesize" id="pagerdropdown">
+                            <option selected="selected" value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+

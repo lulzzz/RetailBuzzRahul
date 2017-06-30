@@ -1,0 +1,51 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetCompanyDetails";
+}
+
+<div>
+   
+         <label for ="exampleInputname">Company Names</label>
+         
+        <table>
+    @{
+        if (Model.CmpList != null && Model.CmpList.Any())
+        {
+           
+                string deleteId = string.Empty;
+                string lineId = string.Empty;
+                string editId = string.Empty;
+                string rowId = string.Empty;
+                string labelEditId = string.Empty;
+                string labelDeleteId = string.Empty;
+                int cnt = Model.CmpList.Count();
+                int count = 1;
+                foreach (var item in Model.CmpList)
+                {
+                    deleteId = "deleteId" + count;
+                    lineId = "lineId" + count;
+                    editId = "editId" + count;
+                    rowId = "rowId" + count;
+                    labelEditId = "labelEditId" + count;
+                    labelDeleteId = "labelDeleteId" + count;
+                   
+            <tr id="@rowId"><td>@Html.DisplayFor(model=>item.CompanyCode)&nbsp&nbsp</td>
+                <td>@Html.DisplayFor(modelitem=>item.companyName)&nbsp&nbsp</td>
+       
+                    
+                 @*   <td>@Html.DisplayFor(modelitem => item.LastName)</td>*@
+                    <td> <a href="#" onclick="Edit(@item.companyId, @cnt, @count)" id="@editId">&nbsp Edit</a><label id="@labelEditId" style="display:none;font-weight:normal;color:gray;">&nbsp Edit</label>
+                         <label id="@lineId">&nbsp |</label>
+                         <a href="#" onclick="Delete(@item.companyId, @cnt,@count)" id="@deleteId">&nbsp Delete</a><label id="@labelDeleteId" style="display:none;font-weight:normal;color:gray;">&nbsp Delete</label>
+                    </td>
+               </tr>
+                    count = count + 1;
+                }
+
+            }
+        
+    }
+      </table> 
+
+           </div> 
+   

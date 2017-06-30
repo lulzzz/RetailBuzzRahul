@@ -1,0 +1,509 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GetQuotationDetailsForPrint";
+}
+
+<script>
+    $(document).ready(function () {
+        document.getElementById("In_Words").innerHTML = NumberToWords();
+    });
+</script>
+<script>
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+    function NumberToWords() {
+        var junkVal = (+removeCommas(document.getElementById('GrandTotal').innerHTML));
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+            //do nothing
+        }
+        else if (Number(junkVal) == 0) {
+            //document.getElementById('container').innerHTML = obStr + '' + 'Rupees Zero Only';
+            return 'Rupees Zero Only';
+        }
+        else {
+            alertbox('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alertbox('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+
+
+<script>
+    $(function () {
+        $("#PrintSell").click(function () {
+            SellingPriceconfirmbox("Do You Want To Print Quotation");
+        });
+
+        $("#PrintMRP").click(function () {
+            MRPconfirmbox("Do You Want To Print Quotation");
+        });
+    });
+</script>
+
+@Html.HiddenFor(model => model.QuotationDetails.Id)
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <h3>Quotation Details</h3>
+        </div>
+        <table style="border: 1px double; width: 100%">
+            <tr>
+                <td>
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12 form-group">
+                            <div class="row">
+                                <div class="col-md-4 col-lg-4" style="border-right: 1px solid #999; height: 220px">
+                                    <div style="height: 10px"></div>
+                                    <div class="col-lg-12 col-md-12">
+                                        <label style="font-size: large">Client Details</label>
+                                        <div class="col-lg-12 col-md-12">
+                                            <label>Name : &nbsp</label>@Html.DisplayFor(model => model.QuotationDetails.ClientName)<br />
+                                            <label>Address : &nbsp</label>@Html.DisplayFor(model => model.QuotationDetails.ClientAddress)<br />
+                                            <label>State : &nbsp</label>@Html.DisplayFor(model => model.QuotationDetails.ClientState)<br />
+                                            <label>Contact Number : &nbsp</label>@Html.DisplayFor(model => model.QuotationDetails.ClientContactNo)<br />
+                                            <label>Email : &nbsp</label>@Html.DisplayFor(model => model.QuotationDetails.ClientEmail)<br />
+                                            <label>Client Type : &nbsp</label>@Html.DisplayFor(model => model.QuotationDetails.ClientType) & @Html.DisplayFor(model => model.QuotationDetails.ConsumeResell)<br />
+                                            @{
+                                                if (Model.QuotationDetails.FormType != null && Model.QuotationDetails.FormType != "")
+                                                {
+                                                <label>Form Type : &nbsp</label>@Html.DisplayFor(model => model.QuotationDetails.FormType)
+                                                }
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-lg-4 form-group" style="border-right: 1px solid #999; height: 220px">
+                                    <div style="height: 10px"></div>
+                                    <label style="font-size: large">Transport Details</label>
+                                    <div class="col-lg-12 col-md-12">
+                                        <label>Transport Mode : &nbsp </label>
+                                        @Html.DisplayFor(model => model.QuotationDetails.TransportMode)<br />
+                                        <label>Transport Name : &nbsp </label>
+                                        @Html.DisplayFor(model => model.QuotationDetails.TransportName)<br />
+                                        <label>Transport Contact : &nbsp </label>
+                                        @Html.DisplayFor(model => model.QuotationDetails.TransportContactNo)
+                                    </div>
+                                </div>
+
+                                <div class="col-md-4 col-lg-4 form-group">
+                                    <div style="height: 10px"></div>
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-12">
+                                            <table>
+                                                <tr>
+                                                    <td>
+                                                        <div style="height: 2px"></div>
+                                                        <label style="font-size: 14px">Date: &nbsp</label>
+                                                    </td>
+                                                    <td>
+                                                        @{ var date = Convert.ToDateTime(Model.QuotationDetails.QuotDate).ToString("dd/MM/yyyy");}
+                                                        <label id="date" style="font-weight: normal">@date</label>
+                                                    </td>
+                                                </tr>
+                                                <tr>
+                                                    <td>
+                                                        <label style="font-size: 14px">Quot No: &nbsp</label>
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(model => model.QuotationDetails.QuotNo)
+                                                    </td>
+                                                </tr>
+                                                <tr style="height: 10px"></tr>
+                                                <tr>
+                                                    <td>
+                                                        <label style="font-size: 14px">Ref No: &nbsp</label>
+                                                    </td>
+                                                    <td>
+                                                        @Html.DisplayFor(model => model.QuotationDetails.RefNo)
+                                                    </td>
+                                                </tr>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <br />
+                            <div class="col-md-12 col-lg-12 form-group">
+                                <div class="row">
+                                    <label style="font-size: large">Item Details</label>
+                                </div>
+                                <div class="row">
+                                    <table border="1" style="border-collapse: collapse;">
+                                        <thead>
+                                            <tr>
+                                                <th>
+                                                    <label class="CenterText">S.N.</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label class="CenterText">Item</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label>Narration</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">Material</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">Colour</label></th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label class="CenterText">Design</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">Unit</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">Qty</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">
+                                                        Rate<br />
+                                                        (<i class='fa fa-inr'></i>)</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">
+                                                        Disc<br />
+                                                        (<i class='fa fa-inr'></i>)</label>
+                                                </th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">
+                                                        Disc<br />
+                                                        (%)</label>
+                                                </th>
+                                                <th class="col-md-1 col-lg-1">Tax<br />
+                                                    (%)</th>
+                                                <th class="col-md-2 col-lg-2">
+                                                    <label class="CenterText">
+                                                        Amt<br />
+                                                        (<i class='fa fa-inr'></i>)</label></th>
+                                                <th class="col-md-1 col-lg-1">
+                                                    <label class="CenterText">
+                                                        Prop<br />
+                                                        Tax<br />
+                                                        (%)</label></th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @{
+                                                int count = 1;
+                                                if (Model.QuotationItemList.Count() != 0 || Model.QuotationItemList.Any())
+                                                {
+                                                    foreach (var item in Model.QuotationItemList)
+                                                    {
+                                                        double Rate = Convert.ToDouble(@item.SellingPrice);
+                                                        var rate = Rate.ToString("#,###.00##");
+                                                        double DisRs = Convert.ToDouble(@item.DiscountRPS);
+                                                        var DiscountRs = DisRs.ToString("#,###.00##");
+                                                        double Amt = Convert.ToDouble(@item.Amount);
+                                                        var amount = Amt.ToString("#,###.00##");
+                                                        var proptax = Convert.ToDouble(@item.ProportionateTax).ToString("#,###.00##");
+                                                <tr>
+                                                    <td>
+                                                        <label class="CenterText" style="font-weight: normal">@count</label></td>
+                                                    <td style="text-align: left">
+                                                        <label style="font-weight: normal">&nbsp;@item.ItemName</label></td>
+                                                    <td style="text-align: left">
+                                                        <label style="font-weight: normal">&nbsp;@item.Narration</label></td>
+                                                    <td style="text-align: left">
+                                                        <label style="font-weight: normal">&nbsp;@item.Description</label></td>
+                                                    <td style="text-align: left">
+                                                        <label style="font-weight: normal">&nbsp;@item.Material</label></td>
+                                                    <td style="text-align: left">
+                                                        <label style="font-weight: normal">&nbsp;@item.Color</label></td>
+                                                    <td style="text-align: left">
+                                                        <label style="font-weight: normal">&nbsp;@item.DesignName</label></td>
+                                                    <td style="text-align: left">
+                                                        <label style="font-weight: normal">&nbsp;@item.Unit</label></td>
+                                                    <td style="text-align: right">
+                                                        <label style="font-weight: normal">@item.Quantity&nbsp</label></td>
+                                                    <td style="text-align: right">
+                                                        <label style="font-weight: normal">@rate&nbsp</label></td>
+                                                    <td style="text-align: right">
+                                                        <label style="font-weight: normal">@DiscountRs&nbsp</label></td>
+                                                    <td style="text-align: right">
+                                                        <label style="font-weight: normal">@item.DiscountPercent&nbsp</label></td>
+                                                    <td style="text-align: right">
+                                                        <label style="font-weight: normal">@item.ItemTax&nbsp</label></td>
+                                                    <td style="text-align: right">
+                                                        <label style="font-weight: normal">@amount&nbsp</label></td>
+                                                    <td style="text-align: right">
+                                                        <label style="font-weight: normal">@proptax&nbsp</label></td>
+                                                </tr>
+                                                    }
+                                                    count++;
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                            <div class="col-md-12 col-lg-12">
+                                <div class="row">
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="row">
+                                            <div class="col-md-5 col-lg-5">
+                                                <label style="font-size: 14px;">Total Discount:</label>
+                                            </div>
+                                            <div class="col-md-7 col-lg-7">
+                                                <i class="fa fa-inr" style="font-size: 14px"></i>
+                                                @{
+                                                    string totaldiscount = Convert.ToDouble(Model.QuotationDetails.TotalDiscount).ToString("#,###.00##");
+                                                }
+                                                <label style="font-size: 14px">@totaldiscount</label>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12">
+                                                <label style="font-size: 14px">Tax Summary:</label>
+                                            </div>
+                                        </div>
+                                        @{
+                                            foreach (var itemtax in Model.InventoryTaxList)
+                                            {
+                                            <div class="row">
+                                                <div class="col-md-3 col-lg-3">
+                                                    <label><i class="fa fa-inr"></i>@itemtax.Amount</label>
+                                                </div>
+                                                <div class="col-md-2 col-lg-2">
+                                                    <label>@itemtax.Tax%</label>
+                                                </div>
+                                                <div class="col-md-7 col-lg-7">
+                                                    <label><i class="fa fa-inr"></i>@itemtax.TaxAmount</label>
+                                                </div>
+                                            </div>
+                                            }
+                                        }
+                                    </div>
+                                    <div class="col-md-7 col-lg-7">
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-4 col-lg-4"></div>
+                                                <div class="col-md-4 col-lg-4" style="text-align: left">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px">Total Amount</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-lg-4" style="text-align: right">
+                                                    <div class="row">
+                                                        @{
+                                                            var totalamount = Convert.ToDouble(@Model.QuotationDetails.TotalAmount).ToString("#,###.00##");
+                                                        }
+                                                        <i class="fa fa-rupee" style="font-size: 14px"></i>
+                                                        <label style="font-size: 14px">@totalamount</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-4 col-lg-4"></div>
+                                                <div class="col-md-4 col-lg-4">
+                                                    <div class="row">
+                                                        <label for="exampleInputname" style="font-size: 14px">Packing and Forwarding</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-lg-4" style="text-align: right">
+                                                    <div class="row">
+                                                        @{
+                                                            var packandforwd = Convert.ToDouble(@Model.QuotationDetails.PackAndForwd).ToString("#,###.00##");
+                                                        }
+                                                        <i class="fa fa-rupee" style="font-size: 14px"></i>
+                                                        <label style="font-size: 14px">@packandforwd</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-4 col-lg-4"></div>
+                                                <div class="col-md-4 col-lg-4">
+                                                    <div class="row">
+                                                        <label for="exampleInputname" style="font-size: 14px">Tax Amount</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-lg-4" style="text-align: right">
+                                                    <div class="row">
+                                                        @{
+                                                            var totaltaxamount = Convert.ToDouble(@Model.QuotationDetails.TotalTaxAmount).ToString("#,###.00##");
+                                                        }
+                                                        <i class="fa fa-rupee" style="font-size: 14px"></i>
+                                                        <label style="font-size: 14px">@totaltaxamount</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="background-color: lightgray; width: 100%; height: 1px"></div>
+                                <div style="height: 5px"></div>
+                                <div class="row">
+                                    <div class="col-md-5 col-lg-5"></div>
+                                    <div class="col-md-7 col-lg-7">
+                                        <div class="col-md-4 col-lg-4"></div>
+                                        <div class="col-md-4 col-lg-4" style="text-align: left">
+                                            <div class="row">
+                                                <label style="font-size: 14px">Grand Total</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 col-lg-4" style="text-align: right">
+                                            <div class="row">
+                                                @{
+                                                    var grandtotal = Convert.ToDouble(@Model.QuotationDetails.GrandTotal).ToString("#,###.00##");   
+                                                }
+                                                <i class="fa fa-rupee" style="font-size: 14px"></i>
+                                                <label style="font-size: 14px" id="GrandTotal">@grandtotal</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <label style="font-size: larger">In Words:</label>
+                                        <label id="In_Words" style="font-size: small; font-weight: normal"></label>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-ld-12 col-md-12">
+                                <div style="width: 100%; height: 1px; background-color: black"></div>
+                            </div>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="col-md-10 col-lg-10"></div>
+                                    <div class="col-md-2 col-lg-2">
+                                        <label style="font-size: large; float: right">Prepared By,</label><br />
+                                        <span style="float: right">@Html.DisplayFor(model => model.QuotationDetails.PreparedBy)</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <div style="height: 5px"></div>
+        <div class="col-lg-offset-5 col-md-offset-5">
+            <button type="button" id="PrintSell" class="btn btn-primary">Print(Selling Price)</button>
+            <button type="button" id="PrintMRP" class="btn btn-primary">Print(MRP)</button>
+        </div>
+    </div>
+</div>

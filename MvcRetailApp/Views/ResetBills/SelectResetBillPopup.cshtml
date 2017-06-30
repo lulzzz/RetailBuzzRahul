@@ -1,0 +1,220 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "SelectResetBillPopup";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<!--custom Alerts-->
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+@*DISPLAY PARTIAL VIEW OF TYPE OF PAYMENT*@
+<script type="text/javascript">
+    function SelectBill(billtype) {
+        if (billtype == 'RetailBill') {
+            $("#SalesBillRadioBtn").prop('checked', false);
+            document.getElementById("SBTxtBox").style.display = 'none';
+            document.getElementById("RBTxtBox").style.display = 'inline';
+        }
+        else if (billtype == 'SalesBill') {
+            $("#RetailBillRadioBtn").prop('checked', false);
+            document.getElementById("RBTxtBox").style.display = 'none';
+            document.getElementById("SBTxtBox").style.display = 'inline';
+        }
+    }
+</script>
+
+@*RETAILBILL NO AUTO COMPLETE*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#RetailBillNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/ResetBills/GetRetailBillNos", { SearchTerm: request.term },
+                function (data) {
+                    if (data.msg != "Error") {
+                        response(data.No);
+                    }
+                })
+            },
+
+            minLength: 1,
+            @*DISPLAY BILL DETAILS IN POP-UP PAGE*@
+            select: function (event, ui) {
+                //JSON AND POP-UP IS CALLED AFTER BILL NO SELECTED
+                if (ui.item) {
+                    $("#RetailBillNo").val(ui.item.value);
+                    var retailbill = document.getElementById("RetailBillNo").value;
+                    window.opener.window.location.assign("/ResetBills/RetailBillDetails?no=" + retailbill);
+                    window.close();
+                }
+            }
+        });
+    });
+</script>
+
+@*SALESBILL NO AUTO COMPLETE*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#SalesBillNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/ResetBills/GetSalesBillNos", { SearchTerm: request.term },
+                function (data) {
+                    if (data.msg != "Error") {
+                        response(data.No);
+                    }
+                })
+            },
+
+            minLength: 1,
+            @*DISPLAY BILL DETAILS IN POP-UP PAGE*@
+            select: function (event, ui) {
+                //JSON AND POP-UP IS CALLED AFTER BILL NO SELECTED
+                if (ui.item) {
+                    $("#SalesBillNo").val(ui.item.value);
+                    var salesbill = document.getElementById("SalesBillNo").value;
+                    window.opener.window.location.assign("/ResetBills/SalesBillDetails?no=" + salesbill);
+                    window.close();
+                }
+            }
+        });
+    });
+</script>
+
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+    <source src="" type="audio/ogg" />
+</audio>
+
+<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+    <br />
+    <br />
+    <div class="row" style="text-align: center">
+        <h2 style="color: red">Reset Bill</h2>
+    </div>
+    <br />
+    <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12" style="text-align: center">
+        <label style="font-size: 14px">Please Select Any One Bill For Reset..</label>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3"></div>
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3">
+            <input type="radio" id="RetailBillRadioBtn" name="RetailBillRadioBtn" onclick="SelectBill('RetailBill')" />
+            <label style="font-size: 14px">&nbsp Retail Bill</label>
+        </div>
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3">
+            <input type="radio" id="SalesBillRadioBtn" name="SalesBillRadioBtn" onclick="SelectBill('SalesBill')" />
+            <label style="font-size: 14px">&nbsp Sales Bill</label>
+        </div>
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3"></div>
+    </div>
+
+    <div class="row" id="RBTxtBox" style="display: none">
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3"></div>
+        <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+            @Html.TextBoxFor(model => model.RetailBillDetails.RetailBillNo, new { id = "RetailBillNo", @class = "form-control", @placeholder = "Retail Bill No" })
+        </div>
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3"></div>
+    </div>
+
+    <div class="row" id="SBTxtBox" style="display: none">
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3"></div>
+        <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+            @Html.TextBoxFor(model => model.SalesBillDetails.SalesBillNo, new { id = "SalesBillNo", @class = "form-control", @placeholder = "Sales Bill No" })
+        </div>
+        <div class="col-md-3 col-lg-3 col-sm-3 col-xs-3"></div>
+    </div>
+
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

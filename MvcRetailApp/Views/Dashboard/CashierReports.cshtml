@@ -1,0 +1,301 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CashierReports";
+}
+@{
+    string EmpDesignation = (string)TempData["EmployeeDesignation"];
+    TempData["EmployeeDesignation"] = EmpDesignation;
+    string EmpDepartment = (string)TempData["EmployeeDepartment"];
+    TempData["EmployeeDepartment"] = EmpDepartment;
+
+    string AssignCashierSOCard = "No";
+    string AssignCashierRBCard = "No";
+    string AssignCashierPCMCard = "No";
+    string AssignCashierSBCard = "No";
+    string AssignCashierROCard = "No";
+    string AssignCashierCHCard = "No";
+    string AssignCashierCCHCard = "No";
+    string AssignCashierIEVECard = "No";
+
+    if (Model.userCredentialList != null && Model.userCredentialList.Any())
+    {
+        foreach (var data in Model.userCredentialList)
+        {
+            //for cashier
+            if (data.AssignDashboardId == "D23")
+            {
+                AssignCashierSOCard = "Yes";
+                AssignCashierRBCard = "Yes";
+                AssignCashierPCMCard = "Yes";
+                AssignCashierSBCard = "Yes";
+                AssignCashierROCard = "Yes";
+            }
+
+            //for cash handover
+            if (data.AssignDashboardId == "D24")
+            {
+                AssignCashierCHCard = "Yes";
+            }
+
+            //for card cheque handover
+            if (data.AssignDashboardId == "D25")
+            {
+                AssignCashierCCHCard = "Yes";
+            }
+
+            //for income exchange voucher entry
+            if (data.AssignDashboardId == "D26")
+            {
+                AssignCashierIEVECard = "Yes";
+            }
+        }
+    }
+
+    //Cashier Sales Orders Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierSOCard == "Yes" || AssignCashierRBCard == "Yes" || AssignCashierPCMCard == "Yes" || AssignCashierSBCard == "Yes" || AssignCashierROCard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-reorder fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var cashiersalesorder = (IEnumerable<CodeFirstEntities.CashierSalesOrder>)TempData["CashierSalesOrder"];
+        TempData["CashierSalesOrder"] = cashiersalesorder;
+        <div class="huge">@cashiersalesorder.Count()</div>
+                        }
+                        <div>Sales Order</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="CashierSalesOrderByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Cashier Retail Bill Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierSOCard == "Yes" || AssignCashierRBCard == "Yes" || AssignCashierPCMCard == "Yes" || AssignCashierSBCard == "Yes" || AssignCashierROCard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-barcode fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var cashierretaillbill = (IEnumerable<CodeFirstEntities.CashierRetailBill>)TempData["CashierRetailBill"];
+        TempData["CashierRetailBill"] = cashierretaillbill;
+        <div class="huge">@cashierretaillbill.Count()</div>
+                        }
+                        <div>Retail Bill</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="CashierRetailBillByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Cashier Temporary Cash Memo Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierSOCard == "Yes" || AssignCashierRBCard == "Yes" || AssignCashierPCMCard == "Yes" || AssignCashierSBCard == "Yes" || AssignCashierROCard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <i class="fa fa-file-o fa-3x"></i>
+                    </div>
+                    <div class="col-xs-10 text-right">
+                        @{
+        var cashiertempcashmemo = (IEnumerable<CodeFirstEntities.CashierTemporaryCashMemo>)TempData["CashierTempCashMemo"];
+        TempData["CashierTempCashMemo"] = cashiertempcashmemo;
+        <div class="huge">@cashiertempcashmemo.Count()</div>
+                        }
+                        <div>Provisional Cash Memo</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="CashierTempCashMemoByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Cashier Sales Bill Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierSOCard == "Yes" || AssignCashierRBCard == "Yes" || AssignCashierPCMCard == "Yes" || AssignCashierSBCard == "Yes" || AssignCashierROCard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-print fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var cashiersalesbill = (IEnumerable<CodeFirstEntities.CashierSalesBill>)TempData["CashierSalesBill"];
+        TempData["CashierSalesBill"] = cashiersalesbill;
+        <div class="huge">@cashiersalesbill.Count()</div>
+                        }
+                        <div>Sales Bill</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="CashierSalesBillByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Cashier Refund Order Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierSOCard == "Yes" || AssignCashierRBCard == "Yes" || AssignCashierPCMCard == "Yes" || AssignCashierSBCard == "Yes" || AssignCashierROCard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <i class="fa fa-mail-reply fa-3x"></i>
+                    </div>
+                    <div class="col-xs-10 text-right">
+                        @{
+        var cashierrefundorder = (IEnumerable<CodeFirstEntities.CashierRefundOrder>)TempData["CashierRefundOrder"];
+        TempData["CashierRefundOrder"] = cashierrefundorder;
+        <div class="huge">@cashierrefundorder.Count()</div>
+                        }
+                        <div>Refund Order</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="CashierRefundOrderByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Cash Handover Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierCHCard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-money fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var cashhandover = (IEnumerable<CodeFirstEntities.CashHandover>)TempData["CashHandover"];
+        TempData["CashHandover"] = cashhandover;
+                            <div class="huge">@cashhandover.Count()</div>
+                        }
+                        <div>Cash Handover</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="CashHandoverByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Card Cheque Handover Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierCCHCard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <i class="fa fa-rupee fa-3x"></i>
+                    </div>
+                    <div class="col-xs-10 text-right">
+                        @{
+        var cardchequehandover = (IEnumerable<CodeFirstEntities.CardChequeHandover>)TempData["CardChequeHandover"];
+        TempData["CardChequeHandover"] = cardchequehandover;
+                            <div class="huge">@cardchequehandover.Count()</div>
+                        }
+                        <div>Card-Cheque Handover</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="CardChequeHandoverByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Income Exchange Voucher Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || AssignCashierIEVECard == "Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-faintblue">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <i class="fa fa-exchange fa-3x"></i>
+                    </div>
+                    <div class="col-xs-10 text-right">
+                        @{
+        var incomeexchangevoucher = (IEnumerable<CodeFirstEntities.IncomeExpenseVoucher>)TempData["IncomeExchangeVoucher"];
+        TempData["IncomeExchangeVoucher"] = incomeexchangevoucher;
+                            <div class="huge">@incomeexchangevoucher.Count()</div>
+                        }
+                        <div>Income Exchange Voucher</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="IncomeExchangeVoucherByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+}

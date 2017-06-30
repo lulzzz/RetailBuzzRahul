@@ -1,0 +1,279 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ResultTransportMaster";
+}
+<script type="text/ecmascript">
+    $(document).ready(function () {
+        var cnt = document.getElementById("TotalNumberOfTransports").value;
+        var type = document.getElementById("ViewType").value;
+        if (type == "Edit") {
+            for (var i = 1; i <= cnt; i++) {
+                var allRowId = "rowId" + i;
+                var editId = "editId" + i;
+                var labelEditId = "labelEditId" + i;
+                if (document.getElementById(editId) != null) {
+                    document.getElementById(editId).style.display = "inline";
+                    document.getElementById(labelEditId).style.display = "none";
+                }
+            }
+        }
+        else {
+            for (var i = 1; i <= cnt; i++) {
+                var deleteId = "deleteId" + i;
+                var allRowId = "rowId" + i;
+                var labelDeleteId = "labelDeleteId" + i;
+                if (document.getElementById(deleteId) != null) {
+                    document.getElementById(deleteId).style.display = "inline";
+                    document.getElementById(labelDeleteId).style.display = "none";
+                }
+            }
+        }
+    });
+</script>
+@{
+    string type = TempData["ViewType"].ToString();
+    TempData["ViewType"] = type;
+    <input type="hidden" id="ViewType" value="@type" />
+}
+<div class="row">
+    <div id="title2" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+        <h2>
+            <label for="exampleInputname">Transport Details</label></h2>
+    </div>
+    <br />
+    <br />
+    <br />
+</div>
+<div class="row">
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleTransportCode">Transport Code</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.TransportCode)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputname">Transport Name</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.TransportName)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputTypeofname">Mode Of Transport</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.ModeOfTransport)
+            </div>
+
+            <div class="form-group row">
+                <label for="exampleInputCountry">Country</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.Country)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputState">State</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.State)
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputDistrict">District</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.District)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputCity">City</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.City)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputAddress">Address</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.Address)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputPincode">Pincode</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.Pincode)
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputContact">Contact No. 1</label><br />
+                @Html.DisplayFor(model => model.TransportDetails.ContactNo1)
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputContact">Contact No. 2</label><br />
+                @{
+                    var idmodel = Model.TransportDetails.ContactNo2;
+                    if (idmodel != null)
+                    {
+                    @Html.DisplayFor(model => model.TransportDetails.ContactNo2)
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputContact">Contact No. 3</label><br />
+                @{
+                    var modeldata = Model.TransportDetails.ContactNo3;
+                    if (modeldata != null)
+                    {
+                    @Html.DisplayFor(model => model.TransportDetails.ContactNo3)
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputEmail">Email</label><br />
+                @{
+                    if (Model.TransportDetails.Email != null)
+                    { 
+                    @Html.DisplayFor(model => model.TransportDetails.Email)        
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputWebsite">Website</label><br />
+                @{
+                    if (Model.TransportDetails.Website != null)
+                    { 
+                    @Html.DisplayFor(model => model.TransportDetails.Website)        
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputSalesTax">Sales Tax No</label><br />
+                @{
+                    if (Model.TransportDetails.STNo != null)
+                    { 
+                    @Html.DisplayFor(model => model.TransportDetails.STNo)        
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3 col-lg-3">
+        <div class="col-md-12 col-lg-12">
+            <div class="form-group row">
+                <label for="exampleInputGST">GST</label><br />
+                @{
+                    var othertax = Model.TransportDetails.OtherTax;
+                    if (othertax != null && othertax != "")
+                    {
+                    @Html.DisplayFor(model => model.TransportDetails.OtherTax)
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputVAT">VAT No</label><br />
+                @{
+                    if (Model.TransportDetails.VTNo != null)
+                    { 
+                    @Html.DisplayFor(model => model.TransportDetails.VTNo)        
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputTDS">TDS</label><br />
+                @{
+                    if (Model.TransportDetails.TDSNo != null)
+                    { 
+                    @Html.DisplayFor(model => model.TransportDetails.TDSNo)        
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+            <div class="form-group row">
+                <label for="exampleInputPANNo">Pan No</label><br />
+                @{
+                    if (Model.TransportDetails.Pancard != null)
+                    { 
+                    @Html.DisplayFor(model => model.TransportDetails.Pancard)        
+                    }
+                    else
+                    {
+                    <label>----</label>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+</div>
+@{
+    if (Model.TransportBankDetailList != null && Model.TransportBankDetailList.Any())
+    {
+
+    <hr />
+    <div class="row">
+        <div id="title1" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+            <label for="exampleInputname">Bank Details</label>
+        </div>
+        <br />
+        <br />
+    </div>
+
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <table class="table-bordered col-md-12 col-lg-12" style="border-width: medium; border-color: grey;">
+                <tr>
+                    <th class="col-md-2 col-lg-2">Bank Name
+                    </th>
+                    <th class="col-md-2 col-lg-2">Branch
+                    </th>
+                    <th class="col-md-2 col-lg-2">Bank IFSCNo
+                    </th>
+                    <th class="col-md-2 col-lg-2">Bank Address
+                    </th>
+                    <th class="col-md-2 col-lg-2">Account Type
+                    </th>
+                    <th class="col-md-2 col-lg-2">Account Number
+                    </th>
+                    <th class="col-md-2 col-lg-2">MICR Code
+                    </th>
+                </tr>
+
+                @foreach (var bankdata in Model.TransportBankDetailList)
+                {
+                    <tr>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.BankName)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.Branch)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.BankIFSCNo)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.BankAddress)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.AccountType)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.AccountNo)</td>
+                        <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => bankdata.MICRCode)</td>
+                    </tr>
+                }
+
+            </table>
+        </div>
+    </div>
+    }
+}

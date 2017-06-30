@@ -1,0 +1,303 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetMultipleSalesBillItemDetails";
+}
+
+<!--custom Alerts-->
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function infoBox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('infoClass');
+        bootbox.alert('<i class="fa fa-2x fa-info-circle"></i><br>' + message + '<hr>');
+    }
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateItemWiseAmount(rowid, '');
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         var totalamount = 0;
+		         for (var i = 1; i <= rowid; i++) {
+		             var amount = "amount" + i;
+		             if (document.getElementById(amount) != null) {
+		                 totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+		             }
+		         }
+
+		         document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    function CalcBal(count) {
+
+        var actualbalance = "MultipleSBActualBalance" + count;
+        var actualrefund = "MultipleSBActualRefund" + count;
+        var payment = "MultipleSBPayment" + count;
+        var discount = "MultipleSBDiscount" + count;
+        var balance = "MultipleSBBalance" + count;
+        var balanceval = "MultipleSBBalanceVal" + count;
+        var refund = "MultipleSBRefund" + count;
+        var refundval = "MultipleSBRefundVal" + count;
+
+        var oldbal = +removeCommas(document.getElementById(balance).innerHTML);
+        var pay = +document.getElementById(payment).value;
+        var disc = +document.getElementById(discount).value;
+        var actualbal = +removeCommas(document.getElementById(actualbalance).value);
+        var actualref = +removeCommas(document.getElementById(actualrefund).value);
+
+        if (actualbal == 0) {
+            if (pay > 0) {
+                alertbox("Please Enter The Correct Amount For Refund..");
+                document.getElementById(payment).value = 0;
+            }
+            else {
+                var currentamt = pay + disc;
+
+                if (actualbal != 0) {
+                    var finalans = (actualbal) - currentamt;
+                    if (finalans >= 0) {
+                        document.getElementById(balance).innerHTML = addCommas(finalans.toFixed(2));
+                        document.getElementById(balanceval).value = addCommas(finalans.toFixed(2));
+                    }
+                    else {
+                        var extraamt = (currentamt) - actualbal;
+                        alertbox(extraamt + " Extra Amount Added, So Please Enter Exact Payment..");
+                        document.getElementById(payment).value = 0;
+                    }
+                }
+                else {
+                    var finalans = (actualref) + currentamt;
+                    if (finalans >= 0) {
+                        document.getElementById(refund).innerHTML = addCommas(finalans.toFixed(2));
+                        document.getElementById(refundval).value = addCommas(finalans.toFixed(2));
+                    }
+                    else {
+                        var extraamt = (currentamt) - actualbal;
+                        alertbox("You Can Not Enter Extra Refund Amount..");
+                        document.getElementById(payment).value = 0;
+                        document.getElementById(refund).innerHTML = actualref;
+                        document.getElementById(refundval).value = actualref;
+                    }
+                }
+
+            }
+        }
+        else {
+            var currentamt = pay + disc;
+            if (actualbal != 0) {
+                var finalans = (actualbal) - currentamt;
+                if (finalans >= 0) {
+                    document.getElementById(balance).innerHTML = addCommas(finalans.toFixed(2));
+                    document.getElementById(balanceval).value = addCommas(finalans.toFixed(2));
+                }
+                else {
+                    var extraamt = (currentamt) - actualbal;
+                    alertbox(extraamt + " Extra Amount Added, So Please Enter Exact Payment..");
+                    document.getElementById(payment).value = 0;
+                }
+            }
+            else {
+                var finalans = (actualref) + currentamt;
+                if (finalans >= 0) {
+                    document.getElementById(refund).innerHTML = addCommas(finalans.toFixed(2));
+                    document.getElementById(refundval).value = addCommas(finalans.toFixed(2));
+                }
+                else {
+                    var extraamt = (currentamt) - actualbal;
+                    alertbox(extraamt + " Extra Amount Added, So Please Enter Exact Payment..");
+                    document.getElementById(refund).innerHTML = 0;
+                    document.getElementById(refundval).value = 0;
+                }
+            }
+        }
+
+        document.getElementById("TypeOfPaymentLabel").style.display = 'inline';
+        document.getElementById("TypeOfPaymentDiv").style.display = 'inline';
+        document.getElementById("verticalline2").style.display = 'inline';
+
+        //CALCULATE TOTAL ADJUSTED/DISCOUNT IN MULTIPLE SALES BILL 
+        var rows = +document.getElementById("MultipleSBhdnRowCount").value;
+        var TotalMultipleSBAmount = 0;
+        var TotalMultipleSBDiscount = 0;
+            for (i = 1; i <= rows; i++) {
+                var payment = "MultipleSBPayment" + i;
+                var discount = "MultipleSBDiscount" + i;
+                var extraadjamt = "MultipleSBExtraAdjAmt" + i;
+                var balance = "MultipleSBBalance" + i;
+                var actualbalance = "MultipleSBActualBalance" + i;
+
+                var sbpayment = +(document.getElementById(payment).value);
+                var sbdiscount = +(document.getElementById(discount).value);
+
+                TotalMultipleSBAmount = TotalMultipleSBAmount + sbpayment;
+                document.getElementById("TotalPaidAmount").innerHTML = TotalMultipleSBAmount.toFixed(2);
+                document.getElementById("TotalPaidAmountVal").value = TotalMultipleSBAmount.toFixed(2);
+                document.getElementById("MulSBTotalAmountDiv").style.display = 'inline';
+
+                TotalMultipleSBDiscount = TotalMultipleSBDiscount + sbdiscount;
+                document.getElementById("TotalDiscount").innerHTML = TotalMultipleSBDiscount.toFixed(2);
+                document.getElementById("TotalDiscountVal").value = TotalMultipleSBDiscount.toFixed(2);
+                document.getElementById("MulSBTotalDiscountDiv").style.display = 'inline';
+            }
+    }
+</script>
+
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+         <source src="" type="audio/ogg" />
+    </audio>
+
+<br />
+<table style="border: 1px double; width: 100%">
+    <tr>
+        <td>
+            <div class="col-md-12 col-lg-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">Sr.<br />
+                                No.</th>
+                            <th style="text-align: center">Sales Bill<br />
+                                No.</th>
+                            <th style="text-align: center">Bill<br />
+                                Amount</th>
+                            <th style="text-align: right">Received<br />
+                                Payment</th>
+                            <th style="text-align: right">Previous<br />
+                                Discount</th>
+                            <th style="text-align: center">Payment<br />(<i class="fa fa-inr"></i>)</th>
+                            <th style="text-align: center">Discount<br />(<i class="fa fa-inr"></i>)</th>
+                            <th style="text-align: right">Balance</th>
+                            <th style="text-align: right">Refund</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            // IF SALES ORDER IS SELECTED
+                            if (Model.SalesBillList != null && Model.SalesBillList.Any())
+                            {
+                                string row1 = string.Empty;
+                                int rowid = 1;
+
+                                foreach (var item in Model.SalesBillList)
+                                {
+                                    row1 = "row" + rowid;
+                            <tr id="@row1">
+                                @{
+                                    string salesbillno = "MultipleSBNo" + rowid;
+                                    string payment = "MultipleSBPayment" + rowid;
+                                    string discount = "MultipleSBDiscount" + rowid;
+                                    string balance = "MultipleSBBalance" + rowid;
+                                    string balanceval = "MultipleSBBalanceVal" + rowid;
+                                    string actualbalance = "MultipleSBActualBalance" + rowid;
+                                    string refund = "MultipleSBRefund" + rowid;
+                                    string refundval = "MultipleSBRefundVal" + rowid;
+                                    string actualrefund = "MultipleSBActualRefund" + rowid;
+                                }
+                                @{
+                                    double grndttl = Convert.ToDouble(@item.GrandTotal);
+                                    var GrandTotal = grndttl.ToString("#,###.00##");
+                                    //double adjamt = Convert.ToDouble(@item.AdjustedAmount);
+                                    //var AdjustedAmount = adjamt.ToString("#,###.00##");
+                                    double bal = Convert.ToDouble(@item.Balance);
+                                    var Balance = bal.ToString("#,###.00##");
+                                    double billdisc = Convert.ToDouble(@item.BillDiscount);
+                                    var BillDisc = billdisc.ToString("#,###.00##");
+                                    double refnd = Convert.ToDouble(@item.Refund);
+                                    var Refund = refnd.ToString("#,###.00##");
+                                }
+                                <td style="text-align: center">@rowid</td>
+                                <td style="text-align: center">@item.SalesBillNo<input type="hidden" id="@salesbillno" name="@salesbillno" value="@item.SalesBillNo"/></td>
+                                <td style="text-align: right">@GrandTotal</td>
+                               @* <td style="text-align: right">@AdjustedAmount</td>*@
+                                <td style="text-align: right">
+                                    @{
+                                    var receivedpay = (@item.AdjustedAmount) + (@item.PaymentReceived);
+                                    double recpay = Convert.ToDouble(@receivedpay);
+                                    var receivedpayment = recpay.ToString("#,###.00##");
+                                    }
+                                    @receivedpayment
+                                </td>
+                                <td style="text-align: right">@BillDisc</td>
+                                <td style="text-align: right" class="col-md-2 col-lg-2">
+                                    <input type="text" id="@payment" name="@payment" style="text-align: center" placeholder="Payment" class="form-control" onchange="CalcBal(@rowid)" value="0"></td>
+                                <td style="text-align: right" class="col-md-2 col-lg-2">
+                                    @{
+                                        if(item.Balance==0)
+                                        {
+                                            <input type="text" id="@discount" name="@discount" style="text-align: center" disabled="disabled" placeholder="Discount" class="form-control" onchange="CalcBal(@rowid)" value="0">
+                                        }
+                                        else
+                                        {
+                                            <input type="text" id="@discount" name="@discount" style="text-align: center" placeholder="Discount" class="form-control" onchange="CalcBal(@rowid)" value="0">
+                                        }
+                                    }
+                                </td>
+                                <td style="text-align: right">
+                                    <label id="@balance">@Balance</label><input type="hidden" id="@balanceval" name="@balanceval" value="@Balance"/><input type="hidden" id="@actualbalance" name="@actualbalance" value="@Balance"/></td>
+                                 <td style="text-align: right">
+                                    <label id="@refund">@Refund</label><input type="hidden" id="@refundval" name="@refundval" value="@Refund"/><input type="hidden" id="@actualrefund" name="@actualrefund" value="@Refund"/></td>
+                            </tr>
+                                    rowid = rowid + 1;
+                                }
+                            <input type="hidden" id="MultipleSBhdnRowCount" name="MultipleSBhdnRowCount" value="@Model.SalesBillList.Count()"/>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+
+<div class="col-md-12 col-lg-12" style="display:none" id="MulSBTotalAmountDiv">
+    <div class="col-md-9 col-lg-9"></div>
+    <div class="col-md-3 col-lg-3">
+            <label style="font-size:14px">Total Paid Amount:</label>
+            <label style="font-size:14px" id="TotalPaidAmount"></label>
+            <input type="hidden" id="TotalPaidAmountVal" name="TotalPaidAmountVal" />
+    </div>
+</div>
+
+<div class="col-md-12 col-lg-12" style="display:none" id="MulSBTotalDiscountDiv">
+    <div class="col-md-9 col-lg-9"></div>
+    <div class="col-md-3 col-lg-3">
+            <label style="font-size:14px">Total Discount:</label>
+            <label style="font-size:14px" id="TotalDiscount"></label>
+            <input type="hidden" id="TotalDiscountVal" name="TotalDiscountVal" />
+    </div>
+</div>
+
+

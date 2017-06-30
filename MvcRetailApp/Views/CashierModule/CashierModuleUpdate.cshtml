@@ -1,0 +1,1971 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CashierModuleUpdate";
+}
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+
+<!--custom Alerts-->
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function NumberToWords() {
+
+        var billtype = document.getElementById("BillType").value;
+        if (billtype == "Sales Order") {
+            var junkVal = (+removeCommas(document.getElementById('AdvancePayment').value));
+        }
+        else {
+            var junkVal = (+removeCommas(document.getElementById('AddAdv').value));
+        }
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+            //do nothing
+        }
+        else if (Number(junkVal) == 0) {
+            //document.getElementById('container').innerHTML = obStr + '' + 'Rupees Zero Only';
+            return 'Rupees Zero Only';
+        }
+        else {
+            alertbox('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alertbox('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+
+<script type="text/javascript">
+    function infoBox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('infoClass');
+        bootbox.alert('<i class="fa fa-2x fa-info-circle"></i><br>' + message + '<hr>');
+    }
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateItemWiseAmount(rowid, '');
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         var totalamount = 0;
+		         for (var i = 1; i <= rowid; i++) {
+		             var amount = "amount" + i;
+		             if (document.getElementById(amount) != null) {
+		                 totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+		             }
+		         }
+
+		         document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+		     }
+		 });
+    }
+</script>
+
+@*DATE PICKER ON PO & LOGISTIC DATE*@
+<script type="text/javascript">
+    window.onclick = function () {
+
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "SelectDate",
+            dateFormat: "%d/%M/%Y",
+        });
+        data.addOnSelectedDelegate(function () {
+            var selecteddate = document.getElementById("SelectDate").value;
+            var todaysdate = new Date();
+
+            var dat = new Date(todaysdate);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            todaysdate = data;
+
+            todaysdate = new Date(todaysdate).getTime();
+            selecteddate = new Date(selecteddate).getTime();
+
+            if (selecteddate > todaysdate) {
+                alertbox("You Cannot Select later Dates");
+                document.getElementById("SelectDate").value = data;
+                return false;
+            }
+        });
+    };
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var todaydate = new Date();
+        var dat = new Date(todaydate);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById("SelectDate").value = data;
+    });
+</script>
+
+
+<script type="text/javascript">
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function AllowNumbersWithoutDecimal(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+</script>
+
+
+@*DISPLAY BILL NO ON BILL TYPE CHANGE EVENT*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var rowId = 1;
+        $("#BillType").change(function () {
+
+            var billtype = $(this).val();
+            var selectdate = document.getElementById("SelectDate").value;
+            if ($("#BillType").val() != "") {
+
+                $("#BillNoDiv").empty();
+                var unorderedList = $("#BillNoDiv");
+                unorderedList.append(
+                    "<label style='font-size:14px'>" + billtype + "  No.<i style='color:red'>*</i></label><br><input type='text' id='BillNo' name='BillNo' class='form-control' placeholder='Enter Bill No.'/>"
+                    );
+
+                 @*BILL NO AUTO COMPLETE*@
+                $("#BillNo").autocomplete({
+                    source: function (request, response) {
+                        $.getJSON("/CashierModule/GetCashierEditBills", { SearchTerm: request.term, billtype: billtype, Date: selectdate },
+                        function (data) {
+
+                            document.getElementById("SelectDate").disabled = 'true';
+                            document.getElementById("BillType").disabled = 'true';
+                            if (data.msg != "Error") {
+                                response(data);
+                            }
+                                //IF ENTER WRONG BILL NO THEN GIVE ERROR MSG
+                            else {
+                                alertbox("Please Enter Exact Bill No..");
+                            }
+                        }
+                       )
+                    },
+
+                    minLength: 1,
+                    select: function (event, ui) {
+                        if (ui.item) {
+
+                            $("#BillNo").val(ui.item.value);
+                            var billno = document.getElementById("BillNo").value;
+
+                            //DISPLAY SALES ORDERS ITEMS DETAILS
+                            if (billtype == "Sales Order") {
+                                $.ajax({
+                                    url: "/CashierModule/GetEditSalesOrderItemDetails",
+                                    data: { BillNumber: billno },
+                                    type: "GET",
+                                    success: function (data) {
+                                        document.getElementById("verticalline1").style.display = 'inline';
+                                        document.getElementById("BillNo").disabled = true;
+                                        $("#LoadItemList").html(data);
+
+                                    }
+                                });
+                            }
+                            //DISPLAY RETAIL BILL ITEMS DETAILS
+                            else if (billtype == "Retail Bill") {
+                                $.ajax({
+                                    url: "/CashierModule/GetEditRetailBillItemDetails",
+                                    data: { BillNumber: billno },
+                                    type: "GET",
+                                    success: function (data) {
+                                        document.getElementById("verticalline1").style.display = 'inline';
+                                        document.getElementById("BillNo").disabled = true;
+                                        $("#LoadItemList").html(data);
+
+                                    }
+                                });
+                            }
+                            //DISPLAY SALES BILL ITEMS DETAILS
+                            else if (billtype == "Sales Bill") {
+                                $.ajax({
+                                    url: "/CashierModule/GetEditSalesBillItemDetails",
+                                    data: { BillNumber: billno },
+                                    type: "GET",
+                                    success: function (data) {
+                                        document.getElementById("verticalline1").style.display = 'inline';
+                                        document.getElementById("BillNo").disabled = true;
+                                        $("#LoadItemList").html(data);
+
+                                    }
+                                });
+                            }
+
+                            //DISPLAY PAYMENT DETAILS ON BILL NO CHANGE EVENT..
+                            $.getJSON("/CashierModule/CheckPaymentType", { BillNumber: billno },
+                            function (data) {
+
+                                paytype = data.msg;
+                                document.getElementById("TypeOfPaymentDiv").style.display = "inline";
+                                document.getElementById("TypeOfPaymentLabel").style.display = "inline";
+
+                                //CASHIER SALES ORDER PAYMENT DETAILS PARTIAL VIEW
+                                var billtype = document.getElementById("BillType").value;
+
+                                if (billtype == "Sales Order") {
+                                    if (paytype == "Cash") {
+                                        $("#CashRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CashPaymentUpdateForSO",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else if (paytype == "Card") {
+                                        $("#CardRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CardPaymentUpdateForSO",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else if (paytype == "Cheque") {
+                                        $("#ChequeRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/ChequePaymentUpdateForSO",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $("#CashCardChequeRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CashCardChequePaymentUpdateForSO",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                }
+
+                                //CASHIER RETAIL BILL PAYMENT DETAILS PARTIAL VIEW
+                                if (billtype == "Retail Bill") {
+                                    if (paytype == "Cash") {
+                                        $("#CashRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CashPaymentUpdateForRB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else if (paytype == "Card") {
+                                        $("#CardRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CardPaymentUpdateForRB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else if (paytype == "Cheque") {
+                                        $("#ChequeRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/ChequePaymentUpdateForRB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $("#CashCardChequeRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CashCardChequePaymentUpdateForRB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                }
+
+                                //CASHIER SALES BILL PAYMENT DETAILS PARTIAL VIEW
+                                if (billtype == "Sales Bill") {
+                                    if (paytype == "Cash") {
+                                        $("#CashRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CashPaymentUpdateForSB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else if (paytype == "Card") {
+                                        $("#CardRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CardPaymentUpdateForSB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else if (paytype == "Cheque") {
+                                        $("#ChequeRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/ChequePaymentUpdateForSB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                    else {
+                                        $("#CashCardChequeRadioBtn").attr("checked", true);
+
+                                        $.ajax({
+                                            url: "/CashierModule/CashCardChequePaymentUpdateForSB",
+                                            data: { BillNo: billno },
+                                            type: "GET",
+                                            success: function (data) {
+                                                $("#PaymentDetails").html(data);
+                                            }
+                                        });
+                                    }
+                                }
+
+
+                            });
+
+                        }
+                    }
+
+                });
+            }
+        });
+    });
+</script>
+
+@*DISPLAY PAYMENT DETAILS ON RADIO BUTTON CHANGE EVENT..*@
+<script type="text/javascript">
+    function DisplayPaymentDetails(type) {
+        var billno = document.getElementById("BillNo").value;
+
+        document.getElementById("PaymentType").value = type;
+        var billtype = document.getElementById("BillType").value;
+
+        //DISPLAY SALES ORDER PAYMENT DETAILS
+        if (billtype == "Sales Order") {
+            if (type == "Cash") {
+                $.ajax({
+                    url: "/CashierModule/CashPaymentUpdateForSO",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        document.getElementById("Quan1").value = "0";
+                        document.getElementById("Quan2").value = "0";
+                        document.getElementById("Quan3").value = "0";
+                        document.getElementById("Quan4").value = "0";
+                        document.getElementById("Quan5").value = "0";
+                        document.getElementById("Quan6").value = "0";
+                        document.getElementById("Quan7").value = "0";
+                        document.getElementById("TotalCash").value = "0";
+                        document.getElementById("Amt1").value = "0";
+                        document.getElementById("Amt2").value = "0";
+                        document.getElementById("Amt3").value = "0";
+                        document.getElementById("Amt4").value = "0";
+                        document.getElementById("Amt5").value = "0";
+                        document.getElementById("Amt6").value = "0";
+                        document.getElementById("Amt7").value = "0";
+                        document.getElementById("refund").innerHTML = "0";
+                        document.getElementById("TotalCash").value = +removeCommas(document.getElementById("AdvancePayment").innerHTML);
+                    }
+                });
+            }
+            else if (type == "Card") {
+                $.ajax({
+                    url: "/CashierModule/CardPaymentUpdateForSO",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        var selectcard = document.getElementById("CashierSalesOrderDetails_SelectedCard").value;
+                        if (selectcard == "CreditCard") {
+                            $("#Card").val("").attr("selected", true);
+                            document.getElementById("CreditCardNo").value = "";
+                            document.getElementById("CreditCardAmount").value = "";
+                            document.getElementById("CreditCardType").value = "";
+                            document.getElementById("CreditCardBank").value = "";
+                        }
+                        else {
+                            $("#Card").val("").attr("selected", true);
+                            document.getElementById("DebitCardName").value = "";
+                            document.getElementById("DebitCardNo").value = "";
+                            document.getElementById("DebitCardAmount").value = "";
+                            document.getElementById("DebitCardType").value = "";
+                            document.getElementById("DebitCardBank").value = "";
+                        }
+                    }
+                });
+            }
+            else if (type == "Cheque") {
+                $.ajax({
+                    url: "/CashierModule/ChequePaymentUpdateForSO",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        document.getElementById("ChequeNo").value = "";
+                        document.getElementById("ChequeAccNo").value = "";
+                        document.getElementById("ChequeAmount").value = "";
+                        document.getElementById("ChequeDate").value = "";
+                        document.getElementById("ChequeBank").value = "";
+                        document.getElementById("ChequeBranch").value = "";
+                    }
+                });
+            }
+            else if (type == "CashCardCheque") {
+                $.ajax({
+                    url: "/CashierModule/CashCardChequePaymentUpdateForSO",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        if (document.getElementById("CashierSalesOrderDetails_SelectedCard").value != "" || ("CashierSalesOrderDetails_SelectedCard").value != null) {
+                            var selectcard = document.getElementById("CashierSalesOrderDetails_SelectedCard").value;
+                            if (selectcard == "CreditCard") {
+                                $("#Card").val("").attr("selected", true);
+                                document.getElementById("CreditCardNo").value = "";
+                                document.getElementById("CreditCardAmount").value = "";
+                                document.getElementById("CreditCardType").value = "";
+                                document.getElementById("CreditCardBank").value = "";
+                            }
+                            else {
+                                $("#Card").val("").attr("selected", true);
+                                document.getElementById("DebitCardName").value = "";
+                                document.getElementById("DebitCardNo").value = "";
+                                document.getElementById("DebitCardAmount").value = "";
+                                document.getElementById("DebitCardType").value = "";
+                                document.getElementById("DebitCardBank").value = "";
+                            }
+                        }
+
+                        if (document.getElementById("ChequeNo").value != "") {
+                            document.getElementById("ChequeNo").value = "";
+                            document.getElementById("ChequeAccNo").value = "";
+                            document.getElementById("ChequeAmount").value = "";
+                            document.getElementById("ChequeDate").value = "";
+                            document.getElementById("ChequeBank").value = "";
+                            document.getElementById("ChequeBranch").value = "";
+                        }
+
+                        if (document.getElementById("TotalCash").value != "") {
+                            document.getElementById("Quan1").value = "0";
+                            document.getElementById("Quan2").value = "0";
+                            document.getElementById("Quan3").value = "0";
+                            document.getElementById("Quan4").value = "0";
+                            document.getElementById("Quan5").value = "0";
+                            document.getElementById("Quan6").value = "0";
+                            document.getElementById("Quan7").value = "0";
+                            document.getElementById("TotalCash").value = "0";
+                            document.getElementById("Amt1").value = "0";
+                            document.getElementById("Amt2").value = "0";
+                            document.getElementById("Amt3").value = "0";
+                            document.getElementById("Amt4").value = "0";
+                            document.getElementById("Amt5").value = "0";
+                            document.getElementById("Amt6").value = "0";
+                            document.getElementById("Amt7").value = "0";
+                        }
+                    }
+                });
+            }
+        }
+
+        //DISPLAY RETAIL BILL PAYMENT DETAILS
+        if (billtype == "Retail Bill") {
+            if (type == "Cash") {
+                $.ajax({
+                    url: "/CashierModule/CashPaymentUpdateForRB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        document.getElementById("Quan1").value = "0";
+                        document.getElementById("Quan2").value = "0";
+                        document.getElementById("Quan3").value = "0";
+                        document.getElementById("Quan4").value = "0";
+                        document.getElementById("Quan5").value = "0";
+                        document.getElementById("Quan6").value = "0";
+                        document.getElementById("Quan7").value = "0";
+                        document.getElementById("TotalCash").value = "0";
+                        document.getElementById("Amt1").value = "0";
+                        document.getElementById("Amt2").value = "0";
+                        document.getElementById("Amt3").value = "0";
+                        document.getElementById("Amt4").value = "0";
+                        document.getElementById("Amt5").value = "0";
+                        document.getElementById("Amt6").value = "0";
+                        document.getElementById("Amt7").value = "0";
+                        document.getElementById("refund").innerHTML = "0";
+                    }
+                });
+            }
+            else if (type == "Card") {
+                $.ajax({
+                    url: "/CashierModule/CardPaymentUpdateForRB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        var selectcard = document.getElementById("CashierRetailBillDetails_SelectedCard").value;
+                        if (selectcard == "CreditCard") {
+                            $("#Card").val("").attr("selected", true);
+                            document.getElementById("CreditCardNo").value = "";
+                            document.getElementById("CreditCardAmount").value = "";
+                            document.getElementById("CreditCardType").value = "";
+                            document.getElementById("CreditCardBank").value = "";
+                        }
+                        else {
+                            $("#Card").val("").attr("selected", true);
+                            document.getElementById("DebitCardName").value = "";
+                            document.getElementById("DebitCardNo").value = "";
+                            document.getElementById("DebitCardAmount").value = "";
+                            document.getElementById("DebitCardType").value = "";
+                            document.getElementById("DebitCardBank").value = "";
+                        }
+                    }
+                });
+            }
+            else if (type == "Cheque") {
+                $.ajax({
+                    url: "/CashierModule/ChequePaymentUpdateForRB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        document.getElementById("ChequeNo").value = "";
+                        document.getElementById("ChequeAccNo").value = "";
+                        document.getElementById("ChequeAmount").value = "";
+                        document.getElementById("ChequeDate").value = "";
+                        document.getElementById("ChequeBank").value = "";
+                        document.getElementById("ChequeBranch").value = "";
+                    }
+                });
+            }
+            else if (type == "CashCardCheque") {
+                $.ajax({
+                    url: "/CashierModule/CashCardChequePaymentUpdateForRB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        if (document.getElementById("CashierRetailBillDetails_SelectedCard").value != "" || ("CashierRetailBillDetails_SelectedCard").value != null) {
+                            var selectcard = document.getElementById("CashierRetailBillDetails_SelectedCard").value;
+                            if (selectcard == "CreditCard") {
+                                $("#Card").val("").attr("selected", true);
+                                document.getElementById("CreditCardNo").value = "";
+                                document.getElementById("CreditCardAmount").value = "";
+                                document.getElementById("CreditCardType").value = "";
+                                document.getElementById("CreditCardBank").value = "";
+                            }
+                            else {
+                                $("#Card").val("").attr("selected", true);
+                                document.getElementById("DebitCardName").value = "";
+                                document.getElementById("DebitCardNo").value = "";
+                                document.getElementById("DebitCardAmount").value = "";
+                                document.getElementById("DebitCardType").value = "";
+                                document.getElementById("DebitCardBank").value = "";
+                            }
+                        }
+
+                        if (document.getElementById("ChequeNo").value != "") {
+                            document.getElementById("ChequeNo").value = "";
+                            document.getElementById("ChequeAccNo").value = "";
+                            document.getElementById("ChequeAmount").value = "";
+                            document.getElementById("ChequeDate").value = "";
+                            document.getElementById("ChequeBank").value = "";
+                            document.getElementById("ChequeBranch").value = "";
+                        }
+
+                        if (document.getElementById("TotalCash").value != "") {
+                            document.getElementById("Quan1").value = "0";
+                            document.getElementById("Quan2").value = "0";
+                            document.getElementById("Quan3").value = "0";
+                            document.getElementById("Quan4").value = "0";
+                            document.getElementById("Quan5").value = "0";
+                            document.getElementById("Quan6").value = "0";
+                            document.getElementById("Quan7").value = "0";
+                            document.getElementById("TotalCash").value = "0";
+                            document.getElementById("Amt1").value = "0";
+                            document.getElementById("Amt2").value = "0";
+                            document.getElementById("Amt3").value = "0";
+                            document.getElementById("Amt4").value = "0";
+                            document.getElementById("Amt5").value = "0";
+                            document.getElementById("Amt6").value = "0";
+                            document.getElementById("Amt7").value = "0";
+                        }
+                    }
+                });
+            }
+        }
+
+        //DISPLAY SALES BILL PAYMENT DETAILS
+        if (billtype == "Sales Bill") {
+            if (type == "Cash") {
+                $.ajax({
+                    url: "/CashierModule/CashPaymentUpdateForSB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        document.getElementById("Quan1").value = "0";
+                        document.getElementById("Quan2").value = "0";
+                        document.getElementById("Quan3").value = "0";
+                        document.getElementById("Quan4").value = "0";
+                        document.getElementById("Quan5").value = "0";
+                        document.getElementById("Quan6").value = "0";
+                        document.getElementById("Quan7").value = "0";
+                        document.getElementById("TotalCash").value = "0";
+                        document.getElementById("Amt1").value = "0";
+                        document.getElementById("Amt2").value = "0";
+                        document.getElementById("Amt3").value = "0";
+                        document.getElementById("Amt4").value = "0";
+                        document.getElementById("Amt5").value = "0";
+                        document.getElementById("Amt6").value = "0";
+                        document.getElementById("Amt7").value = "0";
+                        document.getElementById("refund").innerHTML = "0";
+                    }
+                });
+            }
+            else if (type == "Card") {
+                $.ajax({
+                    url: "/CashierModule/CardPaymentUpdateForSB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        var selectcard = document.getElementById("CashierSalesBillDetails_SelectedCard").value;
+                        if (selectcard == "CreditCard") {
+                            $("#Card").val("").attr("selected", true);
+                            document.getElementById("CreditCardNo").value = "";
+                            document.getElementById("CreditCardAmount").value = "";
+                            document.getElementById("CreditCardType").value = "";
+                            document.getElementById("CreditCardBank").value = "";
+                        }
+                        else {
+                            $("#Card").val("").attr("selected", true);
+                            document.getElementById("DebitCardName").value = "";
+                            document.getElementById("DebitCardNo").value = "";
+                            document.getElementById("DebitCardAmount").value = "";
+                            document.getElementById("DebitCardType").value = "";
+                            document.getElementById("DebitCardBank").value = "";
+                        }
+                    }
+                });
+            }
+            else if (type == "Cheque") {
+                $.ajax({
+                    url: "/CashierModule/ChequePaymentUpdateForSB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        document.getElementById("ChequeNo").value = "";
+                        document.getElementById("ChequeAccNo").value = "";
+                        document.getElementById("ChequeAmount").value = "";
+                        document.getElementById("ChequeDate").value = "";
+                        document.getElementById("ChequeBank").value = "";
+                        document.getElementById("ChequeBranch").value = "";
+                    }
+                });
+            }
+            else if (type == "CashCardCheque") {
+                $.ajax({
+                    url: "/CashierModule/CashCardChequePaymentUpdateForSB",
+                    data: { BillNo: billno },
+                    type: "GET",
+                    success: function (data) {
+                        $("#PaymentDetails").html(data);
+
+                        //when we change the payment type all value is empty
+                        if (document.getElementById("CashierSalesBillDetails_SelectedCard").value != "" || ("CashierSalesBillDetails_SelectedCard").value != null) {
+                            var selectcard = document.getElementById("CashierSalesBillDetails_SelectedCard").value;
+                            if (selectcard == "CreditCard") {
+                                $("#Card").val("").attr("selected", true);
+                                document.getElementById("CreditCardNo").value = "";
+                                document.getElementById("CreditCardAmount").value = "";
+                                document.getElementById("CreditCardType").value = "";
+                                document.getElementById("CreditCardBank").value = "";
+                            }
+                            else {
+                                $("#Card").val("").attr("selected", true);
+                                document.getElementById("DebitCardName").value = "";
+                                document.getElementById("DebitCardNo").value = "";
+                                document.getElementById("DebitCardAmount").value = "";
+                                document.getElementById("DebitCardType").value = "";
+                                document.getElementById("DebitCardBank").value = "";
+                            }
+                        }
+
+                        if (document.getElementById("ChequeNo").value != "") {
+                            document.getElementById("ChequeNo").value = "";
+                            document.getElementById("ChequeAccNo").value = "";
+                            document.getElementById("ChequeAmount").value = "";
+                            document.getElementById("ChequeDate").value = "";
+                            document.getElementById("ChequeBank").value = "";
+                            document.getElementById("ChequeBranch").value = "";
+                        }
+
+                        if (document.getElementById("TotalCash").value != "") {
+                            document.getElementById("Quan1").value = "0";
+                            document.getElementById("Quan2").value = "0";
+                            document.getElementById("Quan3").value = "0";
+                            document.getElementById("Quan4").value = "0";
+                            document.getElementById("Quan5").value = "0";
+                            document.getElementById("Quan6").value = "0";
+                            document.getElementById("Quan7").value = "0";
+                            document.getElementById("TotalCash").value = "0";
+                            document.getElementById("Amt1").value = "0";
+                            document.getElementById("Amt2").value = "0";
+                            document.getElementById("Amt3").value = "0";
+                            document.getElementById("Amt4").value = "0";
+                            document.getElementById("Amt5").value = "0";
+                            document.getElementById("Amt6").value = "0";
+                            document.getElementById("Amt7").value = "0";
+                        }
+                    }
+                });
+            }
+        }
+    }
+</script>
+
+@*<script type="text/javascript">
+    function EmptyPaymentDetails() {
+
+        var paytype = document.getElementById("PaymentType").value;
+        if (paytype == "Cash") {
+            document.getElementById("Quan1").value = "0";
+            document.getElementById("Quan2").value = "0";
+            document.getElementById("Quan3").value = "0";
+            document.getElementById("Quan4").value = "0";
+            document.getElementById("Quan5").value = "0";
+            document.getElementById("Quan6").value = "0";
+            document.getElementById("Quan7").value = "0";
+            document.getElementById("TotalCash").value = "0";
+            document.getElementById("Amt1").value = "0";
+            document.getElementById("Amt2").value = "0";
+            document.getElementById("Amt3").value = "0";
+            document.getElementById("Amt4").value = "0";
+            document.getElementById("Amt5").value = "0";
+            document.getElementById("Amt6").value = "0";
+            document.getElementById("Amt7").value = "0";
+            document.getElementById("refund").innerHTML = "0";
+        }
+        else if (paytype == "Card") {
+            var selectcard = document.getElementById("CashierSalesOrderDetails_SelectedCard").value;
+
+            if (selectcard == "CreditCard") {
+                $("#Card").val("").attr("selected", true);
+                document.getElementById("CreditCardNo").value = "";
+                document.getElementById("CreditCardAmount").value = "";
+                document.getElementById("CreditCardType").value = "";
+                document.getElementById("CreditCardBank").value = "";
+            }
+            else {
+                $("#Card").val("").attr("selected", true);
+                document.getElementById("DebitCardName").value = "";
+                document.getElementById("DebitCardNo").value = "";
+                document.getElementById("DebitCardAmount").value = "";
+                document.getElementById("DebitCardType").value = "";
+                document.getElementById("DebitCardBank").value = "";
+            }
+        }
+        else if (paytype == "Cheque") {
+            document.getElementById("ChequeNo").value = "";
+            document.getElementById("ChequeAccNo").value = "";
+            document.getElementById("ChequeAmount").value = "";
+            document.getElementById("ChequeDate").value = "";
+            document.getElementById("ChequeBank").value = "";
+            document.getElementById("ChequeBranch").value = "";
+        }
+        else {
+
+            if (document.getElementById("CashierSalesOrderDetails_SelectedCard").value != "" || ("CashierSalesOrderDetails_SelectedCard").value != null) {
+                var selectcard = document.getElementById("CashierSalesOrderDetails_SelectedCard").value;
+                $("#Card").val(selectcard).attr("selected", true);
+                if (selectcard == "CreditCard") {
+                    $("#Card").val("").attr("selected", true);
+                    document.getElementById("CreditCardNo").value = "";
+                    document.getElementById("CreditCardAmount").value = "";
+                    document.getElementById("CreditCardType").value = "";
+                    document.getElementById("CreditCardBank").value = "";
+                }
+                else {
+                    $("#Card").val("").attr("selected", true);
+                    document.getElementById("DebitCardName").value = "";
+                    document.getElementById("DebitCardNo").value = "";
+                    document.getElementById("DebitCardAmount").value = "";
+                    document.getElementById("DebitCardType").value = "";
+                    document.getElementById("DebitCardBank").value = "";
+                }
+            }
+
+            if (document.getElementById("ChequeNo").value != "") {
+                document.getElementById("ChequeNo").value = "";
+                document.getElementById("ChequeAccNo").value = "";
+                document.getElementById("ChequeAmount").value = "";
+                document.getElementById("ChequeDate").value = "";
+                document.getElementById("ChequeBank").value = "";
+                document.getElementById("ChequeBranch").value = "";
+            }
+
+            if (document.getElementById("TotalCash").value != "") {
+                document.getElementById("Quan1").value = "0";
+                document.getElementById("Quan2").value = "0";
+                document.getElementById("Quan3").value = "0";
+                document.getElementById("Quan4").value = "0";
+                document.getElementById("Quan5").value = "0";
+                document.getElementById("Quan6").value = "0";
+                document.getElementById("Quan7").value = "0";
+                document.getElementById("TotalCash").value = "0";
+                document.getElementById("Amt1").value = "0";
+                document.getElementById("Amt2").value = "0";
+                document.getElementById("Amt3").value = "0";
+                document.getElementById("Amt4").value = "0";
+                document.getElementById("Amt5").value = "0";
+                document.getElementById("Amt6").value = "0";
+                document.getElementById("Amt7").value = "0";
+            }
+        }
+
+    }
+</script>*@
+
+
+@*PART PAYMENT VALIDATIONS*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Update").click(function () {
+
+            var validationcount = 0;
+            var billtype = document.getElementById("BillType").value;
+
+            var type = document.getElementById("PaymentType").value;
+
+            //when we update cashier using SO with additional advance
+            var UpdateSOType = document.getElementById("UpdateSOType").value;
+            if (UpdateSOType == "AdditionalAdvance") {
+                var payment = (+removeCommas(document.getElementById("AdvancePaymentTxtBox").value));
+            }
+            else {
+                //when we update cashier using direct SO / RB / SB
+                var payment = (+removeCommas(document.getElementById("AdvancePayment").innerHTML));
+            }
+           
+            //CASH PAYMENT VALIDATIONS
+            if (type == "Cash") {
+
+                document.getElementById("Amt1").disabled = false;
+                document.getElementById("Amt2").disabled = false;
+                document.getElementById("Amt3").disabled = false;
+                document.getElementById("Amt4").disabled = false;
+                document.getElementById("Amt5").disabled = false;
+                document.getElementById("Amt6").disabled = false;
+                document.getElementById("Amt7").disabled = false;
+                document.getElementById("TotalCash").disabled = false;
+
+                if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                    alertbox("Please Enter Total Cash");
+                    validationcount = 1;
+                    return false;
+                }
+
+                if ($("#TotalCash").val() < payment) {
+                    alertbox("Total Cash Can Not Be Less Than Advance Payment..");
+                    validationcount = 1;
+                    return false;
+                }
+
+                //if part payment < total amount then get refund alert..
+                if (document.getElementById("TotalCash") != null) {
+                    var totalcash = +(document.getElementById("TotalCash").value);
+
+                    if (billtype == "Sales Order") {
+                        if (totalcash > payment) {
+                            var refund = totalcash - payment;
+                            var msg = alertbox(refund + " " + "Rupees Refunded..");
+                            document.getElementById("CashierSalesOrderDetails_Refund").value = refund;
+                        }
+                    }
+
+                    if (billtype == "Retail Bill") {
+                        if (totalcash > payment) {
+                            var refund = totalcash - payment;
+                            var msg = alertbox(refund + " " + "Rupees Refunded..");
+                            document.getElementById("CashierRetailBillDetails_Refund").value = refund;
+                        }
+                    }
+
+                    if (billtype == "Sales Bill") {
+                        if (totalcash > payment) {
+                            var refund = totalcash - payment;
+                            var msg = alertbox(refund + " " + "Rupees Refunded..");
+                            document.getElementById("CashierSalesBillDetails_Refund").value = refund;
+                        }
+                    }
+                }
+            }
+
+                //CARD PAYMENT VALIDATIONS
+            else if (type == "Card") {
+                if (document.getElementById("Card") != null) {
+                    var selectedcard = document.getElementById("Card").value;
+                }
+
+                if (selectedcard != "") {
+                    //if we select credit card then validations on credit card details..
+                    if (selectedcard == "CreditCard") {
+
+                        var creditamt = +(document.getElementById("CreditCardAmount").value);
+
+                        if ($("#CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        if (creditamt != payment) {
+                            alertbox("Please Enter The Correct Amount For Payment");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                        //if we select debit card then validations on debit card details..
+                    else {
+
+                        var debitamt = +(document.getElementById("DebitCardAmount").value);
+
+                        if ($("#DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        if (debitamt != payment) {
+                            alertbox("Please Enter The Correct Amount For Payment");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+                }
+                else {
+                    alertbox("Please Select The Card..");
+                    return false;
+                }
+            }
+
+                //CHEQUE PAYMENT VALIDATION
+            else if (type == "Cheque") {
+
+                var chequeamt = +(document.getElementById("ChequeAmount").value);
+
+                if ($("#ChequeNo").val() == "") {
+                    alertbox("Please Enter Cheque No");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#ChequeAccNo").val() == "") {
+                    alertbox("Please Enter Cheque Account No");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#ChequeAmount").val() == "") {
+                    alertbox("Please Enter Cheque Amount");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#ChequeDate").val() == "") {
+                    alertbox("Please Enter Cheque Date");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#ChequeBank").val() == "") {
+                    alertbox("Please Enter Cheque Bank");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#ChequeBranch").val() == "") {
+                    alertbox("Please Enter Cheque Branch");
+                    validationcount = 1;
+                    return false;
+                }
+                if (chequeamt != payment) {
+                    alertbox("Please Enter The Correct Amount For Payment");
+                    validationcount = 1;
+                    return false;
+                }
+            }
+
+                //CASH/CARD/CHEQUE VALIDATIONS
+            else if (type == "CashCardCheque") {
+                // cash card check combination
+                if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#ChequeNo").val() != "" && $("#Card").val() != "") {
+
+                    document.getElementById("Amt1").disabled = false;
+                    document.getElementById("Amt2").disabled = false;
+                    document.getElementById("Amt3").disabled = false;
+                    document.getElementById("Amt4").disabled = false;
+                    document.getElementById("Amt5").disabled = false;
+                    document.getElementById("Amt6").disabled = false;
+                    document.getElementById("Amt7").disabled = false;
+                    document.getElementById("TotalCash").disabled = false;
+
+                    if ($("#Card").val() == "CreditCard") {
+
+                        if ($("#CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#ChequeNo").val() == "") {
+                            alertbox("Please Enter Cheque No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeAccNo").val() == "") {
+                            alertbox("Please Enter Cheque Account No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeAmount").val() == "") {
+                            alertbox("Please Enter Cheque Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeDate").val() == "") {
+                            alertbox("Please Enter Cheque Date");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeBank").val() == "") {
+                            alertbox("Please Enter Cheque Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeBranch").val() == "") {
+                            alertbox("Please Enter Cheque Branch");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                            alertbox("Please Enter Total Cash");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                    else {
+                        if ($("#DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#ChequeNo").val() == "") {
+                            alertbox("Please Enter Cheque No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeAccNo").val() == "") {
+                            alertbox("Please Enter Cheque Account No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeAmount").val() == "") {
+                            alertbox("Please Enter Cheque Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeDate").val() == "") {
+                            alertbox("Please Enter Cheque Date");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeBank").val() == "") {
+                            alertbox("Please Enter Cheque Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#ChequeBranch").val() == "") {
+                            alertbox("Please Enter Cheque Branch");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                            alertbox("Please Enter Total Cash");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                }
+
+                    //cash and cheque combination
+                else if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#ChequeNo").val() != "") {
+
+                    document.getElementById("Amt1").disabled = false;
+                    document.getElementById("Amt2").disabled = false;
+                    document.getElementById("Amt3").disabled = false;
+                    document.getElementById("Amt4").disabled = false;
+                    document.getElementById("Amt5").disabled = false;
+                    document.getElementById("Amt6").disabled = false;
+                    document.getElementById("Amt7").disabled = false;
+                    document.getElementById("TotalCash").disabled = false;
+
+                    if ($("#ChequeNo").val() == "") {
+                        alertbox("Please Enter Cheque No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeAccNo").val() == "") {
+                        alertbox("Please Enter Cheque Account No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeAmount").val() == "") {
+                        alertbox("Please Enter Cheque Amount");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeDate").val() == "") {
+                        alertbox("Please Enter Cheque Date");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeBank").val() == "") {
+                        alertbox("Please Enter Cheque Bank");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeBranch").val() == "") {
+                        alertbox("Please Enter Cheque Branch");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                        alertbox("Please Enter Total Cash");
+                        validationcount = 1;
+                        return false;
+                    }
+                }
+
+                    //cash and card combination
+                else if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#Card").val() != "") {
+
+                    document.getElementById("Amt1").disabled = false;
+                    document.getElementById("Amt2").disabled = false;
+                    document.getElementById("Amt3").disabled = false;
+                    document.getElementById("Amt4").disabled = false;
+                    document.getElementById("Amt5").disabled = false;
+                    document.getElementById("Amt6").disabled = false;
+                    document.getElementById("Amt7").disabled = false;
+                    document.getElementById("TotalCash").disabled = false;
+
+                    if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                        alertbox("Please Enter Total Cash");
+                        validationcount = 1;
+                        return false;
+                    }
+
+                    if ($("#Card").val() == "CreditCard") {
+
+                        if ($("#CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                        //if we select debit card then validations on debit card details..
+                    else {
+
+                        var debitamt = +(document.getElementById("DebitCardAmount").value);
+
+                        if ($("#DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+                }
+
+                    //card and cheque combination
+                else if ($("#ChequeNo").val() != "" && ($("#Card").val() != "")) {
+
+                    if ($("#ChequeNo").val() == "") {
+                        alertbox("Please Enter Cheque No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeAccNo").val() == "") {
+                        alertbox("Please Enter Cheque Account No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeAmount").val() == "") {
+                        alertbox("Please Enter Cheque Amount");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeDate").val() == "") {
+                        alertbox("Please Enter Cheque Date");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeBank").val() == "") {
+                        alertbox("Please Enter Cheque Bank");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#ChequeBranch").val() == "") {
+                        alertbox("Please Enter Cheque Branch");
+                        validationcount = 1;
+                        return false;
+                    }
+
+                    if ($("#Card").val() == "CreditCard") {
+
+                        if ($("#CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                        //if we select debit card then validations on debit card details..
+                    else {
+
+                        var debitamt = +(document.getElementById("DebitCardAmount").value);
+
+                        if ($("#DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+                }
+
+                else if ($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) {
+                    alertbox("Please Select Only Cash Part Payment..");
+                    validationcount = 1;
+                }
+
+                else if ($("#Card").val() != "") {
+                    alertbox("Please Select Only Card Part Payment..");
+                    validationcount = 1;
+                }
+
+                else if ($("#ChequeNo").val() != "") {
+                    alertbox("Please Select Only Cheque Part Payment..");
+                    validationcount = 1;
+                }
+
+                else {
+                    alertbox("Please Fill All The Part Payment Details Before Submit..")
+                    validationcount = 1;
+                }
+
+
+                // display alert gor refund amount in type cashcardcheque..
+                var creditamt = 0;
+                var debitamt = 0;
+                var chequeamt = 0;
+                var totalcashamt = 0;
+                var payment = (+removeCommas(document.getElementById("AdvancePayment").innerHTML));
+
+                if ($("#Card").val() != "") {
+                    if ($("#Card").val() == "CreditCard") {
+                        creditamt = +(document.getElementById("CreditCardAmount").value);
+                    }
+                    else {
+                        debitamt = +(document.getElementById("DebitCardAmount").value);
+                    }
+                }
+                if ($("#ChequeNo").val() != "") {
+                    var chequeamt = +(document.getElementById("ChequeAmount").value);
+                }
+                if ($("#TotalCash").val() != "" || +($("#TotalCash").val()) != 0) {
+                    var totalcashamt = +(document.getElementById("TotalCash").value);
+                }
+
+                var totalamt = creditamt + debitamt + chequeamt + totalcashamt;
+                var refund = totalamt - payment;
+
+                //get refund alert if cash part payment in included..
+                if ($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) {
+                    if (refund >= 0) {
+                        alertbox(refund + " " + "Rupees Refunded..");
+
+                        if (billtype == "Sales Order") {
+                            document.getElementById("CashierSalesOrderDetails_Refund").value = refund;
+                        }
+                        if (billtype == "Retail Bill") {
+                            document.getElementById("CashierRetailBillDetails_Refund").value = refund;
+                        }
+                        if (billtype == "Sales Bill") {
+                            document.getElementById("CashierSalesBillDetails_Refund").value = refund;
+                        }
+                    }
+                    else {
+                        alertbox("Please Enter The Correct Amount For Payment");
+                        validationcount = 1;
+                    }
+                }
+                else {
+                    if (payment != totalamt) {
+                        alertbox("Please Enter The Correct Amount For Payment");
+                        validationcount = 1;
+                    }
+                }
+
+            }
+
+            if (validationcount == 0) {
+                document.getElementById("SelectDate").disabled = false;
+                document.getElementById("BillNo").disabled = false;
+                document.getElementById("BillType").disabled = false;
+                $("#Save").trigger('click');
+            }
+
+        });
+    });
+</script>
+
+@*EMPTY CASH PAYMEBT DETAILS*@
+<script type="text/javascript">
+    function EmptyCashPaymentDetails() {
+
+        var type = document.getElementById("PaymentType").value;
+        if (type == "Cash") {
+
+            document.getElementById("Quan1").value = 0;
+            document.getElementById("Quan2").value = 0;
+            document.getElementById("Quan3").value = 0;
+            document.getElementById("Quan4").value = 0;
+            document.getElementById("Quan5").value = 0;
+            document.getElementById("Quan6").value = 0;
+            document.getElementById("Quan7").value = 0;
+
+            document.getElementById("Amt1").value = 0;
+            document.getElementById("Amt2").value = 0;
+            document.getElementById("Amt3").value = 0;
+            document.getElementById("Amt4").value = 0;
+            document.getElementById("Amt5").value = 0;
+            document.getElementById("Amt6").value = 0;
+            document.getElementById("Amt7").value = 0;
+
+            document.getElementById("TotalCash").value = 0;
+            document.getElementById("refund").innerHTML = 0;
+        }
+
+        if (type == "CashCardCheque") {
+
+            document.getElementById("Quan1").value = 0;
+            document.getElementById("Quan2").value = 0;
+            document.getElementById("Quan3").value = 0;
+            document.getElementById("Quan4").value = 0;
+            document.getElementById("Quan5").value = 0;
+            document.getElementById("Quan6").value = 0;
+            document.getElementById("Quan7").value = 0;
+
+            document.getElementById("Amt1").value = 0;
+            document.getElementById("Amt2").value = 0;
+            document.getElementById("Amt3").value = 0;
+            document.getElementById("Amt4").value = 0;
+            document.getElementById("Amt5").value = 0;
+            document.getElementById("Amt6").value = 0;
+            document.getElementById("Amt7").value = 0;
+
+            document.getElementById("TotalCash").value = 0;
+        }
+    }
+</script>
+
+
+@using (Html.BeginForm("CashierModuleUpdate", "CashierModule", FormMethod.Post))
+{
+    <input type="hidden" id="UpdateSOType" name="UpdateSOType">
+   
+    
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    
+    <!-- Start: Header -->
+    @Html.Partial("../Shared/Header")
+    <!-- End: Header -->
+    <!-- Start: Main -->
+    <section>
+        <div class="mainwrapper">
+            <!-- Start: Sidebar -->
+            @Html.Partial("../Shared/LeftMenu")
+            <!-- End: Sidebar -->
+
+            <!-- Start: Content -->
+            <input type="hidden" id="PaymentType" name="PaymentType"/>
+
+            <div class="mainpanel">
+                <div class="col-md-12 col-lg-12">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="row">
+                            <div id="topbar">
+                                <ol class="breadcrumb">
+                                    <li><a href="#"><i class="fa fa-home"></i></a></li>
+                                    <li><a href="index.html">Home</a></li>
+                                    <li class="active">Dashboard</li>
+                                </ol>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h2>Edit Cashier Module</h2>
+
+                            <table style="border: 1px double; width: 100%">
+                                <tr>
+                                    <td>
+                                        <div class="col-md-12 col-lg-12">
+                                            <div style="height: 10px"></div>
+                                            <div class="row">
+                                                <div class="col-md-3 col-lg-3">
+                                                    <label style="font-size: 14px">Cashier Date<i style="color: red">*</i></label>
+                                                    @Html.TextBoxFor(model => model.CashierReceivableDetails.Date, new { id = "SelectDate", @class = "form-control", @placeholder = "Date" })
+                                                </div>
+
+                                                <div class="col-md-3 col-lg-3">
+                                                    <label style="font-size: 14px;">Select Bill Type<i style="color: red">*</i></label><br />
+                                                    <select class="form-control" id="BillType" name="BillType">
+                                                        <option value="0">Select</option>
+                                                        <option value="Sales Order">Sales Order</option>
+                                                        <option value="Retail Bill">Retail Bill</option>
+                                                        <option value="Sales Bill">Sales Bill</option>
+                                                    </select>
+                                                </div>
+
+                                                <div class="col-md-3 col-lg-3">
+                                                    <div id="BillNoDiv"></div>
+                                                </div>
+
+                                                <div class="col-md-3 col-lg-3">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="col-lg-12 col-md-12" id="verticalline1" style="display: none">
+                                            <div style="height: 8px"></div>
+                                            <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div style="height: 10px"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div id="LoadItemList"></div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="col-lg-12 col-md-12">
+                                            <div style="height: 8px"></div>
+                                            <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div style="height: 12px"></div>
+                                        <div class="col-lg-12 col-md-12" id="TypeOfPaymentLabel" style="display: none;">
+                                            <label style="font-weight: bolder; font-size: 14px;">Type Of Payment</label>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div class="col-lg-12 col-md-12" id="TypeOfPaymentDiv" style="display: none;">
+                                            <div class="col-md-3 col-lg-3">
+                                                <input type="radio" id="CashRadioBtn" name="CashierRadioBtn" onclick="DisplayPaymentDetails('Cash')" />
+                                                <label>&nbsp Cash</label>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <input type="radio" id="CardRadioBtn" name="CashierRadioBtn" onclick="DisplayPaymentDetails('Card')" />
+                                                <label>&nbsp Card</label>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <input type="radio" id="ChequeRadioBtn" name="CashierRadioBtn" onclick="DisplayPaymentDetails('Cheque')" />
+                                                <label>&nbsp Cheque</label>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3">
+                                                <input type="radio" id="CashCardChequeRadioBtn" name="CashierRadioBtn" onclick="DisplayPaymentDetails('CashCardCheque')" />
+                                                <label>&nbsp Cash/Card/Cheque</label>
+                                            </div>
+                                        </div>
+                                    </td>
+                                </tr>
+
+                                <tr>
+                                    <td>
+                                        <div id="PaymentDetails"></div>
+                                    </td>
+                                </tr>
+
+                            </table>
+
+                            <div class="row" style="text-align: center">
+                                <div class="col-lg-12 col-md-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                                <div class="col-lg-12 col-md-12">
+                                    <button type="button" id="Update" class="btn btn-success">Update</button>
+                                    <button type="submit" class="btn btn-success" id="Save" style="display: none;">Submit</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+
+

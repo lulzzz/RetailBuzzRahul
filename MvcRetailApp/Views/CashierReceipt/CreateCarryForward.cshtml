@@ -1,0 +1,241 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CreateCarryForward";
+}
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        if (document.getElementById("OpeningBalanceAmount").value != 0) {
+            document.getElementById("OpeningBalanceAmount").disabled = 'true';
+        }
+    });
+</script>
+
+
+@using (Html.BeginForm("CreateCarryForward", "CashierReceipt", FormMethod.Post))
+{
+    <input type="hidden" id="CarryForwardCode" name="CarryForwardCode" value="@Model.BalanceCarryForwardDetails.CarryForwardCode"/>
+    
+    <!-- Start: Header -->
+    @Html.Partial("../Shared/Header")
+
+    <!-- End: Header --> 
+    <!-- Start: Main -->
+    <section>
+        <div class="mainwrapper">
+            <!-- End: Sidebar -->
+            @Html.Partial("../Shared/LeftMenu")
+
+            <!-- Start: Content -->
+
+            <div class="mainpanel">
+                <div class="col-lg-12 col-md-12">
+                    <br />
+
+                    <h2>Balance Carry Forward</h2>
+
+                   <input type="hidden" id="PayType" />
+                    @{
+                                                                        string shopcode = string.Empty;
+                                                                        string godowncode = string.Empty;
+                                                                        if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+                                                                        {
+                                                                            if (Session["LOGINSHOPGODOWNCODE"] != null)
+                                                                            {
+                                                                                if (Session["LOGINSHOPGODOWNCODE"].ToString().Contains("SH"))
+                                                                                {
+                                                                                    shopcode = Session["LOGINSHOPGODOWNCODE"].ToString();
+                                                                                }
+                                                                                else
+                                                                                {
+                                                                                    godowncode = Session["LOGINSHOPGODOWNCODE"].ToString();
+                                                                                }
+            
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAME"].ToString()</label>
+                        </div>
+                                                                            }
+                                                                        }
+                    }
+
+                    
+                    <table style="border: 1px double; width: 100%">
+                        <tr>
+                            <td>
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height:10px"></div>
+                                </div>
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="col-md-8 col-lg-8 col-sm-8"></div>
+                                    <div class="col-md-4 col-lg-4 col-sm-4">
+                                        @{
+                                               string date = DateTime.Now.ToString("dd/MM/yyyy");
+                                               string Code = Model.BalanceCarryForwardDetails.CarryForwardCode;
+                                        }
+                                        <div class="row">
+                                            <label style="font-size: 14px;">Date:&nbsp;&nbsp;</label>
+                                            <label style="font-size: 16px;">@date</label>
+                                        </div>
+                                        <div class="row">
+                                            <label style="font-size: 14px;">Carry Forward No:&nbsp;&nbsp;</label>
+                                            <label style="font-size: 16px;" id="CashierCodeNo">@Code</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height:10px"></div>
+                                </div>
+
+                                @{
+    var carryfrwddata = Session["TodayCarryForwdData"].ToString();
+    if (carryfrwddata == "Yes")
+    {
+                                    <div class="col-md-12 col-lg-12 col-sm-12" style="text-align:center">
+                                        <label id="CheckData" style="color:red; font-size:13px">Today's Closing Balance Is Already Forwarded</label>
+                                    </div>
+    }
+    else
+    {
+        <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="col-md-3 col-lg-3 col-sm-3" id="OpenBalDiv">
+                                        <label>Opening Balance:<i style="color: red">*</i></label>
+                                        <div class="row">
+                                            @{
+        var OPENINGBALANCE = Session["TodayOpeningBalance"].ToString();
+                                            }
+                                            <div class="col-md-12 col-lg-12">
+                                                <input type="text" id="OpeningBalanceAmount" name="OpeningBalanceAmount" value="@OPENINGBALANCE" class="form-control"/>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-1 col-lg-1 col-sm-1"></div>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3 col-sm-3" id="CloseBalDiv">
+                                        <label>Closing Balance:<i style="color: red">*</i></label>
+                                        <div class="row">
+                                            @{
+        var CLOSINGBALANCE = Session["TodayClosingBalance"].ToString();
+                                            }
+                                            <div class="col-md-12 col-lg-12">
+                                                <input type="text" id="ClosingBalanceAmount" name="ClosingBalanceAmount" value="@CLOSINGBALANCE" class="form-control"/>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+    }
+                                }
+
+                                
+
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height:10px"></div>
+                                </div>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="col-md-12 col-lg-12 col-sm-12">
+                        <div style="height: 10px"></div>
+                    </div>
+                   
+                    <div style="text-align: center">
+                        <button type="submit" id="save" class="btn btn-success">Save</button>
+                        @*<button type="button" id="save" class="btn btn-success" onclick="CheckCarryForwardData()">Save</button>
+                        <button type="submit" id="Submit" class="btn btn-success" style="display: none;">Submit</button>*@
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+}

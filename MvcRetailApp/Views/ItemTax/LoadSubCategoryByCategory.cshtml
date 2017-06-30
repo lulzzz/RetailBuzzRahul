@@ -1,0 +1,133 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "LoadSubCategoryByCategory";
+}
+
+<script type="text/javascript">
+    function CheckBox(count)
+    {
+        var chkbox = "CheckBox" + count;
+        var taxpercent = "taxpercent" + count;
+        if ($("#" + chkbox).attr("checked"))
+        {
+            document.getElementById(chkbox).value = "Yes";
+            $("#" + taxpercent).attr("disabled",false);
+        }
+        else
+        {
+            document.getElementById(chkbox).value = "No";
+            $("#" + taxpercent).attr("disabled",true);
+            document.getElementById(taxpercent).value = "";    
+        }
+    }
+
+    function SelectAllCheckbox() {
+        var count = document.getElementById("AllItemsCount").value;
+        if ($("#SelectAllId").attr("checked")) {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                var taxpercent = "taxpercent" + i;
+                $("#" + chkbox).attr("checked", true);
+                document.getElementById(chkbox).value = "Yes";
+                $("#" + taxpercent).attr("disabled",false);
+            }
+        }
+        else {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                var taxpercent = "taxpercent" + i;
+                $("#" + chkbox).attr("checked", false);
+                document.getElementById(chkbox).value = "No";
+                $("#" + taxpercent).attr("disabled",true);
+                document.getElementById(taxpercent).value = "";
+            }
+        }
+    }
+</script>
+
+<script>
+    $(document).ready(function(){
+        $("#submit").click(function(){
+        
+            var itemcount = document.getElementById("AllItemsCount").value;
+            var errorcount = 0;
+            for(var count = 1; count <= itemcount; count++ )
+            {
+                var chkbox = "CheckBox" + count;
+                var taxpercent = "taxpercent" + count;
+                if($("#" + chkbox).val() == "Yes")
+                {
+                    if($("#" + taxpercent).val() == "")
+                    {
+                        alertbox("Enter The Tax For Selected Product");
+                        document.getElementById(taxpercent).focus();
+                        errorcount++;
+                        return false;
+                    }
+                }
+            }
+            if(errorcount == 0)
+            {
+                $("#DDLCategory").attr("disabled", false);
+                $("#DDLState").attr("disabled", false);
+                $("#ItemTaxDetails_FromDate").attr("disabled", false);
+                $("#ItemTaxDetails_ToDate").attr("disabled", false);
+            }
+        });
+    });
+</script>
+<input type="hidden" id="AllItemsCount" name="AllItemsCount"  value="@Model.ItemSubCategoryList.Count()"/>
+<div class="col-lg-12 col-md-12">
+    <table border="1" style="border-collapse: collapse; width: 100%" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th style="text-align: center">Select
+                    All<br />
+                    <input type="checkbox" id="SelectAllId" onclick="SelectAllCheckbox()" style="width: 17px; height: 17px;" />
+                </th>
+                <th style="text-align: center">Sub Category</th>
+                <th style="text-align: center">Tax Type</th>
+                <th style="text-align: center">Tax Percentage</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int count = 1;
+
+                foreach (var data in Model.ItemSubCategoryList)
+                {
+                    string checkbox1 = "CheckBox" + count;
+                    string taxpercent = "taxpercent" + count;
+                    string subcat = "subcat" + count;
+                    
+                    <tr>
+                        <td style="text-align: center">
+                            <input type="checkbox" id="@checkbox1" name="@checkbox1" value="No" style="width:17px; height:17px" onclick="CheckBox(@count)" />
+                        </td>
+                        <td style="text-align: center">
+                            <label>@data.subCategoryName</label>
+                            <input type="hidden" name="@subcat"  value="@data.subCategoryName"/>
+                        </td>
+                        <td style="text-align: center">
+                            @{
+                                if(@ViewBag.State == "Maharashtra")
+                                { 
+                                    <label>VAT</label>   
+                                }
+                                else
+                                {
+                                    <label>CST</label>
+                                }
+                             }
+                        </td>
+                        <td style="text-align: center" class="col-lg-2 col-md-2">
+                            <input type="text" name="@taxpercent" id="@taxpercent" placeholder="%" class="form-control" style="text-align: center" disabled />
+                        </td>
+                    </tr>
+                    count++;
+                }
+            }
+         </tbody>
+    </table>
+</div>

@@ -1,0 +1,13 @@
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\bin\Release\CodeFirstEntities.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\bin\Release\CodeFirstEntities.pdb
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\obj\Release\CodeFirstEntities.dll
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\obj\Release\CodeFirstEntities.pdb
+D:\TFS Projets\RetailApp\ATOZ\CodeFirstEntities\obj\Release\CodeFirstEntities.csprojResolveAssemblyReference.cache
+W:\RetailApp\RetailApp\ATOZ\CodeFirstEntities\bin\Release\CodeFirstEntities.dll
+W:\RetailApp\RetailApp\ATOZ\CodeFirstEntities\bin\Release\CodeFirstEntities.pdb
+W:\RetailApp\RetailApp\ATOZ\CodeFirstEntities\obj\Release\CodeFirstEntities.dll
+W:\RetailApp\RetailApp\ATOZ\CodeFirstEntities\obj\Release\CodeFirstEntities.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstEntities\bin\Release\CodeFirstEntities.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstEntities\bin\Release\CodeFirstEntities.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstEntities\obj\Release\CodeFirstEntities.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\CodeFirstEntities\obj\Release\CodeFirstEntities.pdb

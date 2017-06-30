@@ -1,0 +1,419 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{8106270C-E812-44BD-85A3-F2549404591A}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodeFirstServices</RootNamespace>
+    <AssemblyName>CodeFirstServices</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Interfaces\ICashierPayableService.cs" />
+    <Compile Include="Interfaces\ICashierTemporaryCashMemoItemService.cs" />
+    <Compile Include="Interfaces\ICashierTemporaryCashMemoService.cs" />
+    <Compile Include="Interfaces\ICatalogueService.cs" />
+    <Compile Include="Interfaces\ICostCodeCreationService.cs" />
+    <Compile Include="Interfaces\IDebitNoteItemService.cs" />
+    <Compile Include="Interfaces\IBalanceCarryForwardService.cs" />
+    <Compile Include="Interfaces\IBankAccountTypeService.cs" />
+    <Compile Include="Interfaces\IBankNameService.cs" />
+    <Compile Include="Interfaces\IBankService.cs" />
+    <Compile Include="Interfaces\IBarcodeNumberService.cs" />
+    <Compile Include="Interfaces\IBarcodeTempDetailService.cs" />
+    <Compile Include="Interfaces\IBloodGroupService.cs" />
+    <Compile Include="Interfaces\ICardChequeHandoverService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\ICashHandoverService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IBillPaymentItemService.cs" />
+    <Compile Include="Interfaces\IBillPaymentService.cs" />
+    <Compile Include="Interfaces\ICashierReceivableService.cs" />
+    <Compile Include="Interfaces\ICashierRetailBillItemService.cs" />
+    <Compile Include="Interfaces\ICashierRetailBillService.cs" />
+    <Compile Include="Interfaces\ICashierSalesBillItemService.cs" />
+    <Compile Include="Interfaces\ICashierSalesBillService.cs" />
+    <Compile Include="Interfaces\ICashierSalesOrderItemService.cs" />
+    <Compile Include="Interfaces\ICashierSalesOrderService.cs" />
+    <Compile Include="Interfaces\ICityService.cs" />
+    <Compile Include="Interfaces\IClientBankDetailService.cs" />
+    <Compile Include="Interfaces\IClientMasterService.cs" />
+    <Compile Include="Interfaces\IColorCodeService.cs" />
+    <Compile Include="Interfaces\ICommissionProductService.cs" />
+    <Compile Include="Interfaces\ICommissionService.cs" />
+    <Compile Include="Interfaces\ICompanyBankDetailsService.cs" />
+    <Compile Include="Interfaces\IItemNameService.cs" />
+    <Compile Include="Interfaces\IPurchaseInventoryTaxService.cs" />
+    <Compile Include="Interfaces\IPurchaseItemTaxService.cs" />
+    <Compile Include="Interfaces\IRetailBillCreditNoteItemService.cs" />
+    <Compile Include="Interfaces\IRetailBillCreditNoteService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IDebitNoteService.cs" />
+    <Compile Include="Interfaces\IDiscountMasterItemService.cs" />
+    <Compile Include="Interfaces\IDiscountMasterService.cs" />
+    <Compile Include="Interfaces\IEmployeesCompanyService.cs" />
+    <Compile Include="Interfaces\ICompanyService.cs" />
+    <Compile Include="Interfaces\ICountryService.cs" />
+    <Compile Include="Interfaces\ICurrencyService.cs" />
+    <Compile Include="Interfaces\ICustomerDetailService.cs" />
+    <Compile Include="Interfaces\IDeliveryChallanItemService.cs" />
+    <Compile Include="Interfaces\IDeliveryChallanService.cs" />
+    <Compile Include="Interfaces\IDepartmentService.cs" />
+    <Compile Include="Interfaces\IDesignService.cs" />
+    <Compile Include="Interfaces\IDistrictService.cs" />
+    <Compile Include="Interfaces\IDesignationMasterService.cs" />
+    <Compile Include="Interfaces\IEmployeeMasterService.cs" />
+    <Compile Include="Interfaces\IEntryStockItemService.cs" />
+    <Compile Include="Interfaces\IEntryStockService.cs" />
+    <Compile Include="Interfaces\IGenerateItemCodeService.cs" />
+    <Compile Include="Interfaces\IGodownAddressService.cs" />
+    <Compile Include="Interfaces\IGodownService.cs" />
+    <Compile Include="Interfaces\IIncomeExpenseVoucherService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Interfaces\IInventoryTaxService.cs" />
+    <Compile Include="Interfaces\IInwardFromGodownService.cs" />
+    <Compile Include="Interfaces\IInwardFromShopToGodownService.cs" />
+    <Compile Include="Interfaces\IInwardFromStkDistService.cs" />
+    <Compile Include="Interfaces\IInwardFromTailorItemService.cs" />
+    <Compile Include="Interfaces\IInwardFromTailorService.cs" />
+    <Compile Include="Interfaces\IInwardInterGodownItemService.cs" />
+    <Compile Include="Interfaces\IInwardInterGodownService.cs" />
+    <Compile Include="Interfaces\IInwardInterShopItemService.cs" />
+    <Compile Include="Interfaces\IInwardInterShopService.cs" />
+    <Compile Include="Interfaces\IInwardItemFromGodownService.cs" />
+    <Compile Include="Interfaces\IInwardItemFromShopToGodownService.cs" />
+    <Compile Include="Interfaces\IInwardItemFromStockDistributionService.cs" />
+    <Compile Include="Interfaces\IInwardToTailorItemService.cs" />
+    <Compile Include="Interfaces\IInwardToTailorService.cs" />
+    <Compile Include="Interfaces\IJobWorkPaymentService.cs" />
+    <Compile Include="Interfaces\IRequisitionForNewItemService.cs" />
+    <Compile Include="Interfaces\IResetRetailBillAdjAmtDetailService1.cs" />
+    <Compile Include="Interfaces\IResetRetailBillItemService.cs" />
+    <Compile Include="Interfaces\IResetRetailBillService.cs" />
+    <Compile Include="Interfaces\IResetSalesBillAdjAmtDetailService.cs" />
+    <Compile Include="Interfaces\IResetSalesBillItemService.cs" />
+    <Compile Include="Interfaces\ISalesBillCreditNoteItemService.cs" />
+    <Compile Include="Interfaces\IItemCategoryService.cs" />
+    <Compile Include="Interfaces\IItemService.cs" />
+    <Compile Include="Interfaces\IItemSubCategoryService.cs" />
+    <Compile Include="Interfaces\IItemTempDetailService.cs" />
+    <Compile Include="Interfaces\IJobWorkerService.cs" />
+    <Compile Include="Interfaces\IJobWorkItemService.cs" />
+    <Compile Include="Interfaces\IJobWorkTypeService.cs" />
+    <Compile Include="Interfaces\ILabMasterService.cs" />
+    <Compile Include="Interfaces\IlogindetailService.cs" />
+    <Compile Include="Interfaces\IModuleService.cs" />
+    <Compile Include="Interfaces\IMonthExperienceService.cs" />
+    <Compile Include="Interfaces\INonInventoryItemService.cs" />
+    <Compile Include="Interfaces\IOutwardInterShopService.cs" />
+    <Compile Include="Interfaces\IOutwardItemInterGodownService.cs" />
+    <Compile Include="Interfaces\IOutwardItemInterShopservice.cs" />
+    <Compile Include="Interfaces\IOutwardItemShopToGodownService.cs" />
+    <Compile Include="Interfaces\IOutwardItemStockDistributionService.cs" />
+    <Compile Include="Interfaces\IOutwardShopToGodownService.cs" />
+    <Compile Include="Interfaces\IOutwardToClientService.cs" />
+    <Compile Include="Interfaces\IOutwardInterGodownService.cs" />
+    <Compile Include="Interfaces\IOutwardStockDistributionService.cs" />
+    <Compile Include="Interfaces\IOutwardToShopService.cs" />
+    <Compile Include="Interfaces\IOutwardItemToClientService.cs" />
+    <Compile Include="Interfaces\IOutwardItemToShopService.cs" />
+    <Compile Include="Interfaces\IInwardItemFromSupplierService.cs" />
+    <Compile Include="Interfaces\IInwardFromSupplierService.cs" />
+    <Compile Include="Interfaces\IOutwardToTailorItemService.cs" />
+    <Compile Include="Interfaces\IOutwardToTailorService.cs" />
+    <Compile Include="Interfaces\IPhysicalStockTakingService.cs" />
+    <Compile Include="Interfaces\IPurchaseItemDetailService.cs" />
+    <Compile Include="Interfaces\IPurchaseOrderDetailService.cs" />
+    <Compile Include="Interfaces\IPurchaseReturnItemService.cs" />
+    <Compile Include="Interfaces\IPurchaseReturnService.cs" />
+    <Compile Include="Interfaces\IQuotationItemService.cs" />
+    <Compile Include="Interfaces\IQuotationService.cs" />
+    <Compile Include="Interfaces\ICashierRefundOrderItemService.cs" />
+    <Compile Include="Interfaces\ICashierRefundOrderService.cs" />
+    <Compile Include="Interfaces\IRequisitionForGodownService.cs" />
+    <Compile Include="Interfaces\IRequisitionForShopService.cs" />
+    <Compile Include="Interfaces\IRequisitionOfPoService.cs" />
+    <Compile Include="Interfaces\IRetailBillAdjAmtDetailService.cs" />
+    <Compile Include="Interfaces\IRetailBillItemService.cs" />
+    <Compile Include="Interfaces\IRetailBillService.cs" />
+    <Compile Include="Interfaces\ISalesBillAdjAmtDetailService.cs" />
+    <Compile Include="Interfaces\ISalesBillItemService.cs" />
+    <Compile Include="Interfaces\ISalesBillService.cs" />
+    <Compile Include="Interfaces\ISalesIncentiveService.cs" />
+    <Compile Include="Interfaces\ISalesOrderItemService.cs" />
+    <Compile Include="Interfaces\ISalesOrderService.cs" />
+    <Compile Include="Interfaces\ISalesReturnItemService.cs" />
+    <Compile Include="Interfaces\ISalesReturnService.cs" />
+    <Compile Include="Interfaces\IShopRequisitionGodownItemSalesBillService.cs" />
+    <Compile Include="Interfaces\IShopRequisitionGodownItemService.cs" />
+    <Compile Include="Interfaces\IShopRequisitionGodownSalesBillService.cs" />
+    <Compile Include="Interfaces\IShopRequisitionGodownService.cs" />
+    <Compile Include="Interfaces\IShopService.cs" />
+    <Compile Include="Interfaces\IShopStockService.cs" />
+    <Compile Include="Interfaces\IGodownStockService.cs" />
+    <Compile Include="Interfaces\IStateService.cs" />
+    <Compile Include="Interfaces\IOpeningStockService.cs" />
+    <Compile Include="Interfaces\IStockDistributionService.cs" />
+    <Compile Include="Interfaces\IStockItemDistributionService.cs" />
+    <Compile Include="Interfaces\ISubTaxMasterService.cs" />
+    <Compile Include="Interfaces\ISupplierBankDetailService.cs" />
+    <Compile Include="Interfaces\ISuppliersMasterService.cs" />
+    <Compile Include="Interfaces\IItemTaxService.cs" />
+    <Compile Include="Interfaces\IJobWorkStockService.cs" />
+    <Compile Include="Interfaces\IJobWorkOutwardToClientService.cs" />
+    <Compile Include="Interfaces\ITaxService.cs" />
+    <Compile Include="Interfaces\ITaxSessionService.cs" />
+    <Compile Include="Interfaces\ITemporaryCashMemoAdjAmtDetailService.cs" />
+    <Compile Include="Interfaces\ITemporaryCashMemoItemService.cs" />
+    <Compile Include="Interfaces\ITemporaryCashMemoService.cs" />
+    <Compile Include="Interfaces\ITransportBankDetailService.cs" />
+    <Compile Include="Interfaces\ITransportService.cs" />
+    <Compile Include="Interfaces\ITypeOfMaterialService.cs" />
+    <Compile Include="Interfaces\ITypeOfSupplierService.cs" />
+    <Compile Include="Interfaces\IBrandMasterService.cs" />
+    <Compile Include="Interfaces\IUnitConversionService.cs" />
+    <Compile Include="Interfaces\IUnitService.cs" />
+    <Compile Include="Interfaces\IUniversalBarcodeNumberService.cs" />
+    <Compile Include="Interfaces\IUserCredentialService.cs" />
+    <Compile Include="Interfaces\IUserService.cs" />
+    <Compile Include="Interfaces\IUtilityService.cs" />
+    <Compile Include="Interfaces\IYearExperienceService.cs" />
+    <Compile Include="Interfaces\ISalesBillCreditNoteService.cs" />
+    <Compile Include="Interfaces\IResetSalesBillService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Services\BalanceCarryForwardService.cs" />
+    <Compile Include="Services\BankAccountTypeService.cs" />
+    <Compile Include="Services\BankNameService.cs" />
+    <Compile Include="Services\BankService.cs" />
+    <Compile Include="Services\BarcodeNumberService.cs" />
+    <Compile Include="Services\BarcodeTempDetailService.cs" />
+    <Compile Include="Services\BloodGroupService.cs" />
+    <Compile Include="Services\BrandMasterService.cs" />
+    <Compile Include="Services\CardChequeHandoverService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Services\CashHandoverService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Services\CashierPayableService.cs" />
+    <Compile Include="Services\BillPaymentItemService.cs" />
+    <Compile Include="Services\BillPaymentService.cs" />
+    <Compile Include="Services\CashierReceivableService.cs" />
+    <Compile Include="Services\CashierRetailBillService.cs" />
+    <Compile Include="Services\CashierRetailBillItemService.cs" />
+    <Compile Include="Services\CashierSalesBillItemService.cs" />
+    <Compile Include="Services\CashierSalesBillService.cs" />
+    <Compile Include="Services\CashierSalesOrderItemService.cs" />
+    <Compile Include="Services\CashierSalesOrderService.cs" />
+    <Compile Include="Services\CashierTemporaryCashMemoItemService.cs" />
+    <Compile Include="Services\CashierTemporaryCashMemoService.cs" />
+    <Compile Include="Services\CatalogueService.cs" />
+    <Compile Include="Services\CityService.cs" />
+    <Compile Include="Services\ClientBankDetailService.cs" />
+    <Compile Include="Services\ClientMasterService.cs" />
+    <Compile Include="Services\ColorCodeService.cs" />
+    <Compile Include="Services\CommissionProductService.cs" />
+    <Compile Include="Services\CommissionService.cs" />
+    <Compile Include="Services\CompanyBankDetailService.cs" />
+    <Compile Include="Services\CostCodeCreationService.cs" />
+    <Compile Include="Services\ItemNameService.cs" />
+    <Compile Include="Services\PurchaseInventoryTaxService.cs" />
+    <Compile Include="Services\PurchaseItemTaxService.cs" />
+    <Compile Include="Services\RetailBillCreditNoteItemService.cs" />
+    <Compile Include="Services\RetailBillCreditNoteService.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Services\DebitNoteItemService.cs" />
+    <Compile Include="Services\DebitNoteService.cs" />
+    <Compile Include="Services\DiscountMasterItemService.cs" />
+    <Compile Include="Services\DiscountMasterService.cs" />
+    <Compile Include="Services\EmployeesCompanyService.cs" />
+    <Compile Include="Services\CompanyService.cs" />
+    <Compile Include="Services\CountryService.cs" />
+    <Compile Include="Services\CurrencyService.cs" />
+    <Compile Include="Services\CustomerDetailService.cs" />
+    <Compile Include="Services\DeliveryChallanItemService.cs" />
+    <Compile Include="Services\DeliveryChallanService.cs" />
+    <Compile Include="Services\DepartmentService.cs" />
+    <Compile Include="Services\DesignService.cs" />
+    <Compile Include="Services\DistrictService.cs" />
+    <Compile Include="Services\DesignationMasterService.cs" />
+    <Compile Include="Services\EmployeeMasterService.cs" />
+    <Compile Include="Services\EntryStockItemService.cs" />
+    <Compile Include="Services\EntryStockService.cs" />
+    <Compile Include="Services\GenerateItemCodeService.cs" />
+    <Compile Include="Services\GodownAddressService.cs" />
+    <Compile Include="Services\GodownService.cs" />
+    <Compile Include="Services\IncomeExpenseVoucherService.cs" />
+    <Compile Include="Services\InwardFromTailorItemService.cs" />
+    <Compile Include="Services\InwardFromTailorService.cs" />
+    <Compile Include="Services\InwardToTailorItemService.cs" />
+    <Compile Include="Services\InwardToTailorService.cs" />
+    <Compile Include="Services\JobWorkerService.cs" />
+    <Compile Include="Services\JobWorkPaymentService.cs" />
+    <Compile Include="Services\JobWorkTypeService.cs" />
+    <Compile Include="Services\InventoryTaxService.cs" />
+    <Compile Include="Services\InwardFromGodownService.cs" />
+    <Compile Include="Services\InwardFromShopToGodownService.cs" />
+    <Compile Include="Services\InwardFromStkDistService.cs" />
+    <Compile Include="Services\InwardInterGodownItemService.cs" />
+    <Compile Include="Services\InwardInterGodownService.cs" />
+    <Compile Include="Services\InwardInterShopItemService.cs" />
+    <Compile Include="Services\InwardInterShopService.cs" />
+    <Compile Include="Services\InwardItemFromGodownService.cs" />
+    <Compile Include="Services\InwardItemFromShopToGodownService.cs" />
+    <Compile Include="Services\InwardItemFromStockDistributionService.cs" />
+    <Compile Include="Services\ItemCategoryService.cs" />
+    <Compile Include="Services\ItemService.cs" />
+    <Compile Include="Services\ItemSubCategoryService.cs" />
+    <Compile Include="Services\ItemTempDetailService.cs" />
+    <Compile Include="Services\JobWorkItemService.cs" />
+    <Compile Include="Services\LabMasterService.cs" />
+    <Compile Include="Services\logindetailService.cs" />
+    <Compile Include="Services\ModuleService.cs" />
+    <Compile Include="Services\MonthExperienceService.cs" />
+    <Compile Include="Services\NonInventoryItemService.cs" />
+    <Compile Include="Services\OutwardInterShopservice.cs" />
+    <Compile Include="Services\OutwardItemInterGodownService.cs" />
+    <Compile Include="Services\OutwardItemInterShopservice.cs" />
+    <Compile Include="Services\OutwardItemShopToGodownService.cs" />
+    <Compile Include="Services\OutwardItemStockDistributionService.cs" />
+    <Compile Include="Services\OutwardShopToGodownService.cs" />
+    <Compile Include="Services\OutwardToClientService.cs" />
+    <Compile Include="Services\OutwardInterGodownService.cs" />
+    <Compile Include="Services\OutwardStockDistributionService.cs" />
+    <Compile Include="Services\OutwardToShopService.cs" />
+    <Compile Include="Services\OutwardItemToClientService.cs" />
+    <Compile Include="Services\OutwardItemToShopService.cs" />
+    <Compile Include="Services\InwardItemFromSupplierService.cs" />
+    <Compile Include="Services\InwardfromSupplierService.cs" />
+    <Compile Include="Services\OutwardToTailorItemService.cs" />
+    <Compile Include="Services\OutwardToTailorService.cs" />
+    <Compile Include="Services\PhysicalStockTakingService.cs" />
+    <Compile Include="Services\PurchaseItemDetailService.cs" />
+    <Compile Include="Services\PurchaseOrderDetailService.cs" />
+    <Compile Include="Services\PurchaseReturnItemService.cs" />
+    <Compile Include="Services\PurchaseReturnService.cs" />
+    <Compile Include="Services\QuotationItemService.cs" />
+    <Compile Include="Services\QuotationService.cs" />
+    <Compile Include="Services\CashierRefundOrderItemService.cs" />
+    <Compile Include="Services\CashierRefundOrderService.cs" />
+    <Compile Include="Services\RequisitionForGodownService.cs" />
+    <Compile Include="Services\RequisitionForNewItemService.cs" />
+    <Compile Include="Services\RequisitionForShopService.cs" />
+    <Compile Include="Services\RequisitionOfPoService.cs" />
+    <Compile Include="Services\ResetRetailBillAdjAmtDetailService.cs" />
+    <Compile Include="Services\ResetRetailBillItemService.cs" />
+    <Compile Include="Services\ResetRetailBillService.cs" />
+    <Compile Include="Services\ResetSalesBillAdjAmtDetailService.cs" />
+    <Compile Include="Services\ResetSalesBillItemService.cs" />
+    <Compile Include="Services\ResetSalesBillService.cs" />
+    <Compile Include="Services\RetailBillAdjAmtDetailService.cs" />
+    <Compile Include="Services\RetailBillItemService.cs" />
+    <Compile Include="Services\RetailBillService.cs" />
+    <Compile Include="Services\SalesBillAdjAmtDetailService.cs" />
+    <Compile Include="Services\SalesBillCreditNoteItemService.cs" />
+    <Compile Include="Services\SalesBillCreditNoteService.cs" />
+    <Compile Include="Services\SalesBillItemService.cs" />
+    <Compile Include="Services\SalesBillService.cs" />
+    <Compile Include="Services\SalesIncentiveService.cs" />
+    <Compile Include="Services\SalesOrderItemService.cs" />
+    <Compile Include="Services\SalesOrderService.cs" />
+    <Compile Include="Services\SalesReturnItemService.cs" />
+    <Compile Include="Services\SalesReturnService.cs" />
+    <Compile Include="Services\ShopRequisitionGodownItemService.cs" />
+    <Compile Include="Services\ShopRequisitiongodownSalesbillService.cs" />
+    <Compile Include="Services\ShopRequisitionService.cs" />
+    <Compile Include="Services\ShopRequsitionGodownItemSalesBillService.cs" />
+    <Compile Include="Services\ShopService.cs" />
+    <Compile Include="Services\GodownStockService.cs" />
+    <Compile Include="Services\ShopStockService.cs" />
+    <Compile Include="Services\StateService.cs" />
+    <Compile Include="Services\OpeningStockService.cs" />
+    <Compile Include="Services\StockDistributionService.cs" />
+    <Compile Include="Services\StockItemDistributionService.cs" />
+    <Compile Include="Services\SubTaxMasterService.cs" />
+    <Compile Include="Services\SupplierBankDetailService.cs" />
+    <Compile Include="Services\SuppliersMasterService.cs" />
+    <Compile Include="Services\ItemTaxService.cs" />
+    <Compile Include="Services\JobWorkStockService.cs" />
+    <Compile Include="Services\JobWorkOutwardToClientService.cs" />
+    <Compile Include="Services\TaxService.cs" />
+    <Compile Include="Services\TaxSessionService.cs" />
+    <Compile Include="Services\TemporaryCashMemoAdjAmtDetailService.cs" />
+    <Compile Include="Services\TemporaryCashMemoItemService.cs" />
+    <Compile Include="Services\TemporaryCashMemoService.cs" />
+    <Compile Include="Services\TranportService.cs" />
+    <Compile Include="Services\TransportBankDetailService.cs" />
+    <Compile Include="Services\TypeOfMaterialService.cs" />
+    <Compile Include="Services\TypeOfSupplierService.cs" />
+    <Compile Include="Services\UnitConversionService.cs" />
+    <Compile Include="Services\UnitService.cs" />
+    <Compile Include="Services\UniversalBarcodeNumberService.cs" />
+    <Compile Include="Services\UserCredentialService.cs" />
+    <Compile Include="Services\UserService.cs" />
+    <Compile Include="Services\UtilityService.cs" />
+    <Compile Include="Services\YearExperienceService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CodeFirstData\CodeFirstData.csproj">
+      <Project>{ba3e7eb9-d011-4c16-a0d2-1bcb9415d43b}</Project>
+      <Name>CodeFirstData</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\CodeFirstEntities\CodeFirstEntities.csproj">
+      <Project>{584ba352-0884-4ac5-99b1-eeab55edfd16}</Project>
+      <Name>CodeFirstEntities</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

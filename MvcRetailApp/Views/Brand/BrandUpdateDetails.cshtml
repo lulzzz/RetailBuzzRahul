@@ -1,0 +1,59 @@
+﻿@model CodeFirstEntities.BrandMaster
+
+@{
+    ViewBag.Title = "BranbdUpdateDetails";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var boundry = document.getElementById("NumberOfRows").value;
+        var type = document.getElementById("ViewType").value;
+        if (type == "Edit") {
+            for (var i = 1; i <= boundry; i++) {
+                editid = "EditId" + i;
+                lableEditid = "LableEditId" + i;
+                if (document.getElementById(editid) != null) {
+                    document.getElementById(editid).style.display = "inline";
+                    document.getElementById(lableEditid).style.display = "none";
+                }
+            }
+        }
+        else {
+            for (var i = 1; i <= boundry; i++) {
+                deleteid = "DeleteId" + i;
+                lableDeleteid = "LableDeleteId" + i;
+                if (document.getElementById(deleteid) != null) {
+                    document.getElementById(deleteid).style.display = "inline";
+                    document.getElementById(lableDeleteid).style.display = "none";
+                }
+            }
+        }
+    });
+</script>
+
+
+<div class="row">
+    <h2><strong>Brand </strong>Details</h2>
+    <br />
+    @{
+        string type = TempData["ViewType"].ToString();
+        TempData["ViewType"] = type;
+        <input type="hidden" id="ViewType" value="@type" />
+    }
+
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="form-group col-md-8 col-lg-8">
+                <label for="exampleInputname">Brand Code : </label>
+                @Html.DisplayFor(model => model.BrandCode, new { @class = "form-control" })
+            </div>
+        </div>
+        <div class="row">
+            <div class="form-group col-md-8 col-lg-8">
+                <label for="exampleInputname">Brand Name : </label>
+                @Html.DisplayFor(model => model.BrandName, new { @class = "form-control" })
+            </div>
+        </div>
+    </div>
+</div>
+

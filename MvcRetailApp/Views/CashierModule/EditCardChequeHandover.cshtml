@@ -1,0 +1,392 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EditCardChequeHandover";
+}
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<!--custom Alerts-->
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function infoBox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('infoClass');
+        bootbox.alert('<i class="fa fa-2x fa-info-circle"></i><br>' + message + '<hr>');
+    }
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateItemWiseAmount(rowid, '');
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         var totalamount = 0;
+		         for (var i = 1; i <= rowid; i++) {
+		             var amount = "amount" + i;
+		             if (document.getElementById(amount) != null) {
+		                 totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+		             }
+		         }
+
+		         document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    //SELECT ALL CHECKBOXES ON SELECT ALL CHECKBOX BUTTON
+    function SelectAllCheckbox() {
+        var count = document.getElementById("HandoverList").value;
+
+        if ($("#SelectAllId").prop("checked")) {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                if (document.getElementById(chkbox) != null) {
+                    $("#" + chkbox).attr("checked", true);
+                    document.getElementById(chkbox).value = "Yes"
+                }
+            }
+        }
+        else {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                if (document.getElementById(chkbox) != null) {
+                    $("#" + chkbox).attr("checked", false);
+                    document.getElementById(chkbox).value = "No"
+                }
+            }
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    //SELECT ALL CHECKBOXES ON SELECT ALL CHECKBOX BUTTON
+    function CheckCheckboxValue(count) {
+        var chkbox = "CheckBox" + count;
+        if (document.getElementById(chkbox).value == "No") {
+            document.getElementById(chkbox).value = "Yes"
+        }
+        else {
+            document.getElementById(chkbox).value = "No"
+        }
+    }
+</script>
+
+
+
+
+@*DISPLAY EMPOYEE DETAILS ON EMP CHANGE EVENT*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLEmployee").change(function () {
+            var data = $(this).val();
+            if (data != "") {
+                $.getJSON("/CashierModule/GetEmployeeDetails", { Emp: data },
+                    function (data) {
+                        if (data != "Fail") {
+                            document.getElementById("EmpDetails").style.display = "inline";
+                            document.getElementById("EmpAddress").innerHTML = data.Address;
+                            document.getElementById("EmpEmail").innerHTML = data.Email;
+                            document.getElementById("EmpContact").innerHTML = data.MobileNo;
+
+                            document.getElementById("CardChequeHandoverDetails_AccountantName").value = data.Name;
+                            document.getElementById("CardChequeHandoverDetails_AccountantEmail").value = data.Email;
+                            document.getElementById("CardChequeHandoverDetails_AccountantContact").value = data.MobileNo;
+                            document.getElementById("CardChequeHandoverDetails_AccountantAddress").value = data.Address;
+
+                            document.getElementById("BillDetails").style.display = 'inline';
+                            document.getElementById("Submit").style.display = "inline";
+                            document.getElementById("preparedbydiv").style.display = "inline";
+                        }
+                    });
+            }
+            else {
+                document.getElementById("EmpDetails").style.display = "none";
+                document.getElementById("BillDetails").style.display = "none";
+                alertbox("Please Select Accountant Name..");
+            }
+        });
+    });
+</script>
+
+
+@using (Html.BeginForm("EditCardChequeHandover", "CashierModule", FormMethod.Post))
+{
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    @Html.HiddenFor(model => model.CardChequeHandoverDetails.CardChequeHandCode);
+    @Html.HiddenFor(model => model.CardChequeHandoverDetails.AccountantName);
+    @Html.HiddenFor(model => model.CardChequeHandoverDetails.AccountantContact);
+    @Html.HiddenFor(model => model.CardChequeHandoverDetails.AccountantEmail);
+    @Html.HiddenFor(model => model.CardChequeHandoverDetails.AccountantAddress);
+    <!-- Start: Header -->
+    @Html.Partial("../Shared/Header")
+
+    <!-- End: Header -->
+    <!-- Start: Main -->
+    <section>
+        <div class="mainwrapper">
+            <!-- End: Sidebar -->
+            @Html.Partial("../Shared/LeftMenu")
+
+            <!-- Start: Content -->
+
+            <div class="mainpanel">
+                <div class="col-lg-12 col-md-12">
+                    <br />
+
+                    <h2>Update Card/Cheque Handover</h2>
+                    @{
+                                                                               string shopcode = string.Empty;
+                                                                               string godowncode = string.Empty;
+                                                                               if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+                                                                               {
+                                                                                   if (Session["LOGINSHOPGODOWNCODE"] != null)
+                                                                                   {
+                                                                                       if (Session["LOGINSHOPGODOWNCODE"].ToString().Contains("SH"))
+                                                                                       {
+                                                                                           shopcode = Session["LOGINSHOPGODOWNCODE"].ToString();
+                                                                                       }
+                                                                                       else
+                                                                                       {
+                                                                                           godowncode = Session["LOGINSHOPGODOWNCODE"].ToString();
+                                                                                       }
+            
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAME"].ToString()</label>
+                        </div>
+                                                                                   }
+                                                                               }
+                    }
+
+                    <div class="table table-bordered">
+                        <div class="row">
+                            <div style="height: 10px"></div>
+                            <div class="col-md-12 col-lg-12">
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Accountant Name<i style="color: red">*</i></label>
+                                    @Html.DropDownListFor(model => model.CardChequeHandoverDetails.AccountantCode, new SelectList(Model.EmpList, "EmployeeCode", "Name"), "Select Employee", new { id = "DDLEmployee", @class = "form-control" })
+                                </div>
+                                <div id="EmpDetails" style="display: none">
+                                    <div class="col-md-3 col-lg-3">
+                                        <label>Accountant Address</label><br />
+                                        <label id="EmpAddress" style="font-weight: normal"></label>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3">
+                                        <label>Accountant Contact</label><br />
+                                        <label id="EmpContact" style="font-weight: normal"></label>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3">
+                                        <label>Accountant Email</label><br />
+                                        <label id="EmpEmail" style="font-weight: normal"></label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 col-lg-12">
+                                <div style="height: 10px"></div>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-12 col-lg-12" id="BillDetails" style="display: none">
+
+                            <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                                <thead>
+                                    <tr>
+                                        <th style="text-align: center">Select
+                    All<br />
+                                            <input type="checkbox" id="SelectAllId" onclick="SelectAllCheckbox()" style="width: 17px; height: 17px;" />
+                                        </th>
+                                        <th style="text-align: center">Cashier Code</th>
+                                        <th style="text-align: center">Bill No</th>
+                                        <th style="text-align: center">Date</th>
+                                        <th style="text-align: center">Payment Type</th>
+                                        <th style="text-align: center">Card/Cheque No</th>
+                                        <th style="text-align: center">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+    int Count = 1;
+                                                                               if (Model.CardChequeHandoverList.Count() != 0 || Model.CardChequeHandoverList.Any())
+                                                                               {
+                                                                                   foreach (var data in Model.CardChequeHandoverList)
+                                                                                   {
+                                                                                       string cardchequeid = "cardChequeId" + Count;
+                                                                                       
+                                                                                       string checkbox = "CheckBox" + Count;
+                                                                                       string cashiercode = "CashierCode" + Count;
+                                                                                       string billnumber = "BillNo" + Count;
+                                                                                       string date = "Date" + Count;
+                                                                                       string paytype = "PaymentType" + Count;
+                                                                                       string cardchequeno = "CardChequeNo" + Count;
+                                                                                       string amount = "Amount" + Count;
+
+                                                                                       string cashiercodeval = "CashierCodeVal" + Count;
+                                                                                       string billnumberval = "BillNoVal" + Count;
+                                                                                       string dateval = "DateVal" + Count;
+                                                                                       string paytypeval = "PaymentTypeVal" + Count;
+                                                                                       string cardchequenoval = "CardChequeNoVal" + Count;
+                                                                                       string amountval = "AmountVal" + Count;
+
+                                        <tr>
+                                            <td style="text-align: center">
+                                                <input type="hidden" id="@cardchequeid" name="@cardchequeid" value="@data.Id"/>
+                                                <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px" value="No" onchange="CheckCheckboxValue(@Count)"/></td>
+                                            <td style="text-align: center" id="@cashiercode">@data.CashierCode<input type="hidden" id="@cashiercodeval" name="@cashiercodeval" value="@data.CashierCode"/></td>
+                                            <td style="text-align: center" id="@billnumber">@data.BillNo<input type="hidden" id="@billnumberval" name="@billnumberval" value="@data.BillNo"/></td>
+                                            <td style="text-align: center" id="@date">@data.CardChequeDate<input type="hidden" id="@dateval" name="@dateval" value="@data.CardChequeDate"/></td>
+                                            <td style="text-align: center" id="@paytype">@data.HandoverType<input type="hidden" id="@paytypeval" name="@paytypeval" value="@data.HandoverType"/></td>
+                                            <td style="text-align: center" id="@cardchequeno">@data.CardChequeNo<input type="hidden" id="@cardchequenoval" name="@cardchequenoval" value="@data.CardChequeNo"/></td>
+                                            <td style="text-align: center" id="@amount">@data.CardChequeAmount<input type="hidden" id="@amountval" name="@amountval" value="@data.CardChequeAmount"/></td>
+                                        </tr>
+                                                                                       Count++;
+                                                                                   }
+                                                                               }
+
+
+                                        <input type="hidden" id="HandoverList" name="HandoverList" value="@Count"/>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-12">
+                        <div style="height: 20px"></div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-12" style="text-align: right; display: none" id="preparedbydiv">
+                        <label style="font-size: 13px">Prepared By,</label>
+                        <br />
+                        <label id="preparedby">@Session["EmpName"].ToString()</label>
+                    </div>
+
+                    <div class="col-md-12 col-lg-12">
+                        <div style="height: 20px"></div>
+                    </div>
+
+                    <div class="col-md-12 col-lg-12" style="text-align: center;">
+                        <button type="submit" id="Submit" class="btn btn-success" style="display: none">Update</button>
+                    </div>
+                </div>
+            </div>
+    </section>
+}
+
+

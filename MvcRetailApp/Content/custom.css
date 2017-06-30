@@ -1,0 +1,40 @@
+/* Author: Louis Holladay
+ * Website: AdminDesigns.com
+ * Last Updated: 01/01/14 
+ 
+ * This file is reserved for changes made by the user 
+ * as it's often a good idea to seperate your work from 
+ * the theme. It makes modifications, and future theme
+ * updates much easier 
+ *
+ */
+
+/* These styles have been placed here for
+* convience as they have a high chance of being
+* changed if one decides to modify the header
+-----------------------------------------------*/
+.header-btns > div > button:focus {
+	color: #666;
+}
+
+
+/* Place custom styles below this line 
+---------------------------------------*/
+
+.leftpanel .profile-left {
+padding: 15px;
+min-height: 90px;
+background-color: #fff;
+border-bottom: 1px solid #eee;
+-webkit-box-shadow: 0 2px 3px rgba(0,0,0,0.03);
+box-shadow: 0 2px 3px rgba(0,0,0,0.03);
+margin-right: 1px;
+}
+
+.media, .media .media {
+margin-top: 15px;
+}
+.media, .media-body {
+overflow: hidden;
+zoom: 1;
+}

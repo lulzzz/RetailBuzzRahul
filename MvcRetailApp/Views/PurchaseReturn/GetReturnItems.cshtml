@@ -1,0 +1,802 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetReturnItems";
+}
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+</script>
+
+<script type="text/javascript">
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function AllowDecimal(key, rowid) {
+        var numbertype = $("#numberType" + rowid).val();
+        var quantity = $("#quantity" + rowid).val();
+
+        var pointFoundCount = 0;
+        for (var i = 0; i <= quantity.length; i++) {
+            if (quantity[i] == '.') {
+                pointFoundCount++;
+            }
+        }
+
+        var pointposition = quantity.indexOf(".");
+        var digitupto = 0;
+        if (pointposition != -1) {
+            digitupto = quantity.substr(pointposition, quantity.length).length;
+        }
+
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (numbertype == 'Whole') { //if unit type is whole number then don't allow point
+            if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+        }
+        else if (quantity.length == 0) {
+            if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+        }
+        else if (keycode == 46) { //if decimal point is inserted
+            if (pointFoundCount > 0 && pointFoundCount < 2) { // more than one decimal point is inserted then don't allow to insert it
+                return false;
+            }
+        }
+        else if (digitupto != 0) { // if unit type is decimal then wait for decimal point to be insert then execute this condition 
+            if (numbertype == '2Digit') { // if unit type is 2 digit the then allow 2 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 3) {
+                    return false;
+                }
+            }
+            else { // if unit type is 2 digit the then allow 3 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 4) {
+                    return false;
+                }
+            }
+        }
+        else { //don't allow any decimal point or character until first digit occurs
+            if (quantity.length == 0) // if first digit is point in quantity field then don't allow it and characters too
+            {
+                if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+            else { //don't allow any character until the above else if condition meets
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function SelectAllCheckbox() {
+        var presentrows = document.getElementById("ItemListCount").value;
+        if ($("#SelectAllId").prop("checked")) {
+            document.getElementById("Save").disabled = false;
+            for (i = 1; i <= presentrows; i++) {
+                var chkbox = "CheckBox" + i;
+                var itemtax = "ItemTax" + i;
+                $("#" + chkbox).attr("checked", true);
+                document.getElementById(chkbox).value = "Yes";
+                document.getElementById("quantity" + i).disabled = false;
+                AddTheItemTaxNumbar(+$("#" + itemtax).html());
+            }
+        }
+        else {
+            document.getElementById("Save").disabled = true;
+            for (i = 1; i <= presentrows; i++) {
+                var chkbox = "CheckBox" + i;
+                $("#" + chkbox).attr("checked", false);
+                document.getElementById(chkbox).value = "No";
+                document.getElementById("quantity" + i).disabled = true;
+                document.getElementById("quantity" + i).value = 0;
+            }
+        }
+
+        for (i = 1; i <= presentrows; i++) {
+            CalculateAmount(i);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function CalculateRefundableAmount(rowid) {
+        $("#SelectAllId").attr("checked", false);
+        var presentrows = document.getElementById("ItemListCount").value;
+        var checkedcount = 0;
+        for (i = 1; i <= presentrows; i++) {
+            var chkbox = "CheckBox" + i;
+            if ($("#" + chkbox).prop("checked")) {
+                checkedcount++;
+            }
+        }
+        if (checkedcount == presentrows) {
+            $("#SelectAllId").attr("checked", true);
+        }
+
+        var chkbox = "CheckBox" + rowid;
+        if ($("#" + chkbox).prop("checked")) {
+            document.getElementById(chkbox).value = "Yes";
+            document.getElementById("quantity" + rowid).disabled = false;
+            document.getElementById("Save").disabled = false;
+            AddTheItemTaxNumbar($("#ItemTax" + rowid).html());
+            CalculateReturnTaxSummary();
+        }
+        else {
+            document.getElementById(chkbox).value = "No";
+            document.getElementById("quantity" + rowid).disabled = true;
+            document.getElementById("quantity" + rowid).value = 0;
+            document.getElementById("Save").disabled = false;
+            CalculateReturnTaxSummary();
+        }
+        CalculateAmount(rowid);
+        CalculateSuppliersAmount();
+        CalculateTaxSummary();
+        CalculateTotalAmountAndGrandTotal();
+    }
+</script>
+
+<script type="text/javascript">
+    function CalculateAmount(rowid) {
+        var quantity = "quantity" + rowid;
+        var stkqty = "StkQty" + rowid;
+        var prevquantity = "prevquantity" + rowid;
+        var rate = "rate" + rowid;
+        var amount = "amount" + rowid;
+        var discountpercent = "discountpercent" + rowid;
+        var amountvalue = "amountvalue" + rowid;
+        var unit = "unit" + rowid;
+        var itemtax = "ItemTax" + rowid;
+        var totalamount = 0;
+        var percent = (+document.getElementById(discountpercent).innerHTML) / 100;
+        var roundupqty = (+document.getElementById(quantity).value);
+        document.getElementById(quantity).value = roundupqty;
+
+        var calculatedvalue = 0;
+        if (+$("#" + stkqty).html() < +$("#" + prevquantity).html()) {
+            if (+$("#" + quantity).val() > +$("#" + stkqty).html()) {
+                alertbox("Cannot Exceed More Than Stock Quantity");
+                document.getElementById(quantity).value = +document.getElementById(stkqty).innerHTML;
+            }
+        }
+        else if (+$("#" + quantity).val() > +$("#" + prevquantity).html()) {
+            alertbox("Cannot Exceed More Than Bill Quantity");
+            document.getElementById(quantity).value = +document.getElementById(prevquantity).innerHTML;
+        }
+
+        if ($("#" + unit).text() == "Dozens") {
+            calculatedvalue = ((+document.getElementById(quantity).value) * 12) * (+removeCommas(document.getElementById(rate).innerHTML));
+        }
+        else {
+            calculatedvalue = (+document.getElementById(quantity).value) * (+removeCommas(document.getElementById(rate).innerHTML));
+        }
+
+        if (percent != 0) {
+            var valueafterdiscount = calculatedvalue * percent;
+            calculatedvalue -= valueafterdiscount;
+        }
+
+        document.getElementById(amountvalue).value = calculatedvalue.toFixed(2);
+        document.getElementById(amount).innerHTML = addCommas(calculatedvalue.toFixed(2));
+        CalculateSuppliersAmount();
+        CalculateReturnTaxSummary();
+        CalculateTaxSummary();
+        CalculateTotalAmountAndGrandTotal();
+    }
+</script>
+
+<script type="text/javascript">
+    function CalculateSuppliersAmount() {
+        var presentrows = document.getElementById("ItemListCount").value;
+        var supplieramount = 0;
+        for (i = 1; i <= presentrows; i++) {
+            var chkbox = "CheckBox" + i;
+            var itemtax = "ItemTax" + i;
+            var amount = "amount" + i;
+            if ($("#" + chkbox).prop("checked")) {
+                var itemamount = +removeCommas(document.getElementById(amount).innerHTML);
+                supplieramount = supplieramount + itemamount + (itemamount * (+$("#" + itemtax).html()) / 100);
+            }
+        }
+        supplieramount = Math.round(supplieramount.toFixed(2));
+        document.getElementById("SupplierAmountLabel").innerHTML = addCommas(supplieramount.toFixed(2));
+        document.getElementById("SupplierAmount").value = supplieramount.toFixed(2);
+    }
+</script>
+
+<script type="text/javascript">
+    function AddTheItemTaxNumbar(tax) {
+        if (+tax != 0) {
+            var taxcount = document.getElementById("ReturnItemTaxCount").value;
+            if ($("#ReturnItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                $("#ReturnItemTaxNumber" + taxcount).val(tax);
+                //document.getElementById("ReturnAddTaxes").style.display = "inline";
+                $("#ReturnAddedTax1").text(tax + "%");
+            }
+            else {
+                var taxpresent = 0;
+                for (var i = 1; i <= taxcount; i++) {
+                    var taxno = "ReturnItemTaxNumber" + i;
+                    if (tax == $("#" + taxno).val()) {
+                        taxpresent++;
+                    }
+                }
+                if (taxpresent == 0) {
+                    taxcount++;
+                    var taxno = "ReturnItemTaxNumber" + taxcount;
+                    var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                    $("#ReturnAllTaxesNumbersValue").append(data);
+                    var addedtaxno = "ReturnAddedTax" + taxcount;
+                    var addedtaxamount = "ReturnAddedTaxAmount" + taxcount;
+                    var addedtaxamounthdn = "ReturnAddedTaxAmounthdn" + taxcount;
+                    var addedamount = "ReturnAddedAmount" + taxcount;
+                    var addedamounthdn = "ReturnAddedAmounthdn" + taxcount;
+                    var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                    newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                    newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                    $("#ReturnAddTaxes").append(newlabel);
+                    $("#ReturnItemTaxCount").val(taxcount);
+                }
+            }
+        }
+    }
+
+    function CalculateReturnTaxSummary() {
+        var rowid = +document.getElementById("ItemListCount").value;
+        var TaxCount = +document.getElementById("ReturnItemTaxCount").value;
+
+        for (var i = 1; i <= TaxCount; i++) {
+            var TotalTaxAmount = 0;
+            var itemtaxno = "ReturnItemTaxNumber" + i;
+            var addedtaxamount = "ReturnAddedTaxAmount" + i;
+            var addedtaxamounthdn = "ReturnAddedTaxAmounthdn" + i;
+            var addedamount = "ReturnAddedAmount" + i;
+            var addedamounthdn = "ReturnAddedAmounthdn" + i;
+            for (var j = 1; j <= rowid; j++) {
+                var checkbox = "CheckBox" + j;
+                var itemtax = "ItemTax" + j;
+                var amount = "amount" + j;
+                if ($("#" + checkbox).prop("checked")) {
+                    if ($("#" + itemtaxno).val() == $("#" + itemtax).html()) {
+                        TotalTaxAmount = (+TotalTaxAmount) + (+removeCommas(document.getElementById(amount).innerHTML));
+                    }
+                }
+            }
+            document.getElementById(addedamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedamounthdn).value = TotalTaxAmount.toFixed(2);
+            TotalTaxAmount = TotalTaxAmount * (+document.getElementById(itemtaxno).value / 100);
+            document.getElementById(addedtaxamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedtaxamounthdn).value = TotalTaxAmount.toFixed(2);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function CalculateTaxSummary() {
+        var rowid = +document.getElementById("ItemListCount").value;
+        var TaxCount = +document.getElementById("ItemTaxCount").value;
+
+        for (var i = 1; i <= TaxCount; i++) {
+            var TotalTaxAmount = 0;
+            var itemtaxno = "ItemTaxNumber" + i;
+            var addedtaxamount = "AddedTaxAmount" + i;
+            var addedtaxamounthdn = "AddedTaxAmounthdn" + i;
+            var addedamount = "AddedAmount" + i;
+            var addedamounthdn = "AddedAmounthdn" + i;
+            for (var j = 1; j <= rowid; j++) {
+                var checkbox = "CheckBox" + j;
+                var itemtax = "ItemTax" + j;
+                var amount = "amount" + j;
+                var rate = "rate" + j;
+                var quantity = "quantity" + j;
+                var prevquantity = "prevquantity" + j;
+                var discountpercent = "discountpercent" + j;
+                //if (!$("#" + checkbox).prop("checked")) {
+                //    if ($("#" + itemtaxno).val() == $("#" + itemtax).html()) {
+                //        TotalTaxAmount = (+TotalTaxAmount) + (+removeCommas(document.getElementById(amount).innerHTML));
+                //    }
+                //}
+                //else {
+                if ($("#" + itemtaxno).val() == $("#" + itemtax).html()) {
+                    var remainingqty = +$("#" + prevquantity).html() - +$("#" + quantity).val();
+                    TotalTaxAmount = (+TotalTaxAmount) + (remainingqty * +removeCommas($("#" + rate).html())) - ((remainingqty * +removeCommas($("#" + rate).html())) * +removeCommas($("#" + discountpercent).html()) / 100);
+                }
+                //}
+            }
+            document.getElementById(addedamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedamounthdn).value = TotalTaxAmount.toFixed(2);
+            TotalTaxAmount = TotalTaxAmount * (+document.getElementById(itemtaxno).value / 100);
+            document.getElementById(addedtaxamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedtaxamounthdn).value = TotalTaxAmount.toFixed(2);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function CalculateTotalAmountAndGrandTotal() {
+        var TotalAmount = 0;
+        var TotalTaxAmount = 0;
+        var GrandTotal = 0;
+        var PackAndForwd = 0;
+
+        var itemcount = document.getElementById("ItemListCount").value;
+        for (i = 1; i <= itemcount; i++) {
+            var checkbox = "CheckBox" + i;
+            var amount = "amount" + i;
+            var rate = "rate" + i;
+            var quantity = "quantity" + i;
+            var prevquantity = "prevquantity" + i;
+            var discountpercent = "discountpercent" + i;
+
+            var remainingqty = +$("#" + prevquantity).html() - +$("#" + quantity).val();
+            TotalAmount = TotalAmount + (remainingqty * +removeCommas($("#" + rate).html())) - ((remainingqty * +removeCommas($("#" + rate).html())) * +removeCommas($("#" + discountpercent).html()) / 100);
+
+        }
+
+        document.getElementById("TotalAmount").innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalAmount.toFixed(2));
+        document.getElementById("TotalAmountValue").value = TotalAmount.toFixed(2);
+
+        var TaxCount = (+document.getElementById("ItemTaxCount").value);
+        for (i = 1; i <= TaxCount; i++) {
+            var addedamounthdn = "AddedTaxAmounthdn" + i;
+            TotalTaxAmount = TotalTaxAmount + (+document.getElementById(addedamounthdn).value);
+        }
+
+        document.getElementById("TotalTaxAmount").innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+        document.getElementById("TotalTaxAmountValue").value = TotalTaxAmount.toFixed(2);
+
+        PackAndForwd = +document.getElementById("PurchaseReturnDetails_PackAndForwd").value;
+        GrandTotal = TotalAmount + TotalTaxAmount + PackAndForwd;
+        GrandTotal = Math.round(GrandTotal.toFixed(2));
+
+        document.getElementById("GrandTotal").innerHTML = "<i class='fa fa-inr'></i>" + addCommas(GrandTotal.toFixed(2));
+        document.getElementById("GrandTotalValue").value = GrandTotal.toFixed(2);
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#Save").click(function () {
+            var itemlistcount = +document.getElementById("ItemListCount").value;
+            var checkboxcount = 0;
+            for (var i = 1; i <= itemlistcount; i++) {
+                var checkbox = "CheckBox" + i;
+                if (!$("#" + checkbox).prop("checked")) {
+                    checkboxcount++;
+                }
+            }
+            if (checkboxcount != itemlistcount) {
+                for (i = 1; i <= itemlistcount; i++) {
+                    var checkbox = "CheckBox" + i;
+                    $("#" + checkbox).attr("disabled", false);
+                    if ($("#" + checkbox).prop("checked")) {
+                        document.getElementById("quantity" + i).disabled = false;
+                        if (+document.getElementById("quantity" + i).value == 0) {
+                            alertbox("Please Fill The Quantity");
+                            return false;
+                            break;
+                        }
+                    }
+                }
+                document.getElementById("BillNo").disabled = false;
+                document.getElementById("ChallanNo").disabled = false;
+                document.getElementById("SupplierName").disabled = false;
+            }
+            else {
+                alertbox("Please Select At Least One Item");
+                return false;
+            }
+
+            if (checkboxcount != itemlistcount) {
+                var emptyqty = 0;
+                for (i = 1; i <= itemlistcount; i++) {
+                    if (+document.getElementById("quantity" + i).value == 0) {
+                        emptyqty++;
+                    }
+                }
+                if (emptyqty == 0) {
+                    setTimeout(function () {
+                        document.getElementById("Save").disabled = true;
+                    }, 100);
+
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    function GetStockQuantity(rowid) {
+        rowid = +rowid;
+        var stkqty = "StkQty" + rowid;
+        var itemcode = "ItemCode" + rowid;
+        var code = document.getElementById("loginshopcode").value;
+        $.getJSON("/PurchaseReturn/GetStockQuantity", { itemcode: $("#" + itemcode).val(), code: code },
+            function (data) {
+                $("#" + stkqty).text(data);
+                //CalculateAmount(rowid);
+            });
+    }
+</script>
+<div id="ReturnAllTaxesNumbersValue">
+    <input type="hidden" id="ReturnItemTaxCount" name="ReturnItemTaxCount" value="1" />
+    <input type="hidden" id="ReturnItemTaxNumber1" name="ReturnItemTaxNumber1" value="0" />
+</div>
+<div id="AllTaxesNumbersValue">
+    @if (Model.PurchaseInventoryTaxList.Count() == 0)
+    {
+        <input type="hidden" id="ItemTaxCount" name="ItemTaxCount" value="1" />
+        <input type="hidden" id="ItemTaxNumber1" name="ItemTaxNumber1" value="0" />
+    }
+    else
+    {
+        <input type="hidden" id="ItemTaxCount" name="ItemTaxCount" value="@Model.PurchaseInventoryTaxList.Count()" />
+    }
+</div>
+
+<div class="col-md-12 col-lg-12 form-group">
+    <div class="col-md-12 col-lg-12">
+        <table style="border: 1px double; width: 100%">
+            <tr>
+                <td>
+                    <div class="col-md-12 col-lg-12">
+                        <table class="table">
+
+                            <thead>
+                                <tr>
+                                    <th style="text-align: center">SelectAll<br />
+                                        <input type="checkbox" id="SelectAllId" onclick="SelectAllCheckbox()" />
+                                    </th>
+                                    <th style="text-align: center">
+                                        <label>S.N.</label></th>
+                                    <th style="text-align: center">
+                                        <label>Item</label></th>
+                                    <th style="text-align: center">
+                                        <label>Color</label></th>
+                                    <th style="text-align: center">
+                                        <label>Unit</label></th>
+                                    <th style="text-align: center">
+                                        <label>Stk Qty</label></th>
+                                    <th style="text-align: center">Bill Qty</th>
+                                    <th style="text-align: center" class="col-md-1 col-lg-1">Return<br />
+                                        Qty<i style="color: red">*</i></th>
+                                    <th style="text-align: center">Cost
+                                        <br />
+                                        Price</th>
+                                    <th style="text-align: center">Disc<br />
+                                        (%)</th>
+                                    <th style="text-align: center">Tax<br />
+                                        (%)</th>
+                                    <th style="text-align: center">Amt<br />
+                                        (<i class="fa fa-inr"></i>)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    int rowid = 1;
+                                    foreach (var item in Model.InwardItemsFromSupplierList)
+                                    {
+                                        string checkbox = "CheckBox" + rowid;
+                                        string itemcode = "ItemCode" + rowid;
+                                        string stkqty = "StkQty" + rowid;
+                                        string quantity = "quantity" + rowid;
+                                        string prevquantity = "prevquantity" + rowid;
+                                        string prevquantityvalue = "prevquantityvalue" + rowid;
+                                        string unit = "unit" + rowid;
+                                        string numbertype = "numberType" + rowid;
+                                        string itemtax = "ItemTax" + rowid;
+                                        string rate = "rate" + rowid;
+                                        string amount = "amount" + rowid;
+                                        string amountvalue = "amountvalue" + rowid;
+                                        string discountpercent = "discountpercent" + rowid;
+                                       
+                                    <tr>
+                                        <td style="text-align: center">
+                                            <input type="checkbox" id="@checkbox" name="@checkbox" onchange="CalculateRefundableAmount(@rowid)" /></td>
+                                        <td style="text-align: center">
+                                            @rowid
+                                        </td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal">@item.Item</label>
+                                            <input type="hidden" id="@itemcode" value="@item.itemCode" />
+                                        </td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal">@item.Color</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@unit">@item.Unit</label>
+                                            <input type="hidden" id="@numbertype" name="@numbertype" value="@item.NumberType" />
+                                        </td>
+                                        @{
+                                               
+                                            <td style="text-align: center">
+                                                @if (item.ItemType == "Inventory")
+                                                {
+                                                    <label id="@stkqty"></label>
+                                                    <script type="text/javascript">
+                                                        GetStockQuantity("@rowid");
+                                                    </script>
+                                                }
+                                                else
+                                                {
+                                                    <label id="@stkqty">---</label>
+                                                }
+                                            </td>
+                                        }
+                                        <td style="text-align: center">
+                                            <label id="@prevquantity">@item.ReceivedQuantity</label>
+                                            <input type="hidden" id="@prevquantityvalue" name="@prevquantityvalue" value="@item.ReceivedQuantity" />
+                                        </td>
+                                        <td class="col-md-1 col-lg-1">
+                                            <input type="text" autocomplete="off" style="text-align: center" placeholder="Qty" class="form-control" disabled="disabled" id="@quantity" name="@quantity" value="0" onchange="CalculateAmount(@rowid)" onkeypress="return AllowDecimal(event,@rowid)" /></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@rate">@Convert.ToDouble(item.CostPrice).ToString("#,###.00##")</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@discountpercent">@item.Discount</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@itemtax">@item.ItemTax</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@amount">@Convert.ToDouble(item.Amount).ToString("#,###.00##")</label>
+                                            <input type="hidden" id="@amountvalue" name="@amountvalue" value="@item.Amount" />
+                                        </td>
+                                    </tr>
+                                                rowid += 1;
+                                    }
+                                    foreach (var item in Model.PurchaseReturnItemList)
+                                    {
+                                        string checkbox = "CheckBox" + rowid;
+                                        string itemcode = "ItemCode" + rowid;
+                                        string stkqty = "StkQty" + rowid;
+                                        string quantity = "quantity" + rowid;
+                                        string prevquantity = "prevquantity" + rowid;
+                                        string prevquantityvalue = "prevquantityvalue" + rowid;
+                                        string unit = "unit" + rowid;
+                                        string numbertype = "numberType" + rowid;
+                                        string itemtax = "ItemTax" + rowid;
+                                        string rate = "rate" + rowid;
+                                        string amount = "amount" + rowid;
+                                        string amountvalue = "amountvalue" + rowid;
+                                        string discountpercent = "discountpercent" + rowid;
+                                       
+                                    <tr>
+                                        <td style="text-align: center">
+                                            <input type="checkbox" id="@checkbox" name="@checkbox" onchange="CalculateRefundableAmount(@rowid)" /></td>
+                                        <td style="text-align: center">
+                                            @rowid
+                                        </td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal">@item.ItemName</label>
+                                            <input type="hidden" id="@itemcode" value="@item.ItemCode" />
+                                        </td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal">@item.Color</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@unit">@item.Unit</label>
+                                            <input type="hidden" id="@numbertype" name="@numbertype" value="@item.NumberType" />
+                                        </td>
+                                        @{
+                                               
+                                            <td style="text-align: center">
+                                                @if (item.ItemType == "Inventory")
+                                                {
+                                                    <label id="@stkqty"></label>
+                                                    <script type="text/javascript">
+                                                        GetStockQuantity("@rowid");
+                                                    </script>
+                                                }
+                                                else
+                                                {
+                                                    <label id="@stkqty">---</label>
+                                                }
+                                            </td>
+                                        }
+                                        <td style="text-align: center">
+                                            <label id="@prevquantity">@item.Balance</label>
+                                            <input type="hidden" id="@prevquantityvalue" name="@prevquantityvalue" value="@item.Balance" />
+                                        </td>
+                                        <td class="col-md-1 col-lg-1">
+                                            <input type="text" autocomplete="off" style="text-align: center" placeholder="Qty" class="form-control" disabled="disabled" id="@quantity" name="@quantity" value="0" onchange="CalculateAmount(@rowid)" onkeypress="return AllowDecimal(event,@rowid)" /></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@rate">@Convert.ToDouble(item.CostPrice).ToString("#,###.00##")</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@discountpercent">@item.DisPer</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@itemtax">@item.ItemTax</label></td>
+                                        <td style="text-align: center">
+                                            <label style="font-weight: normal" id="@amount">@Convert.ToDouble(item.Amount).ToString("#,###.00##")</label>
+                                            <input type="hidden" id="@amountvalue" name="@amountvalue" value="@item.Amount" />
+                                        </td>
+                                    </tr>
+                                                rowid += 1;
+                                    }
+                                    long ItemList = Model.InwardItemsFromSupplierList.Count() + Model.PurchaseReturnItemList.Count();
+                                    <input type="hidden" id="ItemListCount" name="ItemListCount" value="@ItemList" />
+                                    <script type="text/javascript">
+                                        CalculateTaxSummary();
+                                        CalculateTotalAmountAndGrandTotal();
+                                    </script>
+                                }
+                            </tbody>
+
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <div class="col-lg-7 col-md-7">
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    <label style="font-size: 14px">Tax Summary:</label>
+                </div>
+            </div>
+            <div id="ReturnAddTaxes">
+                <div class="row">
+                    <div class="col-md-3 col-lg-3">
+                        <label id="ReturnAddedAmount1">0</label>
+                        <input type="hidden" id="ReturnAddedAmounthdn1" name="ReturnAddedAmounthdn1" value="0" />
+                    </div>
+                    <div class="col-md-2 col-lg-2">
+                        <label id="ReturnAddedTax1">0%</label>
+                    </div>
+                    <div class="col-md-3 col-lg-3">
+                        <label id="ReturnAddedTaxAmount1">0</label>
+                        <input type="hidden" id="ReturnAddedTaxAmounthdn1" name="ReturnAddedTaxAmounthdn1" value="0" />
+                    </div>
+                </div>
+            </div>
+            <div id="AddTaxes" style="display:none">
+                @{
+                    if (Model.PurchaseInventoryTaxList.Count() != 0)
+                    {
+                        int taxcount = 1;
+                        foreach (var tax in Model.PurchaseInventoryTaxList)
+                        {
+                            string addedtax = "AddedTax" + taxcount;
+                            string taxnumber = "ItemTaxNumber" + taxcount;
+                            string addedtaxamount = "AddedTaxAmount" + taxcount;
+                            string addedtaxhdn = "AddedTaxAmounthdn" + taxcount;
+                            string addedamount = "AddedAmount" + taxcount;
+                            string addedamounthdn = "AddedAmounthdn" + taxcount;
+                            string itemtax = tax.Tax + "%";
+                    <div class="row">
+                        <div class="col-md-3 col-lg-3">
+                            <label id="@addedamount"><i class="fa fa-inr"></i>@Convert.ToDouble(tax.Amount).ToString("#,###.00##")</label>
+                            <input type="hidden" id="@addedamounthdn" name="@addedamounthdn" value="@tax.Amount" />
+                        </div>
+                        <div class="col-md-2 col-lg-2">
+                            <label id="@addedtax">@itemtax</label>
+                            <input type="hidden" id="@taxnumber" name="@taxnumber" value="@tax.Tax" />
+                        </div>
+                        <div class="col-md-7 col-lg-7">
+                            <label id="@addedtaxamount"><i class="fa fa-inr"></i>@Convert.ToDouble(tax.TaxAmount).ToString("#,###.00##")</label>
+                            <input type="hidden" id="@addedtaxhdn" name="@addedtaxhdn" value="@tax.TaxAmount" />
+                        </div>
+                    </div>
+                            taxcount++;
+                        }
+                    }
+                }
+            </div>
+        </div>
+        <div class="col-lg-5 col-md-5">
+            <div class="row">
+                <div class="col-lg-8 col-md-8" style="text-align: right">
+                    <label style="font-size: 14px;">Total Amount:</label>
+                </div>
+                <div class="col-lg-4 col-md-4" style="text-align: right">
+                    <label id="TotalAmount">
+                        @if (Model.PurchaseReturnDetails != null)
+                        {
+                            @Html.DisplayFor(model => model.PurchaseReturnDetails.TotalAmount)
+                        }
+                        else
+                        {
+                            @Html.DisplayFor(model => model.InwardFromSupplierDetails.TotalAmount)
+                        }
+
+                    </label>
+                    <input type="hidden" id="TotalAmountValue" name="TotalAmountValue" value="0" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-md-8" style="text-align: right">
+                    <label style="font-size: 14px;">Tax Amount:</label>
+                </div>
+                <div class="col-lg-4 col-md-4" style="text-align: right">
+                    @{
+                        double? itemtaxamount = 0;
+                        if (Model.PurchaseReturnDetails != null)
+                        {
+                            itemtaxamount = Model.PurchaseReturnDetails.TotalTaxAmount;
+                        }
+                        else
+                        {
+                            itemtaxamount = Model.InwardFromSupplierDetails.TotalTaxAmount;
+                        }
+                    }
+                    <label id="TotalTaxAmount">@Convert.ToDouble(itemtaxamount).ToString("#,###.00##")</label>
+                    <input type="hidden" id="TotalTaxAmountValue" name="TotalTaxAmountValue" value="@itemtaxamount" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-md-8" style="text-align: right">
+                    <label style="font-size: 14px;">Packing And Forwarding:</label>
+                </div>
+                <div class="col-lg-1 col-md-1"></div>
+                <div class="col-lg-3 col-md-3" style="text-align: right">
+                    @{
+                        double? PackAndForwd = 0;
+                        if (Model.PurchaseReturnDetails != null)
+                        {
+                            PackAndForwd = Model.PurchaseReturnDetails.PackAndForwd;
+                        }
+                        else
+                        {
+                            PackAndForwd = Model.InwardFromSupplierDetails.PackAndForwd;
+                        }
+                    }
+                    @Html.TextBoxFor(model => model.PurchaseReturnDetails.PackAndForwd, new { @class = "form-control", @autocomplete = "off", @placeholder = "0", @Value = @PackAndForwd, @style = "text-align:right", @onkeypress = "return AllowNumbers(event)", @onchange = "CalculateTotalAmountAndGrandTotal()" })
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-md-8" style="text-align: right">
+                    <label style="font-size: 14px;">Grand Total:</label>
+                </div>
+                <div class="col-lg-4 col-md-4" style="text-align: right">
+                    <label id="GrandTotal">
+                        @{
+                            double? GrandTotal = 0;
+                            if (Model.PurchaseReturnDetails != null)
+                            {
+                            @Html.DisplayFor(model => model.PurchaseReturnDetails.GrandTotal)
+                                GrandTotal = Model.PurchaseReturnDetails.GrandTotal;
+                            }
+                            else
+                            {
+                            @Html.DisplayFor(model => model.InwardFromSupplierDetails.GrandTotal)
+                                GrandTotal = Model.InwardFromSupplierDetails.GrandTotal;
+                            }
+                        }
+                    </label>
+                    <input type="hidden" id="GrandTotalValue" name="GrandTotalValue" value="@GrandTotal" />
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-lg-8 col-md-8" style="text-align: right">
+                    <label style="font-size: 14px;">Supplier Amount:</label>
+                </div>
+                <div class="col-lg-4 col-md-4" style="text-align: right">
+                    <i class="fa fa-inr" style="color: green"></i>
+                    <label id="SupplierAmountLabel" style="color: green">0</label>
+                    <input type="hidden" id="SupplierAmount" name="SupplierAmount" />
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

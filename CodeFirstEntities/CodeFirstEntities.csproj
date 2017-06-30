@@ -1,0 +1,251 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{584BA352-0884-4AC5-99B1-EEAB55EDFD16}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>CodeFirstEntities</RootNamespace>
+    <AssemblyName>CodeFirstEntities</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>SAK</SccProjectName>
+    <SccLocalPath>SAK</SccLocalPath>
+    <SccAuxPath>SAK</SccAuxPath>
+    <SccProvider>SAK</SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BackUpDatabase.cs" />
+    <Compile Include="BankAccountType.cs" />
+    <Compile Include="BankMaster.cs" />
+    <Compile Include="BankName.cs" />
+    <Compile Include="BarcodeNumber.cs" />
+    <Compile Include="BloodGroup.cs" />
+    <Compile Include="BrandMaster.cs" />
+    <Compile Include="CardChequeHandover.cs" />
+    <Compile Include="CashHandover.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CashierPayable.cs" />
+    <Compile Include="BillPayment.cs" />
+    <Compile Include="BillPaymentItem.cs" />
+    <Compile Include="CashierSalesBill.cs" />
+    <Compile Include="CashierSalesBillItem.cs" />
+    <Compile Include="CashierReceivable.cs" />
+    <Compile Include="CashierRetailBill.cs" />
+    <Compile Include="CashierRetailBillItem.cs" />
+    <Compile Include="CashierSalesOrder.cs" />
+    <Compile Include="CashierSalesOrderItem.cs" />
+    <Compile Include="CashierTemporaryCashMemo.cs" />
+    <Compile Include="CashierTemporaryCashMemoItem.cs" />
+    <Compile Include="Catalogue.cs" />
+    <Compile Include="City.cs" />
+    <Compile Include="BalanceCarryForward.cs" />
+    <Compile Include="CommissionMaster.cs" />
+    <Compile Include="CommissionProduct.cs" />
+    <Compile Include="CostCodeCreation.cs" />
+    <Compile Include="ItemName.cs" />
+    <Compile Include="PurchaseInventoryTax.cs" />
+    <Compile Include="PurchaseItemTaxMasters.cs" />
+    <Compile Include="RetailBillCreditNote.cs" />
+    <Compile Include="RetailBillCreditNoteItem.cs" />
+    <Compile Include="DebitNote.cs" />
+    <Compile Include="DebitNoteItem.cs" />
+    <Compile Include="DiscountMaster.cs" />
+    <Compile Include="DiscountMasterItem.cs" />
+    <Compile Include="EmployeesCompany.cs" />
+    <Compile Include="CreateDynamicDb.cs" />
+    <Compile Include="CustomerDetail.cs" />
+    <Compile Include="DeliveryChallan.cs" />
+    <Compile Include="DeliveryChallanItem.cs" />
+    <Compile Include="GetAllItemsFromStkDistrbtn.cs" />
+    <Compile Include="GetCashRowsBySO.cs" />
+    <Compile Include="GetItemCodesByQuotAndItemCode.cs" />
+    <Compile Include="GetItemsByQuotOrOrderNo.cs" />
+    <Compile Include="GetItemsFromItemMaster.cs" />
+    <Compile Include="GetPOListByPaymentStatusAndSupplier.cs" />
+    <Compile Include="GetUsersEmail.cs" />
+    <Compile Include="GodownStock.cs" />
+    <Compile Include="IncomeExpenseVoucher.cs" />
+    <Compile Include="InventoryTax.cs" />
+    <Compile Include="InwardToTailor.cs" />
+    <Compile Include="InwardFromGodown.cs" />
+    <Compile Include="InwardFromShopToGodown.cs" />
+    <Compile Include="InwardFromStockDistribution.cs" />
+    <Compile Include="InwardFromSupplier.cs" />
+    <Compile Include="InwardFromTailor.cs" />
+    <Compile Include="InwardFromTailorItem.cs" />
+    <Compile Include="InwardInterGodown.cs" />
+    <Compile Include="InwardInterGodownItem.cs" />
+    <Compile Include="InwardInterShop.cs" />
+    <Compile Include="InwardInterShopItem.cs" />
+    <Compile Include="InwardItemFromGodown.cs" />
+    <Compile Include="InwardItemFromShopToGodown.cs" />
+    <Compile Include="InwardItemFromStockDistribution.cs" />
+    <Compile Include="InwardItemsFromSupplier.cs" />
+    <Compile Include="InwardToTailorItems.cs" />
+    <Compile Include="JobWorker.cs" />
+    <Compile Include="JobWorkItem.cs" />
+    <Compile Include="JobWorkPayment.cs" />
+    <Compile Include="JobWorkType.cs" />
+    <Compile Include="ListOfItemCode.cs" />
+    <Compile Include="NonInventoryItem.cs" />
+    <Compile Include="OutwardInterShop.cs" />
+    <Compile Include="OutwardItemInterGodown.cs" />
+    <Compile Include="OutwardItemInterShop.cs" />
+    <Compile Include="OutwardItemShopToGodown.cs" />
+    <Compile Include="OutwardItemStockDistribution.cs" />
+    <Compile Include="OutwardShopToGodown.cs" />
+    <Compile Include="OutwardToClient.cs" />
+    <Compile Include="OutwardInterGodown.cs" />
+    <Compile Include="OutwardStockDistribution.cs" />
+    <Compile Include="OutwardToShop.cs" />
+    <Compile Include="OutwardItemToClient.cs" />
+    <Compile Include="OutwardItemToShop.cs" />
+    <Compile Include="OutwardToTailor.cs" />
+    <Compile Include="OutwardToTailorItem.cs" />
+    <Compile Include="PhysicalStockTaking.cs" />
+    <Compile Include="PurchaseReturn.cs" />
+    <Compile Include="PurchaseReturnItem.cs" />
+    <Compile Include="Quotation.cs" />
+    <Compile Include="QuotationItem.cs" />
+    <Compile Include="CashierRefundOrder.cs" />
+    <Compile Include="CashierRefundOrderItem.cs" />
+    <Compile Include="RequisitionForGodown.cs" />
+    <Compile Include="RequisitionForShop.cs" />
+    <Compile Include="RequisitionofNewItemsForShop.cs" />
+    <Compile Include="RequisitionOfPo.cs" />
+    <Compile Include="ResetRetailBill.cs" />
+    <Compile Include="ResetRetailBillAdjAmtDetail.cs" />
+    <Compile Include="ResetRetailBillItem.cs" />
+    <Compile Include="ResetSalesBill.cs" />
+    <Compile Include="ResetSalesBillAdjAmtDetail.cs" />
+    <Compile Include="ResetSalesBillItem.cs" />
+    <Compile Include="RetailBillAdjAmtDetail.cs" />
+    <Compile Include="RetailBillItem.cs" />
+    <Compile Include="RetailBill.cs" />
+    <Compile Include="SalesBill.cs" />
+    <Compile Include="ClientBankDetail.cs" />
+    <Compile Include="ClientMaster.cs" />
+    <Compile Include="ColorCode.cs" />
+    <Compile Include="Company.cs" />
+    <Compile Include="companybankdetail.cs" />
+    <Compile Include="Country.cs" />
+    <Compile Include="Currency.cs" />
+    <Compile Include="Department.cs" />
+    <Compile Include="DesignMaster.cs" />
+    <Compile Include="District.cs" />
+    <Compile Include="DesignationMaster.cs" />
+    <Compile Include="EmployeeMaster.cs" />
+    <Compile Include="EntryStockItem.cs" />
+    <Compile Include="EntryStockMaster.cs" />
+    <Compile Include="GenerateItemCode.cs" />
+    <Compile Include="GodownAddress.cs" />
+    <Compile Include="GodownMaster.cs" />
+    <Compile Include="Item.cs" />
+    <Compile Include="ItemCategory.cs" />
+    <Compile Include="ItemSubCategory.cs" />
+    <Compile Include="itemTempDetail.cs" />
+    <Compile Include="BarcodeTempDetail.cs" />
+    <Compile Include="ItemTruncate.cs" />
+    <Compile Include="LabMaster.cs" />
+    <Compile Include="logindetail.cs" />
+    <Compile Include="MainApplication.cs" />
+    <Compile Include="MainTaxMaster.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="MonthExperience.cs" />
+    <Compile Include="PurchaseItemDetail.cs" />
+    <Compile Include="PurchaseOrderDetail.cs" />
+    <Compile Include="SalesBillAdjAmtDetail.cs" />
+    <Compile Include="SalesBillCreditNote.cs" />
+    <Compile Include="SalesBillCreditNoteItem.cs" />
+    <Compile Include="SalesBillItem.cs" />
+    <Compile Include="SalesIncentiveMaster.cs" />
+    <Compile Include="SalesOrder.cs" />
+    <Compile Include="SalesOrderItem.cs" />
+    <Compile Include="SalesReturn.cs" />
+    <Compile Include="SalesReturnItem.cs" />
+    <Compile Include="ShopMaster.cs" />
+    <Compile Include="ShopRequisitionGodown.cs" />
+    <Compile Include="ShopRequisitionGodownItem.cs" />
+    <Compile Include="ShopRequisitionGodownitemsalesbill.cs" />
+    <Compile Include="ShopRequisitionGodownsalesbill.cs" />
+    <Compile Include="ShopStock.cs" />
+    <Compile Include="State.cs" />
+    <Compile Include="OpeningStockMaster.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StockDistribution.cs" />
+    <Compile Include="StockItemDistribution.cs" />
+    <Compile Include="SubTaxMaster.cs" />
+    <Compile Include="SupplierBankDetail.cs" />
+    <Compile Include="SupplierMaster.cs" />
+    <Compile Include="ItemTaxMaster.cs" />
+    <Compile Include="JobWorkStock.cs" />
+    <Compile Include="JobWorkOutwardToClient.cs" />
+    <Compile Include="TaxSessionMaster.cs" />
+    <Compile Include="TemporaryCashMemo.cs" />
+    <Compile Include="TemporaryCashMemoAdjAmtDetail.cs" />
+    <Compile Include="TemporaryCashMemoItem.cs" />
+    <Compile Include="TransportBankDetail.cs" />
+    <Compile Include="TransportMaster.cs" />
+    <Compile Include="TruncateTable.cs" />
+    <Compile Include="TypeOfMaterial.cs" />
+    <Compile Include="TypeOfSupplier.cs" />
+    <Compile Include="UnitConversion.cs" />
+    <Compile Include="UnitMaster.cs" />
+    <Compile Include="UniversalBarcodeNumber.cs" />
+    <Compile Include="UpdateDynamicDb.cs" />
+    <Compile Include="User.cs" />
+    <Compile Include="UserCredential.cs" />
+    <Compile Include="ValidationCompany.cs" />
+    <Compile Include="YearExperience.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Content\bootstrap-theme.css" />
+    <Content Include="Content\bootstrap-theme.min.css" />
+    <Content Include="Content\bootstrap.css" />
+    <Content Include="Content\bootstrap.min.css" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Content\bootstrap-theme.css.map" />
+    <None Include="Content\bootstrap.css.map" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

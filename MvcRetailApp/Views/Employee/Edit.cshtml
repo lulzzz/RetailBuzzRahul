@@ -1,0 +1,506 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "Edit";
+}
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("textarea").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+<script>
+    $(function () {
+        var $elem = $('#content');
+
+        $('#nav_up').fadeIn('slow');
+        $('#nav_down').fadeIn('slow');
+
+        $(window).bind('scrollstart', function () {
+            $('#nav_up,#nav_down').stop().animate({ 'opacity': '0.2' });
+        });
+        $(window).bind('scrollstop', function () {
+            $('#nav_up,#nav_down').stop().animate({ 'opacity': '1' });
+        });
+
+        $('#nav_down').click(
+            function (e) {
+                $('html, body').animate({ scrollTop: $elem.height() }, 800);
+            }
+        );
+        $('#nav_up').click(
+            function (e) {
+                $('html, body').animate({ scrollTop: '0px' }, 800);
+            }
+        );
+    });
+</script>
+
+<script type="text/javascript">
+    function UpdateEmployeeData() {
+        var cnt = 0;
+        if ($("#EmployeeDetails_Name").val() == "" || $("#EmployeeDetails_DateOfJoining").val() == "" || $("#EmployeeDetails_Address").val() == "" ||
+            $("#EmployeeDetails_MobileNo").val() == "" || $("#ddlExpMonths").val() == "" ||
+            $("#EmployeeDetails_DateOfBirth").val() == "" || $("#ddlExpYr").val() == "" || $("#EmployeeDetails_Salary").val() == "" ||
+            $("#ddlState").val() == "" || $("#ddlCity").val() == "" || $("#EmployeeDetails_PFNO").val() == "") {
+            return false;
+        }
+        else if ($("#EmployeeDetails_MobileNo").val().length < 7 || $("#EmployeeDetails_MobileNo").val().length > 14 ||
+                $("#EmployeeDetails_Salary").val().length < 1 || $("#EmployeeDetails_Salary").val().length > 8) {
+            alert("2")
+            return false;
+        }
+        else {
+            if ($("#EmployeeDetails_ResidenceNo").val() != "") {
+                if ($("#EmployeeDetails_ResidenceNo").val().length < 7 || $("#EmployeeDetails_ResidenceNo").val().length > 14) {
+                    alert("3")
+                    return false;
+                }
+            }
+
+            if ($("#EmployeeDetails_Email").val() != "") {
+                $.ajax({
+                    url: '/User/EmailValidate',
+                    dataType: 'json',
+                    async: false,
+                    data: { email: $("#EmployeeDetails_Email").val() },
+                    success: function (data) {
+                        if (data != 'true') {
+                            errorcount++;
+                            alertbox("invalid email");
+                            alert("4")
+                            return false;
+                        }
+                    }
+                });
+            }
+
+            if ($("#ddlBankNames").val() != "") {
+                if ($("ddlBranchname").val() == 0 || $("#EmployeeDetails_AccountType").val() == "" || $("#EmployeeDetails_Account_No").val() == "") {
+                    alertbox("BranchName,Account Type and Account Number are required");
+                    cnt++;
+                    return false;
+                }
+
+            }
+            if ($("#EmployeeDetails_Account_No").val() != "") {
+                if ($("#EmployeeDetails_Account_No").val().length > 25 || $("#EmployeeDetails_Account_No").val().length < 10) {
+                    alertbox("Account No should be between 10 and 25");
+                    cnt++;
+                    return false;
+                }
+            }
+        }
+
+
+        if (cnt == 0) {
+            //$("#Update").attr("disabled", true);
+            var count = document.getElementById("EmployeeRowValue").value;
+            var employeename = "employeename" + count;
+            var txt = document.getElementById("EmployeeDetails_Name").value;
+            txt = txt.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+            document.getElementById(employeename).innerHTML = txt;
+            document.getElementById("EmployeeDetails_Name").value = txt;
+
+            var file = $("#file").val().toString();
+            file = file.substring(file.lastIndexOf('\\'), file.length).substring(1);
+            var formdata = new FormData();
+            var fileInput = document.getElementById("file");
+            if (document.getElementById("file").value != "") {
+                formdata.append(fileInput.files[0].name, fileInput.files[0]);
+                document.getElementById("EmployeeDetails_Photo").value = file;
+            }
+            else {
+                document.getElementById("EmployeeDetails_Photo").value = " ";
+            }
+            var empmaster = {
+                EmpId: $("#EmployeeDetails_EmpId").val(),
+                EmployeeCode: $("#EmployeeDetails_EmployeeCode").val(),
+                Name: $("#EmployeeDetails_Name").val(),
+                Address: $("#EmployeeDetails_Address").val(),
+                MobileNo: $("#EmployeeDetails_MobileNo").val(),
+                ResidenceNo: $("#EmployeeDetails_ResidenceNo").val(),
+                Email: $("#EmployeeDetails_Email").val(),
+                DateOfBirth: $("#EmployeeDetails_DateOfBirth").val(),
+                Age: $("#EmployeeDetails_Age").val(),
+                department: $("#ddldepartment").val(),
+                Designation: $("#Designation").val(),
+                totalExpYear: $("#ddlExpYr").val(),
+                totalExpmonth: $("#ddlExpMonths").val(),
+                Salary: $("#EmployeeDetails_Salary").val(),
+                DateOfJoining: $("#EmployeeDetails_DateOfJoining").val(),
+                bloodgroup: $("#ddlBGroup").val(),
+                PancardNo: $("#EmployeeDetails_PancardNo").val(),
+                ESIC: $("#EmployeeDetails_ESIC").val(),
+                PFNO: $("#EmployeeDetails_PFNO").val(),
+                AadharNo: $("#EmployeeDetails_AadharNo").val(),
+                State: $("#ddlState").val(),
+                City: $("#ddlCity").val(),
+                CommissionType: $("#EmployeeDetails_CommissionType").val(),
+                Industry: $("#ddlIndustry").val(),
+                BankName: $("#bankname").val(),
+                branch: $("#ddlBranchname").val(),
+                BankIFSCNo: $("#EmployeeDetails_BankIFSCNo").val(),
+                BankAddress: $("#EmployeeDetails_BankAddress").val(),
+                AccountType: $("#EmployeeDetails_AccountType").val(),
+                Account_No: $("#EmployeeDetails_Account_No").val(),
+                MICRCode: $("#EmployeeDetails_MICRCode").val(),
+                Photo: $("#EmployeeDetails_Photo").val(),
+            };
+
+            document.getElementById("ddlDesignation").disabled = false;
+            var rtype = $("#Designation").val();
+            var ltype = $("#ddlDesignation").val();
+            if (rtype != ltype) {
+                document.getElementById("rowId" + count).style.display = "none";
+            }
+
+            $.ajax({
+                url: '/Employee/EditDetails',
+                contentType: "application/json; charset=utf-8",
+                type: "POST",
+                data: JSON.stringify(empmaster),
+                datatype: "json",
+                success: function (data) {
+                    var formdata = new FormData();
+                    var fileInput = document.getElementById("file");
+                    if (document.getElementById("file").value != "") {
+                        formdata.append(fileInput.files[0].name, fileInput.files[0]);
+                    }
+                    var xhr = new XMLHttpRequest();
+                    xhr.open('POST', '/Employee/InsertPhoto?id=' + document.getElementById("EmployeeDetails_EmpId").value);
+                    xhr.send(formdata);
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState == 4 && xhr.status == 200) {
+                            document.getElementById("Data").innerHTML = "";
+                            document.getElementById("ResultEmployeeMaster").style.display = "inline";
+                            document.getElementById("SearchText").disabled = false;
+                            document.getElementById("SearchButton").disabled = false;
+                            document.getElementById("pager").style.display = "inline";
+                            document.getElementById("rowId" + count).style.background = "#F1DDE7";
+                            $("#ResultEmployeeMaster").html(xhr.responseText);
+                        }
+                    }
+                }
+            });
+            var cnt = document.getElementById("getrows").value;
+            for (var i = 1; i <= cnt; i++) {
+                var lineId = "lineId" + i;
+                var editId = "editId" + i;
+                var labelEditId = "labelEditId" + i;
+
+                if (document.getElementById(editId) != null) {
+                    document.getElementById(editId).style.display = "inline";
+                    document.getElementById(labelEditId).style.display = "none";
+                }
+            }
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#ddlDesignation").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel != "") {
+                $.ajax({
+                    url: '/Employee/GetEmployeeDetails',
+                    type: "POST",
+                    data: { designation: idmodel },
+                    success: function (data) {
+                        if (data != null) {
+                            document.getElementById("list").style.display = "inline";
+                            document.getElementById("SearchNames").style.display = "inline";
+                            $("#list").html(data);
+                        }
+                    }
+                });
+            }
+            else {
+                document.getElementById("list").style.display = "none";
+                document.getElementById("SearchNames").style.display = "none";
+                document.getElementById("Data").innerHTML = "";
+                document.getElementById("ResultEmployeeMaster").innerHTML = "";
+                document.getElementById("uparrows").style.display = "none";
+                //document.getElementById("downarrows").style.display = "none";
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function Edit(empid, cnt, count) {
+
+        document.getElementById("ResultEmployeeMaster").style.display = "none";
+        document.getElementById("LoadPartialView").style.display = "inline";
+        for (var i = 1; i <= cnt; i++) {
+            //var deleteId = "deleteId" + i;
+            var lineId = "lineId" + i;
+            var allRowId = "rowId" + i;
+            var editId = "editId" + i;
+            var labelEditId = "labelEditId" + i;
+
+            if (document.getElementById(editId) != null) {
+                document.getElementById(editId).style.display = "none";
+                document.getElementById(labelEditId).style.display = "inline";
+                document.getElementById(allRowId).style.backgroundColor = "#F1DDE7";
+            }
+        }
+        var rowId = "rowId" + count;
+        if (document.getElementById(rowId) != null) {
+            document.getElementById(rowId).style.backgroundColor = "lightgreen";
+            var typeOfSuppilerData = document.getElementById("ddlDesignation").value;
+            document.getElementById("ddlDesignation").disabled = true;
+            document.getElementById("SearchText").disabled = true;
+            document.getElementById("SearchButton").disabled = true;
+            document.getElementById("pager").style.display = "none";
+
+            $.ajax({
+                url: '/Employee/EditDetails',
+                type: "GET",
+                data: { value: empid },
+                success: function (data) {
+                    if (data != null) {
+                        document.getElementById("Data").style.display = "inline";
+                        $("#Data").html(data);
+                        document.getElementById("DisplayValues").style.display = "inline";
+                        document.getElementById("DisplayAllValues").style.display = "inline";
+                        document.getElementById("Display").style.display = "inline";
+                        document.getElementById("DisplayMICR").style.display = "inline";
+                    }
+                }
+            });
+        }
+        document.getElementById("uparrows").style.display = "inline";
+        //document.getElementById("downarrows").style.display = "inline"
+        $("#TotalNumberOfEmployees").val(cnt);
+        $("#EmployeeRowValue").val(count);
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#SearchButton").click(function () {
+            var searchData = document.getElementById("SearchText").value;
+            $.ajax({
+                url: '/Employee/EmployeeDetails',
+                data: { id: searchData },
+                type: "GET",
+                success: function (data) {
+                    if (data != null) {
+                        document.getElementById("list").style.display = "inline";
+                        $("#list").html(data);
+                    }
+                },
+                error: function () {
+                }
+            });
+        });
+    });
+</script>
+
+@Html.Partial("../Shared/Header")
+<!-- Start: Header -->
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- Start: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="EmployeeRowValue" name="EmployeeRowValue" />
+        <input type="hidden" id="TotalNumberOfEmployees" name="TotalNumberOfEmployees" />
+        @*<input type="hidden" id="DeleteEmployeeRow" name="DeleteEmployeeRow" />*@
+        <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+            <source src="" type="audio/ogg" />
+        </audio>
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+                <br />
+                <div class="col-md-12 col-lg-12">
+                    <div class="row">
+                        <div class="form-group col-md-4 col-lg-4">
+                            <div class="form-group col-md-11 col-lg-11">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="row">
+                                            <div class="form-group col-md-11 col-lg-11">
+                                                <label for="exampleInputname">Designation</label>
+
+                                                @Html.DropDownListFor(model => model.EmployeeDetails.Designation, new SelectList(Model.EmployeeDetails.DesignationList, "DesignationName",
+                                                "DesignationName", Model.EmployeeDetails.Designation), "Select Designation", new { id = "ddlDesignation", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                        <div class="row" id="SearchNames" style="display: none">
+                                            <div class="row">
+                                                <div class="form-group col-md-12 col-lg-12">
+                                                    @Html.Label("Search")
+                                                    <div class="row">
+                                                        <div class="form-group col-md-8 col-lg-8">
+                                                            @Html.TextBox("search", ViewData.TemplateInfo.FormattedModelValue, new { placeholder = "Search", @class = "form-control", id = "SearchText" })
+                                                        </div>
+                                                        <button type="button" id="SearchButton" class="btn btn-primary glyphicon glyphicon-search" style="width: 75px"></button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-12 col-lg-12">
+                                            <div class="form-group col-md-12 col-lg-12">
+                                                <div class="row">
+                                                    <div class="form-group col-md-12 col-lg-12">
+                                                        <div id="list"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="float: left; min-height: 630px; width: 1px; background-color: lightgrey;"></div>
+                        </div>
+
+                        <div class="form-group col-md-8 col-lg-8" id="LoadPartialView">
+                            <div id="Data"></div>
+                        </div>
+                        <div class="form-group col-md-8 col-lg-8">
+                            <div id="ResultEmployeeMaster"></div>
+                        </div>
+                    </div>
+
+                    <div id="uparrows" style="display: none">
+                        <div class="nav_up" id="nav_up"><i class="glyphicon glyphicon-chevron-up" style="padding-left: 5px; color: white;"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+

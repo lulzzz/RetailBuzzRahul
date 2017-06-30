@@ -1,0 +1,245 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetEditSalesOrderItemDetails";
+}
+
+@*if payment type can not be change like credit card payment converted into debit card then payment type 
+is same as pervious database payment type*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("PaymentType").value = document.getElementById("PayType").value;
+    });
+</script>
+
+@{
+    var paytype = Model.CashierSalesOrderDetails.PaymentType;
+    <input type="hidden" id="PayType" name="PayType" value="@paytype"/>
+}
+
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.Id)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.CashierCode)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.CashierDate)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.OrderDate)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.ClientName)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.ClientState)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.ClientContact)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.ClientType)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.ClientFormType)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.TotalAmount)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.PackAndForwd)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.TotalTaxAmount)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.AdvancePayment)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.TotalAdvancePayment)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.GrandTotal)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.Balance)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.SavingFrom)
+@Html.HiddenFor(model => model.CashierSalesOrderDetails.HandoverStatus)
+
+<div class="col-lg-12 col-md-12" style="text-align: right">
+    <label style="font-size: 14px">Cash Receive No:</label>
+    <label style="font-size: 14px">@Html.DisplayFor(model => model.CashierSalesOrderDetails.CashierCode)</label>
+</div>
+
+<div style="height: 10px"></div>
+
+
+
+<table style="border: 1px double; width: 100%">
+    <tr>
+        <td>
+            <div class="col-md-12 col-lg-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>S.N.</th>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th>Color</th>
+                            <th>Unit</th>
+                            <th style="text-align: right">Qty</th>
+                            <th style="text-align: right">Rate</th>
+                            <th style="text-align: right">Disc<br />
+                                (%)</th>
+                            <th style="text-align: right">Disc<br />
+                                (<i class="fa fa-inr"></i>)</th>
+                            <th style="text-align: right">Tax<br />
+                                (%)</th>
+                            <th style="text-align: right">Amt<br />
+                                (<i class="fa fa-inr"></i>)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            // IF CASHIER SALES ORDER IS SELECTED
+                            if (Model.CashierSalesOrderItemList != null && Model.CashierSalesOrderItemList.Any())
+                            {
+                                string row1 = string.Empty;
+                                int rowid = 1;
+
+                                foreach (var item in Model.CashierSalesOrderItemList)
+                                {
+                                    row1 = "row" + rowid;
+                            <tr id="@row1">
+                                @{
+                                    double Qty = Convert.ToDouble(@item.Quantity);
+                                    var quantity = Qty.ToString("#,###.00##");
+                                    double SellingPrice = Convert.ToDouble(@item.SellingPrice);
+                                    var sellingprice = SellingPrice.ToString("#,###.00##");
+                                    double disrs = Convert.ToDouble(@item.DisInRs);
+                                    var DisRs = disrs.ToString("#,###.00##");
+                                    double disper = Convert.ToDouble(@item.DisInPer);
+                                    var DisPer = disper.ToString("#,###.00##");
+                                    double tax = Convert.ToDouble(@item.ItemTax);
+                                    var Tax = tax.ToString("#,###.00##");
+                                    double Amt = Convert.ToDouble(@item.Amount);
+                                    var amount = Amt.ToString("#,###.00##");
+                                }
+                                <td>@rowid</td>
+                                <td>@item.ItemCode</td>
+                                <td>@item.ItemName</td>
+                                <td>@item.Color</td>
+                                <td>@item.Unit</td>
+                                <td style="text-align: right">@quantity</td>
+                                <td style="text-align: right">@sellingprice</td>
+                                <td style="text-align: right">@DisPer</td>
+                                <td style="text-align: right">@DisRs</td>
+                                <td style="text-align: right">@Tax</td>
+                                <td style="text-align: right">@amount</td>
+                            </tr>
+                                    rowid = rowid + 1;
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+<br />
+
+@{
+    if (Model.CashierSalesOrderDetails != null)
+    {
+    <div class="col-lg-7 col-md-7"></div>
+    <div class="col-lg-5 col-md-5">
+
+        @{
+        double ttlamt = Convert.ToDouble(@Model.CashierSalesOrderDetails.TotalAmount);
+        var totalamount = ttlamt.ToString("#,###.00##");
+        double packford = Convert.ToDouble(@Model.CashierSalesOrderDetails.PackAndForwd);
+        var PackFord = packford.ToString("#,###.00##");
+        double taxamt = Convert.ToDouble(@Model.CashierSalesOrderDetails.TotalTaxAmount);
+        var TaxAmt = taxamt.ToString("#,###.00##");
+        double advpay = Convert.ToDouble(@Model.CashierSalesOrderDetails.AdvancePayment);
+        var AdvPay = advpay.ToString("#,###.00##");
+        double grndttl = Convert.ToDouble(@Model.CashierSalesOrderDetails.GrandTotal);
+        var GrandTtl = grndttl.ToString("#,###.00##");
+        double bal = Convert.ToDouble(@Model.CashierSalesOrderDetails.Balance);
+        var Bal = bal.ToString("#,###.00##");
+
+        //calculate advance paid amount
+        var ttladvpay = Convert.ToDouble(@Model.CashierSalesOrderDetails.TotalAdvancePayment);
+        var advpaid = ttladvpay - advpay;
+        var AdvPaid = advpaid.ToString("#,###.00##");
+        }
+
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Total Amount:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="TotalAmount" style="font-size: 14px;">@totalamount</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Packaging & Forwarding:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="PackFord" style="font-size: 14px;">@PackFord</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Tax Amount:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="TaxAmount" style="font-size: 14px;">@TaxAmt</label>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Grand Total:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="GrandTotal" style="font-size: 14px;">@GrandTtl</label>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Advance Paid:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="AdvancePaid" style="font-size: 14px;">@AdvPaid</label>
+            </div>
+        </div>
+        @*<div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Advance Payment:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="AdvancePayment" style="font-size: 14px;">@AdvPay</label>
+            </div>
+        </div>*@
+
+        @*IF UPDATE CASHIER WITH DIRECT SALES ORDER THEN CAN NOT CHANGE PAYMENT AMOUNT*@
+        @{
+        if (@Model.CashierSalesOrderDetails.SavingFrom == "SalesOrder")
+        {
+            <div class="row">
+                <div class="col-lg-7 col-md-7" style="text-align: right">
+                    <label style="font-size: 14px;">Advance Payment:</label>
+                </div>
+                <div class="col-lg-5 col-md-5" style="text-align: right">
+                    <label id="AdvancePayment" style="font-size: 14px;">@AdvPay</label>
+                </div>
+            </div>
+            
+            <script>
+                document.getElementById("UpdateSOType").value = "SalesOrder";
+            </script>
+        }
+        else if (@Model.CashierSalesOrderDetails.SavingFrom == "AdditionalAdvance")
+        {
+            <div class="row">
+                <div class="col-lg-7 col-md-7" style="text-align: right">
+                    <label style="font-size: 14px;">Advance Payment:</label>
+                </div>
+                <div class="col-lg-5 col-md-5" style="text-align: right">
+                    <input type="text" id="AdvancePaymentTxtBox" name="AdvancePaymentTxtBox" class="form-control" value="@AdvPay" style="text-align:right" onchange="EmptyCashPaymentDetails()"/>
+                     <input type="hidden" id="AdvPayLabelVal" name="AdvPayLabelVal" value="@AdvPay">
+                </div>
+            </div>
+            
+            <script>
+                document.getElementById("UpdateSOType").value = "AdditionalAdvance";
+            </script>
+        }
+        }
+
+        <div class="row">
+            <div class="col-lg-7 col-md-7" style="text-align: right">
+                <label style="font-size: 14px;">Balance:</label>
+            </div>
+            <div class="col-lg-5 col-md-5" style="text-align: right">
+                <label id="Balance" style="font-size: 14px;">@Bal</label>
+            </div>
+        </div>
+    </div>
+    }
+   
+}
+
+

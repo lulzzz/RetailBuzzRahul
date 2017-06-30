@@ -1,0 +1,131 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CardPayment";
+}
+
+@*DISPLAY CARD DETAILS*@
+<script type="text/javascript">
+    function CardDetails() {
+        document.getElementById("blankdiv").style.display = 'none';
+        var card = document.getElementById("Card").value;
+        if (card != "") {
+            if (card == "CreditCard") {
+                document.getElementById("debitdiv1").style.display = 'none';
+                document.getElementById("debitdiv2").style.display = 'none';
+                document.getElementById("creditdiv1").style.display = 'inline';
+                document.getElementById("creditdiv2").style.display = 'inline';
+                document.getElementById("save").disabled = false;
+            }
+            else {
+                document.getElementById("debitdiv1").style.display = 'inline';
+                document.getElementById("debitdiv2").style.display = 'inline'
+                document.getElementById("creditdiv1").style.display = 'none';
+                document.getElementById("creditdiv2").style.display = 'none';
+                document.getElementById("save").disabled = false;
+            }
+        }
+        else {
+            document.getElementById("debitdiv1").style.display = 'none';
+            document.getElementById("debitdiv2").style.display = 'none';
+            document.getElementById("creditdiv1").style.display = 'none';
+            document.getElementById("creditdiv2").style.display = 'none';
+            document.getElementById("save").disabled = true;
+        }
+    }
+</script>
+
+<div class="col-lg-12 col-md-12">
+    <table style="border: 1px double; width: 100%">
+         <tr>
+            <td><div style="height:3px" class="form-group"></div></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="col-lg-12 col-md-12">
+                    <div class="col-lg-3 col-md-3">
+                        <label>Select Card<i style="color: red">*</i></label><br />
+                        <select class="form-control" id="Card" name="Card" onchange="CardDetails()">
+                            <option value="">Select</option>
+                            <option value="CreditCard">Credit Card</option>
+                            <option value="DebitCard">Debit Card</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-9 col-md-9" id="blankdiv"></div>
+                    <div id="creditdiv1" style="display:none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard No.<i style="color: red">*</i></label><br />
+                            @Html.TextBoxFor(model => model.BillPaymentDetails.CreditCardNo, new { @class = "form-control", @placeholder = "Card No" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard Amount<i style="color: red">*</i></label><br />
+                            @Html.TextBoxFor(model => model.BillPaymentDetails.CreditCardAmount, new { @class = "form-control", @placeholder = "Amount", @onkeypress="return AllowNumbers(event)" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard Type<i style="color: red">*</i></label><br />
+                            @Html.DropDownListFor(model => model.BillPaymentDetails.CreditCardType, new List<SelectListItem> { new SelectListItem { Text = "Visa" }, new SelectListItem { Text = "Master" }, new SelectListItem { Text = "Platinum" }, new SelectListItem { Text = "Gold" }, new SelectListItem { Text = "Business" }, new SelectListItem { Text = "Silver" } }, "Select Type", new { @class = "form-control" })
+                        </div>
+                        
+                    </div>
+                    <div id="debitdiv1" style="display:none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Name<i style="color: red">*</i></label><br />
+                            @Html.TextBoxFor(model => model.BillPaymentDetails.DebitCardName, new { @class = "form-control", @placeholder = "Name" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard No.<i style="color: red">*</i></label><br />
+                            @Html.TextBoxFor(model => model.BillPaymentDetails.DebitCardNo, new { @class = "form-control", @placeholder = "Card No" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Amount<i style="color: red">*</i></label><br />
+                            @Html.TextBoxFor(model => model.BillPaymentDetails.DebitCardAmount, new { @class = "form-control", @placeholder = "Amount", @onkeypress="return AllowNumbers(event)" })
+                        </div>
+                        
+                    </div>
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><div style="height:3px" class="form-group"></div></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td>
+                <div class="col-lg-12 col-md-12">
+                    <div id="creditdiv2" style="display: none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard Bank<i style="color: red">*</i></label><br />
+                            @Html.TextBoxFor(model => model.BillPaymentDetails.CreditCardBank, new { @class = "form-control", @placeholder = "Bank name" })
+                        </div>
+                    </div>
+                    <div id="debitdiv2" style="display: none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Type<i style="color: red">*</i></label><br />
+                            @Html.DropDownListFor(model => model.BillPaymentDetails.DebitCardType, new List<SelectListItem> { new SelectListItem { Text = "Visa" }, new SelectListItem { Text = "Master" }, new SelectListItem { Text = "Platinum" }, new SelectListItem { Text = "Gold" }, new SelectListItem { Text = "Business" }, new SelectListItem { Text = "Silver" } }, "Select Type", new { @class = "form-control" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Bank<i style="color: red">*</i></label><br />
+                            @Html.TextBoxFor(model => model.BillPaymentDetails.DebitCardBank, new { @class = "form-control", @placeholder = "Bank name" })
+                        </div>
+                    </div>
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+        <tr>
+            <td><div style="height:3px" class="form-group"></div></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>

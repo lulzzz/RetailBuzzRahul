@@ -1,0 +1,539 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetClientPendingBills";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        document.getElementById("ClientName").innerHTML = window.opener.document.getElementById("ClientName").value;
+    });
+</script>
+
+<script type="text/javascript">
+    //SELECT ALL CHECKBOXES ON SELECT ALL CHECKBOX BUTTON
+    function SelectAllCheckbox() {
+        var count = document.getElementById("ItemList").value;
+        if ($("#SelectAllId").attr("checked")) {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                $("#" + chkbox).attr("checked", true);
+            }
+        }
+        else {
+            for (i = 1; i <= count; i++) {
+                var chkbox = "CheckBox" + i;
+                $("#" + chkbox).attr("checked", false);
+            }
+        }
+    }
+</script>
+
+@*ADD SELECTED ITEMS IN MAIN PAGE*@
+<script type="text/javascript">
+    function AddItemsInMainPage() {
+
+        var count = document.getElementById("ItemList").value;
+        var counter = 0;
+
+        for (i = 1; i <= count; i++) {
+            checkbox = "CheckBox" + i;
+
+            if ($("#" + checkbox).attr("checked")) {
+                counter = 1;
+            }
+        }
+
+        if (counter == 1) {
+            window.opener.document.getElementById("ItemDetails").innerHTML = "";
+            var rowid = 0;
+            for (i = 1; i <= count; i++) {
+
+                row = "row" + i;
+                checkbox = "CheckBox" + i;
+                billno = "BillNo" + i;
+                itemcode = "ItemCode" + i;
+                itemname = "ItemName" + i;
+                quantity = "Quantity" + i;
+                stkqty = "StkQty" + i;
+                shopqty = "ShopQty" + i;
+                itemtype = "ItemType" + i;
+                unit = "Unit" + i;
+                numbertype = "NumberType" + i;
+                sellingprice = "SellingPrice" + i;
+                mrp = "MRP" + i;
+                costprice = "CostPrice" + i;
+                balance = "Balance" + i;
+                amount = "Amount" + i;
+                description = "Description" + i;
+                color = "Color" + i;
+                material = "Material" + i;
+                designcode = "DesignCode" + i;
+                designname = "DesignName" + i;
+                brand = "Brand" + i;
+                size = "Size" + i;
+                disinrs = "DisRs" + i;
+                disinper = "DisPer" + i;
+                itemtax = "ItemTax" + i;
+                itemtaxamt = "ItemTaxAmt" + i;
+                barcode = "Barcode" + i;
+
+                if ($("#" + checkbox).attr("checked")) {
+
+                    rowid = +rowid + 1;
+
+                    row = "row" + rowid;
+                    selectbillno = "BillNo" + rowid;
+                    selectitemcode = "ItemCode" + rowid;
+                    selectitemcodeval = "ItemCodeVal" + rowid;
+                    selectitemname = "ItemName" + rowid;
+                    selectquantity = "Quantity" + rowid;
+                    selectstkqty = "StkQty" + rowid;
+                    selectshopqty = "ShopQty" + rowid;
+                    selectitemtype = "ItemType" + rowid;
+                    selectunit = "Unit" + rowid;
+                    selectunitval = "UnitVal" + rowid;
+                    selectnumbertype = "NumberType" + rowid;
+                    selectsellingprice = "SellingPrice" + rowid;
+                    selectmrp = "MRP" + rowid;
+                    selectcostprice = "CostPrice" + rowid;
+                    selectamount = "Amount" + rowid;
+                    selectamountval = "AmountVal" + rowid;
+                    selectdescription = "Description" + rowid;
+                    selectcolor = "Color" + rowid;
+                    selectmaterial = "Material" + rowid;
+                    selectdesigncode = "DesignCode" + rowid;
+                    selectdesignname = "DesignName" + rowid;
+                    selectbrand = "Brand" + rowid;
+                    selectsize = "Size" + rowid;
+                    selectdisinrs = "DisRs" + rowid;
+                    selectdisinper = "DisPer" + rowid;
+                    selectitemtax = "ItemTax" + rowid;
+                    selectitemtaxval = "ItemTaxVal" + rowid;
+                    selectitemtaxamt = "ItemTaxAmt" + rowid;
+                    selectbarcode = "Barcode" + rowid;
+
+                    var ItemList = window.opener.$("#ItemDetails");
+                    ItemList.append(
+                    "<tr id='" + row + "'><td style='text-align:center'>" + rowid + "</td>" +
+                    "<td style='text-align:center'><label>" + $("#" + billno).val() + "</label></td>" +
+                    "<td class='col-md-1 col-lg-1 col-sm-1' style='text-align:center'><input type='text' name='" + selectbarcode + "' id='" + selectbarcode + "' value='" + $("#" + barcode).val() + "' class='form-control'style='text-align:center' disabled='disabled' /></td>" +
+                    "<td style='text-align:center'><label id='" + selectitemcode + "' style='font-weight: normal'>" + $("#" + itemcode).val() + "</label></td>" +
+                    "<td class='col-md-2 col-lg-2'><input type='text' name='" + selectitemname + "' id='" + selectitemname + "' value='" + $("#" + itemname).html() + "' class='form-control'style='text-align:center' disabled='disabled' /></td>" +
+                    "<td style='text-align:center'><a id='" + selectstkqty + "' onclick='ShowQuantity(" + rowid + ")' style='font-weight: normal'>" + $("#" + stkqty).val() + "</a></td>" +
+                    "<td style='text-align:center'><a id='" + selectshopqty + "' onclick='ShopRequisition(" + rowid + ")' style='font-weight: normal'>" + $("#" + shopqty).val() + "</a></td>" +
+                    "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + selectquantity + "' id='" + selectquantity + "' value='" + $("#" + balance).val() + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ")' onkeypress='return AllowDecimal(event," + rowid + ")'/></td>" +
+                    "<td><label id='" + selectunit + "' style='font-weight: normal'>" + $("#" + unit).val() + "</label></td>" +
+                    "<td class='col-md-1 col-lg-1 col-sm-1' style='text-align:center'><input type='text' name='" + selectsellingprice + "' id='" + selectsellingprice + "' value='" + $("#" + sellingprice).val() + "' class='form-control'style='text-align:center' disabled='disabled' /></td>" +
+                    "<td class='col-md-1 col-lg-1 col-sm-1' style='text-align:center'><input type='text' name='" + selectmrp + "' id='" + selectmrp + "' value='" + $("#" + mrp).val() + "' class='form-control'style='text-align:center' disabled='disabled' /><input type='hidden' id='" + selectcostprice + "' name='" + selectcostprice + "' value='" + $("#" + costprice).val() + "'/></td>" +
+                    "<td ><input type='text' name='" + selectdisinper + "' id='" + selectdisinper + "' value='" + $("#" + disinper).val() + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"percent\"' + ")' value='0' placeholder='0%' onclick='PutTheDiscountType(\"percent\")' /></td>" +
+                    "<td ><input type='text' name='" + selectdisinrs + "' id='" + selectdisinrs + "' value='" + $("#" + disinrs).val() + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"rps\"' + ")' value='0.00' placeholder='0'  onclick='PutTheDiscountType(\"rps\")' /></td>" +
+                    "<td><label id='" + selectitemtax + "' style='font-weight: normal'>" + $("#" + itemtax).val() + "</label></td>" +
+                    "<td style='text-align:center'> <label id='" + selectamount + "' style='font-weight: normal'>" + $("#" + amount).val() + "</label></td>" +
+                    "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + rowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td>" +
+                    "<input type='hidden' id='" + selectbillno + "' name='" + selectbillno + "' value='" + $("#" + billno).val() + "'/><input type='hidden' id='" + selectdesigncode + "' name='" + selectdesigncode + "' value='" + $("#" + designcode).val() + "'/>" +
+                    "<input type='hidden' id='" + selectdesignname + "' name='" + selectdesignname + "' value='" + $("#" + designname).val() + "'/><input type='hidden' id='" + selectbrand + "' name='" + selectbrand + "' value='" + $("#" + brand).val() + "'/>" +
+                    "<input type='hidden' id='" + selectsize + "' name='" + selectsize + "' value='" + $("#" + size).val() + "'/><input type='hidden' id='" + selectitemcodeval + "' name='" + selectitemcodeval + "' value='" + $("#" + itemcode).val() + "'/>" +
+                    "<input type='hidden' name='" + selectcolor + "' id='" + selectcolor + "' value='" + $("#" + color).val() + "' /><input type='hidden' name='" + selectmaterial + "' id='" + selectmaterial + "' value='" + $("#" + material).val() + "' />" +
+                    "<input type='hidden' id='" + selectunitval + "' name='" + selectunitval + "' value='" + $("#" + unit).val() + "'/><input type='hidden' id='" + selectnumbertype + "' name='" + selectnumbertype + "' value='" + $("#" + numbertype).val() + "'/>" +
+                    "<input type='hidden' name='" + selectitemtaxval + "' id='" + selectitemtaxval + "' value='" + $("#" + itemtax).val() + "' />" +
+                    "<input type='hidden' name='" + selectitemtaxamt + "' id='" + selectitemtaxamt + "' value='" + $("#" + itemtaxamt).val() + "' /><input type='hidden' id='" + selectdescription + "' name='" + selectdescription + "' value='" + $("#" + description).val() + "'/>" +
+                    "<input type='hidden' id='" + selectamountval + "' name='" + selectamountval + "' value='" + $("#" + amount).val() + "'/><input type='hidden' id='" + selectitemtype + "' name='" + selectitemtype + "' value='" + $("#" + itemtype).val() + "'/></tr>"
+                    );
+                    window.opener.$("#hdnRowCount").val(rowid);
+                    window.opener.document.getElementById("Submit").disabled = false;
+                }
+            }
+            window.opener.$("#QuotationNo").blur();
+            window.opener.$("#SalesOrderNo").blur();
+            window.opener.$("#ChallanNo").blur();
+            window.opener.CalculateItemTaxNumber();
+            window.opener.CalculateItemWiseAmount();
+            window.opener.CalculateTotalAmount();
+            window.opener.CalcGrandTotal();
+            window.close();
+        }
+        else {
+            alertbox("Please Select Atleast One Item..");
+        }
+    }
+</script>
+<audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+    <source src="" type="audio/ogg" />
+</audio>
+<div style="height: 10px"></div>
+<label style="font-size: 15px">&nbsp;Client Name:&nbsp;&nbsp;</label><label style="font-size: 14px" id="ClientName"></label>
+<div style="height: 10px"></div>
+
+<div class="col-lg-12 col-md-12">
+    <table border="1" style="border-collapse: collapse; width: 100%" cellpadding="0" cellspacing="0">
+        <thead>
+            <tr>
+                <th style="text-align: center">Select
+                    All<br />
+                    <input type="checkbox" id="SelectAllId" onclick="SelectAllCheckbox()" style="width: 17px; height: 17px;" />
+                </th>
+                <th style="text-align: center">Ref No</th>
+                <th style="text-align: center">Processed
+                <br />
+                    By</th>
+                <th style="text-align: center">Item Code</th>
+                <th style="text-align: center">Item Name</th>
+
+                <th style="text-align: center">Quantity</th>
+                <th style="text-align: center">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                int count = 1;
+
+                foreach (var data in Model.QuotationItemList)
+                {
+                    string checkbox = "CheckBox" + count;
+                    string billnumber = "BillNo" + count;
+                    string itemcode = "ItemCode" + count;
+                    string itemname = "ItemName" + count;
+                    string quantity = "Quantity" + count;
+                    string itemtype = "ItemType" + count;
+                    string stkqty = "StkQty" + count;
+                    string shopqty = "ShopQty" + count;
+                    string unit = "Unit" + count;
+                    string numbertype = "NumberType" + count;
+                    string SellingPrice = "SellingPrice" + count;
+                    string mrp = "MRP" + count;
+                    string costprice = "CostPrice" + count;
+                    string balance = "Balance" + count;
+                    string amount = "Amount" + count;
+                    string description = "Description" + count;
+                    string color = "Color" + count;
+                    string material = "Material" + count;
+                    string designcode = "DesignCode" + count;
+                    string designname = "DesignName" + count;
+                    string brand = "Brand" + count;
+                    string size = "Size" + count;
+                    string disinrs = "DisRs" + count;
+                    string disinper = "DisPer" + count;
+                    string itemtax = "ItemTax" + count;
+                    string itemtaxamt = "ItemTaxAmt" + count;
+                    string barcode = "Barcode" + count;
+                
+                <tr>
+                    <td style="text-align: center">
+                        <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px"/></td>
+                    <td style="text-align: center">@data.QuotNo</td>
+                    <td style="text-align: center">----</td>
+                    <td style="text-align: center">@data.ItemCode</td>
+                    <td style="text-align: center" id="@itemname">@data.ItemName</td>
+                    <td style="text-align: center" id="@quantity">@data.Quantity</td>
+                    <td style="text-align: center">@data.Balance</td>
+
+                    <input type="hidden" id="@billnumber" value="@data.QuotNo"/>
+                    <input type="hidden" id="@itemtype" value="@data.ItemType"/>
+                    @{
+                    if (@data.ReadOnlyTotalStockQuantity != null)
+                    {
+                        <input type="hidden" id="@stkqty" value="@data.ReadOnlyTotalStockQuantity"/>
+                    }
+                    else
+                    {  
+                        <input type="hidden" id="@stkqty" value="----"/>
+                    }   
+                    }
+
+                    @{
+                    if (@data.ReadOnlyShopQuantity != null)
+                    {
+                        <input type="hidden" id="@shopqty" value="@data.ReadOnlyShopQuantity"/>
+                    }
+                    else
+                    {  
+                        <input type="hidden" id="@shopqty" value="----"/>
+                    }   
+                    }
+                    <script type="text/javascript">
+                        function GetItemsCostPrice(itemcode, itemtype) {
+                            $.getJSON("/TemporaryCashMemo/GetItemsCostPrice", { itemcode: itemcode, itemtype: itemtype },
+                                function (data) {
+                                    document.getElementById("CostPrice" + "@count").value = data;
+                                });
+                            }
+                            GetItemsCostPrice("@data.ItemCode", "@data.ItemType");
+                    </script>
+                    <input type="hidden" id="@balance" value="@data.Balance"/>
+                    <input type="hidden" id="@itemcode" value="@data.ItemCode"/>
+                    <input type="hidden" id="@unit" value="@data.Unit"/>
+                    <input type="hidden" id="@numbertype" value="@data.NumberType"/>
+                    <input type="hidden" id="@SellingPrice" value="@data.SellingPrice"/>
+                    <input type="hidden" id="@mrp" value="@data.MRP"/>
+                    <input type="hidden" id="@costprice"/>
+                    <input type="hidden" id="@amount" value="@data.Amount"/>
+                    <input type="hidden" id="@description" value="@data.Description"/>
+                    <input type="hidden" id="@color" value="@data.Color"/>
+                    <input type="hidden" id="@material" value="@data.Material"/>
+                    <input type="hidden" id="@designcode" value="@data.DesignCode"/>
+                    <input type="hidden" id="@designname" value="@data.DesignName"/>
+                    <input type="hidden" id="@brand" value="@data.Brand"/>
+                    <input type="hidden" id="@size" value="@data.Size"/>
+                    <input type="hidden" id="@disinrs" value="@data.DiscountRPS"/>
+                    <input type="hidden" id="@disinper" value="@data.DiscountPercent"/>
+                    <input type="hidden" id="@itemtax" value="@data.ItemTax"/>
+                    <input type="hidden" id="@itemtaxamt" value="@data.ItemTaxAmt"/>
+                    <input type="hidden" id="@barcode" value="@data.Barcode"/>
+                </tr>
+                    count++;
+                }
+
+                count = Model.QuotationItemList.Count() + 1;
+
+                foreach (var data in Model.SalesOrderItemList)
+                {
+                    string checkbox = "CheckBox" + count;
+                    string billnumber = "BillNo" + count;
+                    string itemcode = "ItemCode" + count;
+                    string itemname = "ItemName" + count;
+                    string quantity = "Quantity" + count;
+                    string itemtype = "ItemType" + count;
+                    string narration = "Narration" + count;
+                    string stkqty = "StkQty" + count;
+                    string shopqty = "ShopQty" + count;
+                    string unit = "Unit" + count;
+                    string numbertype = "NumberType" + count;
+                    string SellingPrice = "SellingPrice" + count;
+                    string mrp = "MRP" + count;
+                    string costprice = "CostPrice" + count;
+                    string amount = "Amount" + count;
+                    string balance = "Balance" + count;
+                    string description = "Description" + count;
+                    string color = "Color" + count;
+                    string material = "Material" + count;
+                    string designcode = "DesignCode" + count;
+                    string designname = "DesignName" + count;
+                    string brand = "Brand" + count;
+                    string size = "Size" + count;
+                    string disinrs = "DisRs" + count;
+                    string disinper = "DisPer" + count;
+                    string itemtax = "ItemTax" + count;
+                    string itemtaxamt = "ItemTaxAmt" + count;
+                    string barcode = "Barcode" + count;
+                
+                <tr>
+                    <td style="text-align: center">
+                        <input type="checkbox" id="@checkbox" name="@checkbox" style="width:17px; height:17px"/></td>
+                    <td style="text-align: center">@data.OrderNo</td>
+                    @{
+                    var processedin = data.QuotationNo;
+                    if (processedin == null)
+                    {
+                        <td style="text-align: center">----</td>
+                    }
+                    else
+                    {
+                        <td style="text-align: center">@data.QuotationNo</td>
+                    }
+                    }
+                    <td style="text-align: center">@data.ItemCode</td>
+                    <td style="text-align: center" id="@itemname">@data.ItemName</td>
+                    <td style="text-align: center" id="@quantity">@data.Quantity</td>
+                    <td style="text-align: center">@data.SOBalance</td>
+
+                    <input type="hidden" id="@billnumber" value="@data.OrderNo"/>
+                    <input type="hidden" id="@itemtype" value="@data.ItemType"/>
+                    <input type="hidden" id="@narration" value="@data.Narration"/>
+                    @{
+                    if (@data.ReadOnlyTotalStockQuantity != null)
+                    {
+                        <input type="hidden" id="@stkqty" value="@data.ReadOnlyTotalStockQuantity"/>
+                    }
+                    else
+                    {  
+                        <input type="hidden" id="@stkqty" value="----"/>
+                    }   
+                    }
+
+                    @{
+                    if (@data.ReadOnlyShopQuantity != null)
+                    {
+                        <input type="hidden" id="@shopqty" value="@data.ReadOnlyShopQuantity"/>
+                    }
+                    else
+                    {  
+                        <input type="hidden" id="@shopqty" value="----"/>
+                    }   
+                    }
+                    <script type="text/javascript">
+                        function GetItemsCostPrice(itemcode, itemtype) {
+                            $.getJSON("/TemporaryCashMemo/GetItemsCostPrice", { itemcode: itemcode, itemtype: itemtype },
+                                function (data) {
+                                    document.getElementById("CostPrice" + "@count").value = data;
+                                });
+                            }
+                            GetItemsCostPrice("@data.ItemCode", "@data.ItemType");
+                    </script>
+                    <input type="hidden" id="@balance" value="@data.SOBalance"/>
+                    <input type="hidden" id="@itemcode" value="@data.ItemCode"/>
+                    <input type="hidden" id="@unit" value="@data.Unit"/>
+                    <input type="hidden" id="@numbertype" value="@data.NumberType"/>
+                    <input type="hidden" id="@SellingPrice" value="@data.SellingPrice"/>
+                    <input type="hidden" id="@mrp" value="@data.MRP"/>
+                    <input type="hidden" id="@costprice"/>
+                    <input type="hidden" id="@amount" value="@data.Amount"/>
+                    <input type="hidden" id="@description" value="@data.Description"/>
+                    <input type="hidden" id="@color" value="@data.Color"/>
+                    <input type="hidden" id="@material" value="@data.Material"/>
+                    <input type="hidden" id="@designcode" value="@data.DesignCode"/>
+                    <input type="hidden" id="@designname" value="@data.DesignName"/>
+                    <input type="hidden" id="@brand" value="@data.Brand"/>
+                    <input type="hidden" id="@size" value="@data.Size"/>
+                    <input type="hidden" id="@disinrs" value="@data.DisInRs"/>
+                    <input type="hidden" id="@disinper" value="@data.DisInPercent"/>
+                    <input type="hidden" id="@itemtax" value="@data.ItemTax"/>
+                    <input type="hidden" id="@itemtaxamt" value="@data.ItemTaxAmt"/>
+                    <input type="hidden" id="@barcode" value="@data.Barcode"/>
+                </tr>
+                    count++;
+                }
+
+                count = Model.QuotationItemList.Count() + Model.SalesOrderItemList.Count() + 1;
+
+                foreach (var data1 in Model.DeliveryChallanItemList)
+                {
+                    string checkbox1 = "CheckBox" + count;
+                    string billnumber = "BillNo" + count;
+                    string itemcode = "ItemCode" + count;
+                    string itemname = "ItemName" + count;
+                    string quantity = "Quantity" + count;
+                    string itemtype = "ItemType" + count;
+                    string narration = "Narration" + count;
+                    string stkqty = "StkQty" + count;
+                    string shopqty = "ShopQty" + count;
+                    string unit = "Unit" + count;
+                    string numbertype = "NumberType" + count;
+                    string SellingPrice = "SellingPrice" + count;
+                    string mrp = "MRP" + count;
+                    string costprice = "CostPrice" + count;
+                    string amount = "Amount" + count;
+                    string balance = "Balance" + count;
+                    string description = "Description" + count;
+                    string color = "Color" + count;
+                    string material = "Material" + count;
+                    string designcode = "DesignCode" + count;
+                    string designname = "DesignName" + count;
+                    string brand = "Brand" + count;
+                    string size = "Size" + count;
+                    string disinrs = "DisRs" + count;
+                    string disinper = "DisPer" + count;
+                    string itemtax = "ItemTax" + count;
+                    string itemtaxamt = "ItemTaxAmt" + count;
+                    string barcode = "Barcode" + count;
+                
+                <tr>
+                    <td style="text-align: center">
+                        <input type="checkbox" id="@checkbox1" name="@checkbox1" style="width:17px; height:17px"/></td>
+                    <td style="text-align: center">@data1.ChallanNo</td>
+                    @{
+                    var billno = data1.QuotOrOrderNo;
+                    if (billno == null)
+                    {
+                        <td style="text-align: center">----</td>
+                    }
+                    else
+                    {
+                        <td style="text-align: center">@data1.QuotOrOrderNo</td>
+                    }
+                    }
+                    <td style="text-align: center">@data1.ItemCode</td>
+                    <td style="text-align: center" id="@itemname">@data1.ItemName</td>
+                    <td style="text-align: center" id="@quantity">@data1.Quantity</td>
+                    <td style="text-align: center">@data1.DelBalance</td>
+
+                    <input type="hidden" id="@billnumber" value="@data1.ChallanNo"/>
+                    <input type="hidden" id="@itemtype" value="@data1.ItemType"/>
+                    <input type="hidden" id="@narration" value="@data1.Narration"/>
+                    @{
+                    if (@data1.ReadOnlyTotalStockQuantity != null)
+                    {
+                        <input type="hidden" id="@stkqty" value="@data1.ReadOnlyTotalStockQuantity"/>
+                    }
+                    else
+                    {  
+                        <input type="hidden" id="@stkqty" value="----"/>
+                    }   
+                    }
+
+                    @{
+                    if (@data1.ReadOnlyShopQuantity != null)
+                    {
+                        <input type="hidden" id="@shopqty" value="@data1.ReadOnlyShopQuantity"/>
+                    }
+                    else
+                    {  
+                        <input type="hidden" id="@shopqty" value="----"/>
+                    }   
+                    }
+                    <script type="text/javascript">
+                        function GetItemsCostPrice(itemcode, itemtype) {
+                            $.getJSON("/TemporaryCashMemo/GetItemsCostPrice", { itemcode: itemcode, itemtype: itemtype },
+                                function (data) {
+                                    document.getElementById("CostPrice" + "@count").value = data;
+                                });
+                            }
+                            GetItemsCostPrice("@data1.ItemCode", "@data1.ItemType");
+                    </script>
+                    <input type="hidden" id="@balance" value="@data1.DelBalance"/>
+                    <input type="hidden" id="@itemcode" value="@data1.ItemCode"/>
+                    <input type="hidden" id="@unit" value="@data1.Unit"/>
+                    <input type="hidden" id="@numbertype" value="@data1.NumberType"/>
+                    <input type="hidden" id="@SellingPrice" value="@data1.SellingPrice"/>
+                    <input type="hidden" id="@mrp" value="@data1.MRP"/>
+                    <input type="hidden" id="@costprice"/>
+                    <input type="hidden" id="@amount" value="@data1.Amount"/>
+                    <input type="hidden" id="@description" value="@data1.Description"/>
+                    <input type="hidden" id="@color" value="@data1.Color"/>
+                    <input type="hidden" id="@material" value="@data1.Material"/>
+                    <input type="hidden" id="@designcode" value="@data1.Design"/>
+                    <input type="hidden" id="@designname" value="@data1.DesignName"/>
+                    <input type="hidden" id="@brand" value="@data1.Brand"/>
+                    <input type="hidden" id="@size" value="@data1.Size"/>
+                    <input type="hidden" id="@disinrs" value="@data1.DiscountRPS"/>
+                    <input type="hidden" id="@disinper" value="@data1.DiscountPercent"/>
+                    <input type="hidden" id="@itemtax" value="@data1.ItemTax"/>
+                    <input type="hidden" id="@itemtaxamt" value="@data1.ItemTaxAmt"/>
+                    <input type="hidden" id="@barcode" value="@data1.Barcode"/>
+                </tr>
+                    count++;
+                }
+
+                var itemcount = Model.QuotationItemList.Count() + Model.SalesOrderItemList.Count() + Model.DeliveryChallanItemList.Count();
+                <input type="hidden" id="ItemList" value="@itemcount" name="ItemList"/>
+            }
+        </tbody>
+    </table>
+
+    <div class="col-lg-12 col-md-12">
+        <br />
+    </div>
+
+    <div style="text-align: center">
+        <button type="button" class="btn btn-primary" id="insertitems" onclick="AddItemsInMainPage()">Insert</button>
+    </div>
+</div>

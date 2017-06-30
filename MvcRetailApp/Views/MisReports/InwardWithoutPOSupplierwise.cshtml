@@ -1,0 +1,163 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "InwardWithoutPOSupplierwise";
+}
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "fromdate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data.addOnSelectedDelegate(function () {
+
+            @*FOR SAVE MULTIPLE DROP DOWN LIST VALUES*@
+            var selectedValues = $('#ddlsuppliername').val();
+            $('input[id=DDLTypeSupplier]').val(selectedValues);
+
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+            var suppname = document.getElementById("DDLTypeSupplier").value;
+
+            if (todate != "") {
+                $.ajax({
+                    url: '/MisReports/GetInwardWithoutPOBySupplier',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate, Supplier: suppname },
+                    success: function (data) {
+
+                        document.getElementById("ddlsuppliername").disabled = 'true';
+                        $("#ItemPartialView").html(data);
+                    }
+                })
+            }
+        });
+    });
+    jQuery(document).ready(function () {
+        var data1 = new JsDatePick({
+            useMode: 2,
+            target: "todate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data1.addOnSelectedDelegate(function () {
+
+            @*FOR SAVE MULTIPLE DROP DOWN LIST VALUES*@
+            var selectedValues = $('#ddlsuppliername').val();
+            $('input[id=DDLTypeSupplier]').val(selectedValues);
+
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+            var suppname = document.getElementById("DDLTypeSupplier").value;
+            if (fromdate != "") {
+                $.ajax({
+                    url: '/MisReports/GetInwardWithoutPOBySupplier',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate, Supplier: suppname },
+                    success: function (data) {
+
+                        document.getElementById("ddlsuppliername").disabled = 'true';
+                        $("#ItemPartialView").html(data);
+                    }
+                });
+            }
+            else { alert("Please Enter From Date"); }
+        });
+    });
+</script>
+
+@*OPEN PRINT PAGE ON PRINT CLICK BUTTON*@
+<script type="text/javascript">
+    function PrintDetails() {
+        window.open("/MisReports/PrintInwardWithoutPOSupplierwise", "_target", "width=715,height=830,top=50px,left=300px");
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlsuppliername").change(function () {
+           
+            document.getElementById("DateDiv").style.display = 'inline';
+        });
+    });
+</script>
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-5 col-lg-5">
+        <div class="col-md-4 col-lg-4">
+            <div class="row">
+                <label>Supplier Name<i style="color: red">*</i></label>
+            </div>
+        </div>
+        <div class="col-md-8 col-lg-8">
+            @Html.DropDownListFor(model => model.SupplierDetails.SupplierName, new SelectList(Model.SupplierList, "SupplierName", "SupplierName"), new { id = "ddlsuppliername", @class = "form-control", multiple = "multiple", style = "height:85px" })
+        </div>
+        @*SAVE SUPPLIER NAME MULTIPLE DDL VALUES*@
+        <input type="hidden" id="DDLTypeSupplier" name="DDLTypeSupplier" value="" />
+    </div>
+
+    <div class="col-md-7 col-lg-7" id="DateDiv" style="display:none">
+        <div class="col-md-2 col-lg-2">
+            <div class="row">
+                <label>From Date<i style="color: red">*</i></label>
+            </div>
+        </div>
+        <div class="col-md-4 col-lg-4">
+            @Html.TextBoxFor(model => model.InwardFromSupplierDetails.ModifiedOn, new { id = "fromdate", @class = "form-control", @placeholder = "From Date" })
+        </div>
+
+        <div class="col-md-2 col-lg-2">
+            <label>To Date<i style="color: red">*</i></label>
+        </div>
+        <div class="col-md-4 col-lg-4">
+            @Html.TextBoxFor(model => model.InwardFromSupplierDetails.ModifiedOn, new { id = "todate", @class = "form-control", @placeholder = "To Date" })
+        </div>
+    </div>
+    <div style="height: 100px"></div>
+</div>
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div id="ItemPartialView"></div>
+    </div>
+</div>
+
+<div class="col-md-12 col-lg-12">
+    <div style="height: 10px"></div>
+</div>
+
+<div class="col-lg-12 col-md-12">
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-offset-6 col-md-offset-6" style="display: none" id="printbtn">
+            <button type="button" class="btn btn-primary" onclick="PrintDetails()">Print</button>
+        </div>
+    </div>
+</div>
+
+<div class="col-md-12 col-lg-12">
+    <div style="height: 10px"></div>
+</div>
+

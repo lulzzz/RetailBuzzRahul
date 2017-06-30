@@ -1,0 +1,203 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CreditNote";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<script type="text/javascript">
+    $(function () {
+        window.opener.document.getElementById("CreditNoteNo").value = document.getElementById("CreditNoteNo").value;
+        document.getElementById("BillNo").innerHTML = window.opener.document.getElementById("BillNo").value;
+        document.getElementById("RefundLabel").style.display = "inline";
+        document.getElementById("RefundValue").innerHTML = "<i class='fa fa-inr'></i>" + window.opener.document.getElementById("RefundableAmount").value;
+        if (window.opener.document.getElementById("ClientName").innerHTML != "") {
+            document.getElementById("ClientNameLabel").style.display = "inline";
+            document.getElementById("ClientName").innerHTML = window.opener.document.getElementById("ClientName").innerHTML
+        }
+        var presentrows = +window.opener.document.getElementById("ItemList").value;
+        var rowid = +window.opener.document.getElementById("hdnRowCount").value;
+        var rowno = 1;
+        var totaltax = 0;
+        for (var i = 1; i <= presentrows; i++) {
+            checkbox = "CheckBox" + i;
+            itemnamelabel = "itemnamelabel" + i;
+            colorlabel = "colorlabel" + i;
+            ratelabel = "ratelabel" + i;
+            unitlabel = "unitlabel" + i;
+            discountpercentlabel = "discountpercentlabel" + i;
+            discountrpslabel = "discountrpslabel" + i;
+            quantity = "quantity" + i;
+            amount = "amount" + i;
+            itemtax = "ItemTax" + i;
+            if (window.opener.$("#" + checkbox).prop("checked")) {
+                var addrows = $("#AddingRows");
+                var data = "<tr>";
+                data += "<td style='text-align:center'>" + rowno + "</td>"
+                data += "<td style='text-align:left'><label style='font-weight:normal'>&nbsp;" + window.opener.document.getElementById(itemnamelabel).innerHTML + "</label></td>";
+                data += "<td style='text-align:left'><label style='font-weight:normal'>&nbsp;" + window.opener.document.getElementById(colorlabel).innerHTML + "</label></td>";
+                data += "<td style='text-align:left'><label style='font-weight:normal'>&nbsp;" + window.opener.document.getElementById(unitlabel).innerHTML + "</label></td>";
+                data += "<td style='text-align:right'><label style='font-weight:normal'>" + window.opener.document.getElementById(quantity).value + "&nbsp;</label></td>";
+                data += "<td style='text-align:right'><label style='font-weight:normal'>" + window.opener.document.getElementById(ratelabel).innerHTML + "&nbsp;</label></td>";
+                data += "<td style='text-align:right'><label style='font-weight:normal'>" + window.opener.document.getElementById(discountpercentlabel).innerHTML + "&nbsp;</label></td>";
+                data += "<td style='text-align:right'><label style='font-weight:normal'>" + window.opener.document.getElementById(discountrpslabel).innerHTML + "&nbsp;</label></td>";
+                data += "<td style='text-align:right'><label style='font-weight:normal'>" + window.opener.document.getElementById(itemtax).innerHTML + "&nbsp;</label></td>";
+                data += "<td style='text-align:right'><label style='font-weight:normal'>" + window.opener.document.getElementById(amount).innerHTML + "&nbsp;</label></td>";
+                data += "<td style='text-align:center'><label style='font-weight:normal'>Return</label></td></tr>";
+                addrows.append(data);
+                rowno++;
+                totaltax = totaltax + (+window.opener.document.getElementById("ItemTaxAmt" + i).value);
+            }
+        }
+        document.getElementById("TaxAmount").innerHTML = "<i class='fa fa-inr'></i>" + totaltax.toFixed(2);
+    });
+</script>
+@Html.HiddenFor(model => model.CreditNoteNo)
+
+<table style="border: 1px double; width: 100%">
+    <tbody>
+        <tr>
+            <td>
+                <table style="width: 100%">
+                    <tbody>
+                        <tr>
+                            <td colspan="8" style="text-align: center;">
+                                <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px;" />
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" style="text-align: center;">
+                                <label><b>A To Z DADAR T.T.</b></label><br />
+                                <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="8" style="text-align: center">
+                                <label style="font-size: x-large;"><b>Credit Note</b></label>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <br />
+                <table cellpadding="0" cellspacing="0" style="width: 100%">
+                    <tbody>
+                        <tr>
+                            <td style="width: 50%">
+                                <label id="ClientNameLabel" style="display:none"><b>Client Name: </b></label>
+                                <label id="ClientName"></label>
+                            </td>
+                            <td>
+                                <table>
+                                    <tr style="float: right">
+                                        <td>
+                                            <label><b>Date: &nbsp</b></label>
+                                        </td>
+                                        <td>
+                                            @{
+                                                string date = DateTime.Now.ToString("dd/MM/yyyy");
+                                            }
+                                            <label style="font-weight: normal">@date</label>
+                                        </td>
+                                    </tr>
+                                    <tr style="float: right">
+                                        <td>
+                                            <label><b>Credit Note No: &nbsp</b></label>
+                                        </td>
+                                        <td>
+                                            @Html.DisplayFor(model => model.CreditNoteNo)
+                                        </td>
+                                    </tr>
+                                    <tr style="float: right">
+                                        <td>
+                                            <label><b>Bill No: &nbsp</b></label>
+                                        </td>
+                                        <td>
+                                            <label style="font-weight: normal" id="BillNo"></label>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <table border="2" style="border-collapse: collapse; width: 100%" cellpadding="2" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                <label>Sno.</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Item</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Colour</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Unit</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Qty</label>
+                            </th>
+
+                            <th style="text-align: center">
+                                <label>
+                                    Rate<br />
+                                    (<i class="fa fa-inr"></i>)</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Disc<br />
+                                    (%)</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Disc<br />
+                                    (<i class="fa fa-inr"></i>)</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Tax<br />
+                                    (%)</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Amount<br />
+                                    (<i class="fa fa-rupee"></i>)</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Goods
+                                </label>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody id="AddingRows">
+                    </tbody>
+                </table>
+                <br />
+                <table style="width: 100%">
+                    <tr style="float: right">
+                        <td>
+                            <label style="font-weight: bold">Tax: </label>
+                            <label style="font-weight: bold" id="TaxAmount">0</label>
+                        </td>
+                    </tr>
+                </table>
+                <table style="width: 100%">
+                    <tr style="float: right">
+                        <td>
+                            <label style="font-weight: bold" id="RefundLabel">Credit Note Amount: </label>
+                            <label style="font-weight: bold" id="RefundValue"></label>
+                        </td>
+                    </tr>
+                </table>
+                @*<table style="width: 100%">
+                    <tr style="float: right">
+                        <td>
+                            <label style="font-weight: bold">Validity: 30 Days</label></td>
+                    </tr>
+                </table>*@
+            </td>
+        </tr>
+    </tbody>
+</table>

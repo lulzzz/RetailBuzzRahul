@@ -1,0 +1,379 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "DeletePartial";
+}
+
+@Html.HiddenFor(model => model.CommissionMasterDetails.CommissionId)
+@Html.HiddenFor(model => model.CommissionMasterDetails.CommissionCode)
+@Html.HiddenFor(model => model.CommissionMasterDetails.EmployeeName)
+@Html.HiddenFor(model => model.CommissionMasterDetails.FromDate)
+@Html.HiddenFor(model => model.CommissionMasterDetails.ToDate)
+@Html.HiddenFor(model => model.CommissionMasterDetails.TotalSale)
+@Html.HiddenFor(model => model.CommissionMasterDetails.TotalSaleCommPercent)
+@Html.HiddenFor(model => model.CommissionMasterDetails.Meter)
+@Html.HiddenFor(model => model.CommissionMasterDetails.MeterCommPercent)
+@Html.HiddenFor(model => model.CommissionMasterDetails.ItemCode)
+@Html.HiddenFor(model => model.CommissionMasterDetails.ItemName)
+@Html.HiddenFor(model => model.CommissionMasterDetails.SubCategory)
+@Html.HiddenFor(model => model.CommissionMasterDetails.ItemCommissionPercent)
+@Html.HiddenFor(model => model.CommissionMasterDetails.ItemCommissionRupees)
+@Html.HiddenFor(model => model.CommissionMasterDetails.ItemSellingPrice)
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var temp = $("#date1").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date1').innerHTML = data;
+
+        var temp = $("#date2").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date2').innerHTML = data;
+    });
+</script>
+
+<div style="height: 10px"></div>
+<div class="col-lg-12 col-md-12">
+    <div class="col-lg-2 col-md-2">
+        <label style="font-size: 14px">Code : </label>
+    </div>
+
+    <div class="col-lg-2 col-md-2">
+        @Html.DisplayFor(model => model.CommissionMasterDetails.CommissionCode)
+    </div>
+
+    <div class="col-lg-3 col-md-3">
+        <div class="row">
+            <label style="font-size: 14px">Employee Name :</label>
+        </div>
+    </div>
+
+    <div class="col-lg-3 col-md-3">
+        <div class="row">
+            @Html.DisplayFor(model => model.CommissionMasterDetails.EmployeeName)
+        </div>
+    </div>
+</div>
+
+<div class="col-lg-12 col-md-12">
+    <div class="col-lg-12 col-md-12">
+        <div style="height:5px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+    <div style="height: 25px"></div>
+
+    <div class="col-lg-12 col-md-12">
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>From Date</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @{
+                    var fromdate = Convert.ToDateTime(Model.CommissionMasterDetails.FromDate).ToString("MM/dd/yyyy");
+                }
+                <label id="date1" style="font-weight: normal">@fromdate</label>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                <label>To Date</label>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                @{
+                    var todate = Convert.ToDateTime(Model.CommissionMasterDetails.ToDate).ToString("MM/dd/yyyy");
+                }
+                <label id="date2" style="font-weight: normal">@todate</label>
+            </div>
+        </div>
+
+    </div>
+
+    
+    <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>Sub Category</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.SubCategory != null)
+                    {
+                        @Model.CommissionMasterDetails.SubCategory
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                <label>Item</label>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.ItemName != null)
+                    {
+                        @Model.CommissionMasterDetails.ItemName
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>Comm in Percent</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.ItemCommissionPercent != null)
+                    {
+                        @Model.CommissionMasterDetails.ItemCommissionPercent
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                <label>Comm in Rupees</label>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.ItemCommissionRupees != null)
+                    {
+                        @Model.CommissionMasterDetails.ItemCommissionRupees
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>Total Sale Target (<i class="fa fa-inr"></i>)</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.TotalSale != null)
+                    {
+                        var totalsale = Convert.ToDouble(Model.CommissionMasterDetails.TotalSale).ToString("#,###.00##");
+                    @totalsale
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                <label>Total Sale Commission Percent</label>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.TotalSaleCommPercent != null)
+                    {
+                        var totalsalecommper = Convert.ToDouble(Model.CommissionMasterDetails.TotalSaleCommPercent).ToString("#,###.00##");
+                    @totalsalecommper
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>Meter</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.Meter != null)
+                    {
+                        var meter = Convert.ToDouble(Model.CommissionMasterDetails.Meter).ToString("#,###.00##");
+                    @meter
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                <label>Meter Commission Amount</label>
+            </div>
+        </div>
+
+        <div class="col-lg-3 col-md-3">
+            <div class="row">
+                @{
+                    if (Model.CommissionMasterDetails.MeterCommPercent != null)
+                    {
+                        var metercommper = Convert.ToDouble(Model.CommissionMasterDetails.MeterCommPercent).ToString("#,###.00##");
+                    @metercommper
+                    }
+                    else
+                    {
+                    <label>---</label>
+                    }
+                }
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>Unit Name</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>Unit Target</label>
+            </div>
+        </div>
+
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label>Commission Percent</label>
+            </div>
+        </div>
+    </div>
+
+
+
+    @{
+        if (Model.CommissionProductList != null && Model.CommissionProductList.Count() != 0)
+        {
+            int count = 1;
+            foreach (var data in Model.CommissionProductList)
+            {
+                var product = "product" + count;
+                var productpercent = "productpercent" + count;
+                    
+        <div class="col-lg-12 col-md-12">
+            <div class="col-lg-2 col-md-2">
+                <label style="font-weight: normal">@data.UnitName</label>
+            </div>
+
+            <div class="col-lg-2 col-md-2">
+                @{
+                var unitamount = Convert.ToDouble(data.UnitAmount).ToString("#,###.00##");
+                    <label style="font-weight: normal">@unitamount</label>
+                }
+            </div>
+
+            <div class="col-lg-2 col-md-2">
+                @{
+                var unitpercentage = Convert.ToDouble(data.UnitPercent).ToString("#,###.00##");
+                                    
+                    <label style="font-weight: normal">@unitpercentage</label>
+                }
+            </div>
+        </div>
+            }
+        }   
+    }
+</div>
+
+<div class="col-lg-offset-5 col-md-offset-5">
+    <button type="button" id="delete" class="btn btn-danger" onclick="Delete()">Delete</button>
+</div>

@@ -1,0 +1,75 @@
+﻿@model IEnumerable<CodeFirstEntities.SizeMaster>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.sizeCode)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.category)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.item)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.sizeMaterial)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.quantity)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.rate)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.status)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.modifiedOn)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.sizeCode)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.category)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.item)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.sizeMaterial)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.quantity)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.rate)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.status)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.modifiedOn)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.sizeId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.sizeId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.sizeId })
+        </td>
+    </tr>
+}
+
+</table>

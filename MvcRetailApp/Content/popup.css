@@ -1,0 +1,8 @@
+/*code for on hover image*/
+#picture {width:100px; height: 100px; background-color:none;}
+#picture a.small { display:block; width:100px; height:100px; text-decoration:none; background:none; top:0; left:0; border:0;}
+#picture a img {border:0;}
+#picture a.small:hover {text-decoration:none; background-color:#000000; color:#000000;}
+#picture a .large {display:block; position:absolute; width:0; height:0; border:0; top:0; left:0;}
+#picture a.small:hover .large {display:block; position:absolute; margin-right:250px; top:-78px;left:0px;width:210px; height:210px;}
+/*code for on hover image*/

@@ -1,0 +1,39 @@
+﻿@{
+    ViewBag.Title = "BankDetails1";
+}
+
+<script type="text/javascript">
+    function UpdateBank() {
+        $.ajax({
+            url: '/CompanyMaster/UpdatedBankDetails',
+            type: "Post",
+            data: {
+               
+                 },
+            success: function (data)
+            {
+                document.getElementById('bankdata').style.display = "none";
+                document.getElementById('banklocation').style.display = "none";
+                document.getElementById('bankaccount').style.display = "none";
+                document.getElementById('bnkname').style.display = "none";
+                document.getElementById('bankaccounntno').style.display = "none";
+                document.getElementById('title1').style.display = "none";
+            }
+        });
+        $.getJSON("/CompanyMaster/BankDetails",{code:document.getElementById('compbankdetails_CompanyCode').value},
+               function (Data) {
+                   var select = $("#ddlBank");
+                   select.empty();
+                   select.append($('<option/>', {
+                       value: 0,
+                       text: "Select Bank"
+                   }));
+                   $.each(Data, function (index, itemData) {
+                       select.append($('<option/>', {
+                           value: itemData.Value,
+                           text: itemData.Text
+                       }));
+                   });
+              });
+}
+</script>

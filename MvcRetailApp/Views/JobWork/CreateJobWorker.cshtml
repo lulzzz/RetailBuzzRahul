@@ -1,0 +1,624 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CreateJobWorker";
+}
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateItemWiseAmount(rowid, '');
+		         CalculateTotalDiscount();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("textarea").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+
+                $("#JobWorkerDetails_Email").change(function () {
+            var idmodel = $(this).val();
+            $.getJSON("/JobWork/ValidateEmail", { mail: idmodel },
+            function (Data) {
+                if (Data == "success") {
+                    document.getElementById("errormsg").innerHTML = "Email Id Is Already Registered!!!";
+                    $("#JobWorkerDetails_Email").val('');
+                }
+                else {
+                    document.getElementById('errormsg').innerHTML = "";
+                }
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Submit").click(function () {
+            var idmodel = document.getElementById('JobWorkerDetails_Email').value;
+            $.getJSON("/JobWork/ValidateEmail", { mail: idmodel },
+            function (Data) {
+                if (Data == "success") {
+                    document.getElementById("errormsg").innerHTML = "Email Id Is Already Registered!!!";
+                    $("#JobWorkerDetails_Email").val('');
+                }
+                else { document.getElementById('errormsg').innerHTML = ""; }
+            });
+
+            if ($("#ddlBankNames").val() != "") {
+                if ($("#ddlBranchname").val() != "") {
+                    if ($("#JobWorkerDetails_AccountType").val() == "" || $("#JobWorkerDetails_Account_No").val() == "") {
+                        alertbox("Please Select Account Type And Account Number");
+                        return false;
+                    }
+                }
+                else {
+                    alertbox("Please Select Branch Name");
+                    return false;
+                }
+            }
+        });
+
+        $("#JobWorkerDetails_Name").change(function () {
+            var txt = document.getElementById("JobWorkerDetails_Name").value;
+            txt = txt.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            document.getElementById("JobWorkerDetails_Name").value = txt;
+        });
+
+        $("#JobWorkerDetails_Address").change(function () {
+            var txt = document.getElementById("JobWorkerDetails_Address").value;
+            txt = txt.replace(/\w\S*/g, function (txt) {
+                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+            });
+            document.getElementById("JobWorkerDetails_Address").value = txt;
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlBankNames").change(function () {
+            var modeldata = $(this).val();
+            if (modeldata != "") {
+                $.getJSON("/JobWork/GetBranch", { BankName: modeldata },
+                function (Data) {
+                    var select = $("#ddlBranchname");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "Select Branch Name"
+                    }));
+                    $.each(Data, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                    document.getElementById("DisplayValues").style.display = "inline";
+                });
+            }
+            else {
+                document.getElementById("DisplayValues").style.display = "none";
+                document.getElementById("DisplayAllValues").style.display = "none";
+                document.getElementById("Display").style.display = "none";
+                document.getElementById("DisplayMICR").style.display = "none";
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlBranchname").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel != "") {
+                $.getJSON("/JobWork/GetIFSCNoAndAddress", { branch: idmodel },
+                 function (data) {
+                     document.getElementById("DisplayAllValues").style.display = "inline";
+                     document.getElementById("Display").style.display = "inline";
+                     document.getElementById("DisplayMICR").style.display = "inline";
+                     $("#JobWorkerDetails_BankIFSCNo").val(data.IFSCNo);
+                     document.getElementById("JobWorkerDetails.BankIFSCNO").innerHTML = data.IFSCNo;
+                     $("#JobWorkerDetails_BankAddress").val(data.BankAddress);
+                     document.getElementById("JobWorkerDetails.BankAddress").innerHTML = data.BankAddress;
+                 });
+            }
+            else {
+                document.getElementById("DisplayAllValues").style.display = "none";
+                document.getElementById("Display").style.display = "none";
+                document.getElementById("DisplayMICR").style.display = "none";
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "JobWorkerDetails_DateOfBirth",
+            dateFormat: "%d/%M/%Y"
+        });
+
+        new JsDatePick({
+            useMode: 2,
+            target: "JobWorkerDetails_DateOfJoining",
+            dateFormat: "%d/%M/%Y"
+        });
+
+        data.addOnSelectedDelegate(function () {
+
+            var today = new Date();
+            var birth = document.getElementById("JobWorkerDetails_DateOfBirth").value;
+            var birthDate = new Date(birth);
+            var age = today.getFullYear() - birthDate.getFullYear();
+            var m = today.getMonth() - birthDate.getMonth();
+            if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+                age--;
+            }
+            document.getElementById("JobWorkerDetails_Age").value = age;
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlState").change(function () {
+            var idModel = $(this).val();
+            $.getJSON("/JobWork/LoadCityByState", { id: idModel },
+            function (stateData) {
+                var select = $("#ddlCity");
+                select.empty();
+                select.append($('<option/>', {
+                    value: 0,
+                    text: "Select a City"
+                }));
+                $.each(stateData, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Email").click(function () {
+            document.getElementById("errormsg").innerHTML = "";
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('#JobWorkerDetails_Salary').change(function () {
+            var salary = document.getElementById("JobWorkerDetails_Salary").value;
+            if (salary <= 15000) {
+                document.getElementById("esic").disabled = false;
+            }
+            else {
+                document.getElementById("esic").disabled = true;
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $('#JobWorkerDetails_Salary').keyup(function () {
+            if (this.value.match(/[^0-9]/g)) {
+                this.value = this.value.replace(/[^0-9]/g, '');
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function EnterCommType(type) {
+        if (type == "D") {
+            document.getElementById("JobWorkerDetails_CommissionType").value = "Direct";
+        }
+        else {
+            document.getElementById("JobWorkerDetails_CommissionType").value = "Target";
+        }
+    }
+
+    $(document).ready(function () {
+        $("#ddldepartment").change(function () {
+            var value = $(this).val();
+            if (value == "Sales") {
+                document.getElementById("Commission").style.display = "inline";
+            }
+            else {
+                document.getElementById("Commission").style.display = "none";
+            }
+        });
+    });
+</script>
+
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <!-- Start: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+
+        <!-- Start: Content -->
+        @using (Html.BeginForm("CreateJobWorker", "JobWork", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmCreate" }))
+        {
+            @Html.ValidationSummary(true)
+            @Html.HiddenFor(model => model.JobWorkerDetails.BankIFSCNo)
+            @Html.HiddenFor(model => model.JobWorkerDetails.BankAddress)
+            @Html.HiddenFor(model => model.JobWorkerDetails.Code)
+            <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                <source src="" type="audio/ogg" />
+            </audio>
+            <div class="mainpanel">
+                <div class="col-md-12 col-lg-12">
+
+                    <br />
+                    <h2>Create Job Worker</h2>
+
+                    <div class="col-md-12 col-lg-12">
+
+                        <div class="row">
+                            <div class="table table-bordered">
+                                <div style="height: 15px"></div>
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="col-md-12 col-lg-12">
+
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Name<i style="color: red">*</i></label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.Name, new { @placeholder = "Name", @class = "form-control" })
+                                                    <font color="red">  @Html.ValidationMessageFor(model => model.JobWorkerDetails.Name)</font>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Date Of Birth<i style="color: red">*</i></label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.DateOfBirth, new { @class = "form-control", @placeholder = "Date Of Birth" })
+                                                    <font color="red">   @Html.ValidationMessageFor(model => model.JobWorkerDetails.DateOfBirth)</font>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Address<i style="color: red">*</i></label>
+                                                    @Html.TextAreaFor(model => model.JobWorkerDetails.Address, new { @placeholder = "Address", @class = "form-control", @rows = 1 })
+                                                    <font color="red">  @Html.ValidationMessageFor(model => model.JobWorkerDetails.Address)</font>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Mobile No.<i style="color: red">*</i></label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.MobileNo, new { @class = "form-control", @placeholder = "Mobile No" })
+                                                    <font color="red">  @Html.ValidationMessageFor(model => model.JobWorkerDetails.MobileNo)</font>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Email</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.Email, new { @class = "form-control", @placeholder = "Email" })
+                                                    <font color="red">  @Html.ValidationMessageFor(model => model.JobWorkerDetails.Email)</font>
+                                                    <label id="errormsg" class="error"></label>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Residence No.</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.ResidenceNo, new { @class = "form-control", @placeholder = "Residence No" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Designation</label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.Designation, new SelectList(Model.DesignationList, "DesignationName", "DesignationName", Model.JobWorkerDetails.Designation), "Select Designation", new { id = "ddlDesignation", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Department</label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.Department, new SelectList(Model.DepartmentList, "Name", "Name"), "Select Department", new { id = "ddldepartment", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Total Experience In Years</label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.TotalExpYear, new SelectList(Model.totalExpYears, "noOfYear", "noOfYear", Model.JobWorkerDetails.TotalExpYear), "Select Total No Of Years", new { id = "ddlExpYr", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Total Experience In Months</label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.TotalExpmonth, new SelectList(Model.totalExpmonths, "noOfMonths", "noOfMonths", Model.JobWorkerDetails.TotalExpmonth), "Select Total No Of Months", new { id = "ddlExpYr", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Salary</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.Salary, new { @class = "form-control", @placeholder = "Salary" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Age</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.Age, new { @class = "form-control", @placeholder = "Age", @readonly = "true" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Pan No</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.PancardNo, new { @class = "form-control", @placeholder = "Pan No" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="disabledtextinput">ESIC No.</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.ESIC, new { @class = "form-control", @placeholder = "ESIC", @disabled = "disabled", id = "esic" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">PF No.</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.PFNO, new { @class = "form-control", @placeholder = "PFNO" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">State<i style="color: red">*</i></label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.State, new SelectList(Model.StateList, "stateId", "stateName", Model.JobWorkerDetails.State), "Select State", new { id = "ddlState", @class = "form-control" })
+                                                    <font color="red"> @Html.ValidationMessageFor(model => model.JobWorkerDetails.State)</font>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">City<i style="color: red">*</i></label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.City, Enumerable.Empty<SelectListItem>(), "Select City", new { id = "ddlCity", @class = "form-control" })
+                                                    <font color="red">  @Html.ValidationMessageFor(model => model.JobWorkerDetails.City)</font>
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Date Of Joining</label>
+                                                    @Html.TextBoxFor(model => model.JobWorkerDetails.DateOfJoining, new { @class = "form-control", @placeholder = "Date Of Joining" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-3 col-md-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Industry</label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.Industry, new SelectList(Model.TypeOfSupplierList, "type_supplier", "type_supplier", Model.JobWorkerDetails.Industry), "Select Industry", new { id = "ddlIndustry", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Blood Group</label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.BloodGroup, new SelectList(Model.BloodGroups, "bloodGroupType", "bloodGroupType", Model.JobWorkerDetails.BloodGroup), " Select Blood Group", new { id = "ddlBGroup", @class = "form-control" })
+                                                </div>
+
+                                                <div class="form-group row">
+                                                    <label for="exampleInputname">Photo</label>
+                                                    <input type="file" name="file" id="file" data-val="true" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <h2>
+                                <label for="exampleInputname">Bank Details</label></h2>
+                        </div>
+
+
+                        <div class="row">
+                            <div class="table table-bordered">
+                                <div style="height: 15px"></div>
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="form-group row">
+                                                    <label for="exampleInputBankName">Bank Name</label>
+                                                    @Html.DropDownListFor(model => model.JobWorkerDetails.BankName, new SelectList(Model.BankNameList, "bankName", "bankName"), "Select Bank", new { id = "ddlBankNames", @placeholder = "BankName", @class = "form-control" })
+                                                </div>
+                                                <div class="form-group row">
+                                                    <div style="display: none" id="DisplayValues">
+                                                        <label for="exampleInputIFSC Code">Branch Name<i style="color: red">*</i></label>
+                                                        @Html.DropDownListFor(model => model.JobWorkerDetails.Branch, Enumerable.Empty<SelectListItem>(), "Select Branch", new { id = "ddlBranchname", @placeholder = "BankName", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.JobWorkerDetails.Branch, null, new { style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div id="DisplayAllValues" style="display: none">
+                                                    <div class="form-group row">
+                                                        <label for="exampleInputBankLocation">Bank Ifsc</label><br />
+                                                        <label id="JobWorkerDetails.BankIFSCNO" style="font-weight: normal"></label>
+
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="exampleInputBankLocation">Bank Location</label><br />
+                                                        <label id="JobWorkerDetails.BankAddress" style="font-weight: normal"></label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div id="Display" style="display: none">
+                                                    <div class="form-group row">
+                                                        <label for="exampleInputAccountType">Account Type<i style="color: red">*</i></label>
+                                                        @Html.DropDownListFor(model => model.JobWorkerDetails.AccountType, new List<SelectListItem> { new SelectListItem { Text = "Current" }, new SelectListItem { Text = "Savings" } }, "Account Type", new { @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.JobWorkerDetails.AccountType, null, new { style = "color:red" })
+                                                    </div>
+                                                    <div class="form-group row">
+                                                        <label for="exampleInputAccountNo">Account No<i style="color: red">*</i></label>
+                                                        @Html.TextBoxFor(model => model.JobWorkerDetails.Account_No, new { @placeholder = "Account No", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.JobWorkerDetails.Account_No, null, new { style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-3 col-lg-3">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div id="DisplayMICR" style="display: none">
+                                                    <div class="form-group row">
+                                                        <label for="exampleInputAccountNo">MICR Code</label>
+                                                        @Html.TextBoxFor(model => model.JobWorkerDetails.MICRCode, new { @placeholder = "MICR Code", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.JobWorkerDetails.MICRCode, null, new { style = "color:red" })
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <br />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-sm-offset-5">
+                            <button type="submit" id="Submit" class="btn btn-success">Save</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

@@ -1,0 +1,85 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EditPartial";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("table.tablesorter").tablesorter({ widthFixed: true, sortList: [[0, 0]] })
+       .tablesorterPager({ container: $("#pager"), size: $(".pagesize option:selected").val() });
+    });
+</script>
+
+<div class="col-lg-12 col-md-12">
+
+    <label style="font-size: large; font-weight: bold">Item List</label>
+    <table class="table" style="border-color: #d2d2d2; border: outset">
+        <thead>
+            <tr>
+                <th style="text-align: center">
+                    <label>State</label></th>
+                <th style="text-align: center">
+                    <label>Item Category</label></th>
+                <th style="text-align: center">
+                    <label>Item SubCategory</label></th>
+                <th style="text-align: center">
+                    <label>Tax Type</label></th>
+                <th style="text-align: center">
+                    <label>From date</label></th>
+                <th style="text-align: center">
+                    <label>To Date</label></th>
+                <th style="text-align: center">
+                    <label>Percentage(%)</label></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{
+                if (Model.PurchaseItemTaxList != null && Model.PurchaseItemTaxList.Any())
+                {
+                    string todate = string.Empty;
+                    int count = 1;
+                    foreach (var item in Model.PurchaseItemTaxList)
+                    {
+                        todate = "todate" + count;                                                            
+                <tr>
+                    <td style="text-align: center">
+                        <label style="font-weight: normal">@item.State</label></td>
+                    <td style="text-align: center">
+                        <label style="font-weight: normal">@item.Category</label></td>
+                    <td style="text-align: center">
+                        <label style="font-weight: normal">@item.SubCategory</label></td>
+                    <td style="text-align: center">
+                        <label style="font-weight: normal">@item.TaxType</label></td>
+                    <td style="text-align: center">
+                        <label style="font-weight: normal">@Convert.ToDateTime(item.FromDate).ToShortDateString()</label></td>
+                    <td style="text-align: center">
+                        <input type="text" value=@Convert.ToDateTime(item.ToDate).ToShortDateString() class="form-control" id="@todate" name="@todate"/></td>
+                    <td style="text-align: center">
+                        <label style="font-weight: normal">@item.Percentage</label></td>
+                </tr>
+                        count++;
+                    }
+                <input type="hidden" value=@Model.PurchaseItemTaxList.Count() id="hdnRowcount" />
+                <script type="text/javascript">
+                    $(function () { 
+                        var rowid = document.getElementById("hdnRowcount").value;
+                        rowid = +rowid;
+                        for (var i = 1; i <= rowid; i++) {
+                            var todate = "todate" + i;
+                                new JsDatePick({
+                                    useMode: 2,
+                                    target: todate,
+                                    dateFormat: "%d/%M/%Y"
+                            });
+                        }
+                    });
+                </script>
+                }
+            }
+        </tbody>
+    </table>
+</div>

@@ -1,0 +1,416 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EditPartial";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        var SupplierType = document.getElementById("SupplierDetails_SupplierType").value;
+        $.each(SupplierType.split(","), function (i, e) {
+            $("#ddltypesupplier option[value='" + e + "']").prop("selected", true);
+        });
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("textarea").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlcountry").change(function () {
+            var idmodel = $(this).val();
+            $.getJSON("/Supplier/LoadStateByCountry", { countryname: idmodel },
+            function (Data) {
+                var select = $("#ddlstate");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select State"
+
+                }));
+                $.each(Data, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlstate").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel == "Maharashtra") {
+                $("#Local").attr('checked', true);
+                document.getElementById("SupplierDetails_checkState").value = "Local";
+            }
+            else {
+                $("#OMS").attr('checked', true);
+                document.getElementById("SupplierDetails_checkState").value = "OMS";
+            }
+            $.getJSON("/Supplier/LoadDistrictByState", { statename: idmodel },
+            function (Data) {
+                var select = $("#ddldistrict");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select District"
+                }));
+
+                $.each(Data, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#ddlsupplierbanknames").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel != "") {
+                $.ajax({
+                    url: '/Supplier/UpdateBankDetail',
+                    type: "Get",
+                    data: { selectedbankname: idmodel },
+                    success: function (data) {
+                        $("#SelectedBankDetails").html(data);
+                        document.getElementById("SelectedBankDetails").style.display = "inline";
+                    }
+                });
+            }
+            else { document.getElementById("SelectedBankDetails").innerHTML = ""; }
+        });
+    });
+</script>
+<script type="text/javascript">
+    function buttonclick(updatesupplierdata) {
+
+        var micrcode = $("#SupplierBankDetails_MICRCode").val();
+        if (micrcode != "")
+        {
+            if (micrcode.length != 9) {
+                return false;
+            }
+        }
+
+        var accno = $("#SupplierBankDetails_AccountNo").val();
+        if (accno == "")
+        {
+            return false;
+        }
+
+        if (accno.length < 10 || accno.length > 25)
+        {
+            return false;
+        }
+
+        var acctype = $("#SupplierBankDetails_AccountType").val();
+        if (acctype == "") {
+            return false;
+        }
+
+        $.ajax({
+            url: '/Supplier/UpdateBankDetail',
+            type: "POST",
+            data: {
+                bankid: document.getElementById("SupplierBankDetails_BankId").value,
+                branch: document.getElementById("ddlBankbranches").value,
+                bankname: document.getElementById("ddlBankNames").value,
+                suppliercode: document.getElementById("SupplierBankDetails_SupplierCode").value,
+                bankifscno: document.getElementById("SupplierBankDetails_BankIFSCNo").value,
+                bankaddress: document.getElementById("SupplierBankDetails_BankAddress").value,
+                accountno: document.getElementById("SupplierBankDetails_AccountNo").value,
+                accounttype: document.getElementById("SupplierBankDetails_AccountType").value,
+                micr: document.getElementById("SupplierBankDetails_MICRCode").value,
+            },
+            success: function (data) {
+                $("#SelectedBankDetails").html(data);
+            }
+        });
+        $(function () {
+            $.getJSON("/Supplier/UpdatedBankDetails", { suppliercode: document.getElementById("SupplierDetails_SupplierCode").value },
+                function (data) {
+                    document.getElementById("SelectedBankDetails").innerHTML = "";
+                    var select = $("#ddlsupplierbanknames");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "Select Bank"
+                    }));
+
+                    $.each(data, function (index, itemData) {
+
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                });
+        });
+        if (updatesupplierdata == "Yes") {
+            /*if bank is selected in update page and update button gets clicked then update bankdetails
+            first then supplier's personal details if updatebank button gets clicked then update bankdetails only by sending no*/
+            supplierupdate();
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function NewBank() {
+        window.open("/Supplier/PopUpPage?suppliercode=" + document.getElementById("SupplierDetails_SupplierCode").value, "_target", "width=600,height=250,top=280px,left=400px");
+    }
+    function CheckState(state) {
+        if (state == 'local') {
+            document.getElementById("SupplierDetails_checkState").value = "Local";
+        }
+        else { document.getElementById("SupplierDetails_checkState").value = "OMS"; }
+    }
+
+    function CheckRegistered(value) {
+        if (value == 'yes') {
+            document.getElementById("SupplierDetails_Registered").value = "Yes";
+        }
+        else { document.getElementById("SupplierDetails_Registered").value = "No"; }
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+        var state = document.getElementById("SupplierDetails_checkState").value;
+        if (state == "Local") {
+            $("#Local").attr("checked", true);
+        }
+        else { $("#OMS").attr("checked", true); }
+
+        var type = document.getElementById("SupplierDetails_Registered").value;
+        if (type == "Yes") {
+            $("#Registered").attr("checked", true);
+        }
+        else { $("#NonRegistered").attr("checked", true); }
+    });
+</script>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.SupplierDetails.SupplierId)
+    @Html.HiddenFor(model => model.SupplierDetails.SupplierCode)
+    @Html.HiddenFor(model => model.SupplierDetails.SupplierType)
+    @Html.HiddenFor(model => model.SupplierDetails.checkState)
+    @Html.HiddenFor(model => model.SupplierDetails.Registered)
+
+    <input type="hidden" id="hdnTypeSuppiler" name="hdnTypeSuppiler" value="" />
+    <div class="row">
+        <h2>
+            <label for="exampleInputname">Supplier Details</label></h2>
+    </div>
+    <div class="row">
+        <div class="col-md-4 col-lg-4">
+            <label>Supplier Code : </label>
+            @Html.DisplayFor(model => model.SupplierDetails.SupplierCode)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputname">Supplier Name<i style="color: red">*</i></label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.SupplierName, new { @placeholder = "Supplier Name", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.SupplierName, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputTypeofname">Items Providing<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.SupplierDetails.SupplierType, new SelectList(Model.ItemSubCategoryList, "subCategoryName", "subCategoryName"), new { id = "ddltypesupplier", @class = "form-control", multiple = "multiple", style = "height:108px" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.SupplierType, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputCountry">Country<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.SupplierDetails.Country, new SelectList(Model.SupplierDetails.CountriesList, "countryName", "countryName", Model.SupplierDetails.Country), "Select Country", new { id = "ddlcountry", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.Country, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputState">State<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.SupplierDetails.State, new SelectList(Model.SupplierDetails.StatesList, "StateName", "StateName", Model.SupplierDetails.State), "Select State", new { id = "ddlstate", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.State, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputDistrict">District<i style="color: red">*</i></label>
+                    @Html.DropDownListFor(model => model.SupplierDetails.district, new SelectList(Model.SupplierDetails.DistrictsList, "DistrictName", "DistrictName", Model.SupplierDetails.district), "Select District", new { id = "ddldistrict", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.district, null, new { style = "color:red" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputCity">City<i style="color: red">*</i></label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.City, new { @placeholder = "City", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.City, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputAddress">Address<i style="color: red">*</i></label>
+                    @Html.TextAreaFor(model => model.SupplierDetails.Address, new { @placeholder = "Address", @class = "form-control", @rows = 1 })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.Address, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputPincode">Pincode</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.Pincode, new { @placeholder = "PinCode", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.Pincode, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputContact">Contact No. 1<i style="color: red">*</i></label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.ContactNo1, new { @placeholder = "Contact No. 1", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.ContactNo1, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputContact">Contact No. 2</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.ContactNo2, new { @placeholder = "Contact No. 2", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.ContactNo2, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputContact">Contact No. 3</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.ContactNo3, new { @placeholder = "Contact No. 3", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.ContactNo3, null, new { style = "color:red" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputEmail">Email</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.Email, new { @placeholder = "Email", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.Email, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputWebsite">Website</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.Website, new { @placeholder = "Website", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.Website, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputSalesTax">Sales Tax No</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.STNo, new { @placeholder = "STNo", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.STNo, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputGST">GST</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.OtherTax, new { @placeholder = "GST", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.OtherTax, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputVAT">VAT No</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.VTNo, new { @placeholder = "VTNo", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.VTNo, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputTDS">TDS</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.TDSNo, new { @placeholder = "TDSNo", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.TDSNo, null, new { style = "color:red" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3 col-lg-3">
+            <div class="col-md-12 col-lg-12">
+                <div class="form-group row">
+                    <label for="exampleInputPANNo">Pan No</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.pancard, new { @placeholder = "Pan No", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.pancard, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputPANNo">Short Code</label>
+                    @Html.TextBoxFor(model => model.SupplierDetails.ShortCode, new { @placeholder = "ShortCode", @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.SupplierDetails.pancard, null, new { style = "color:red" })
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputSalesTax">Dealer</label><br />
+                    <input type="radio" id="Local" name="LocalOMS" onclick="CheckState('local')" />
+                    Local   
+                <input type="radio" id="OMS" name="LocalOMS" onclick="CheckState('oms')" />
+                    OMS      
+                <div class="form-group"></div>
+                </div>
+                <div class="form-group row">
+                    <label for="exampleInputSalesTax">Registered</label><br />
+                    <input type="radio" id="Registered" name="Registered" checked="checked" onclick="CheckRegistered('yes')" />
+                    Yes
+                <input type="radio" id="NonRegistered" name="Registered" onclick="CheckRegistered('no')" />
+                    No                                   
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+@*SAVE MULTIPLE DDL VALUES*@
+
+    <hr />
+    <div class="form-group row">
+        <div class="row">
+            <div class="col-md-7 col-lg-7">
+                <label style="font-size: medium">Banks Assosiated With</label>
+                @{
+    string suppliername = Model.SupplierDetails.SupplierName;
+                    <label style="font-size: medium; color: royalblue;">@suppliername.ToUpper()</label>
+                }
+            </div>
+            <div class="col-md-5 col-lg-5">
+                @Html.DropDownListFor(model => model.SupplierBankDetails.BankName, new SelectList(Model.SupplierBankDetailList, "Bankid", "BankName", Model.SupplierBankDetails.BankName), "Select Bank", new { id = "ddlsupplierbanknames", @class = "form-control" })
+            </div>
+        </div>
+    </div>
+    <div id="SelectedBankDetails"></div>
+    <div class="col-lg-offset-4">
+        <input type="button" id="Add New Bank" value="Add New Bank" class="btn btn-link" style="color: dodgerblue; font-weight: bolder;" onclick="NewBank()" />
+    </div>
+    <div class="col-lg-offset-5">
+        <button type="button" class="btn btn-success" id="Update" onclick="UpdateSupplierData()">Update</button>
+    </div>
+}

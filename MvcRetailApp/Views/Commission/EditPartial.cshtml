@@ -1,0 +1,611 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "EditPartial";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+         if ($("#subcategory").val() != "") {
+             var item = $("#itemcode").val();
+             $.getJSON('/Requisition/LoadItemsBySubCategory', { subcat: $("#subcategory").val() }, function (data) {
+                 var select = $("#item");
+                 select.empty();
+                 select.append($('<option>', {
+                     text: "Select",
+                     value: "",
+                 }));
+                 $.each(data, function (index, item) {
+                     select.append($('<option>', {
+                         text: item.Text,
+                         value: item.Value,
+                     }));
+                 });
+                 
+                 $("#item").val(item).attr("selected", true);
+             });
+         }
+
+        var temp = $("#date1").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date1').innerHTML = data;
+
+        var temp = $("#date2").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date2').innerHTML = data;
+    });
+
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function DeleteRow(id) {
+        var row = "row" + id;
+        confirmbox("Do You Want To Delete This Row?", row);
+    }
+
+    $(document).ready(function () {
+
+        $("#item").change(function () {
+            var item = $(this).val();
+
+            $.getJSON('/Commission/GetSellingPrice', { item: item }, function (data) {
+                $("#CommissionMasterDetails_ItemSellingPrice").val(data.sellingprice);
+            });
+        });
+
+        $("#submit").click(function () {
+
+            var no_of_rows = document.getElementById("rowcount").value;
+            no_of_rows = +no_of_rows;
+
+            var counter = 0;
+
+            for (var i = 1; i <= no_of_rows; i++) {
+                var product = "product" + i;
+                var productamount = "productamount" + i;
+                var productpercent = "productpercent" + i;
+
+                if (document.getElementById(product) != null) {
+                    if (document.getElementById(product).value == "" || document.getElementById(productamount).value == "" || document.getElementById(productpercent).value == "") {
+                        alertbox("Please Fill All Unit Wise Fields");
+                        counter++;
+                        return false;
+                    }
+                }
+            }
+
+            if ($("#CommissionMasterDetails_TotalSale").val() == "" && $("#CommissionMasterDetails_Meter").val() == "" && $("#product1").val() == "") {
+                alertbox("Enter Atleast One Value(Sale or Meter or Unit Wise)");
+                counter++;
+                return false;
+            }
+
+            if (document.getElementById("CommissionMasterDetails_TotalSale").value != "") {
+                if (document.getElementById("CommissionMasterDetails_TotalSaleCommPercent").value == "") {
+                    alertbox("Enter The Total Sale Commission");
+                    counter++;
+                    return false;
+                }
+            }
+
+            if (document.getElementById("CommissionMasterDetails_Meter").value != "") {
+                if (document.getElementById("CommissionMasterDetails_MeterCommPercent").value == "") {
+                    alertbox("Enter The Meter Commission");
+                    counter++;
+                    return false;
+                }
+            }
+
+            if ($("#subcategory").val() != "") {
+                if ($("#item").val() == "") {
+                    alertbox("Please Select The Item");
+                    return false;
+                }
+            }
+
+            if ($("#subcategory").val() != "" && $("#item").val() != "") {
+                if ($("#CommissionMasterDetails_ItemCommissionPercent").val() == 0 && $("#CommissionMasterDetails_ItemCommissionRupees").val() == 0) {
+                    alertbox("Enter Either Comm in Percent Or Comm in Rupees");
+                    return false;
+                }
+            }
+
+            if (counter == 0) {
+                for (var i = 1; i <= no_of_rows; i++) {
+                    var product = "product" + i;
+
+                    if (document.getElementById(product) != null) {
+                        document.getElementById(product).disabled = false;
+                    }
+                }
+                setTimeout(function () {
+                    $("#submit").attr("disabled", true);
+                }, 500);
+
+                $("#empname").attr("disabled", false);
+                $("#fromdate").attr("disabled", false);
+                $("#fromdate").val("");
+                $("#todate").attr("disabled", false);
+                $("#todate").val("");
+                $("#empname").val("").attr("selected", true);
+            }
+        });
+
+        $("#addrows").click(function () {
+            var row = +document.getElementById("rowcount").value;
+            row = +row;
+
+            for (var i = 1; i <= row; i++) {
+                var product = "product" + i;
+                var productamount = "productamount" + i;
+                var productpercent = "productpercent" + i;
+
+                if (document.getElementById(product) != null) {
+                    if (document.getElementById(product).value == "" || document.getElementById(productamount).value == "" || document.getElementById(productpercent).value == "") {
+                        alertbox("Enter All The Unit Wise Fields")
+                        return false;
+                    }
+                    else {
+                        $("#" + product).attr("disabled", true);
+                    }
+                }
+            }
+
+            row = +row + 1;
+
+            var product = "product" + row;
+            var productamount = "productamount" + row;
+            var productpercent = "productpercent" + row;
+            var list = $("#dynamicrow");
+
+            var datalist = "<div id='row" + row + "'><div class='row'><div class='col-lg-12 col-md-12'><div style='height:9px'></div><div class='row'><div class='col-lg-2 col-md-2'><div class='row'></div></div><div class='col-lg-2 col-md-2'><div class='row'><select id='" + product + "' name='" + product + "' class='form-control'></select></div></div>";
+            datalist += "<div class='col-lg-2 col-md-2'><input type='text' id='" + productamount + "' class='form-control' name='" + productamount + "' placeholder='Amount' onkeypress='return AllowNumbers(event)' autocomplete = 'off' /></div>";
+            datalist += "<div class='col-lg-2 col-md-2'><input type='text' id='" + productpercent + "' class='form-control' name='" + productpercent + "' placeholder='Percent' onkeypress='return AllowNumbers(event)' autocomplete = 'off' /></div>";
+            datalist += "<div class='col-lg-1 col-md-1'><div class='row'><label style='font-size:18px'>%</label></div></div>"
+            datalist += "<div class='col-lg-1 col-md-1'><div class='row'><div class='row'><a href='#' onclick='DeleteRow(" + row + ")' class='fa fa-trash fa-lg' style='color:red;' /></div></div></div></div></div></div></div>";
+
+            list.append(datalist);
+
+            $("#rowcount").val(row);
+
+            $.getJSON("/Commission/GetUnits", function (data) {
+
+                var dropdown = $("#" + product);
+                dropdown.empty();
+                dropdown.append($('<option>', {
+                    text: "Select Unit",
+                    value: ""
+                }));
+
+                $.each(data, function (index, item) {
+                    dropdown.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text,
+                    }));
+                });
+            });
+
+            $("#" + product).change(function () {
+                var value = $(this).val();
+
+                if (value == "Meter" || value == "meter" || value == "Meters" || value == "meters") {
+                    $("#" + product).val("").attr("selected", true);
+                }
+
+                if (value != "" && value != "Meter") {
+                    document.getElementById(productpercent).style.display = "inline";
+                    document.getElementById(productamount).style.display = "inline";
+                }
+
+                for (var i = 1; i < row ; i++) {
+                    var productname = "product" + i;
+                    if (document.getElementById(productname) != null) {
+                        if (document.getElementById(productname).value == value) {
+                            alertbox("This Unit Has Already Been Selected Above");
+                            $("#" + product).val("").attr("selected", true);
+                            $("#" + productamount).val("");
+                            $("#" + productpercent).val("");
+                            return false;
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        $("#subcategory").change(function () {
+            var subcat = $(this).val();
+            $.getJSON('/Requisition/LoadItemsBySubCategory', { subcat: subcat }, function (data) {
+                var select = $("#item");
+                select.empty();
+                select.append($('<option>', {
+                    text: "Select",
+                    value: "",
+                }));
+                $.each(data, function (index, item) {
+                    select.append($('<option>', {
+                        text: item.Text,
+                        value: item.Value,
+                    }));
+                });
+            });
+        });
+
+        $("#CommissionMasterDetails_TotalSaleCommPercent").change(function () {
+            var data = $(this).val();
+            if (data >= 100) {
+                alertbox("Commission Percent Cannot Be Equal Or Greater Than 100");
+                $("#CommissionMasterDetails_TotalSaleCommPercent").val(" ");
+                return false;
+            }
+        });
+
+        $("#CommissionMasterDetails_ProductwiseCommPercent").change(function () {
+            var data = $(this).val();
+            if (data >= 100) {
+                alertbox("Commission Percent Cannot Be Equal Or Greater Than 100");
+                $("#CommissionMasterDetails_ProductwiseCommPercent").val(" ");
+                return false;
+            }
+        });
+    });
+</script>
+
+
+@using (Html.BeginForm("EditPartial", "Commission", FormMethod.Post))
+{
+    <input type="hidden" name="rowcount" id="rowcount" value="@Model.CommissionProductList.Count()" />
+
+    @Html.HiddenFor(model => model.CommissionMasterDetails.EmployeeName)
+    @Html.HiddenFor(model => model.CommissionMasterDetails.CommissionId)
+    @Html.HiddenFor(model => model.CommissionMasterDetails.CommissionCode)
+    @Html.HiddenFor(model => model.CommissionMasterDetails.FromDate)
+    @Html.HiddenFor(model => model.CommissionMasterDetails.ToDate)
+    @Html.HiddenFor(model => model.CommissionMasterDetails.ItemSellingPrice)
+    
+    <input type="hidden" name="itemcode" id="itemcode" value="@Model.CommissionMasterDetails.ItemCode" />
+    
+    <div style="height: 10px"></div>
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">Code : </label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @Html.DisplayFor(model => model.CommissionMasterDetails.CommissionCode)
+            </div>
+        </div>
+
+        <div class="col-lg-1 col-md-1"></div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">Employee Name :</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @Html.DisplayFor(model => model.CommissionMasterDetails.EmployeeName)
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 5px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+        <div style="height: 15px"></div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">From Date</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+
+                @{
+    var fromdate = Convert.ToDateTime(Model.CommissionMasterDetails.FromDate).ToString("MM/dd/yyyy");
+                }
+                <label id="date1" style="font-weight: normal">@fromdate</label>
+            </div>
+        </div>
+
+        <div class="col-lg-1 col-md-1"></div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">To Date</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @{
+    var todate = Convert.ToDateTime(Model.CommissionMasterDetails.ToDate).ToString("MM/dd/yyyy");
+                }
+                <label id="date2" style="font-weight: normal">@todate</label>
+            </div>
+        </div>
+
+    </div>
+
+        <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">Sub Category</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @Html.DropDownListFor(model => model.CommissionMasterDetails.SubCategory, new SelectList(Model.ItemSubCategoryList,"subCategoryName","subCategoryName",Model.CommissionMasterDetails.SubCategory),"Select Sub Category",new { @class = "form-control" , @id="subcategory" })
+            </div>
+        </div>
+
+        <div class="col-lg-1 col-md-1"></div>
+
+        <div>
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    <label>Item</label>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    @Html.DropDownListFor(model => model.CommissionMasterDetails.ItemCode,Enumerable.Empty<SelectListItem>(), "Select" ,new { @class = "form-control" , @id="item" })
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">Comm in Percent</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @Html.TextBoxFor(model => model.CommissionMasterDetails.ItemCommissionPercent, new { @class = "form-control" , onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+            </div>
+        </div>
+
+        <div class="col-lg-1 col-md-1"></div>
+
+        <div>
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    <label>Comm in Rupees</label>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    @Html.TextBoxFor(model => model.CommissionMasterDetails.ItemCommissionRupees, new { @class = "form-control" , onkeypress = "return AllowNumbers(event)", autocomplete = "off"})
+                </div>
+            </div>
+
+        </div>
+    </div>
+    
+    
+    <div class="col=lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">Total Sale Target</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @Html.TextBoxFor(model => model.CommissionMasterDetails.TotalSale, new { @class = "form-control", placeholder = "Total Sale In Rupees", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+            </div>
+        </div>
+
+        <div class="col-lg-1 col-md-1"></div>
+
+        <div id="salepercent">
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    <label>Comm. Percent</label>
+                </div>
+            </div>
+
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    @Html.TextBoxFor(model => model.CommissionMasterDetails.TotalSaleCommPercent, new { @class = "form-control", placeholder = "Commission Percent", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                <label style="font-size: 14px">Meter Target</label>
+            </div>
+        </div>
+
+        <div class="col-lg-2 col-md-2">
+            <div class="row">
+                @Html.TextBoxFor(model => model.CommissionMasterDetails.Meter, new { @class = "form-control", placeholder = "Meter", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+            </div>
+        </div>
+
+        <div class="col-lg-1 col-md-1"></div>
+
+        <div id="meterpercent">
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    <label>Comm. Amount</label>
+                </div>
+            </div>
+
+
+            <div class="col-lg-2 col-md-2">
+                <div class="row">
+                    @Html.TextBoxFor(model => model.CommissionMasterDetails.MeterCommPercent, new { @class = "form-control", placeholder = "Commission Amount", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 8px"></div>
+        <div style="height: 1px; background-color: lightgray"></div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="height: 20px"></div>
+
+        <div class="row">
+            <div class="col-lg-2 col-md-2">
+                <label style="font-size: 14px">Unit Wise</label>
+            </div>
+            <div class="col-lg-8 col-md-8"></div>
+            <div class="col-lg-1 col-md-1">
+                <div class="row">
+                    <button type="button" class="btn btn-primary btn-sm" id="addrows"><i class="fa fa-plus-square"></i></button>
+                </div>
+            </div>
+            <div class="col-lg-1 col-md-1"></div>
+        </div>
+
+        <div id="dynamicrow">
+
+            @{
+    if (Model.CommissionProductList.Count() != 0 && Model.CommissionProductList.Any())
+    {
+        int count = 1;
+        string select = string.Empty;
+        string productpercent = string.Empty;
+        string productamount = string.Empty;
+
+        foreach (var unit in Model.CommissionProductList)
+        {
+
+            productpercent = "productpercent" + count;
+            productamount = "productamount" + count;
+            select = "product" + count;
+            var row = "row" + count;
+
+                <div class="row">
+                    <div id="@row">
+
+                        @if (count != 0)
+                        {
+                            <div class="col-lg-2 col-md-2"></div>
+                        }
+
+                        <div class="col-lg-2 col-md-2">
+                            <div class="row">
+                                @{
+                                    <select class="form-control" id="@select" name="@select">
+                                        <option>Select</option>
+                                        @foreach (var data in Model.UnitList)
+                                        {
+                                            if (data.UnitName == unit.UnitName)
+                                            { 
+                                            <option value="@data.UnitName" selected>@data.UnitName</option>
+                                            }
+                                            else
+                                            {
+                                            <option value="@data.UnitName">@data.UnitName</option>
+                                            }
+                                        }
+                                    </select>
+                                }
+                            </div>
+                        </div>
+
+                        <div id="productpercent">
+                            <div class="col-lg-2 col-md-2">
+                                <input type="text" class="form-control" id="@productamount" name="@productamount" onkeypress = "return AllowNumbers(event)" autocomplete="off" value="@unit.UnitAmount" placeholder="Target" />
+                            </div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <input type="text" class="form-control" id="@productpercent" name="@productpercent" onkeypress = "return AllowNumbers(event)" autocomplete="off" value="@unit.UnitPercent" placeholder="Percent" />
+                            </div>
+
+                            <div class="col-lg-1 col-md-1" style="text-align: left">
+                                <div class="row">
+                                    <label style="font-size: 18px">%</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-1 col-md-1">
+                            <div class="row">
+                                <div class="row">
+                                    <a href='#' onclick='DeleteRow(@count)' class='fa fa-trash fa-lg' style='color: red;' />
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            
+                <div style="height: 10px"></div>
+                                        count++;
+        }
+    }
+            }
+        </div>
+    </div>
+
+    <div class="col-lg-12 col-md-12">
+        <div style="text-align: center">
+            <div style="height: 15px"></div>
+            <input type="submit" id="submit" class="btn btn-success" value="Update" />
+        </div>
+    </div>
+}

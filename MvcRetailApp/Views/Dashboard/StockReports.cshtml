@@ -1,0 +1,133 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "StockReports";
+}
+
+@{
+    string EmpDesignation = (string)TempData["EmployeeDesignation"];
+    TempData["EmployeeDesignation"] = EmpDesignation;
+    string EmpDepartment = (string)TempData["EmployeeDepartment"];
+    TempData["EmployeeDepartment"] = EmpDepartment;
+
+    string EntryStockCard = "No";
+    string ShopStockCard = "No";
+    string GodownStockCard = "No";
+
+    if (Model.userCredentialList != null && Model.userCredentialList.Any())
+    {
+        foreach (var data in Model.userCredentialList)
+        {
+            //entry stock
+            if (data.AssignDashboardId == "D30")
+            {
+                EntryStockCard = "Yes";
+            }
+
+            //shop stock
+            if (data.AssignDashboardId == "D30")
+            {
+                ShopStockCard = "Yes";
+            }
+
+            //godown stock
+            if (data.AssignDashboardId == "D30")
+            {
+                GodownStockCard = "Yes";
+            }
+
+        }
+    }
+    
+    //Stock In All Shops And Godowns Till Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || EntryStockCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lavender">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-database fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var entrystock = (IEnumerable<CodeFirstEntities.EntryStockItem>)TempData["EntryStock"];
+        TempData["EntryStock"] = entrystock;
+                            <div class="huge">@entrystock.Count()</div>
+                        }
+                        <div>Entry Stock</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="EntryStockTillDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Stock In Shops Till Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || ShopStockCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lavender">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-database fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var shopstock = (IEnumerable<CodeFirstEntities.ShopStock>)TempData["ShopStock"];
+        TempData["ShopStock"] = shopstock;
+        <div class="huge">@shopstock.Count()</div>
+                        }
+                        <div>Shop Stock</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="ShopStockTillDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Stock In Godowns Till Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || GodownStockCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-lavender">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-database fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var godownstock = (IEnumerable<CodeFirstEntities.GodownStock>)TempData["GodownStock"];
+        TempData["GodownStock"] = godownstock;
+        <div class="huge">@godownstock.Count()</div>
+                        }
+                        <div>Godown Stock</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="GodownStockTillDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }  
+}

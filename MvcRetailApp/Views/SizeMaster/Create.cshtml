@@ -1,0 +1,535 @@
+﻿@model CodeFirstEntities.SizeMaster
+
+@{
+    ViewBag.Title = "Create";
+}
+<style type="text/css">
+body{
+	background:#474F57;  
+	margin:0; 
+}
+a:link{
+	 		 font-family: 'Open Sans', sans-serif;
+			 font-size: 13px;
+			  color: #888;
+			  text-decoration:none;
+			  
+}
+a:hover.set1{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color:#FFF;
+			text-decoration:none;
+			 
+}
+a:hover.set2{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color:#000;
+			text-decoration:none;
+			 
+}
+a:active{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color:#fff;
+			text-decoration:none;	 
+}
+a:visited{
+	 		font-family: 'Open Sans', sans-serif;
+			font-size: 13px;
+			color: #888;
+			text-decoration:none;
+			 
+}
+	
+#header{
+		position:absolute;
+		border-top: 1px solid #ccc;
+		padding: 0px;
+		margin-top:0px;
+		
+		background:#474F57; 
+		height:50px;
+		width:100%;
+	   border-bottom: 0px solid #ddd;
+		-webkit-box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+		box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+		
+	}
+	.HeaderTab{
+				float:right;
+				font-family: 'Open Sans', sans-serif;
+				font-size: 13px;
+				color:#fff;
+				padding:20px 20px 20px 20px; 
+	}
+	.content{
+				position:absolute;
+				margin:50px 0 0 0;
+			 -webkit-font-smoothing: antialiased;
+			  box-sizing: border-box;
+			 color: rgb(102, 102, 102);
+			 display: block;
+		     font-family: 'Open Sans', sans-serif;
+			 font-size: 13px;
+             height: 100%;
+			 line-height: 22px;
+			 width: 1585px;
+			 
+			
+		}
+	.sidebar {
+				width: 230px;
+				float: left;
+				display: block;
+				color: #777;
+				position: relative;
+			}
+	.sidebar #nav {
+					display: block;
+					width: 100%;
+					margin: 0 auto;
+					position: relative;
+					z-index: 60;
+					}
+		.sidebar ul {
+						padding: 0px;
+						
+					}
+		.sidebar li {
+					
+						background:#474f57;
+						border-bottom: 1px solid #3C434A;
+						border-top: 1px solid #4F5861;
+						height:35px;
+						padding-top:5px;
+						padding-left:5px;	
+						text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.6);
+						color:#b7bebe;
+					}
+	   .mainbar {
+					position: relative;
+					margin-left: 230px;
+					margin-right: 0px;
+					width: auto;
+					overflow: hidden;
+					background: #EEEFF2;
+					border-left: 1px solid #ccc;
+					z-index: 50;
+					min-height: 800px;
+				}
+				.mainbar .matter {
+									border-top: 1px solid #ddd;
+									padding: 15px 15px 15px 15px;
+								 }
+				.mainbar .container {
+										max-width: 100% !important;
+										width: 100% !important;
+									}
+				.mainbar .page-head {
+									padding: 8px 20px;
+									background: #f3f3f3;
+									border-bottom: 1px solid #fff;
+									-webkit-box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+									box-shadow: 0px 1px 3px 0 rgba(0, 0, 0, 0.19);
+									font-family: 'Open Sans', sans-serif;
+									font-size:16px;
+									}
+				.mainbar .bread-crumb {
+										padding-top: 3px;
+										border-top: 1px solid #ddd;
+										font-size: 12px;
+										margin-top: 10px;
+										color: #aaa;
+										}
+				.FormDetails {
+							border: 1px solid #c9c9c9;
+							position: relative;
+							border-radius: 3px;
+							margin-top: 10px;
+							margin-bottom: 20px;
+							min-height: 50px;
+							box-shadow: 0 1px 1px rgba(0, 0, 0, 0.05);
+							background: #F4F2F5;
+						}
+				.FormDetails .FormDetails-head {
+background-color: #f8f8f8;
+background: -webkit-gradient(linear, left top, left bottom, from(#f8f8f8), to(#f2f2f2));
+background: -webkit-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: -moz-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: -ms-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: -o-linear-gradient(top, #f8f8f8, #f2f2f2);
+background: linear-gradient(top, #f8f8f8, #f2f2f2);
+border-top-right-radius: 3px;
+border-top-left-radius: 3px;
+text-shadow: 0px 1px #fff;
+border-bottom: 1px solid #ccc;
+border-top: 1px solid #fff;
+color: #2B3856;
+font-size: 14px;
+font-weight: bold;
+padding: 8px 15px;
+}
+*, *:before, *:after {
+-webkit-box-sizing: border-box;
+-moz-box-sizing: border-box;
+box-sizing: border-box;
+}
+
+label { display: inline-block;; width: 150px; padding-left:-3px;font-weight:bold;		 }
+
+.textbox_style{
+background-color: #fff;
+color: #555;
+border: 1px solid #ccc;
+border-radius: 2px;
+-webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+-webkit-transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+transition: border-color ease-in-out .15s,box-shadow ease-in-out .15s;
+}
+.btn {
+display: inline-block;
+padding: 6px 12px;
+margin-bottom: 0;
+font-size: 14px;
+font-weight: normal;
+line-height: 1.428571429;
+text-align: center;
+white-space: nowrap;
+vertical-align: middle;
+cursor: pointer;
+border: 1px solid transparent;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+.btn-default:hover, .btn-default:focus, .btn-default:active, .btn-default.active, .open .dropdown-toggle.btn-default {
+color: #fff;
+background-color: #000000;
+border-color: #adadad;
+-webkit-border-radius: 2px;
+border-radius: 2px;
+}
+footer{
+  background-color: #333;
+	padding:10px 0px;
+	color: #777;
+	font-size: 12px;
+	border-top: 1px solid #333;
+}
+</style>
+@*<h2>Create</h2>
+<style>
+    .setwidth
+        {
+            width:153px;
+        }
+
+    #right_header{
+	 position:absolute;
+	 margin-top:0;
+	 margin-left:0px;
+	 width:599px;
+	 height:25px;
+	 font-family:calibri;
+	 font-weight:bold;
+	 font-size:18px;
+	 color:#000;
+	 float:right;
+	 background:#cccc99;
+	border-top:2px solid;
+	border-top-color:#6687ad;	
+	}
+    .button_example{
+				width:70px;
+				margin-left:250px;
+				border:1px solid #7d99ca; 
+				-webkit-border-radius: 3px;
+				-moz-border-radius: 3px;
+				border-radius: 3px;
+				font-size:12px;
+				
+				text-align:center;
+				font-family:arial, helvetica, sans-serif;
+				padding: 10px 10px 10px 10px;
+				text-decoration:none; 
+				display:inline-block;
+				text-shadow: -1px -1px 0 rgba(0,0,0,0.3);
+				font-weight:bold; color: #000000;
+ 				background-color: #a5b8da; 
+				background-image: -webkit-gradient(linear, left top, left bottom, from(#9c9c5f), to(#cccc99));
+				background-image: -webkit-linear-gradient(top, #9c9c5f, #cccc99);
+ 				background-image: -moz-linear-gradient(top, #9c9c5f, #cccc99);
+ 				background-image: -ms-linear-gradient(top, #9c9c5f, #cccc99);
+ 				background-image: -o-linear-gradient(top, #9c9c5f, #cccc99);
+ 				background-image: linear-gradient(to bottom, #9c9c5f, #cccc99);
+				filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#9c9c5f, endColorstr=#cccc99);
+}
+
+.button_example:hover{
+ border:1px solid #5d7fbc;
+ background-color: #819bcb; background-image: -webkit-gradient(linear, left top, left bottom, from(#cccc99), to(#7f7f46));
+ background-image: -webkit-linear-gradient(top, #cccc99, #7f7f46);
+ background-image: -moz-linear-gradient(top, #cccc99, #7f7f46);
+ background-image: -ms-linear-gradient(top, #cccc99, #7f7f46);
+ background-image: -o-linear-gradient(top, #cccc99, #7f7f46);
+ background-image: linear-gradient(to bottom, #cccc99, #7f7f46);
+ filter:progid:DXImageTransform.Microsoft.gradient(GradientType=0,startColorstr=#cccc99, endColorstr=#7f7f46);
+}
+
+</style> *@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#item").attr("disabled", true);
+        $("#quantity").attr("disabled", true);
+        $("#rate").attr("disabled", true);
+        $("#sizeMaterial").attr("disabled", true);
+        $("#currency").attr("disabled", true);
+
+        $("#category").change(function () {
+            var catmodel = $(this).val();
+            $("#item").attr("disabled", false);
+            //$("#item").attr("disabled", false);
+            //$("#quantity").attr("disabled", false);
+
+            //  alert(catmodel);
+
+
+            if (catmodel == "") {
+
+                $("#item").attr("disabled", true);
+                $("#quantity").attr("disabled", true);
+                $("#rate").attr("disabled", true);
+                $("#sizeMaterial").attr("disabled", true);
+                $("#currency").attr("disabled", true);
+
+            }
+
+            else {
+
+                $.getJSON("/SizeMaster/getSize", { code: catmodel },
+                           function (stateData) {
+                               var select = $("#item");
+                               select.empty();
+                               select.append($('<option/>', {
+                                   value: "",
+                                   text: "Select a ItemCode"
+                               }));
+                               $.each(stateData, function (index, itemData) {
+                                   select.append($('<option/>', {
+                                       value: itemData.Value,
+                                       text: itemData.Text
+
+                                   }));
+                               });
+                           });
+            }
+        });
+        
+        
+        });
+    
+ 
+    $(document).ready(function () {
+        $("#item").change(function () {
+            var item = $(this).val();
+            // alert(item);
+            if (item == "") {
+
+                $("#quantity").attr("disabled", true);
+                $("#rate").attr("disabled", true);
+                $("#sizeMaterial").attr("disabled", true);
+                $("#currency").attr("disabled", true);
+            }
+            else {
+
+                $("#quantity").attr("disabled", false);
+                $("#rate").attr("disabled", false);
+                $("#sizeMaterial").attr("disabled", false);
+                $("#currency").attr("disabled", false);
+            }
+
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+
+    $(function(){
+
+        $("#quantity").keyup(function () {
+            if(this.value.match(/[^0-9]/g)) 
+            {
+                this.value=this.value.replace(/[^0-9]/g,'');
+            }
+
+        });
+
+
+    });
+
+</script>
+@using (Html.BeginForm("Create", "SizeMaster", FormMethod.Post,new { enctype = "multipart/form-data"  ,id = "frmCreate"}))
+  {
+     @Html.ValidationSummary(true)     
+           <div class="content">
+ 
+               @Html.HiddenFor(model=>model.sizeCode)
+ <div id="leftb_menu">
+                @Html.Partial("MastersLeftMenu");
+            </div>
+ <div class="mainbar">
+            		 <div class="page-head"><b>Size Details</b>
+                     		<div class="bread-crumb">
+                            </div>
+                            <a href="#" class="set2"><i class="fa fa-plus fa-lg"></i></a>&nbsp; |&nbsp;
+                            <a href="#" class="set2"><i class="fa fa-floppy-o fa-lg"></i></a>&nbsp; | &nbsp;
+                            <a href="#" class="set2"><i class="fa fa-refresh fa-lg"></i></a>&nbsp; | &nbsp;
+                            <a href="#" class="set2"><i class="fa fa-check-square-o fa-lg"></i></a>&nbsp; | &nbsp;
+                            <a href="#" class="set2"><i class="fa fa-trash-o fa-lg"></i></a>
+              </div>
+                      
+                      <div class="matter">
+                      		 <div class="container">
+                           <div class="FormDetails">
+                      		<div class="FormDetails-head">Size Details</div>
+                               <ul style="border:1px solid #c2bdbd;">
+                                                                      <br/>
+
+    
+   
+    @*@Html.ValidationSummary(true)     
+
+    <fieldset>
+        <legend>SizeMaster</legend>
+       
+         <div id="container">
+          @Html.HiddenFor(model=>model.sizeCode)
+             @Html.HiddenFor(model=>model.sizeId)
+
+<div id="right_menu"> 
+                        		      <div id="right_header"> &nbsp;Size Details:</div>
+                                    <div id="right_button_panel"> &nbsp;
+										<a href="#"><span title="Add"><img src="@Url.Content("~/Images/add_button.jpg")" alt="Add" width="31" height="29" /></span></a>
+										|<a href="#"><span title="Refresh"><img src="@Url.Content("~/Images/refresh_button.jpg")" width="33" height="30" /></span></a>
+										|<a href="#"><span title="Save"><img src="@Url.Content("~/Images/save_button.jpg")" width="28" height="27" /></span></a>
+										|<a href="#"><span title="Update"><img src="@Url.Content("~/Images/update_button.jpg")" width="34" height="33" /></span></a>
+										|<a href="#"><span title="Delete"><img src="@Url.Content("~/Images/delete_button.jpg")" width="33" height="33" /></span></a>
+                                         
+									  </div>
+                                      
+            </div>
+   *@
+
+ <div id="right_form"> 
+                                      						Size Details:
+														      <ul style="border:1px solid gray;">
+                                                              <br />
+                                                              <li style="list-style:none">Category
+                                                                      <span style="margin-left:25px">&nbsp;</span>
+      																	 @Html.DropDownListFor(model => model.category, new SelectList(Model.typeofcategories, "categoryCode", "categoryCode", Model.category), "Select Category", new { id = "category",@class="setwidth"})
+
+                                                                       <span style="margin-left:68px">&nbsp;</span>
+                                                                   	   Item
+                                                                        <span style="margin-left:34px">&nbsp;</span>
+                                                                    	@Html.DropDownListFor(model=>model.item,Enumerable.Empty<SelectListItem>(),"select item",new{id="item",@class="setwidth"})
+                                                                           <br /><br />
+                                                                     </li>
+                                                                   <li style="list-style:none" >
+                                                                   <span style="margin-left:76px">&nbsp;</span>
+                                                                   <font color="red"> 
+                                                                        @Html.ValidationMessageFor(model=>model.category)
+                                                                    
+                                                                       @Html.ValidationSummary(true)
+                                                                        
+                                                                  <span style="margin-left:301px">&nbsp;</span>
+                                                                    @Html.ValidationMessageFor(model=>model.item)
+                                                                       @Html.ValidationSummary(true)
+                                                               
+
+                                                                   </font> 
+                                                                    
+
+                                                                     </li>  
+                                                                     
+  																	<li style="list-style:none">
+      																Size Material
+                                                                    <span style="margin-left:4px">&nbsp;</span>
+   																	@Html.TextBoxFor(model=>model.sizeMaterial)
+                                                                        @* @Html.ValidationMessageFor(model => model.sizeMaterial)*@
+                                                                    <br /><br /> 
+                                                                    </li>  
+                                                                   <li style="list-style:none" ><span style="margin-left:76px">&nbsp;</span>
+                                                                   <font color="red">  @Html.ValidationMessageFor(model=>model.sizeMaterial)</font> <br /><br /> 
+                                                                    
+
+                                                                     </li>  
+                                                                   
+                                     							  <li style="list-style:none">
+                                                                   Size Quantity
+                                                                  <span style="margin-left:5px">&nbsp;</span>
+                                                                   @Html.TextBoxFor(model=>model.quantity)
+
+                                                                  <br /><br /> 
+                                                                  </li>
+
+
+                                                                   <li style="list-style:none" ><span style="margin-left:76px">&nbsp;</span>
+                                                                   <font color="red">  @Html.ValidationMessageFor(model=>model.quantity)</font> <br /><br /> 
+                                                                    
+
+                                                                     </li>  
+
+
+                                                                     <li style="list-style:none">
+      																	Rate
+                                                                       <span style="margin-left:46px">&nbsp;</span>
+      																	@Html.TextBoxFor(model=>model.rate)
+                                                                <span style="margin-left:65px">&nbsp;</span>
+                                                                                  Currency
+                                                                      <span style="margin-left:14px">&nbsp;</span>
+      																	 @Html.DropDownListFor(model => model.currency, new SelectList(Model.currencies, "currencyname", "currencyname", Model.currencies), "Select Currency", new { id = "currency",@class="setwidth"})
+                                                                
+
+                                                                        <br /><br />
+                                                                     </li>
+                                                                   <li style="list-style:none" ><span style="margin-left:69px">&nbsp;</span>
+                                                                   <font color="red">  @Html.ValidationMessageFor(model=>model.rate)</font> <br /><br /> 
+                                                                    
+
+                                                                     </li> 
+                                                                   
+                                        				</ul>
+       </div><!--matter-->
+          
+      	    <li style="list-style:none">
+                                                                     <span style="margin-left:400px;">&nbsp;</span> 
+                                                                     <button type="submit" id="submit" class="btn btn-default" >Save</button>
+                                                                     </li>
+	</div>
+	
+       
+     </div>
+                                     </div>  
+         
+    </div>
+               <div class="footer"> <font face="calibri" color="#FFFFFF"> Powered By Maria Infotech Pvt.Ltd</font>
+            </div>	
+               </div>
+               
+        }                                        
+           				  <br />                                                                 
+                                                                  @*@*    <button type="submit" id="submit" class="button_example">
+                    <font color="#000000">Submit</font>
+                </button>   
+                                      </div>
+                                       
+     <div id="left_menu">
+                @Html.Partial("MastersLeftMenu");
+            </div>
+       </div> 
+                    
+</fieldset>
+ }*@

@@ -1,0 +1,161 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "SupplierReport";
+}
+
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+<link href="//cdn.datatables.net/responsive/1.0.1/css/dataTables.responsive.css" rel="stylesheet" />
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<script src="@Url.Content("~/Scripts/dataTables.bootstrap.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.dataTables.min.js")"></script>
+<link href="http://cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.css" rel="stylesheet" />
+<script src="http://cdn.datatables.net/plug-ins/a5734b29083/integration/bootstrap/3/dataTables.bootstrap.js"></script>
+<script src="http://cdn.datatables.net/responsive/1.0.1/js/dataTables.responsive.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+        jQuery('#basicTable').DataTable({
+            responsive: true,
+        });
+        console.clear();
+    });
+</script>
+
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    function OpenBankDetails(Code) {
+        window.open("/MisReports/SupplierBankDetails?Code=" + Code, "_target", "width=770,height=300,top=100px,left=300px");
+    }
+</script>
+
+@Html.Partial("../Shared/Header")
+
+<section>
+    <div class="mainwrapper">
+
+        <!-- Start: Sidebar -->
+        <!-- End: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- Start: Content -->
+        <div class="mainpanel">
+            <div class="col-lg-12 col-md-12">
+                    @if (Model.SupplierList != null && Model.SupplierList.Any())
+                    {
+                        <div style="height: 15px"></div>
+                        <div style="height: 20px"></div>
+                        <table id="basicTable" class="table table-striped table-hover table-condensed col-lg-8 col-md-8 col-sm-8">
+                            <thead>
+                                <tr>
+                                    <th>Sr.No.</th>
+                                    <th>Code</th>
+                                    <th>Name</th>
+                                    <th>Address</th>
+                                    <th>Contact</th>
+                                    <th>Email</th>
+                                    <th>State</th>
+                                    <th>City</th>
+                                    <th>Local/<br />OMS</th>
+                                    <th>Registered</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                        int rowid = 1;
+                                }
+                                @foreach (var data in Model.SupplierList)
+                                {
+                                    <tr>
+                                        <td>@rowid</td>
+                                        <td>@data.SupplierCode</td>
+                                        <td>
+                                            <button onclick="OpenBankDetails('@data.SupplierCode')" class="btn btn-link" style="color:blue">@data.SupplierName</button>
+                                        </td>
+                                        <td>@data.Address</td>
+                                        <td>@data.ContactNo1</td>
+                                        <td>@data.Email</td>
+                                        <td>@data.State</td>
+                                        <td>@data.City</td>
+                                        <td>@data.checkState</td>
+                                        <td>@data.Registered</td>
+                                        @{
+                                    rowid += 1;
+                                        }
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    }
+                    else
+                    {
+                        <label style="color: red; text-align: center; font-weight: bolder; width: 100%">Record Not Found..</label>
+                        <script>
+                            document.getElementById("printbtn").style.display = 'none';
+                            document.getElementById("pager").style.display = 'none';
+                        </script>
+                    }
+            </div>
+        </div>
+    </div>
+</section>

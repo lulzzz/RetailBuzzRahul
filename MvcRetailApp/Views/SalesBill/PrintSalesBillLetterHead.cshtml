@@ -1,0 +1,392 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "PrintSalesBillLetterHead";
+}
+
+<style type="text/css">
+    #ItemTable {
+        page-break-inside: auto;
+    }
+
+    tr {
+        page-break-inside: avoid;
+        page-break-after: auto;
+    }
+
+    thead {
+        display: table-header-group;
+    }
+
+    tfoot {
+        display: table-footer-group;
+    }
+</style>
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<script type="text/javascript">
+    $(function () {
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        //document.getElementById('date').innerHTML = data;
+
+        document.getElementById("Inwords").innerHTML = NumberToWords();
+    });
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+    function NumberToWords() {
+        var junkVal = (+removeCommas(document.getElementById('Grand_Total').innerHTML));
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+            //do nothing
+        }
+        else if (Number(junkVal) == 0) {
+            //document.getElementById('container').innerHTML = obStr + '' + 'Rupees Zero Only';
+            return 'Rupees Zero Only';
+        }
+        else {
+            alert('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alert('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+
+<table style="width: 100%">
+    <tr>
+        <td style="width: 15%;"></td>
+        <td style="width: 85%;">
+            <table style="width: 100%">
+                <tr style="border: 1px solid">
+                    <td>
+                        <table style="width: 100%">
+                            <tr>
+                                <td colspan="2">
+                                    <header style="height: 3.4cm"></header>
+                                </td>
+                            </tr>
+                            <tr style="height: 3.2cm;">
+                                <td style="width: 70.91%">
+                                    <label></label>
+                                    <label style="padding-left: 1.8cm">@Model.SalesBillDetails.ClientName</label>
+                                    <div style="height: 35px"></div>
+                                </td>
+                                <td>
+                                    <table>
+                                        <tr>
+                                            <td>
+                                                <label></label>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td style="height: 3px">
+                                                <label style="padding-left: 1.3cm; font-size: 12px">@Model.SalesBillDetails.SalesBillNo</label>
+                                            </td>
+                                        </tr>
+                                        <tr style="height: 1.1cm"></tr>
+                                        <tr>
+                                            <td>
+                                                <label></label>
+                                                <label style="padding-left: 2.3cm; font-size: 12px">@Convert.ToDateTime(Model.SalesBillDetails.Date).ToShortDateString()</label>
+                                            </td>
+                                        </tr>
+                                    </table>
+
+                                </td>
+                            </tr>
+                        </table>
+                        <table style="width: 100%">
+                            <tr style="vertical-align: top">
+                                <td style="width: 200px; height: 35px">
+                                    <label></label>
+                                </td>
+                                <td style="width: 303px;">
+                                    <label></label>
+                                </td>
+                                <td style="width: 300px;">
+                                    <label></label>
+                                </td>
+                                <td style="width: 200px;">
+                                    <label></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="height: 60.03px; width: 200px; font-size: 12px">@Model.SalesBillDetails.SalesOrderNo</td>
+                                <td style="width: 300px; font-size: 12px">@Model.SalesBillDetails.DeliveryChallanNo</td>
+                                <td style="width: 300px; font-size: 13px">@Model.SalesBillDetails.PreparedBy</td>
+                                <td style="width: 200px; font-size: 13px">@Model.SalesBillDetails.Id</td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+            <table style="width: 100%; min-height: 404.41px; max-height: 404.41px;" id="ItemTable">
+                <thead>
+                    <tr>
+                        <td colspan="5" style="height: 10px"></td>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        var totalamount = Convert.ToDouble(Model.SalesBillDetails.TotalAmount).ToString("#,###.00##");
+                        var totaldiscount = Convert.ToDouble(Model.SalesBillDetails.TotalDiscount).ToString("#,###.00##");
+                        var packandforwd = Convert.ToDouble(Model.SalesBillDetails.PackAndForwd).ToString("#,###.00##");
+                        var ttltaxamt = Convert.ToDouble(Model.SalesBillDetails.TotalTaxAmount).ToString("#,###.00##");
+                        var grandtotal = Convert.ToDouble(Model.SalesBillDetails.GrandTotal).ToString("#,###.00##");
+                        if (Model.SalesBillItemList != null && Model.SalesBillItemList.Any())
+                        {
+                            int count = 1;
+                            int ListCount = Model.SalesBillItemList.Count();
+                            foreach (var data in Model.SalesBillItemList)
+                            {
+                                var rt = Convert.ToDouble(@data.SellingPrice);
+                                var sp = rt.ToString("#,###.00##");
+                                var mrp = Convert.ToDouble(@data.MRP).ToString("#,###.00##");
+                                var amt = Convert.ToDouble(@data.Amount);
+                                var amount = amt.ToString("#,###.00##");
+                                var discountrs = "0";
+                                if (data.DiscountRPS != null && data.DiscountRPS != 0)
+                                {
+                                    discountrs = Convert.ToDouble(@data.DiscountRPS).ToString("#,###.00##");
+                                }
+                        <tr style="margin-bottom: 10px">
+                            <td style="width: 45px; height: 10px">
+                                <label style="font-weight: normal">&nbsp;@count</label>
+                            </td>
+                            <td style="width: 257px">
+                                <table>
+                                    <tr>
+                                        <td style="width: 100px">
+                                            <label style="font-weight: normal">&nbsp;@data.ItemName</label></td>
+                                        <td style="width: 140px">
+                                            <label style="font-weight: normal">&nbsp;@data.Narration </label>
+                                        </td>
+                                        <td>
+                                            <label style="font-weight: normal; text-align: right">@data.DiscountPercent&nbsp;</label></td>
+                                        <td>
+                                        @{
+                                if (Model.SalesBillDetails.TaxStatus == "WithTax")
+                                {
+                                            <td>
+                                                <label style="font-weight: normal; text-align: right">@data.ItemTax&nbsp;</label></td>
+                                }   
+                                        }
+                                    </tr>
+                                </table>
+                            </td>
+                            <td style="text-align: right; width: 106px">
+                                <label style="font-weight: normal">@data.Quantity&nbsp;</label>
+                            </td>
+                            <td style="text-align: right; width: 95px">
+                                @{
+                                if (Model.SalesBillDetails.TaxStatus == "WithTax")
+                                { 
+                                    <label style="font-weight: normal">@sp&nbsp;</label>    
+                                }
+                                else
+                                { 
+                                    <label style="font-weight: normal">@mrp&nbsp;</label>    
+                                }
+                                }
+                            </td>
+                            <td style="text-align: right; width: 144px">
+                                <label style="font-weight: normal">@amount&nbsp;</label>
+                            </td>
+                        </tr>
+                                count++;
+                            }
+                        }
+                        <tr style="vertical-align: bottom">
+                            <td></td>
+                            <td>
+                                @{
+                                    if (Model.SalesBillDetails.TaxStatus == "WithTax")
+                                    {
+                                    <label><b>Tax Summary:</b></label><br />
+                                    <table style="width: 100%">
+                                        @foreach (var itemtax in Model.InventoryTaxList)
+                                        {
+                                            <tr>
+                                                <td>
+                                                    <label>@itemtax.Amount</label></td>
+                                                <td>
+                                                    <label>@itemtax.Tax%</label></td>
+                                                <td>
+                                                    <label>@itemtax.TaxAmount</label></td>
+                                            </tr>
+                                        }
+                                    </table>
+                                    }
+                                }
+                            </td>
+                            <td></td>
+                            <td style="text-align: right">
+                                <label style="font-size: 13px"><b>Total Amt</b></label><br />
+                                <label style="font-size: 13px"><b>Total Disc</b></label><br />
+                                <label style="font-size: 13px"><b>Pack & Forwd</b></label><br />
+                                @{
+                                    if (Model.SalesBillDetails.TaxStatus == "WithTax")
+                                    { 
+                                    <label style="font-size: 13px"><b>Tax Amount</b></label><br />        
+                                    }
+                                }
+                                <label style="font-size: 13px"><b>Grand Total</b></label>
+                            </td>
+                            <td style="text-align: right">
+                                <label>@totalamount</label><br />
+                                <label>@totaldiscount</label><br />
+                                <label>@packandforwd</label><br />
+                                @{
+                                    if (Model.SalesBillDetails.TaxStatus == "WithTax")
+                                    {
+                                    <label>@ttltaxamt</label><br />
+                                    }
+                                }
+                                <label id="Grand_Total">@grandtotal</label><br />
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+            <table>
+                <tr style="height: 0.8cm">
+                    <td style="height: 12px">
+                        <label style="padding-left: 3.5cm" id="Inwords"></label>
+                    </td>
+                </tr>
+            </table>
+            <table>
+                <tr>
+                    <td>
+                        <footer style="height: 4.1cm;"></footer>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+</table>

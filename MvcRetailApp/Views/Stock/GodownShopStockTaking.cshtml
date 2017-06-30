@@ -1,0 +1,101 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GodownShopStockTaking";
+}
+
+<script type="text/javascript">
+    function Check(type) {
+        if (type == "shop") {
+            document.getElementById("shopselect").style.display = "inline";
+        }
+        else {
+            document.getElementById("gdselect").style.display = "inline";
+        }
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#shoplist").change(function () {
+            var shop = $(this).val();
+            
+            $.ajax({
+                url: '/Stock/GetStockTakingItems',
+                data: { Code: shop },
+                type: 'Get',
+                success: function (data) {
+                    if (data != null) {
+                        $("#LoadList").html(data);
+                    }
+                }
+            });
+            document.getElementById("Submit").style.display = "inline";
+        });
+
+        $("#godownlist").change(function () {
+            var godown = $(this).val();
+
+            $.ajax({
+                url: '/Stock/GetStockTakingItems',
+                data: { Code: godown },
+                type: 'Get',
+                success: function (data) {
+                    if (data != null) {
+                        $("#LoadList").html(data);
+                    }
+                }
+            });
+            document.getElementById("Submit").style.display = "inline";
+        });
+
+    });
+</script>
+
+@using (Html.BeginForm("GetStockTakingItems","Stock",FormMethod.Post))
+{
+
+<div class="table table-bordered">
+    <div class="row">
+        <div style="height: 10px"></div>
+        <div class="col-md-12 col-lg-12">
+            <div class="col-md-4 col-lg-4">
+                <input type="radio" name="stocktake" id="shop" onclick="Check('shop')" />
+                <label>Shop Stock Taking</label><br />
+                <div id="shopselect" style="display: none">
+                    <div style="height: 10px"></div>
+                    <label>Select Shop</label>
+                    @Html.DropDownListFor(model => model.ShopDetails.ShopCode, new SelectList(Model.ShopList, "ShopCode", "ShopName"), "Select Shop", new { @class = "form-control", id = "shoplist" })
+                    <div style="height: 10px"></div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4">
+                <input type="radio" name="stocktake" id="godown" onclick="Check('godown')" />
+                <label>Godown Stock Taking</label><br />
+                <div id="gdselect" style="display: none">
+                    <div style="height: 10px"></div>
+                    <label>Select Godown</label>
+                    @Html.DropDownListFor(model => model.GodownDetails.GdCode, new SelectList(Model.GodownMasterList,"GdCode","GodownName"), "Select", new { @class = "form-control", id = "godownlist" })
+                    <div style="height: 10px"></div>
+                </div>
+            </div>
+            <div class="col-md-4 col-lg-4"></div>
+        </div>
+        <div style="height: 55px"></div>
+        <div class="form-group"></div>
+    </div>
+</div>
+    
+<div style="height: 15px"></div>
+
+<div id="LoadList"></div>
+
+<div class="col-md-12 col-lg-12">
+    <div style="height: 10px"></div>
+</div>
+
+<div class="col-md-12 col-lg-12" style="text-align: center">
+    <input type="submit" id="Submit" class="btn btn-success" style="display: none" value="Save" />
+</div>
+
+}

@@ -1,0 +1,398 @@
+﻿@model CodeFirstEntities .MainApplication
+@{
+    ViewBag.Title = "PrintPendingQuotations";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+
+<table style="border: 1px double; width: 100%;">
+    <tr>
+        <td>
+            <table style="width: 100%">
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <label><b>A To Z DADAR T.T.</b></label><br />
+                        <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center">
+                        <label style="font-size: x-large;"><b>Quotation</b></label>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table style="border: 1px double; width: 100%">
+
+                <tr>
+                    <td style="width: 34%;">
+                        <label style="font-size: larger; font-weight: bold">Client Details:</label><br />
+                        <label><b>Name: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.ClientName)<br />
+                        <label><b>Address: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.ClientAddress)<br />
+                        <label><b>State: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.ClientState)<br />
+                        <label><b>Contact Number: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.ClientContactNo)<br />
+                        <label><b>Email : &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.ClientEmail)<br />
+                        <label><b>Client Type : &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.ClientType) & @Html.DisplayFor(model => model.QuotationDetails.ConsumeResell)<br />
+                        @{
+                            if (@Model.QuotationDetails.FormType != null)
+                            {
+                            <label><b>Form Type: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.FormType)
+                            }
+                        }
+                    </td>
+                    <td style="width: 32%; border-left: 1px solid; border-right: 1px solid;">
+                        <table>
+                            <tr>
+                                <td>
+                                    <label style="font-size: large; font-weight: bold">Transport Details:</label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Transport Mode: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.TransportMode)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Transport Name: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.TransportName)</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Contact Number: &nbsp</b></label>@Html.DisplayFor(model => model.QuotationDetails.TransportContactNo)
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="height: 80px"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width: 34%; position: absolute; margin-top: 0px;">
+                        <table class="" style="width: 100%;">
+                            <tr>
+                                <td><b>Date: &nbsp</b></td>
+                                <td>
+                                    <label id="date" style="font-weight: normal">@Html.DisplayFor(model => model.QuotationDetails.QuotDate)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Quot No. : &nbsp</b></td>
+                                <td>
+                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.QuotationDetails.QuotNo)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Salesman: &nbsp</b></td>
+                                <td>
+                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.QuotationDetails.SalesPersonName)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Ref No : &nbsp</b></td>
+                                <td>
+                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.QuotationDetails.RefNo)</label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div style="height: 15px"></div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label style="font-size: large"><b>Pending Quotations</b></label>
+            <div class="form-group row">
+                <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                <label>S.N.</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Item</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Color</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Design</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Unit</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>Actual<br />
+                                    Quantity</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Balance<br />
+                                    Quantity(<i class="fa fa-inr"></i>)</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Disc<br />
+                                    (%)</label>
+                            </th>
+                            <th style="text-align: center">
+                                <label>
+                                    Disc<br />
+                                    (<i class="fa fa-inr"></i>)</label>
+                            </th>
+                            <th style="text-align: center">Tax<br />(<i class="fa fa-inr"></i>)</th>
+                            <th style="text-align: center">
+                                <label>
+                                    Amount<br />
+                                    (<i class="fa fa-rupee"></i>)</label>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.QuotationItemList != null && Model.QuotationItemList.Any())
+                            {
+                                int count = 1;
+                                foreach (var data in Model.QuotationItemList)
+                                {                                                                        
+                            <tr>
+                                @{
+                                    var rate = Convert.ToDouble(@data.SellingPrice).ToString("#,###.00##");
+                                    var amount = Convert.ToDouble(@data.Amount).ToString("#,###.00##");
+                                    var discountrps = Convert.ToDouble(@data.DiscountRPS).ToString("#,##.00##");
+
+                                    var tax = Convert.ToDouble(@data.ItemTax);
+                                    var itemtax = tax.ToString("#,###.00##");
+                                }
+                                <td style="text-align: left">@count</td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">&nbsp;@data.ItemName</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">&nbsp;@data.Color</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">&nbsp;@data.DesignName</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">&nbsp;@data.Unit</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@data.Quantity&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@rate&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@data.DiscountPercent&nbsp</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@discountrps&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@data.ItemTax&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@amount&nbsp</label>
+                                </td>
+                            </tr>
+                                    count++;
+                                }
+                            }
+                        }
+
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+    @{
+        string totaldiscount = Convert.ToDouble(Model.QuotationDetails.TotalDiscount).ToString("#,###.00##");
+        var totalamount = Convert.ToDouble(Model.QuotationDetails.TotalAmount).ToString("#,###.00##");
+        var packingforwarding = Convert.ToDouble(Model.QuotationDetails.PackAndForwd).ToString("#,###.00##");
+        var grandtotal = Convert.ToDouble(Model.QuotationDetails.GrandTotal).ToString("#,###.00##");
+        var totaltaxamount = Convert.ToDouble(Model.QuotationDetails.TotalTaxAmount).ToString("#,###.00##");
+    }
+    <tr>
+        <td>
+            <table style="width: 100%">
+                <tr>
+                    <td style="width: 40%">
+                        <table style="float: left">
+                            <tr>
+                                <td style="float: left">
+                                    <label><b>Total Discount : &nbsp</b></label></td>
+                                <td style="float: left">
+                                    <span font-weight: bold"><b><i class="fa fa-inr"></i>@totaldiscount</b></span></td>
+                            </tr>
+                            <tr style="height:75px"></tr>
+                        </table>
+                    </td>
+                    <td style="width: 60%">
+                        <table style="float: right">
+                            <tr>
+
+                                <td style="text-align: right">
+                                    <label><b>Total Amount : &nbsp</b></label></td>
+                                <td colspan="2">
+                                    <label id="Total_Amount" float: right; font-weight: bold"><b><i class="fa fa-inr"></i>@totalamount</b></label></td>
+                            </tr>
+
+                            <tr>
+                                <td style="text-align: right">
+                                    <label><b>Packing And Forwarding : &nbsp</b></label>
+                                </td>
+
+                                <td colspan="2" style="text-align: right">
+                                    <label float: right; font-weight: bold; font-size: 20px"><b><i class="fa fa-inr"></i>@packingforwarding</b></label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="text-align: right">
+                                    <label><b>Tax Amount : &nbsp</b></label>
+                                </td>
+
+                                <td colspan="2" style="text-align: right">
+                                    <label float: right; font-weight: bold; font-size: 20px"><b><i class="fa fa-inr"></i>@totaltaxamount</b></label>
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td style="text-align: right">
+                                    <label><b>Grand Total : &nbsp</b></label>
+                                </td>
+
+                                <td colspan="2" style="text-align: right">
+                                    <label float: right; font-weight: bold; font-size: 20px"><b><i class="fa fa-inr"></i>@grandtotal</b></label>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label><b>&nbsp In Words:</b></label>
+            &nbsp;&nbsp;<label id="In_Words"><b></b></label>
+        </td>
+    </tr>
+    <tr>
+        <td>
+            <div style="float: right; text-align: right">
+                <br />
+                <label style="font-size: 18px; font-weight: bold; margin-right: 10px">Prepared By,</label><br />
+                <div style="margin-right: 10px">@Html.DisplayFor(model => model.QuotationDetails.PreparedBy)</div>
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <br />
+            <div style="background-color: GrayText; width: 100%; height: 1px"></div>
+            <br />
+            <label style="font-size: large"><b>Remarks:</b></label>
+        </td>
+    </tr>
+
+    <tr>
+        <td><b>Company's CST No.&nbsp;:</b>
+            27170291194C w.e.f 1.04.2006</td>
+    </tr>
+
+    <tr>
+        <td><b>Company's Service Tax No.&nbsp;:</b>
+            AAACO4131DST001</td>
+    </tr>
+    <tr>
+        <td><b>Company's PAN&nbsp;:</b>
+            AAACO4131D</td>
+    </tr>
+
+
+    <tr>
+        <td>
+            <table border="0">
+                <tr>
+                    <td style="width: 70%">
+                        <label style="font-weight: normal"><b>Declaration:</b></label><br />
+                        <label style="font-size: small">This PO is made in response to a written proposal or other form of offer from Seller, and if Seller’s proposal or other form of offer contains terms additional to or different from this PO, then BUYER’S ACCEPTANCE OF SELLER’S PROPOSAL OR OFFER IS HEREBY EXPRESSLY CONDITIONED UPON SELLER’S ASSENT TO ALL THE TERMS AND CONDITIONS CONTAINED IN THIS PO.</label>
+                    </td>
+                    <td style="width: 30%">
+                        <table style="border: 1px double; width: 100%; padding-top: 12px">
+                            <tr style="height: 40px; float: left; font-size: small">
+                                <td>Authorised Signatory: </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+
+        </td>
+    </tr>
+</table>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

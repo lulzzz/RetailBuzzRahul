@@ -1,0 +1,53 @@
+﻿@model CodeFirstEntities .MainApplication
+@{
+    ViewBag.Title = "PrintOpeningStock";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("FromDate").innerHTML = window.opener.document.getElementById("fromdate").value;
+        document.getElementById("ToDate").innerHTML = window.opener.document.getElementById("todate").value;
+        document.getElementById("Category").innerHTML = window.opener.document.getElementById("DDLCategory").value;
+    })
+    
+</script>
+
+<h2 style="text-align:center">Opening Stock Report</h2>
+<table style="width:100%">
+    <tr>
+        <td class="col-lg-4 col-md-4" style="font-weight:bold">From Date:<label id="FromDate" style="font-weight:normal"></label></td>
+        <td class="col-lg-4 col-md-4" style="font-weight:bold">To Date:<label id="ToDate" style="font-weight:normal"></label></td>
+        <td class="col-lg-4 col-md-4" style="font-weight:bold">Category:<label id="Category" style="font-weight:normal"></label></td>
+    </tr>
+</table>
+<br />
+
+<label style="font-weight:bold">Item Details:</label>
+<table><tr><td style="height:5px"></td></tr></table>
+<table border="1" cellpadding="0" cellspacing="0" style="width: 100%">
+    <thead>
+        <tr>
+            <th style="text-align: center">Item Code</th>
+            <th style="text-align: center">Item Name</th>
+            <th style="text-align: center" class="col-lg-3 col-md-3">Description</th>
+            <th style="text-align: center">Quantity</th>
+            <th style="text-align: center">Rate</th>
+            <th style="text-align: center">Size</th>
+            <th style="text-align: center">Unit</th>
+        </tr>
+    </thead>
+    <tbody id="itemlist">
+        @foreach (var data in Model.OpeningStockList)
+        {
+            <tr>
+                <td style="text-align: center">@data.itemCode</td>
+                <td style="text-align: center">@data.ItemName</td>
+                <td style="text-align: center" class="col-lg-3 col-md-3">@data.Description</td>
+                <td style="text-align: center">@data.ItemQuantity</td>
+                <td style="text-align: center">@data.Rate'</td>
+                <td style="text-align: center">@data.Size</td>
+                <td style="text-align: center">@data.Unit</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,260 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DynamicRowCreationForState";
+}
+<!-- 
+
+  NOTE: This index page is primarily for demonstrative purposes. 
+  dashboard.html is more suitable for use as it has 
+  been stripped of added animations 
+-->
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+    <script src="/Scripts/jquery-1.8.2.min.js"></script>
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+
+<!-- Core CSS  -->
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css"/>
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css"/>
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css"/>
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+<![endif]-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- Begin: Front Page Loading Animation --> 
+<div id="page-loader"><span class="glyphicon glyphicon-cog fa-spin cog-1"></span></div>
+<!-- End: Front Page Loading Animation --> 
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")"></script>
+
+
+@*<script src="~/Scripts/bootstrap.min.js"></script>*@
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<!-- Plugins -->
+<script type="text/javascript" src="~/Scripts/gcal.js"></script><!-- Calendar Addon -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.resize.min.js"></script><!-- Flot Charts Addon -->
+<script type="text/javascript" src="~/Scripts/datatables.js"></script><!-- Datatable Bootstrap Addon -->
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var idModel = document.getElementById("MainTaxMasters_State").value;
+        //alert(idModel);
+        document.getElementById("dynamic").style.display = "inline";
+        var rowid = document.getElementById("hdnRowCount").value;
+        rowid = +rowid + 1;
+        var city = document.createElement("SELECT");
+        var select = "citylist" + rowid;
+        var taxtype = "taxtype" + rowid;
+        var fromdate = "fromdate" + rowid;
+        var todate = "todate" + rowid;
+        var percentage = "percentage" + rowid;
+        var unorderedlist = $("#AddingRows");
+        $.getJSON("/Tax/LoadDistrictByState", { id: idModel },
+        function (stateData) {
+            city.className = "form-control";
+            city.id = "city" + rowid;
+            city.name = "city" + rowid;
+            var myoption1 = document.createElement("option");
+            myoption1.text = "Select District";
+            myoption1.value = 0;
+            city.appendChild(myoption1);
+            $.each(stateData, function (index, itemData) {
+                var myoption = document.createElement("option");
+                myoption.text = itemData.Text;
+                myoption.value = itemData.Value;
+                city.appendChild(myoption);
+            });
+        });
+      
+        var data = "<tr>";
+        data += "<td>" + rowid + "</<td>"
+        data += "<td><select id='" + taxtype + "' name='" + taxtype + "' class='form-control'><option value='0'>Select Tax</option><option value='VAT'>VAT</option><option value='SalesTax'>Sales Tax</option><option value='OtherTax'>Other Tax</option></select></td>";
+        data += "<td id='" + select + "' name='" + select + "'></td>"
+        data += "<td><input type='textbox' id='" + fromdate + "' name='" + fromdate + "' class='form-control'></input></td>";
+        data += "<td><input type='textbox' id='" + todate + "' name='" + todate + "' class='form-control'></input></td>";
+        data += "<td><input type='textbox' id='" + percentage + "' name='" + percentage + "' class='form-control'></input></td></tr>";
+
+        unorderedlist.append(data);
+        var cities = document.getElementById(select);
+        cities.appendChild(city);
+
+        new JsDatePick({
+            useMode: 2,
+            target: fromdate,
+            dateFormat: "%d/%M/%Y"
+        });
+
+        new JsDatePick({
+            useMode: 2,
+            target: todate,
+            dateFormat: "%d/%M/%Y"
+        });
+        $("#hdnRowCount").val(rowid);
+       
+    });
+</script>
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+
+            var idModel = document.getElementById("MainTaxMasters_State").value;
+            var rowid = document.getElementById("hdnRowCount").value;
+            rowid = +rowid + 1;
+            var city = document.createElement("SELECT");
+            var select = "citylist" + rowid;
+            var taxtype = "taxtype" + rowid;
+            var fromdate = "fromdate" + rowid;
+            var todate = "todate" + rowid;
+            var percentage = "percentage" + rowid;
+            var unorderedlist = $("#AddingRows");
+            $.getJSON("/Tax/LoadDistrictByState", { id: idModel },
+           function (stateData) {
+               city.className = "form-control";
+               city.id = "city" + rowid;
+               city.name = "city" + rowid;
+               var myoption1 = document.createElement("option");
+               myoption1.text = "Select District";
+               myoption1.value = 0;
+               city.appendChild(myoption1);
+               $.each(stateData, function (index, itemData) {
+                   var myoption = document.createElement("option");
+                   myoption.text = itemData.Text;
+                   myoption.value = itemData.Value;
+                   city.appendChild(myoption);
+               });
+           });
+            var data = "<tr>";
+            data += "<td>" + rowid + "</<td>"
+            data += "<td><select id='" + taxtype + "' name= '" + taxtype + "'class='form-control'><option value='0'>Select Tax</option><option value='VAT'>VAT</option><option value='SalesTax'>Sales Tax</option><option value='OtherTax'>Other Tax</option></select></td>";
+            data += "<td id='" + select + "' name='" + select + "'></td>"
+            data += "<td><input type='textbox' id='" + fromdate + "' name='" + fromdate + "' class='form-control'></input></td>";
+            data += "<td><input type='textbox' id='" + todate + "' name='" + todate + "' class='form-control'></input></td>";
+            data += "<td><input type='textbox' id='" + percentage + "' name='" + percentage + "' class='form-control'></input></td></tr>";
+            unorderedlist.append(data);
+            var cities = document.getElementById(select);
+            cities.appendChild(city);
+
+            new JsDatePick({
+                useMode: 2,
+                target: fromdate,
+                dateFormat: "%d/%M/%Y"
+            });
+
+            new JsDatePick({
+                useMode: 2,
+                target: todate,
+                dateFormat: "%d/%M/%Y"
+            });
+            $("#hdnRowCount").val(rowid);
+        }
+    });
+
+</script>
+@using (Html.BeginForm("DynamicRowCreationForState", "TaxMaster", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmcreate" }))
+{
+    @Html.HiddenFor(model => model.MainTaxMasters.State)
+    //  @Html.HiddenFor(model=>model.SubTaxMasters.Code)
+    @Html.HiddenFor(model => model.SubTaxMasters.Id)
+    @Html.HiddenFor(model => model.MainTaxMasters.VAT)
+    @Html.HiddenFor(model => model.MainTaxMasters.SalesTax)
+    @Html.HiddenFor(model => model.MainTaxMasters.OtherTax)
+ <input type="hidden" id="hdnRowCount" name="hdnRowCount" /> 
+ <div class="row" style="display:none" id="dynamic">
+                        <table class="table" id="AddingRows" style="border-width:1px;border-color:GrayText;border:1px double;">
+                         
+                                <tr>
+                                    <th class="col-md-1 col-lg-1"><label>S.N.</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="Headings">TaxType</label></th>
+                                     <th class="col-md-2 col-lg-2"><label id="Headins">District</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="DescriptionHeadings">FromDate</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="Heading">ToDate</label></th>
+                                    <th class="col-md-2 col-lg-2"><label id="Headin">Percentage</label></th>
+                                </tr>
+                        </table>
+         </div>
+    <br />
+    <div class="row">
+ <div class="col-sm-offset-5">
+                 <button type="submit" class="btn btn-success">Submit</button>
+                
+    </div>
+        </div>
+}

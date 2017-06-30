@@ -1,0 +1,282 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "CommissionReleaseReport";
+}
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, obj) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + obj).remove();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        $.getJSON("/ItemTax/GetFinancialYear", {}, function (data) {
+            var dat = new Date(data.fromdate);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var fromdatedata = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            document.getElementById('fromdate').value = fromdatedata;
+            document.getElementById('hdnfromdate').value = fromdatedata;
+
+            var dat = new Date(data.todate);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var todatedata = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            document.getElementById('todate').value = todatedata;
+            document.getElementById('hdntodate').value = todatedata;
+        });
+
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "fromdate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data.addOnSelectedDelegate(function () {
+
+            var selectedValues = $('#ddlshopname').val();
+            $('input[id=ShopName]').val(selectedValues);
+
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+
+            var selectedfromdate = new Date(fromdate).getTime();
+            var selectedtodate = new Date(todate).getTime();
+            var hiddenfromdate = document.getElementById("hdnfromdate").value;
+            hiddenfromdate =  new Date(hiddenfromdate).getTime();
+
+            if (selectedfromdate > selectedtodate || hiddenfromdate > selectedfromdate) {
+                alertbox("Invalid Date");
+                $("#fromdate").val("");
+                return false;
+            }
+
+            if (todate != "") {
+                $.ajax({
+                    url: '/MisReports/GetCommissionEmployeewise',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate },
+                    success: function (data) {
+                        document.getElementById("fromdate").disabled = 'true';
+                        document.getElementById("todate").disabled = 'true';
+                        $("#ItemPartialView").html(data);
+                    }
+                })
+            }
+        });
+    });
+    jQuery(document).ready(function () {
+        var data1 = new JsDatePick({
+            useMode: 2,
+            target: "todate",
+            dateFormat: "%d/%M/%Y"
+        });
+        data1.addOnSelectedDelegate(function () {
+
+            var fromdate = document.getElementById("fromdate").value;
+            var todate = document.getElementById("todate").value;
+
+            var selectedfromdate = new Date(fromdate).getTime();
+            var selectedtodate = new Date(todate).getTime();
+
+            var hiddentodate = document.getElementById("hdntodate").value;
+            hiddentodate = new Date(hiddentodate).getTime();
+
+            if (selectedfromdate > selectedtodate || selectedtodate > hiddentodate) {
+                alertbox("Invalid Date");
+                $("#todate").val("");
+                return false;
+            }
+
+            if (fromdate != "") {
+                $.ajax({
+                    url: '/MisReports/GetCommissionEmployeewise',
+                    type: "GET",
+                    data: { FromDate: fromdate, ToDate: todate,},
+                    success: function (data) {
+                        document.getElementById("fromdate").disabled = 'true';
+                        document.getElementById("todate").disabled = 'true';
+
+                        $("#ItemPartialView").html(data);
+                    }
+                });
+            }
+            else { alertbox("Please Enter From Date"); }
+        });
+    });
+</script>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+
+        <!-- Start: Sidebar -->
+        <!-- End: Sidebar -->
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- Start: Content -->
+        <input type="hidden" id="hdnfromdate" />
+        <input type="hidden" id="hdntodate" />
+        <div class="mainpanel">
+            <div class="col-lg-12 col-md-12">
+
+                <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                    <source src="" type="audio/ogg" />
+                </audio>
+
+                <div style="height: 20px"></div>
+                <label style="font-size: 18px">Commission Released Report</label>
+                <br />
+
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 20px"></div>
+                </div>
+
+                <div class="col-lg-2 col-md-2">
+                    <label>From Date<i style="color: red">*</i></label>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <div class="row">
+                        @Html.TextBoxFor(model => model.RetailBillDetails.ModifiedOn, new { id = "fromdate", @class = "form-control", @placeholder = "From Date" })
+                    </div>
+                </div>
+
+                <div class="col-lg-1 col-md-1"></div>
+
+                <div class="col-lg-2 col-md-2">
+                    <label>To Date<i style="color: red">*</i></label>
+                </div>
+                <div class="col-lg-2 col-md-2">
+                    <div class="row">
+                        @Html.TextBoxFor(model => model.RetailBillDetails.ModifiedOn, new { id = "todate", @class = "form-control", @placeholder = "To Date" })
+                    </div>
+                </div>
+
+                <div class="col-md-12 col-lg-12">
+                    <div id="ItemPartialView"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>

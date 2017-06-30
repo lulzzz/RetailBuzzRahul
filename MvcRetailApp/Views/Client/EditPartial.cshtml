@@ -1,0 +1,528 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EditPartial";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+        $("textarea").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlcountry").change(function () {
+            var idmodel = $(this).val()
+
+            $.getJSON("/Client/LoadStateByCountry", { countryname: idmodel },
+            function (Data) {
+                var select = $("#ddlstate");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select State"
+                }));
+                $.each(Data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlstate").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel == "Maharashtra") {
+                $("#Local").attr('checked', true);
+                document.getElementById("ClientDetails_checkState").value = "Local";
+                document.getElementById("YesRadioButton").disabled = true;
+                document.getElementById("NoRadioButton").disabled = true;
+                document.getElementById("NoRadioButton").checked = true;
+                document.getElementById("displayformtype").style.display = "none";
+            }
+            else {
+                $("#OMS").attr('checked', true);
+                document.getElementById("ClientDetails_checkState").value = "OMS";
+            }
+            $.getJSON("/Client/LoadDistrictByState", { statename: idmodel },
+            function (Data) {
+                var select = $("#ddldistrict");
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select District"
+                }));
+
+                $.each(Data, function (index, itemData) {
+
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#ddlclientbanknames").change(function () {
+            var idmodel = $(this).val();
+            if (idmodel != "") {
+                $.ajax({
+                    url: '/Client/UpdateBankDetail',
+                    type: "Get",
+                    data: { selectedbankname: idmodel },
+                    success: function (data) {
+                        $("#SelectedBankDetails").html(data);
+                        document.getElementById("SelectedBankDetails").style.display = "inline";
+                    }
+                });
+            }
+            else { document.getElementById("SelectedBankDetails").innerHTML = ""; }
+        });
+    });
+</script>
+<script type="text/javascript">
+    function buttonclick(updateclientdata) {
+
+        var micrcode = $("#ClientBankDetails_MICRCode").val();
+        if (micrcode != "") {
+            if (micrcode.length != 9) {
+                return false;
+            }
+        }
+
+        var accno = $("#ClientBankDetails_AccountNo").val();
+        if (accno == "") {
+            return false;
+        }
+
+        if (accno.length < 10 || accno.length > 25) {
+            return false;
+        }
+
+        var acctype = $("#ClientBankDetails_AccountType").val();
+        if (acctype == "") {
+            return false;
+        }
+
+        $.ajax({
+            url: '/Client/UpdateBankDetail',
+            type: "POST",
+            data: {
+                bankid: document.getElementById("ClientBankDetails_BankId").value,
+                branch: document.getElementById("ddlBankbranches").value,
+                bankname: document.getElementById("ddlBankNames").value,
+                clientcode: document.getElementById("ClientDetails_ClientCode").value,
+                bankifscno: document.getElementById("ClientBankDetails_BankIFSCNo").value,
+                bankaddress: document.getElementById("ClientBankDetails_BankAddress").value,
+                accountno: document.getElementById("ClientBankDetails_AccountNo").value,
+                accounttype: document.getElementById("ClientBankDetails_AccountType").value,
+                micr: document.getElementById("ClientBankDetails_MICRCode").value,
+            },
+            success: function (data) {
+                $("#SelectedBankDetails").html(data);
+            }
+        });
+        $(function () {
+            $.getJSON("/Client/UpdatedBankDetails", { clientcode: document.getElementById("ClientDetails_ClientCode").value },
+                function (data) {
+                    document.getElementById("SelectedBankDetails").style.display = "none";
+                    var select = $("#ddlclientbanknames");
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "Select Bank"
+                    }));
+
+                    $.each(data, function (index, itemData) {
+
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text
+                        }));
+                    });
+                });
+        });
+        if (updateclientdata == "Yes") {
+            /*if bank is selected in update page and update button gets clicked then update bankdetails
+            first then client's personal details if updatebank button gets clicked then update bankdetails only by sending no*/
+            UpdateClient();
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function DisplayForm(code) {
+        if (code == 'yes') {
+            document.getElementById("ddlformtypes").disabled = false;
+            document.getElementById("displayformtype").style.display = "inline"
+        }
+        else {
+            document.getElementById("displayformtype").style.display = "none"
+            $("#ddlformtypes").val("").attr("selected", true);
+            document.getElementById("ddlformtypes").disabled = true;
+            document.getElementById("ClientDetails_FormType").value = null;
+        }
+    }
+
+    function CheckState(state) {
+        if (state == 'local') {
+            document.getElementById("ClientDetails_checkState").value = "Local";
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            document.getElementById("YesRadioButton").disabled = true;
+            document.getElementById("NoRadioButton").checked = true;
+            document.getElementById("NoRadioButton").disabled = true;
+            document.getElementById("displayformtype").style.display = "none";
+        }
+        else { document.getElementById("ClientDetails_checkState").value = "OMS"; }
+    }
+
+    function CheckRegistered(value) {
+        if (value == 'yes') {
+            document.getElementById("ClientDetails_ClientType").value = "Registered";
+            $("#ClientDetails_STNo").attr("disabled", false);
+            $("#ClientDetails_OtherTax").attr("disabled", false);
+            $("#ClientDetails_VTNo").attr("disabled", false);
+            $("#ClientDetails_TDSNo").attr("disabled", false);
+            if (document.getElementById("ClientDetails_ConsumeResell").value == "Reseller") {
+                $("#ddlformtypes").val("").attr("selected", "selected");
+                document.getElementById("YesRadioButton").disabled = false;
+                document.getElementById("NoRadioButton").checked = true;
+                document.getElementById("NoRadioButton").disabled = false;
+                document.getElementById("displayformtype").style.display = "none";
+            }
+            else if (document.getElementById("ClientDetails_ConsumeResell").value == "Consumer") {
+                document.getElementById("YesRadioButton").disabled = true;
+                document.getElementById("NoRadioButton").disabled = true;
+            }
+        }
+        else if (value == 'no') {
+            document.getElementById("ClientDetails_ClientType").value = "Non-Registered";
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            $("#ClientDetails_STNo").attr("disabled", true);
+            $("#ClientDetails_OtherTax").attr("disabled", true);
+            $("#ClientDetails_VTNo").attr("disabled", true);
+            $("#ClientDetails_TDSNo").attr("disabled", true);
+            document.getElementById("YesRadioButton").disabled = true;
+            document.getElementById("NoRadioButton").disabled = true;
+            document.getElementById("NoRadioButton").checked = true;
+            document.getElementById("displayformtype").style.display = "none";
+        }
+        else if (value == "Consumer") {
+            document.getElementById("ClientDetails_ConsumeResell").value = "Consumer";
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            $("#YesRadioButton").attr("disabled", true);
+            $("#NoRadioButton").attr("disabled", true);
+            document.getElementById("NoRadioButton").checked = true;
+            document.getElementById("displayformtype").style.display = "none";
+        }
+        else {
+            document.getElementById("ClientDetails_ConsumeResell").value = "Reseller";
+            if (document.getElementById("ClientDetails_checkState").value == "OMS" && document.getElementById("ClientDetails_ClientType").value == "Registered") {
+                $("#YesRadioButton").attr("disabled", false);
+                $("#NoRadioButton").attr("disabled", false);
+                document.getElementById("displayformtype").style.display = "none";
+            }
+        }
+
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        if (document.getElementById("ddlformtypes").value == "") {
+            $("#NoRadioButton").attr('checked', true);
+        }
+        else {
+            $("#YesRadioButton").attr('checked', true);
+            document.getElementById("displayformtype").style.display = "inline";
+        }
+
+        var state = document.getElementById("ClientDetails_checkState").value;
+        if (state == "Local") {
+            $("#Local").attr('checked', true);
+        }
+        else { $("#OMS").attr('checked', true); }
+
+        var type = document.getElementById("ClientDetails_ClientType").value;
+        if (type == "Registered") {
+            $("#Registered").attr("checked", true);
+            $("#ClientDetails_STNo").attr("disabled", false);
+            $("#ClientDetails_OtherTax").attr("disabled", false);
+            $("#ClientDetails_VTNo").attr("disabled", false);
+            $("#ClientDetails_TDSNo").attr("disabled", false);
+        }
+        else {
+            $("#NonRegistered").attr("checked", true);
+            $("#ClientDetails_STNo").attr("disabled", true);
+            $("#ClientDetails_OtherTax").attr("disabled", true);
+            $("#ClientDetails_VTNo").attr("disabled", true);
+            $("#ClientDetails_TDSNo").attr("disabled", true);
+        }
+
+        var consumresell = document.getElementById("ClientDetails_ConsumeResell").value;
+        if (consumresell == "Consumer") {
+            $("#Consumer").attr("checked", true);
+        }
+        else {
+            $("#Reseller").attr("checked", true);
+        }
+    });
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#ddltypemembership").change(function () {
+            if ($(this).val() != "No Card" && $(this).val() != "") {
+                window.open("/Client/PopUpPage", "_target", "width=350,height=270,top=280px,left=500px");
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    function NewBank() {
+        window.open("/Client/BankPopUpPage?clientcode=" + document.getElementById("ClientDetails_ClientCode").value, "_target", "width=600,height=250,top=280px,left=400px");
+    }
+</script>
+
+<div class="col-lg-12 col-md-12">
+
+    @using (Html.BeginForm())
+    {
+    
+        @Html.HiddenFor(model => model.ClientDetails.ClientId)
+        @Html.HiddenFor(model => model.ClientDetails.ClientCode)
+        @Html.HiddenFor(model => model.ClientDetails.NameOnCard)
+        @Html.HiddenFor(model => model.ClientDetails.CardNumber)
+        @Html.HiddenFor(model => model.ClientDetails.IssueDate)
+        @Html.HiddenFor(model => model.ClientDetails.checkState)
+        @Html.HiddenFor(model => model.ClientDetails.ClientType)
+        @Html.HiddenFor(model => model.ClientDetails.ConsumeResell)
+    
+        
+        <div class="row">
+            <div class="row">
+                <h2>Client Details</h2>
+            </div>
+            <div class="row">
+                <div class="col-md-4 col-lg-4">
+                    <label>Client Code</label>
+                    @Html.DisplayFor(model => model.ClientDetails.ClientCode)
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3 col-lg-3">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="form-group row">
+                            <label for="exampleInputname">Client Name<i style="color: red">*</i></label>
+                            @Html.TextBoxFor(model => model.ClientDetails.ClientName, new { @placeholder = "Client Name", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.ClientName, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputTypeofname">Type Of Membership<i style="color: red"></i></label>
+                            @Html.DropDownListFor(model => model.ClientDetails.TypeOfMembershipCard, new List<SelectListItem> { new SelectListItem { Text = "No Card" }, new SelectListItem { Text = "Payback Membership" }, new SelectListItem { Text = "Club Membership" }, new SelectListItem { Text = "Life Time Membership" } }, "Membership Card Type", new { id = "ddltypemembership", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.TypeOfMembershipCard, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputCountry">Country<i style="color: red">*</i></label>
+                            @Html.DropDownListFor(model => model.ClientDetails.Country, new SelectList(Model.ClientDetails.CountryList, "countryName", "countryName", Model.ClientDetails.Country), "Select Country", new { id = "ddlcountry", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.Country, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputState">State<i style="color: red">*</i></label>
+                            @Html.DropDownListFor(model => model.ClientDetails.State, new SelectList(Model.ClientDetails.StateList, "StateName", "StateName", Model.ClientDetails.State), "Select State", new { id = "ddlstate", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.State, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputDistrict">District<i style="color: red">*</i></label>
+                            @Html.DropDownListFor(model => model.ClientDetails.District, new SelectList(Model.ClientDetails.DistrictList, "DistrictName", "DistrictName", Model.ClientDetails.District), "Select District", new { id = "ddldistrict", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.District, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputCity">City<i style="color: red">*</i></label>
+                            @Html.TextBoxFor(model => model.ClientDetails.City, new { @placeholder = "City", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.City, null, new { style = "color:red" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-lg-3">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="form-group row">
+                            <label for="exampleInputAddress">Address<i style="color: red">*</i></label>
+                            @Html.TextAreaFor(model => model.ClientDetails.Address, new { @placeholder = "Address", @class = "form-control", @rows = 1 })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.Address, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputPincode">Pincode</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.Pincode, new { @placeholder = "PinCode", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.Pincode, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputContact">Contact No. 1<i style="color: red">*</i></label>
+                            @Html.TextBoxFor(model => model.ClientDetails.ContactNo1, new { @placeholder = "Contact No. 1", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.ContactNo1, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputContact">Contact No. 2</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.ContactNo2, new { @placeholder = "Contact No. 2", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.ContactNo2, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputContact">Contact No. 3</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.ContactNo3, new { @placeholder = "Contact No 3", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.ContactNo3, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputEmail">Email</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.Email, new { @placeholder = "Email", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.Email, null, new { style = "color:red" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-lg-3">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="form-group row">
+                            <label for="exampleInputWebsite">Website</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.Website, new { @placeholder = "Website", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.Website, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputSalesTax">CST</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.STNo, new { @placeholder = "CST", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.STNo, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputGST">GST</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.OtherTax, new { @placeholder = "GST", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.OtherTax, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputVAT">VAT No</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.VTNo, new { @placeholder = "VTNo", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.VTNo, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputTDS">TDS</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.TDSNo, new { @placeholder = "TDSNo", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.TDSNo, null, new { style = "color:red" })
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputPANNo">Pan No</label>
+                            @Html.TextBoxFor(model => model.ClientDetails.PanCard, new { @placeholder = "Pan No", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ClientDetails.PanCard)
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-3 col-lg-3">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="form-group row">
+                            <label for="exampleInputSalesTax">Dealer</label><br />
+                            <input type="radio" id="Local" name="LocalOMS" onclick="CheckState('local')" />
+                            Local   
+                <input type="radio" id="OMS" name="LocalOMS" onclick="CheckState('oms')" />
+                            OMS      
+                <div class="form-group"></div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="exampleInputSalesTax">Client Type</label><br />
+                            <input type="radio" id="Registered" name="Registered" checked="checked" onclick="CheckRegistered('yes')" />
+                            Registered
+                <input type="radio" id="NonRegistered" name="Registered" onclick="CheckRegistered('no')" />
+                            Non-Registered 
+                            <br />
+                            <input type="radio" id="Consumer" name="ConsumeResell" onclick="CheckRegistered('Consumer')" />
+                            Consumer   
+                            <input type="radio" id="Reseller" name="ConsumeResell" onclick="CheckRegistered('Reseller')" />
+                            Reseller                                
+                        </div>
+                        <div class="form-group row">
+                            <div class="form-group">
+                                <label for="exampleInputSalesTax">Form Applicable</label><br />
+                                <input type="radio" id="YesRadioButton" name="RadioButton" onclick="DisplayForm('yes')" />Yes
+                                <input type="radio" id="NoRadioButton" name="RadioButton" onclick="DisplayForm('no')" />No
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <div style="display: none" id="displayformtype">
+                                <label for="exampleInputFormType">Form Type</label>
+                                @Html.DropDownListFor(model => model.ClientDetails.FormType, new List<SelectListItem> { new SelectListItem { Text = "C-Form" }, new SelectListItem { Text = "D-Form" }, new SelectListItem { Text = "E-Form" }, new SelectListItem { Text = "F-Form" } }, "Select Type", new { id = "ddlformtypes", @class = "form-control" })
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <hr />
+
+            <div class="form-group row">
+                <div class="row">
+                    <div class="col-md-7 col-lg-7">
+                        <label style="font-size: medium">Banks Assosiated With</label>
+                        @{
+        string clientname = Model.ClientDetails.ClientName;
+                            <label style="font-size: medium; color: royalblue;">@clientname.ToUpper()</label>
+                        }
+                    </div>
+                    <div class="col-md-5 col-lg-5">
+                        @Html.DropDownListFor(model => model.ClientBankDetails.BankName, new SelectList(Model.ClientBankDetailList, "Bankid", "BankName", Model.ClientBankDetails.BankName), "Select Bank", new { id = "ddlclientbanknames", @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+            <div id="SelectedBankDetails"></div>
+            <div class="col-lg-offset-4">
+                <input type="button" id="Add New Bank" value="Add New Bank" class="btn btn-link" style="color: dodgerblue; font-weight: bolder;" onclick="NewBank()" />
+            </div>
+            <div class="col-lg-offset-5">
+                <button type="button" class="btn btn-success" id="Update" onclick="UpdateClientData()">Update</button>
+            </div>
+        </div>
+    }
+</div>

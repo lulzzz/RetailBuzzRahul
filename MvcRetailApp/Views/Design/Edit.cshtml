@@ -1,0 +1,328 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "Edit";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+@*This script is used for load Subcategory  by category*@
+<script type="text/javascript">
+    $(function () {
+        $("#ddlcategorycode").change(function () {
+            document.getElementById("SubCatDiv").style.display = "inline";
+            var idmodel = $("#ddlcategorycode").val();
+            $.getJSON("/Design/LoadSubCatByCat", { category: idmodel },
+            function (data) {
+                var select = $("#ddlsubcategory");
+                select.empty();
+                select.append($('<option/>', {
+                    value: 0,
+                    text: "Select SubCategory"
+                }));
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+        });
+    });
+</script>
+
+<!--This script is used for load design names list-->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlsubcategory").change(function () {
+            var idmodel = $(this).val();
+
+            if (idmodel == "") {
+                document.getElementById("DesignNamesView").style.display = "none";
+            }
+            else {
+                document.getElementById("DesignNamesView").style.display = "inline";
+
+                $.ajax({
+                    url: "/Design/LoadDesignNames",
+                    type: "GET",
+                    data: { name: idmodel },
+                    success: function (data) {
+
+                        $("#DesignNamesView").html(data);
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<!--this script is used for display EDIT partial view-->
+<script type="text/javascript">
+    function UpdateDesign(id, bndry, count) {
+        document.getElementById("DesignPartialView").style.display = "inline";
+        document.getElementById("UpdateDetailsView").style.display = "none";
+        for (var i = 1; i <= bndry; i++) {
+            DesignEditId = "EditId" + i;
+            rowid = "rowid" + i;
+            if (document.getElementById(DesignEditId) != null) {
+                document.getElementById(rowid).style.backgroundColor = "#F1DDE7";
+                document.getElementById(DesignEditId).disabled = true;
+            }
+        }
+        document.getElementById("ddlcategorycode").disabled = true;
+        document.getElementById("ddlsubcategory").disabled = true;
+        var rowid = "rowid" + count;
+        if (document.getElementById(rowid) != null) {
+            document.getElementById(rowid).style.backgroundColor = "lightgreen";
+        }
+
+        $.ajax({
+            url: '/Design/EditPartial',
+            type: "GET",
+            data: { Id: id },
+            success: function (data) {
+
+                $("#DesignPartialView").html(data);
+
+            }
+        });
+
+        document.getElementById('pagertextbox').disabled = true;
+        document.getElementById('pagerdropdown').disabled = true;
+        document.getElementById("pager").style.display = "none";
+        $("#NumberOfRows").val(bndry);
+        $("#SelectedRowValue").val(count);
+    }
+</script>
+
+@*this script is used for show Edit partial view entity*@
+<script type="text/javascript">
+    function DesignDetailsEdit() {
+
+        if ($("#DesignDetails_DesignName").val() == "" ||
+            $("#DesignDetails_DesignSize").val() == "") {
+            return false;
+        }
+        else {
+            //this code is used for show changes in list
+            document.getElementById("ddlcategorycode").disabled = false;
+            document.getElementById("ddlsubcategory").disabled = false;
+            var count = document.getElementById("SelectedRowValue").value;
+            var designname = "designname" + count;
+            document.getElementById(designname).innerHTML = $("#DesignDetails_DesignName").val();
+
+            //this code is used for to Show first lettr capital
+            var txt = document.getElementById("DesignDetails_DesignName").value;
+            txt = txt.replace(/\w\S*/g, function (txt) { return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase(); });
+            document.getElementById(designname).innerHTML = txt;
+            document.getElementById("DesignDetails_DesignName").value = txt;
+            var file = $("#file").val().toString();
+            file = file.substring(file.lastIndexOf('\\'), file.length).substring(1);
+            var formdata = new FormData();
+            var fileInput = document.getElementById("file");
+            if (document.getElementById("file").value != "") {
+                formdata.append(fileInput.files[0].name, fileInput.files[0]);
+                document.getElementById("DesignDetails_DesignPhoto").value = file;
+            }
+            else {
+                document.getElementById("DesignDetails_DesignPhoto").value = null;
+            }
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/Design/EditPartial?DesignId=' + $("#DesignDetails_DesignId").val()
+                + '&DesignCode=' + $("#DesignDetails_DesignCode").val()
+                + '&CategoryCode=' + $("#ddlcategorycode").val()
+                + '&SubCategoryName=' + $("#ddlsubcategory").val()
+                + '&DesignName=' + $("#DesignDetails_DesignName").val()
+                + '&DesignDescription=' + $("#DesignDetails_DesignDescription").val()
+                //+ '&DesignSize=' + $("#DesignDetails_DesignSize").val()
+                + '&DesignPhoto=' + $("#DesignDetails_DesignPhoto").val()
+                );
+            xhr.send(formdata);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    document.getElementById("DesignPartialView").style.display = "none";
+                    document.getElementById("UpdateDetailsView").style.display = "inline";
+                    $("#UpdateDetailsView").html(xhr.responseText);
+                }
+
+            }
+            document.getElementById("rowid" + count).style.background = "#F1DDE7";
+            document.getElementById("pager").style.display = "inline";
+            document.getElementById('pagertextbox').disabled = false;
+            document.getElementById('pagerdropdown').disabled = false;
+        }
+    }
+</script>
+
+<!-- Pass the filefield and query String -->
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Editbtn").click(function () {
+            var formdata = new FormData();
+            var fileInput = document.getElementById("file");
+
+            //Appending each file to FormData object
+            formdata.append(fileInput.files[0].name, fileInput.files[0]);
+
+            var xhr = new XMLHttpRequest();
+            xhr.open('POST', '/Design/EditPartial?');
+            xhr.send(formdata);
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4 && xhr.status == 200) {
+                    alert(xhr.responseText);
+                    window.open("/Home/Home", "_self");
+                }
+            }
+        });
+    });
+</script>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        @Html.Partial("../Shared/LeftMenu")
+        <!-- End: Sidebar -->
+
+        <!-- Start: Content -->
+        @Html.HiddenFor(model => model.DesignDetails.DesignPhoto)
+
+
+        @Html.ValidationSummary(true)
+        <input type="hidden" id="NumberOfRows" name="NumberOfRows" />
+        <input type="hidden" id="SelectedRowValue" />
+
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+
+                <br />
+
+                <div class="col-md-4 col-lg-4">
+                    <div class="form-group row">
+                        <div class="row">
+                            <div class="col-md-10 col-lg-10">
+                                <label>Category</label>
+                                @Html.DropDownListFor(model => model.DesignDetails.CategoryCode, new SelectList(Model.ItemCategoryList, "CategoryName", "ItemCategoryCode"), "Select Category", new { id = "ddlcategorycode", @class = "form-control" })
+                                @Html.ValidationMessageFor(model => model.DesignDetails.CategoryCode, null, new { style = "color:red" })
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div class="row">
+                            <div class="col-md-10 col-lg-10">
+                                <div class="row" style="display: none" id="SubCatDiv">
+                                    <label>Item SubCategory</label>
+                                    @Html.DropDownListFor(model => model.DesignDetails.SubCategoryName, Enumerable.Empty<SelectListItem>(), "Select SubCategory", new { id = "ddlsubcategory", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.DesignDetails.SubCategoryName, null, new { style = "color:red" })
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group row">
+                        <div id="DesignNamesView"></div>
+                    </div>
+                </div>
+
+                <div class="col-md-1 col-lg-1">
+                    <div style="float: left; min-height: 650px; width: 1px; background-color: lightgrey;"></div>
+                </div>
+
+                <div class="col-md-7 col-lg-7">
+                    <div id="DesignPartialView"></div>
+                </div>
+
+                <div class="col-md-7 col-lg-7">
+                    <div id="UpdateDetailsView"></div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</section>
+<!-- End: Main -->

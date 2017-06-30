@@ -1,0 +1,99 @@
+﻿@model CodeFirstEntities .MainApplication
+@{
+    ViewBag.Title = "PrintGodownStock";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("Godown").innerHTML = window.opener.document.getElementById("DDLGodown").value;
+    })
+    
+</script>
+
+<table style="border: 1px double; width: 100%;">
+    <tr>
+        <td>
+            <table style="width:100%">
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <label><b>A To Z DADAR T.T.</b></label><br />
+                        <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align:center">
+                        <label style="font-size: x-large"><b>Godown Stock Report</b></label>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table style="width: 100%">
+                <tr>
+                    <td style="font-weight: bold;">Godown Code:<label id="Godown" style="font-weight: normal"></label></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label style="font-weight: bolder; text-align:center; width:100%">&nbsp;Item Details:</label>
+            <table>
+                <tr>
+                    <td style="height: 5px"></td>
+                </tr>
+            </table>
+            <table border="1" cellpadding="0" cellspacing="0" style="width: 100%">
+                <thead>
+                    <tr>
+                        <th style="text-align: left">Sr.No.</th>
+                        <th style="text-align: left">Item Code</th>
+                        <th style="text-align: left">Item Name</th>
+                        <th style="text-align: left" class="col-lg-3 col-md-3">Description</th>
+                        <th style="text-align: center">Quantity</th>
+                        <th style="text-align: left">Unit</th>
+                        <th style="text-align: left">Size</th>
+                        <th style="text-align: center">Rate</th>
+                    </tr>
+                </thead>
+                <tbody id="itemlist">
+                    @{
+                        int rowid = 1;
+                    }
+                    @foreach (var data in Model.GodownStockList)
+                    {
+                        <tr>
+                           @{
+                                double Qty = Convert.ToDouble(@data.Quantity);
+                                var quantity = Qty.ToString("#,###.00##");
+                                double Rate = Convert.ToDouble(@data.SellingPrice);
+                                var rate = Rate.ToString("#,###.00##");
+                            }
+                            <td>@rowid</td>
+                            <td style="text-align: left">@data.ItemCode</td>
+                            <td style="text-align: left">@data.ItemName</td>
+                            <td style="text-align: left" class="col-lg-3 col-md-3">@data.Description</td>
+                            <td style="text-align: right">@quantity</td>
+                            <td style="text-align: left">@data.Unit</td>
+                            <td style="text-align: left">@data.Size</td>
+                            <td style="text-align: right">@rate</td>
+                            @{rowid +=1;}
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </td>
+    </tr>
+</table>
+
+
+

@@ -1,0 +1,159 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "ShowQuantity";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+<script>
+    function Close() {
+        window.close();
+    }
+</script>
+
+<div class="row">
+    <div class="col-lg-12 col-md-12">
+
+        <table class="table" style="border-color: #d2d2d2; width: 100%; border: outset">
+            @{
+                if (Model.GodownStockList != null && Model.GodownStockList.Any())
+                {
+                <h3>Godown Stock</h3>
+                    var row = 1;
+                    
+                <thead>
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Godown Name</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                    foreach (var item in Model.GodownStockList)
+                    {
+                <tbody>
+                    <tr>
+                        <td>@row</td>
+                        <td>@item.GodownName</td>
+                        <td>@item.ItemName</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                    @{
+                        row++;
+                    }
+                </tbody>
+                    }
+                }
+            }
+        </table>
+
+
+        <table class="table" style="border-color: #d2d2d2; width: 100%; border: outset">
+            @{
+                if (Model.ShopStockList != null && Model.ShopStockList.Any())
+                {
+                <h3>Shop Stock</h3>
+                    var row = 1;
+                     
+                <thead>
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Shop Name</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                    foreach (var item in Model.ShopStockList)
+                    {
+                <tbody>
+
+                    <tr>
+                        <td>@row</td>
+                        <td>@item.ShopName</td>
+                        <td>@item.ItemName</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                    @{
+                        row++;
+                    }
+
+                </tbody>
+                    }
+                }
+            }
+        </table>
+
+        
+        <table class="table" style="border-color: #d2d2d2; width: 100%; border: outset">
+            @{
+                if (Model.SalesOrderItemList != null && Model.SalesOrderItemList.Any())
+                {
+                    <h3>Order Details</h3>
+                    var row = 1;
+                     
+                <thead>
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Order No</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                    foreach (var item in Model.SalesOrderItemList)
+                    {
+                <tbody>
+                    <tr>
+                        <td>@row</td>
+                        <td>@item.OrderNo</td>
+                        <td>@item.ItemName</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                    @{
+                        row++;
+                    }
+                </tbody>
+                    }
+                }
+            }
+            @{
+                if (Model.DeliveryChallanItemList != null && Model.DeliveryChallanItemList.Any())
+                {
+                    <h3>Order Details</h3>
+                    var row = 1;
+                    
+                <thead>
+                    <tr>
+                        <th>S.N.</th>
+                        <th>Order No</th>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                    </tr>
+                </thead>
+                    foreach (var item in Model.DeliveryChallanItemList)
+                    {
+                <tbody>
+                    <tr>
+                        <td>@row</td>
+                        <td>@item.ChallanNo</td>
+                        <td>@item.ItemName</td>
+                        <td>@item.Quantity</td>
+                    </tr>
+                    @{
+                        row++;
+                    }
+                </tbody>
+                    }
+                }
+            }
+        </table>
+
+        <div style="text-align: center">
+            <button type="button" class="btn btn-success" onclick="Close()">Close</button>
+        </div>
+
+    </div>
+</div>

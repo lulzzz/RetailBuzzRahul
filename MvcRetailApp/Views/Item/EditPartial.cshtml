@@ -1,0 +1,145 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "EditPartial";
+}
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8/jquery.validate.min.js"></script>
+<style type="text/css">
+    label.error {
+        color: red;
+        font-size: 12px;
+    }
+</style>
+
+@using (Html.BeginForm())
+{
+    @Html.HiddenFor(model => model.ItemDetails.itemId)
+    @Html.HiddenFor(model => model.ItemDetails.itemCode)
+    @Html.HiddenFor(model => model.ItemDetails.itemName)
+    @Html.HiddenFor(model => model.ItemDetails.designName)
+    @Html.HiddenFor(mdel => Model.ItemDetails.NumberType)
+    @Html.HiddenFor(model => model.ItemDetails.itemtype)
+    @Html.HiddenFor(model => model.ItemDetails.unit)
+
+    <div class="row">
+        <div class="row">
+            <div class="row">
+                <h2>Item Details</h2>
+                <div class="col-md-4 col-lg-4">
+                    <label>Item Code : </label>
+                    @Html.DisplayFor(model => model.ItemDetails.itemCode)
+                    <br />
+                    <label>Item Name : </label>
+                    @Html.DisplayFor(model => model.ItemDetails.itemName)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="row">
+            <div class="row form-group">
+                <div class="col-lg-4 col-md-4">
+                    <label>Item Description</label>
+                    @Html.TextAreaFor(model => model.ItemDetails.description, new { @class = "form-control" })
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+                    <label>Size</label>
+                    @Html.TextBoxFor(model => model.ItemDetails.size, null, new { @class = "form-control" })
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+                    <label>Cost Price</label><i style="color: red">*</i>
+                    @Html.TextBoxFor(model => model.ItemDetails.costprice, null, new { @class = "required form-control" })
+                    @Html.ValidationMessageFor(model => model.ItemDetails.costprice, null, new { style = "color:red" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-lg-4 col-md-4">
+                    <label>Type Of Material</label><i style="color: red">*</i>
+                    @Html.DropDownListFor(model => model.ItemDetails.typeOfMaterial, new SelectList(Model.typeOfMaterialList, "MaterialName", "MaterialName", Model.ItemDetails.typeOfMaterial), "Select Type", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ItemDetails.typeOfMaterial, null, new { style = "color:red" })
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+                    <label>Design Code</label>
+                    @Html.DropDownListFor(model => model.ItemDetails.designCode, new SelectList(Model.DesignList, "DesignCode", "DesignCode", Model.ItemDetails.designCode), "Select Design Code", new { @class = "form-control" })
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+                    <label>Selling Price</label><i style="color: red">*</i>
+                    @Html.TextBoxFor(model => model.ItemDetails.sellingprice, null, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ItemDetails.sellingprice, null, new { style = "color:red" })
+                </div>
+            </div>
+
+            <div class="row form-group">
+                <div class="col-lg-4 col-md-4">
+                    <label>Color Code</label><i style="color: red">*</i>
+                    @Html.DropDownListFor(model => model.ItemDetails.colorCode, new SelectList(Model.ColorCodeList, "colorName", "colorName", Model.ItemDetails.colorCode), "Select Color Code", new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ItemDetails.colorCode, null, new { style = "color:red" })
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+                    <label>Brand Name</label>
+                    @Html.DropDownListFor(model => model.ItemDetails.brandName, new List<SelectListItem> { new SelectListItem { Text = "Bombay Dyeing", Value = "BombayDyeing" }, new SelectListItem { Text = "Portico", Value = "Portico" }, new SelectListItem { Text = "Louis Phillipse", Value = "LouisPhillipse" }, new SelectListItem { Text = "Allen Solly", Value = "AllenSolly" }, new SelectListItem { Text = "Provogue", Value = "Provogue" }, new SelectListItem { Text = "Van Heusen", Value = "VanHeusen" }, new SelectListItem { Text = "Tommy Hilfiger", Value = "TommyHilfiger" } }, "Brand Name", new { @class = "form-control" })
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+                    <label>MRP</label><i style="color: red">*</i>
+                    @Html.TextBoxFor(model => model.ItemDetails.mrp, null, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ItemDetails.mrp, null, new { style = "color:red" })
+                </div>
+
+            </div>
+
+            <div class="row form-group">
+
+                <div class="col-lg-4 col-md-4">
+                    <label>Percent Commission<i style="color: red">*</i></label>
+                    @{
+    if (Model.ItemDetails.CommissionInPercent != 0)
+    {
+                        @Html.TextBoxFor(model => model.ItemDetails.CommissionInPercent, new { @class = "form-control", @onkeypress = "return AllowNumbers(event)", @onchange = "CalculateComm()" })
+    }
+    else
+    {
+                        @Html.TextBoxFor(model => model.ItemDetails.CommissionInPercent, new { @class = "form-control", @onkeypress = "return AllowNumbers(event)", @onchange = "CalculateComm()", @readonly = "true" })
+    }
+                    }
+                </div>
+
+                <div class="col-lg-4 col-md-4">
+                    <label>Rupees Commission<i style="color: red">*</i></label>
+                    @{
+    if (Model.ItemDetails.CommissionInRupees != 0)
+    {
+                        @Html.TextBoxFor(model => model.ItemDetails.CommissionInRupees, null, new { @class = "form-control", @onkeypress = "return AllowNumbers(event)", @onchange = "CalculateComm()" })
+    }
+    else
+    {
+                        @Html.TextBoxFor(model => model.ItemDetails.CommissionInRupees, null, new { @class = "form-control", @onkeypress = "return AllowNumbers(event)", @onchange = "CalculateComm()", @readonly = "true" })
+    }
+                    }
+
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+    <br />
+
+    <div class="col-lg-offset-5 col-md-offset-5">
+        <button type="button" class="btn btn-success" onclick="UpdateData()">Update</button>
+    </div>
+}

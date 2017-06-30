@@ -1,0 +1,670 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PrintsbPreprinted";
+}
+
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<script type="text/javascript">
+    $(function () {
+        document.getElementById("Inwords").innerHTML = NumberToWords();
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+    });
+</script>
+
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function NumberToWords() {
+        var junkVal = (+removeCommas(document.getElementById('Grand_Total').innerHTML));
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+            //do nothing
+        }
+        else if (Number(junkVal) == 0) {
+            //document.getElementById('container').innerHTML = obStr + '' + 'Rupees Zero Only';
+            return 'Rupees Zero Only';
+        }
+        else {
+            alert('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alert('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+
+<script>
+    $(function () {
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+    });
+</script>
+
+<table style="width: 100%;">
+    <tr>
+        <td style="width: 143.62px; background-color: red; height: 100%"></td>
+        <td>
+            <table>
+
+                <thead class="header">
+                    <tr>
+                        <td class="col-lg-8 col-md-8 col-sm-8" style="font-size: 14px; width: 427.09px">
+                            <div class="col-lg-12 col-md-12 col-sm-12" style="text-align: center">
+                                <label style="font-size: 24px; color: red"><b>TAX INVOICE</b></label>
+                                <br />
+                                <label><b>PROP. PAREKH & CO.</b></label>
+                                <div style="height: 5px"></div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12" style="border-bottom: 1px solid">
+                                <label style="color: red">*&nbsp;</label>Imperial Mahal, Khodadad Circle, Dadar T.T., (East), Mumbai 400 014
+                            <br />
+                                Tel. : 2412 4820, 2412 0085, 2416 3631, 2421 1936
+                                <br />
+                                Email:atozfurnishings@hotmail.com
+                            <div style="height: 7px"></div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <div style="height: 5px"></div>
+                            </div>
+                            <div class="col-lg-12 col-md-12 col-sm-12">
+                                <label style="color: red">*&nbsp;</label>Broadway Shopping Centre, Dadar T.T. (East), Mumbai 400 014.
+                                <br />
+                                Tel. : 2411 6599, 2414 0739
+                            <label style="color: red">*&nbsp;</label>Fax : 91-22-2414 6361
+                            </div>
+                        </td>
+                        <td class="col-lg-4 col-md-4 col-sm-4" style="text-align: center">
+                            <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" />
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="height: 123.94px">
+                            <div style="font-size: 14px">
+                                <label><b>M/s:&nbsp</b></label><label><b>@Html.DisplayFor(model => model.SalesBillDetails.ClientName)</b></label>
+                                <br />
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientAddress)
+                                <br />
+                                @Html.DisplayFor(model => model.SalesBillDetails.ClientContactNo)
+                            </div>
+                        </td>
+                        <td>
+                            <label><b>Invoice No. :</b></label>
+                            <br />
+                            <label><b>@Html.DisplayFor(model => model.SalesBillDetails.SalesBillNo)</b></label>
+                            <div style="height: 10px"></div>
+                            <label>Date :</label>
+                            <br />
+                            <label>@Convert.ToDateTime(Model.SalesBillDetails.Date).ToString("dd/MM/yyyy")</label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td colspan="2">
+                            <table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                                <thead>
+                                    <tr style="background-color: #eee; font-size: 14px">
+                                        <th style="width: 25%; border-right: 1px solid; border-bottom: 1px solid">Order No.</th>
+                                        <th style="width: 25%; border-right: 1px solid; border-bottom: 1px solid">Challan No.</th>
+                                        <th style="width: 25%; border-right: 1px solid; border-bottom: 1px solid">Despatch by</th>
+                                        <th style="width: 25%; border-bottom: 1px solid">G. R. No.</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr style="text-align: center; font-size: 13px">
+                                        <td style="border-right: 1px solid;">@Html.DisplayFor(model => model.SalesBillDetails.SalesOrderNo)</td>
+                                        <td style="border-right: 1px solid;">@Html.DisplayFor(model => model.SalesBillDetails.DeliveryChallanNo)</td>
+                                        <td style="border-right: 1px solid;">@Html.DisplayFor(model => model.SalesBillDetails.PreparedBy)</td>
+                                        <td></td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div style="height: 7px"></div>
+                        </td>
+                    </tr>
+                </thead>
+
+                <tbody style="height:510px; vertical-align: top">
+                    <tr>
+                        <td colspan="2" style="height: 440px; vertical-align: top">
+                            <table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                                <thead>
+                                    <tr style="background-color: #eee; min-height: 360px; font-size: 14px">
+                                        <th style="width: 10%; border-right: 1px solid; border-bottom: 1px solid">S. No.</th>
+                                        <th style="width: 20%; border-right: 1px solid; border-bottom: 1px solid">Item</th>
+                                        <th style="width: 5%; border-right: 1px solid; border-bottom: 1px solid">Disc</th>
+                                        <th style="width: 5%; border-right: 1px solid; border-bottom: 1px solid">Tax</th>
+                                        <th style="width: 15%; border-right: 1px solid; border-bottom: 1px solid">Quantity</th>
+                                        <th style="width: 20%; border-right: 1px solid; border-bottom: 1px solid">Rate</th>
+                                        <th style="width: 25%; border-bottom: 1px solid">Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{
+                                        if (Model.SalesBillItemList != null && Model.SalesBillItemList.Any())
+                                        {
+                                            int count = 1;
+                                            foreach (var data in Model.SalesBillItemList)
+                                            {
+                                                var rate = Convert.ToDouble(@data.SellingPrice).ToString("#,###.00##");
+                                                var amount = Convert.ToDouble(@data.Amount).ToString("#,###.00##");     
+                                        <tr style="text-align: center; font-size: 13px;">
+                                            <td style="border-right: 1px solid;">@count</td>
+                                            <td style="border-right: 1px solid;">@data.ItemName</td>
+                                            <td style="border-right: 1px solid;">@data.DiscountRPS</td>
+                                            <td style="border-right: 1px solid;">@data.ItemTax</td>
+                                            <td style="border-right: 1px solid;">@data.Quantity</td>
+                                            <td style="border-right: 1px solid; text-align: right">@rate</td>
+                                            <td style="text-align: right">@amount</td>
+                                        </tr>
+                                                count++;
+                                            }
+                                        }
+                                    }
+                                    <tr style="font-size: 14px">
+                                        <td colspan="6" style="text-align: right">
+                                            <label><b>Total Amount :</b></label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            @{var ttlamt = Convert.ToDouble(@Model.SalesBillDetails.TotalAmount).ToString("#,###.00##");}
+                                            <label><b>@ttlamt</b></label>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-size: 14px">
+                                        <td colspan="6" style="text-align: right">
+                                            <label><b>Tax Amount :</b></label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            @{var taxamt = Convert.ToDouble(@Model.SalesBillDetails.TotalTaxAmount).ToString("#,###.00##");}
+                                            <label><b>@taxamt</b></label>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-size: 14px">
+                                        <td colspan="6" style="text-align: right">
+                                            <label><b>Pack & Frwd :</b></label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            @{var pactford = Convert.ToDouble(@Model.SalesBillDetails.PackAndForwd).ToString("#,###.00##");}
+                                            <label><b>@pactford</b></label>
+                                        </td>
+                                    </tr>
+                                    <tr style="font-size: 14px">
+                                        <td colspan="6" style="text-align: right">
+                                            <label><b>Grand Total :</b></label>
+                                        </td>
+                                        <td style="text-align: right">
+                                            @{var grndttl = Convert.ToDouble(@Model.SalesBillDetails.GrandTotal).ToString("#,###.00##");}
+                                            <label id="Grand_Total"><b>@grndttl</b></label>
+                                        </td>
+                                    </tr>
+
+                                    <tr style="font-size: 14px; background-color: #eee">
+                                        <td colspan="7" style="text-align: left">
+                                            <label><b>Amount in words :</b></label>
+                                            &nbsp;&nbsp;<label id="Inwords"><b></b></label>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </td>
+                    </tr>
+
+                </tbody>
+
+                <tfoot class="footer">
+                    <tr>
+                        <td colspan="2">
+                            <label style="font-size: 10px">
+                                "I/We hereby certify that my/our registration cretificate under the Maharashtra Value Added Tax Act, 20002 is in
+                            force on the date on whitch the sale of the goods specified in this <u>Tax Invoice</u> is made by me/us & that the transaction
+                            of sale covered by this <u>Tax Invoice</u> has been effected by me/us & it shall be accounted for in the turnover of sales while filling
+                            of return and the due tax, if any, payable on the sale has been paid or shall be paid."
+                            </label>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <td style="height: 123.94px">
+                            <table style="width: 100%">
+                                <tr>
+                                    <td style="font-size: 10px; border-bottom: 1px solid; width: 100%">
+                                        <label style="font-size: 14px; color: red; text-align: right"><b>MONDAY CLOSED</b></label><br />
+                                        <label>*&nbsp;Subject to Mumbai Jurisdiction.</label><br />
+                                        <label>*&nbsp;Goods once sold will not be taken back or replaced.</label><br />
+                                        <label>*&nbsp;Our resposibility ceases no sooner the goods leave our permises.</label><br />
+                                        <label>*&nbsp;Crosses Cheques/Drafts in Favourof 'PAREKH & CO.'</label><br />
+                                        <label>*&nbsp;Interest at..........per annum will be charged after due date.</label><br />
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 14px; text-align: center; width: 100%; border-bottom: 1px solid">
+                                        <label><b>VAT TIN No. 27790060963V. CST TIN No. 27790060963C</b></label>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="font-size: 10px; text-align: left; width: 100%;">
+                                        <table>
+                                            <tr>
+                                                <td style="width: 20%">Beneficiary Name</td>
+                                                <td style="width: 35%">: PAREKH & COMPONY</td>
+                                                <td style="width: 16%">Account No.</td>
+                                                <td style="width: 19%">: 012311023871</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Bank Name</td>
+                                                <td style="width: 35%">: DENA BANK</td>
+                                                <td style="width: 16%">IFSC Code</td>
+                                                <td style="width: 19%">: BKDN0450123</td>
+                                            </tr>
+                                            <tr>
+                                                <td style="width: 20%">Branch</td>
+                                                <td style="width: 35%">: K.C.BRANCH</td>
+                                                <td style="width: 16%">MICR Code No.</td>
+                                                <td style="width: 19%">: 400018043</td>
+                                            </tr>
+                                        </table>
+                                    </td>
+                                </tr>
+                            </table>
+                        </td>
+                        <td style="text-align: center;">
+                            <br />
+                            <footer style="height: 139.84px">
+                                <label style="text-align: center; font-size: 13px">For PAREKH & CO</label>
+                                <br />
+                                <br />
+                                <br />
+                                <br />
+                                <label style="text-align: center; font-size: 14px">Partner/Manager</label>
+                                <br />
+                                <label style="text-align: center; font-size: 14px; color: red"><b>NO BRANCH</b></label>
+                                <br />
+                                <label style="text-align: center; font-size: 14px">E. & O. E.</label>
+                            </footer>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </td>
+    </tr>
+</table>
+
+
+@*<div style="height: 8px"></div>
+<table style="width: 100%;">
+
+    <tr>
+        <td style="width: 143.62px; background-color: red; height: 100%"></td>
+        <td>
+            <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="2" cellspacing="0" id="basic-table ">
+                <tr>
+                    <td class="col-lg-8 col-md-8 col-sm-8" style="font-size: 14px; width: 427.09px">
+                        <div class="col-lg-12 col-md-12 col-sm-12" style="text-align: center">
+                            <label style="font-size: 24px; color: red"><b>TAX INVOICE</b></label>
+                            <br />
+                            <label><b>PROP. PAREKH & CO.</b></label>
+                            <div style="height: 5px"></div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12" style="border-bottom: 1px solid">
+                            <label style="color: red">*&nbsp;</label>Imperial Mahal, Khodadad Circle, Dadar T.T., (East), Mumbai 400 014
+                            <br />
+                            Tel. : 2412 4820, 2412 0085, 2416 3631, 2421 1936
+                                <br />
+                            Email:atozfurnishings@hotmail.com
+                            <div style="height: 7px"></div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <div style="height: 5px"></div>
+                        </div>
+                        <div class="col-lg-12 col-md-12 col-sm-12">
+                            <label style="color: red">*&nbsp;</label>Broadway Shopping Centre, Dadar T.T. (East), Mumbai 400 014.
+                                <br />
+                            Tel. : 2411 6599, 2414 0739
+                            <label style="color: red">*&nbsp;</label>Fax : 91-22-2414 6361
+                        </div>
+                    </td>
+                    <td class="col-lg-4 col-md-4 col-sm-4" style="text-align: center">
+                        <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" />
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="height: 123.94px">
+                        <div style="font-size: 14px">
+                            <label><b>M/s:&nbsp</b></label><label><b>@Html.DisplayFor(model => model.SalesBillDetails.ClientName)</b></label>
+                            <br />
+                            @Html.DisplayFor(model => model.SalesBillDetails.ClientAddress)
+                            <br />
+                            @Html.DisplayFor(model => model.SalesBillDetails.ClientContactNo)
+                        </div>
+                    </td>
+                    <td>
+                        <label><b>Invoice No. :</b></label>
+                        <br />
+                        <label><b>@Html.DisplayFor(model => model.SalesBillDetails.SalesBillNo)</b></label>
+                        <div style="height: 10px"></div>
+                        <label>Date :</label>
+                        <br />
+                        <label>@Convert.ToDateTime(Model.SalesBillDetails.Date).ToString("dd/MM/yyyy")</label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr style="background-color: #eee; font-size: 14px">
+                                    <th style="width: 25%; border-right: 1px solid; border-bottom: 1px solid">Order No.</th>
+                                    <th style="width: 25%; border-right: 1px solid; border-bottom: 1px solid">Challan No.</th>
+                                    <th style="width: 25%; border-right: 1px solid; border-bottom: 1px solid">Despatch by</th>
+                                    <th style="width: 25%; border-bottom: 1px solid">G. R. No.</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr style="text-align: center; font-size: 13px">
+                                    <td style="border-right: 1px solid;">@Html.DisplayFor(model => model.SalesBillDetails.SalesOrderNo)</td>
+                                    <td style="border-right: 1px solid;">@Html.DisplayFor(model => model.SalesBillDetails.DeliveryChallanNo)</td>
+                                    <td style="border-right: 1px solid;">@Html.DisplayFor(model => model.SalesBillDetails.PreparedBy)</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="height: 7px"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2" style="height: 440px; vertical-align: top">
+                        <table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                            <thead>
+                                <tr style="background-color: #eee; min-height: 360px; font-size: 14px">
+                                    <th style="width: 10%; border-right: 1px solid; border-bottom: 1px solid">S. No.</th>
+                                    <th style="width: 20%; border-right: 1px solid; border-bottom: 1px solid">Item</th>
+                                    <th style="width: 5%; border-right: 1px solid; border-bottom: 1px solid">Disc</th>
+                                    <th style="width: 5%; border-right: 1px solid; border-bottom: 1px solid">Tax</th>
+                                    <th style="width: 15%; border-right: 1px solid; border-bottom: 1px solid">Quantity</th>
+                                    <th style="width: 20%; border-right: 1px solid; border-bottom: 1px solid">Rate</th>
+                                    <th style="width: 25%; border-bottom: 1px solid">Amount</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @{
+                                    if (Model.SalesBillItemList != null && Model.SalesBillItemList.Any())
+                                    {
+                                        int count = 1;
+                                        foreach (var data in Model.SalesBillItemList)
+                                        {
+                                            var rate = Convert.ToDouble(@data.SellingPrice).ToString("#,###.00##");
+                                            var amount = Convert.ToDouble(@data.Amount).ToString("#,###.00##");     
+                                    <tr style="text-align: center; font-size: 13px;">
+                                        <td style="border-right: 1px solid;">@count</td>
+                                        <td style="border-right: 1px solid;">@data.ItemName</td>
+                                        <td style="border-right: 1px solid;">@data.DiscountRPS</td>
+                                        <td style="border-right: 1px solid;">@data.ItemTax</td>
+                                        <td style="border-right: 1px solid;">@data.Quantity</td>
+                                        <td style="border-right: 1px solid; text-align: right">@rate</td>
+                                        <td style="text-align: right">@amount</td>
+                                    </tr>
+                                            count++;
+                                        }
+                                    }
+                                }
+                                <tr style="font-size: 14px">
+                                    <td colspan="6" style="text-align: right">
+                                        <label><b>Total Amount :</b></label>
+                                    </td>
+                                    <td style="text-align: right">
+                                        @{var ttlamt = Convert.ToDouble(@Model.SalesBillDetails.TotalAmount).ToString("#,###.00##");}
+                                        <label><b>@ttlamt</b></label>
+                                    </td>
+                                </tr>
+                                <tr style="font-size: 14px">
+                                    <td colspan="6" style="text-align: right">
+                                        <label><b>Tax Amount :</b></label>
+                                    </td>
+                                    <td style="text-align: right">
+                                        @{var taxamt = Convert.ToDouble(@Model.SalesBillDetails.TotalTaxAmount).ToString("#,###.00##");}
+                                        <label><b>@taxamt</b></label>
+                                    </td>
+                                </tr>
+                                <tr style="font-size: 14px">
+                                    <td colspan="6" style="text-align: right">
+                                        <label><b>Pack & Frwd :</b></label>
+                                    </td>
+                                    <td style="text-align: right">
+                                        @{var pactford = Convert.ToDouble(@Model.SalesBillDetails.PackAndForwd).ToString("#,###.00##");}
+                                        <label><b>@pactford</b></label>
+                                    </td>
+                                </tr>
+                                <tr style="font-size: 14px">
+                                    <td colspan="6" style="text-align: right">
+                                        <label><b>Grand Total :</b></label>
+                                    </td>
+                                    <td style="text-align: right">
+                                        @{var grndttl = Convert.ToDouble(@Model.SalesBillDetails.GrandTotal).ToString("#,###.00##");}
+                                        <label id="Grand_Total"><b>@grndttl</b></label>
+                                    </td>
+                                </tr>
+
+                                <tr style="font-size: 14px; background-color: #eee">
+                                    <td colspan="7" style="text-align: left">
+                                        <label><b>Amount in words :</b></label>
+                                        &nbsp;&nbsp;<label id="Inwords"><b></b></label>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td colspan="2">
+                        <label style="font-size: 10px">
+                            "I/We hereby certify that my/our registration cretificate under the Maharashtra Value Added Tax Act, 20002 is in
+                            force on the date on whitch the sale of the goods specified in this <u>Tax Invoice</u> is made by me/us & that the transaction
+                            of sale covered by this <u>Tax Invoice</u> has been effected by me/us & it shall be accounted for in the turnover of sales while filling
+                            of return and the due tax, if any, payable on the sale has been paid or shall be paid."
+                        </label>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td style="height: 123.94px">
+                        <table style="width: 100%">
+                            <tr>
+                                <td style="font-size: 10px; border-bottom: 1px solid; width: 100%">
+                                    <label style="font-size: 14px; color: red; text-align: right"><b>MONDAY CLOSED</b></label><br />
+                                    <label>*&nbsp;Subject to Mumbai Jurisdiction.</label><br />
+                                    <label>*&nbsp;Goods once sold will not be taken back or replaced.</label><br />
+                                    <label>*&nbsp;Our resposibility ceases no sooner the goods leave our permises.</label><br />
+                                    <label>*&nbsp;Crosses Cheques/Drafts in Favourof 'PAREKH & CO.'</label><br />
+                                    <label>*&nbsp;Interest at..........per annum will be charged after due date.</label><br />
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 14px; text-align: center; width: 100%; border-bottom: 1px solid">
+                                    <label><b>VAT TIN No. 27790060963V. CST TIN No. 27790060963C</b></label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-size: 10px; text-align: left; width: 100%;">
+                                    <table>
+                                        <tr>
+                                            <td style="width: 20%">Beneficiary Name</td>
+                                            <td style="width: 35%">: PAREKH & COMPONY</td>
+                                            <td style="width: 16%">Account No.</td>
+                                            <td style="width: 19%">: 012311023871</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 20%">Bank Name</td>
+                                            <td style="width: 35%">: DENA BANK</td>
+                                            <td style="width: 16%">IFSC Code</td>
+                                            <td style="width: 19%">: BKDN0450123</td>
+                                        </tr>
+                                        <tr>
+                                            <td style="width: 20%">Branch</td>
+                                            <td style="width: 35%">: K.C.BRANCH</td>
+                                            <td style="width: 16%">MICR Code No.</td>
+                                            <td style="width: 19%">: 400018043</td>
+                                        </tr>
+                                    </table>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="text-align: center;">
+                        <br />
+                        <footer style="height: 139.84px">
+                            <label style="text-align: center; font-size: 13px">For PAREKH & CO</label>
+                            <br />
+                            <br />
+                            <br />
+                            <br />
+                            <label style="text-align: center; font-size: 14px">Partner/Manager</label>
+                            <br />
+                            <label style="text-align: center; font-size: 14px; color: red"><b>NO BRANCH</b></label>
+                            <br />
+                            <label style="text-align: center; font-size: 14px">E. & O. E.</label>
+                        </footer>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+        <td style="width: 10px; height: 100%"></td>
+    </tr>
+
+</table>
+<div style="height: 15px"></div>*@
+

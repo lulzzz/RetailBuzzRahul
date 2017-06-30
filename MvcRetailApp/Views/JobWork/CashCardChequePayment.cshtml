@@ -1,0 +1,385 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "CashCardCheque";
+}
+
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+@*DATE PICKER ON CHECK DATE*@
+<script type="text/javascript">
+    window.onclick = function () {
+        new JsDatePick({
+            useMode: 2,
+            target: "ChequeDate",
+            dateFormat: "%d/%M/%Y",
+        });
+    };
+</script>
+
+@*DATE PICKER ON CHECK DATE*@
+<script type="text/javascript">
+    $(document).ready(function () {
+
+        if (document.getElementById("JobWorkPaymentDetails_SelectedCard").value != "" || ("JobWorkPaymentDetails_SelectedCard").value != null) {
+            var selectcard = document.getElementById("JobWorkPaymentDetails_SelectedCard").value;
+            $("#Card").val(selectcard).attr("selected", true);
+            if (selectcard == "CreditCard") {
+                document.getElementById("creditdiv1").style.display = "inline";
+                document.getElementById("creditdiv2").style.display = "inline";
+            }
+            else {
+                document.getElementById("debitdiv1").style.display = "inline";
+                document.getElementById("debitdiv2").style.display = "inline";
+            }
+        }
+
+        if (document.getElementById("ChequeNo").value != "") {
+            document.getElementById("chequeaccno").style.display = "inline";
+            document.getElementById("chequeamt").style.display = "inline";
+            document.getElementById("chequedate").style.display = "inline";
+            document.getElementById("chequebankbranch").style.display = "inline";
+        }
+       
+    })
+</script>
+
+@*DISPLAY CARD DETAILS*@
+<script type="text/javascript">
+    function CardDetails() {
+        document.getElementById("blankdiv").style.display = 'none';
+        var card = document.getElementById("Card").value;
+        if (card != "") {
+            if (card == "CreditCard") {
+                document.getElementById("debitdiv1").style.display = 'none';
+                document.getElementById("debitdiv2").style.display = 'none';
+                document.getElementById("creditdiv1").style.display = 'inline';
+                document.getElementById("creditdiv2").style.display = 'inline';
+                document.getElementById("DebitCardName").value = "";
+                document.getElementById("DebitCardNo").value = "";
+                document.getElementById("DebitCardAmount").value = "";
+                document.getElementById("DebitCardType").value = "";
+                document.getElementById("DebitCardBank").value = "";
+            }
+            else {
+                document.getElementById("debitdiv1").style.display = 'inline';
+                document.getElementById("debitdiv2").style.display = 'inline'
+                document.getElementById("creditdiv1").style.display = 'none';
+                document.getElementById("creditdiv2").style.display = 'none';
+                document.getElementById("CreditCardNo").value = "";
+                document.getElementById("CreditCardAmount").value = "";
+                document.getElementById("CreditCardType").value = "";
+                document.getElementById("CreditCardBank").value = "";
+            }
+        }
+        else {
+            document.getElementById("debitdiv1").style.display = 'none';
+            document.getElementById("debitdiv2").style.display = 'none';
+            document.getElementById("creditdiv1").style.display = 'none';
+            document.getElementById("creditdiv2").style.display = 'none';
+        }
+    }
+</script>
+
+@*CALCULATE CASH DETAILS & ITS AMOUNT*@
+<script type="text/javascript">
+    function CalcCheckAmount(no) {
+        var cash = "Cash" + no;
+        var quan = "Quan" + no;
+        var amt = "Amt" + no;
+        var amount = +(document.getElementById(cash).innerHTML) * (+document.getElementById(quan).value);
+        document.getElementById(amt).value = amount;
+
+        CalTotalAmount();
+    }
+
+    function CalTotalAmount() {
+        var finalamt = 0;
+        var payment = (+removeCommas(document.getElementById("Payment").value));
+
+        for (i = 1; i <= 7; i++) {
+            var amt = "Amt" + i;
+            finalamt = finalamt + (+document.getElementById(amt).value);
+            document.getElementById("TotalCash").value = finalamt;
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $("#ChequeNo").change(function () {
+        if ($("#ChequeNo").val() != "") {
+            document.getElementById("chequeaccno").style.display = "inline";
+            document.getElementById("chequeamt").style.display = "inline";
+            document.getElementById("chequedate").style.display = "inline";
+            document.getElementById("chequebankbranch").style.display = "inline";
+        }
+        else {
+            document.getElementById("chequeaccno").style.display = "none";
+            document.getElementById("chequeamt").style.display = "none";
+            document.getElementById("chequedate").style.display = "none";
+            document.getElementById("chequebankbranch").style.display = "none";
+        }
+    })
+</script>
+
+@Html.HiddenFor(model => model.JobWorkPaymentDetails.SelectedCard)
+@Html.HiddenFor(model => model.JobWorkPaymentDetails.Refund)
+
+<div class="col-lg-12 col-md-12">
+    <table style="border: 1px double; width: 100%">
+        @*CARD DETAILS*@
+
+        <tr style="min-height: 20px">
+            <td>
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 10px"></div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <label style="font-size: medium">Card Details:</label>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div class="col-lg-3 col-md-3">
+                        <label>Select Card</label><br />
+                        <select class="form-control" id="Card" name="Card" onchange="CardDetails()">
+                            <option value="">Select</option>
+                            <option value="CreditCard">Credit Card</option>
+                            <option value="DebitCard">Debit Card</option>
+                        </select>
+                    </div>
+                    <div class="col-lg-9 col-md-9" id="blankdiv"></div>
+                    <div id="creditdiv1" style="display:none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard No.</label><br />
+                            @Html.TextBoxFor(model => model.JobWorkPaymentDetails.CreditCardNo, new {id="CreditCardNo", @class = "form-control", @placeholder = "Card No" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard Amount</label><br />
+                            @Html.TextBoxFor(model => model.JobWorkPaymentDetails.CreditCardAmount, new {id="CreditCardAmount", @class = "form-control", @placeholder = "Amount" , @onkeypress="return AllowNumbers(event)"})
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard Type</label><br />
+                            @Html.DropDownListFor(model => model.JobWorkPaymentDetails.CreditCardType, new List<SelectListItem> { new SelectListItem { Text = "Visa" }, new SelectListItem { Text = "Master" }, new SelectListItem { Text = "Platinum" }, new SelectListItem { Text = "Gold" }, new SelectListItem { Text = "Business" }, new SelectListItem { Text = "Silver" } }, "Select Type", new { @class = "form-control", id="CreditCardType"})
+                        </div>
+                        
+                    </div>
+                    <div id="debitdiv1" style="display:none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Name</label><br />
+                            @Html.TextBoxFor(model => model.JobWorkPaymentDetails.DebitCardName, new {id="DebitCardName", @class = "form-control", @placeholder = "Name" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard No.</label><br />
+                            @Html.TextBoxFor(model => model.JobWorkPaymentDetails.DebitCardNo, new {id="DebitCardNo", @class = "form-control", @placeholder = "Card No" })
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Amount</label><br />
+                            @Html.TextBoxFor(model => model.JobWorkPaymentDetails.DebitCardAmount, new {id="DebitCardAmount", @class = "form-control", @placeholder = "Amount", @onkeypress="return AllowNumbers(event)"})
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 10px"></div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div id="creditdiv2" style="display: none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>CreditCard Bank</label><br />
+                            @Html.TextBoxFor(model => model.JobWorkPaymentDetails.CreditCardBank, new {id="CreditCardBank", @class = "form-control", @placeholder = "Bank name" })
+                        </div>
+                    </div>
+                    <div id="debitdiv2" style="display: none">
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Type</label><br />
+                            @Html.DropDownListFor(model => model.JobWorkPaymentDetails.DebitCardType, new List<SelectListItem> { new SelectListItem { Text = "Visa" }, new SelectListItem { Text = "Master" }, new SelectListItem { Text = "Platinum" }, new SelectListItem { Text = "Gold" }, new SelectListItem { Text = "Business" }, new SelectListItem { Text = "Silver" } }, "Select Type", new { @class = "form-control", id="DebitCardType"})
+                        </div>
+                        <div class="col-lg-3 col-md-3">
+                            <label>DebitCard Bank</label><br />
+                            @Html.TextBoxFor(model => model.JobWorkPaymentDetails.DebitCardBank, new {id="DebitCardBank", @class = "form-control", @placeholder = "Bank name" })
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 10px"></div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        @*CHECK DETAILS*@
+        <tr style="min-height: 20px">
+            <td>
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 10px"></div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <label style="font-size: medium">Cheque Details:</label>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div class="col-lg-3 col-md-3">
+                        <label>Cheque No.</label><br />
+                        @Html.TextBoxFor(model => model.JobWorkPaymentDetails.ChequeNo, new {id="ChequeNo", @class = "form-control", @placeholder = "Check No"})
+                    </div>
+                    <div class="col-lg-3 col-md-3" id="chequeaccno" style="display:none">
+                        <label>Account No.</label><br />
+                        @Html.TextBoxFor(model => model.JobWorkPaymentDetails.ChequeAccNo, new {id="ChequeAccNo", @class = "form-control", @placeholder = "Account No" })
+                    </div>
+                    <div class="col-lg-3 col-md-3" id="chequeamt" style="display:none">
+                        <label>Amount</label><br />
+                        @Html.TextBoxFor(model => model.JobWorkPaymentDetails.ChequeAmount, new {id="ChequeAmount", @class = "form-control", @placeholder = "Amount", @onkeypress="return AllowNumbers(event)"})
+                    </div>
+                    <div class="col-lg-3 col-md-3" id="chequedate" style="display:none">
+                        <label>Date</label><br />
+                        @Html.TextBoxFor(model => model.JobWorkPaymentDetails.ChequeDate, new {id="ChequeDate", @class = "form-control", @placeholder = "Date" })
+                    </div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 10px"></div>
+                </div>
+                <div class="col-lg-12 col-md-12"  id="chequebankbranch" style="display:none">
+                    <div class="col-lg-3 col-md-3">
+                        <label>Bank</label><br />
+                        @Html.TextBoxFor(model => model.JobWorkPaymentDetails.ChequeBank, new {id="ChequeBank", @class = "form-control", @placeholder = "Bank Name" })
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <label>Branch</label><br />
+                        @Html.TextBoxFor(model => model.JobWorkPaymentDetails.ChequeBranch, new {id="ChequeBranch", @class = "form-control", @placeholder = "Branch Name" })
+                    </div>
+                    <div class="col-lg-6 col-md-6"></div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div style="height: 10px"></div>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        <tr>
+            <td>
+                <div style="height: 1px" class="form-group"></div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+        @*CASH DETAILS*@
+
+        <tr>
+            <td>
+                <div class="col-lg-12 col-md-12">
+                    <label style="font-size: medium">Cash Details:</label>
+                </div>
+                <div class="col-lg-12 col-md-12">
+                    <table style="border: 1px double; width: 100%">
+                        <tr>
+                            <td>
+                                <table style="border: 1px double; width: 100%">
+                                    <thead>
+                                        <tr><td><div style="height:8px"></div></td></tr>
+                                        <tr>
+                                            <th></th>
+                                            <th style="text-align:center"><i class="fa fa-inr">&nbsp;<label id="Cash1">1000</label></i></th>
+                                            <th style="text-align:center"><i class="fa fa-inr">&nbsp;<label id="Cash2">500</label></i></th>
+                                            <th style="text-align:center"><i class="fa fa-inr">&nbsp;<label id="Cash3">100</label></i></th>
+                                            <th style="text-align:center"><i class="fa fa-inr">&nbsp;<label id="Cash4">50</label></i></th>
+                                            <th style="text-align:center"><i class="fa fa-inr">&nbsp;<label id="Cash5">20</label></i></th>
+                                            <th style="text-align:center"><i class="fa fa-inr">&nbsp;<label id="Cash6">10</label></i></th>
+                                            <th style="text-align:center"><i class="fa fa-inr">&nbsp;<label id="Cash7">1</label></i></th>
+                                            <th style="text-align:center">Total</th>
+                                            <th></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr>
+                                            <td><b>&nbsp;&nbsp;CashDetails:</b>&nbsp;&nbsp;&nbsp;</td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.JobWorkPaymentDetails.Cash_1000, new { id = "Quan1", @class = "form-control", @placeholder = "0", @style = "text-align:center; width:100%", @onchange = "CalcCheckAmount(1);", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.JobWorkPaymentDetails.Cash_500, new { id = "Quan2", @class = "form-control", @placeholder = "0", @onchange = "CalcCheckAmount(2);", @style = "text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.JobWorkPaymentDetails.Cash_100, new { id = "Quan3", @class = "form-control", @placeholder = "0", @onchange = "CalcCheckAmount(3);", @style = "text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                                            </td>
+                                            <td>
+                                                 @Html.TextBoxFor(model => model.JobWorkPaymentDetails.Cash_50, new { id = "Quan4", @class = "form-control", @placeholder = "0", @onchange = "CalcCheckAmount(4);", @style = "text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.JobWorkPaymentDetails.Cash_20, new { id = "Quan5", @class = "form-control", @placeholder = "0", @onchange = "CalcCheckAmount(5);", @style = "text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.JobWorkPaymentDetails.Cash_10, new { id = "Quan6", @class = "form-control", @placeholder = "0", @onchange = "CalcCheckAmount(6);", @style = "text-align:center; width:100%", @onkeypress="return AllowNumbersWithoutDecimal(event)" })
+                                            </td>
+                                            <td>
+                                                @Html.TextBoxFor(model => model.JobWorkPaymentDetails.Cash_1, new { id = "Quan7", @class = "form-control", @placeholder = "0", @onchange = "CalcCheckAmount(6);", @style = "text-align:center; width:100%", @onkeypress="return AllowNumbers(event)" })
+                                            </td>
+                                            <td rowspan="2" style="height:100%">
+                                                @Html.TextBoxFor(model => model.JobWorkPaymentDetails.TotalCash, new { id = "TotalCash", @class = "form-control", @style = "text-align:center; width:100%", @disabled="disabled"})
+                                            </td>
+                                            <td></td>
+                                        </tr>
+
+                                        <tr>
+                                            <td><b>&nbsp;&nbsp;Rupees:</b>&nbsp;&nbsp;&nbsp;</td>
+                                            <td>
+                                                <input type="text" id="Amt1" name="Amt1" value="@Model.JobWorkPaymentDetails.Cash_1000_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align: center; width: 100%" disabled="disabled"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="Amt2" name="Amt2" value="@Model.JobWorkPaymentDetails.Cash_500_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align: center; width: 100%" disabled="disabled"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="Amt3" name="Amt3" value="@Model.JobWorkPaymentDetails.Cash_100_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align: center; width: 100%" disabled="disabled"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="Amt4" name="Amt4" value="@Model.JobWorkPaymentDetails.Cash_50_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align: center; width: 100%" disabled="disabled"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="Amt5" name="Amt5" value="@Model.JobWorkPaymentDetails.Cash_20_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align: center; width: 100%" disabled="disabled"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="Amt6" name="Amt6" value="@Model.JobWorkPaymentDetails.Cash_10_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align: center; width: 100%" disabled="disabled"/>
+                                            </td>
+                                            <td>
+                                                <input type="text" id="Amt7" name="Amt7" value="@Model.JobWorkPaymentDetails.Cash_1_Amt" placeholder="0.00" class="form-control" autocomplete="off" style="text-align: center; width: 100%" disabled="disabled"/>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td></td>
+                                        </tr>
+
+                                    </tbody>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+
+
+        <tr>
+            <td>
+                <div style="height: 3px" class="form-group"></div>
+            </td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </table>
+</div>

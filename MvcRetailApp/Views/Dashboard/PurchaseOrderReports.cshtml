@@ -1,0 +1,95 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PurchaseOrderReports";
+}
+@{
+    string EmpDesignation = (string)TempData["EmployeeDesignation"];
+    TempData["EmployeeDesignation"] = EmpDesignation;
+    string EmpDepartment = (string)TempData["EmployeeDepartment"];
+    TempData["EmployeeDepartment"] = EmpDepartment;
+
+    string PendingPOCard = "No";
+    string PurchaseReturnCard = "No";
+
+    if (Model.userCredentialList != null && Model.userCredentialList.Any())
+    {
+        foreach (var data in Model.userCredentialList)
+        {
+            //for pending purchase order
+            if (data.AssignDashboardId == "D27")
+            {
+                PendingPOCard = "Yes";
+            }
+            //for purchase return
+            if (data.AssignDashboardId == "D28")
+            {
+                PurchaseReturnCard = "Yes";
+            }
+
+        }
+    }
+    
+
+    //List Of All Pending Poes
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || EmpDesignation == "PurchaseManager" || PendingPOCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-babypink">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-refresh fa-spin fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var pendingpoes = (IEnumerable<CodeFirstEntities.PurchaseOrderDetail>)TempData["PendingPoes"];
+        TempData["PendingPoes"] = pendingpoes;
+        <div class="huge">@pendingpoes.Count()</div>
+                        }
+                        <div>Pending Poes</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="pendingPoList()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    
+    //Purchase Returns Created In Current Date
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || PurchaseReturnCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-babypink">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-print fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var purchasereturns = (IEnumerable<CodeFirstEntities.PurchaseReturn>)TempData["PurchaseReturns"];
+        TempData["PurchaseReturns"] = purchasereturns;
+        <div class="huge">@purchasereturns.Count()</div>
+                        }
+                        <div>Purchase Return</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="PurchaseReturnByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+}

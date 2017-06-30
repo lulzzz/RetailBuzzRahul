@@ -1,0 +1,340 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PrintPendingTemporaryCashMemos";
+}
+
+
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+
+
+
+<table style="border: 1px double; width: 100%;">
+    <tr>
+        <td>
+            <table style="width: 100%">
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px;" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <label><b>A To Z DADAR T.T.</b></label><br />
+                        <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center">
+                        <label style="font-size: x-large;"><b>Provision Cash Memo</b></label>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table style="border: 1px double; width: 100%">
+
+                <tr>
+                    <td style="width: 32%">
+                        @{
+                            if (Model.TemporaryCashMemoDetails.ClientName != null)
+                            {
+                            <label style="font-size: larger; font-weight: bold">Client Details:</label><br />
+                            <label><b>Name: &nbsp</b></label>
+                                if (Model.TemporaryCashMemoDetails.ClientName != "Customer")
+                                {
+                                    @Html.DisplayFor(model => model.TemporaryCashMemoDetails.ClientName)
+                                }
+                            <br />
+                            <label><b>Address: &nbsp</b></label>@Html.DisplayFor(model => model.TemporaryCashMemoDetails.ClientAddress)<br />
+                            <label><b>Contact Number: &nbsp</b></label>@Html.DisplayFor(model => model.TemporaryCashMemoDetails.ClientContact)<br />
+                            <label><b>Email : &nbsp</b></label>@Html.DisplayFor(model => model.TemporaryCashMemoDetails.ClientEmail)<br />
+                            }}
+                    </td>
+                    <td style="width: 34%; border-left: 1px solid; border-right: 1px solid;">
+                        <table class="" style="width: 100%;">
+                            <tr>
+                                <td>
+                                    <label style="font-size: large; font-weight: bold">Sales Person Details:</label></td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label><b>Name: &nbsp</b></label>@Html.DisplayFor(model => model.TemporaryCashMemoDetails.SalesPersonName)</td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="height: 30px"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                    <td style="width: 32%;">
+                        <table class="" style="width: 100%;">
+                            <tr>
+                                <td><b>Date: &nbsp</b></td>
+                                <td>
+                                    @{ var date = @Html.DisplayFor(model => model.TemporaryCashMemoDetails.Date); }
+                                    <label id="date" style="font-weight: normal">@date</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td><b>Retail No.: &nbsp</b></td>
+                                <td>
+                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.TemporaryCashMemoDetails.TempCashMemoNo)</label>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <div style="height: 30px"></div>
+                                </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div style="height: 15px"></div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label style="font-size: large"><b>Item Details</b></label>
+            <div class="form-group row">
+                <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">
+                                <label>S.No.</label></th>
+                            <th style="text-align: center">
+                                <label>Barcode</label></th>
+                            <th style="text-align: center">
+                                <label>Item</label></th>
+                            <th style="text-align: center">
+                                <label>Description</label></th>
+                            <th style="text-align: center">
+                                <label>Unit</label></th>
+                            <th style="text-align: center">
+                                <label>Quantity</label></th>
+                            <th style="text-align: center">
+                                <label>
+                                    Rate<br />
+                                    (<i class="fa fa-rupee"></i>)</label></th>
+                            <th style="text-align: center">
+                                <label>
+                                    Disc<br />
+                                    (<i class="fa fa-inr"></i>)</label></th>
+                            <th style="text-align: center">
+                                <label>
+                                    Disc<br />
+                                    (%)</label></th>
+                            <th style="text-align: center">
+                                <label>
+                                    Amount<br />
+                                    (<i class="fa fa-rupee"></i>)</label></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            if (Model.TemporaryCashMemoItemList != null && Model.TemporaryCashMemoItemList.Any())
+                            {
+                                int count = 1;
+                                foreach (var data in Model.TemporaryCashMemoItemList)
+                                {
+                                    string barcode = data.Barcode;
+                                    var itemamount = "ItemAmount" + count;
+                                    var rate = Convert.ToDouble(@data.SellingPrice).ToString("#,###.00##");
+                                    var amount = Convert.ToDouble(data.Quantity * data.MRP).ToString("#,###.00##");
+                                    var discountpercent = Convert.ToDouble(@data.DiscountPercent).ToString("#,###.00##");
+                                    var discountrupees = (data.MRP * data.Quantity) * data.DiscountPercent / 100;
+                                    amount = Convert.ToDouble((data.MRP * data.Quantity) - discountrupees).ToString("#,###.00##");
+                            <tr>
+                                <td>
+                                    <label style="font-weight: normal">&nbsp;@count</label>
+                                </td>
+                                <td style="text-align: center">
+                                    @if (barcode != null)
+                                    {
+                                        <img src="../../Images/@barcode" style="width:150px;height:40px">
+                                    }
+                                    else
+                                    {
+                                        <label style="font-weight: normal">----</label>
+                                    }
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">&nbsp;@data.ItemName</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">&nbsp;@data.Description</label>
+                                </td>
+                                <td style="text-align: left">
+                                    <label style="font-weight: normal">@data.Unit&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@data.Quantity&nbsp;</label>
+                                </td>
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal">@rate&nbsp;</label>
+                                </td>
+
+                                @{
+                                   
+                                    if (discountrupees != 0)
+                                    {
+                                    <td style="text-align: right">
+                                        <label style="font-weight: normal">@discountrupees&nbsp;</label>
+                                    </td>     
+                                    }
+                                    else
+                                    {
+                                    <td style="text-align: center">
+                                        <label style="font-weight: normal">--</label>
+                                    </td>
+                                    }
+                                }
+
+                                @{
+                                    if (discountpercent != ".00")
+                                    {
+                                    <td style="text-align: right">
+                                        <label style="font-weight: normal">@discountpercent&nbsp;</label>
+                                    </td>     
+                                    }
+                                    else
+                                    {
+                                    <td style="text-align: center">
+                                        <label style="font-weight: normal">--</label>
+                                    </td>
+                                    }
+                                }
+
+                                <td style="text-align: right">
+                                    <label style="font-weight: normal" id="@itemamount">@amount&nbsp;</label>
+                                </td>
+                            </tr>
+                                    count++;
+                                }
+                            <input type="hidden" id="ItemCount" name="ItemCount" value="@count"/>
+                            }
+                        }
+
+                    </tbody>
+                </table>
+
+                @{
+                    var totalamount = Convert.ToDouble(Model.TemporaryCashMemoDetails.TotalAmount).ToString("#,###.00##");
+                    var advancepayment = Convert.ToDouble(Model.TemporaryCashMemoDetails.Payment).ToString("#,###.00##");
+                    var grandtotal = Convert.ToDouble(Model.TemporaryCashMemoDetails.GrandTotal).ToString("#,###.00##");
+                    var totaltaxtotal = Convert.ToDouble(Model.TemporaryCashMemoDetails.TotalTaxAmount).ToString("#,###.00##");
+                }
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table style="float: right">
+                <tr>
+                    <td style="text-align: right">
+                        <label style="font-size: 18px;"><b>Total Amount : &nbsp</b></label></td>
+                    <td style="float: right"><span style="font-size: 20px; font-weight: bold" id="Total_Amount"><i class="fa fa-inr"></i>@totalamount</span></td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: right">
+                        <label style="font-size: 18px"><b>Payment : &nbsp</b></label></td>
+                    <td style="float: right"><span id="Payment" style="font-size: 20px; font-weight: bold"><i class="fa fa-inr"></i>@advancepayment</span></td>
+                </tr>
+
+                <tr>
+                    <td style="text-align: right">
+                        <label style="font-size: 18px;"><b>Grand Total : &nbsp</b></label></td>
+                    <td style="float: right"><span id="Grand_Total" style="font-size: 20px; font-weight: bold"><i class="fa fa-inr"></i>@grandtotal</span></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <label style="font-size: 19px"><b>In Words :</b></label>
+            &nbsp;&nbsp;<label id="Inwords" style="font-size: 18px"><b></b></label>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div style="height: 10px"></div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div style="float: right; text-align: right">
+                <label style="font-size: 17px; font-weight: bold; margin-right: 10px">Prepared By,</label><br />
+                <div style="margin-right: 10px">@Html.DisplayFor(model => model.TemporaryCashMemoDetails.PreparedBy)</div>
+                <br />
+            </div>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <div style="background-color: GrayText; width: 100%; height: 1px"></div>
+            <br />
+            <label style="font-size: large"><b>Remarks:</b></label>
+        </td>
+    </tr>
+
+    <tr>
+        <td><b>Company's CST No.&nbsp;:</b>
+            27170291194C w.e.f 1.04.2006</td>
+    </tr>
+
+    <tr>
+        <td><b>Company's Service Tax No.&nbsp;:</b>
+            AAACO4131DST001</td>
+    </tr>
+    <tr>
+        <td><b>Company's PAN&nbsp;:</b>
+            AAACO4131D</td>
+    </tr>
+
+
+    <tr>
+        <td>
+            <table border="0">
+                <tr>
+                    <td style="width: 70%">
+                        <label style="font-weight: normal"><b>Declaration:</b></label><br />
+                        <label style="font-size: small">This PO is made in response to a written proposal or other form of offer from Seller, and if Seller’s proposal or other form of offer contains terms additional to or different from this PO, then BUYER’S ACCEPTANCE OF SELLER’S PROPOSAL OR OFFER IS HEREBY EXPRESSLY CONDITIONED UPON SELLER’S ASSENT TO ALL THE TERMS AND CONDITIONS CONTAINED IN THIS PO.</label>
+                    </td>
+                    <td style="width: 30%">
+                        <table style="border: 1px double; width: 100%; padding-top: 12px">
+                            <tr style="height: 40px; float: left; font-size: small">
+                                <td>Authorised Signatory: </td>
+                            </tr>
+                        </table>
+                    </td>
+                </tr>
+            </table>
+
+
+        </td>
+    </tr>
+</table>
+

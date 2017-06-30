@@ -1,0 +1,1072 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "NewItem";
+}
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<!-- Plugins - Via CDN -->
+<script type ="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+@*GET SUBCATEGORY BY CATEGORY*@
+<script type="text/javascript">
+    $(function () {
+        $("#ItemDetails_itemCategory").autocomplete({
+            source: "/Item/GetCategory",
+            minLength: 1,
+            select: function (event, ui) {
+                document.getElementById("DDLSubCat").disabled = false;
+                document.getElementById("itemname").disabled = false;
+
+                if (ui.item) {
+                    $("#ItemDetails_itemCategory").val(ui.item.value);
+                    var idModel = document.getElementById("ItemDetails_itemCategory").value;
+                    $.getJSON("/Item/LoadSubCategoryByCategory", { id: idModel },
+           function (stateData) {
+               var select = $("#DDLSubCat");
+               select.empty();
+               select.append($('<option/>', {
+                   value: "",
+                   text: "Select SubCategory"
+               }));
+               $.each(stateData, function (index, itemData) {
+
+                   select.append($('<option/>', {
+                       value: itemData.Value,
+                       text: itemData.Text
+                   }));
+               });
+           });
+                    $("#ItemDetails_itemCategory").change(function () {
+                        if (document.getElementById("ItemDetails_itemCategory").value == "") {
+
+                            var select = $("#DDLSubCat");
+                            select.empty();
+                            select.append($('<option/>', {
+                                value: "",
+                                text: "Select SubCategory"
+                            }));
+                            document.getElementById("CreateRow").innerHTML = "";
+                            document.getElementById("Save").style.display = "none";
+                        }
+                    });
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#DDLSubCat").change(function () {
+            var subcat = document.getElementById("DDLSubCat").value;
+            $.getJSON("/PurchaseOrder/GetSubCatTax", { SubCategory: subcat },
+                    function (data) {
+                        document.getElementById("SubCatTax").value = data;
+                    });
+        });
+    });
+</script>
+
+@*CALCULATE SELLINGPRICE USING MRP*@
+<script type="text/javascript">
+    function CalcSellingPrice(id) {
+        var costprice = "CostPrice" + id;
+        var sellingprice = "SellingPrice" + id;
+        var mrp = "MRP" + id;
+
+        var tax = document.getElementById("SubCatTax").value;
+        var costpriceval = +document.getElementById(costprice).value;
+        var mrpval = +document.getElementById(mrp).value;
+
+        var costprisetax = costpriceval * tax / 100;
+        var costprisetaxinper = costpriceval / (costpriceval + costprisetax) * tax;
+        var sellingpriceval = mrpval - (mrpval * costprisetaxinper / 100);
+        document.getElementById(sellingprice).value = sellingpriceval.toFixed(2);
+    }
+</script>
+
+@*CALCULATE MRP USING SELLINGPRICE*@
+<script type="text/javascript">
+    function CalcMRP(id) {
+        var costprice = "CostPrice" + id;
+        var sellingprice = "SellingPrice" + id;
+        var mrp = "MRP" + id;
+
+        var tax = document.getElementById("SubCatTax").value;
+        var costpriceval = +document.getElementById(costprice).value;
+        var sellingpriceval = +document.getElementById(sellingprice).value;
+
+        var taxonsellprice = sellingpriceval * tax / 100;
+        var mrpval = sellingpriceval + taxonsellprice;
+        document.getElementById(mrp).value = mrpval.toFixed(2);
+    }
+</script>
+
+
+@*DISPLAY DETAILS ON ITEM CHANGE EVENT*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var rowId = 1;
+        $("#itemname").change(function () {
+            document.getElementById("ItemDetails_itemCategory").disabled = true;
+            document.getElementById("DDLSubCat").disabled = true;
+            document.getElementById("itemname").disabled = true;
+
+            $("#CreateRow").empty();
+            var unorderedList = $("#CreateRow");
+            var row = "row" + rowId;
+            var item = "Item" + rowId;
+            var select = "TypeOfMaterial" + rowId;
+            var colorCodeSelect = "ColorCode" + rowId;
+            var designname = "designName" + rowId;
+            var selectbrand = "BrandList" + rowId;
+            var typeOfMaterial = document.createElement("SELECT");
+            var colorCode = document.createElement("SELECT");
+            var designCode = "designCodeData" + rowId;
+            var unit = "Unit" + rowId;
+            var unitnumbertype = "NumberType" + rowId;
+            var brand = document.createElement("SELECT");
+            var idModel1 = $(this).val();
+            var category = document.getElementById("ItemDetails_itemCategory").value;
+
+            //GET TYPE OF MATERIAL DDL
+            $.getJSON("/Item/LoadTypeOfMaterial", {},
+            function (stateData) {
+                typeOfMaterial.className = "form-control";
+                typeOfMaterial.id = "materialType" + rowId;
+                typeOfMaterial.name = "materialType" + rowId;
+                var myoption1 = document.createElement("option");
+                myoption1.text = "Select Type Of Material";
+                myoption1.value = 0;
+                typeOfMaterial.appendChild(myoption1);
+                $.each(stateData, function (index, itemData) {
+                    var myoption = document.createElement("option");
+                    myoption.text = itemData.Text;
+                    myoption.value = itemData.Value;
+                    typeOfMaterial.appendChild(myoption);
+                });
+            });
+
+            //GET UNIT DDL
+            $.getJSON("/PurchaseOrder/GetUnits",
+            function (stateData) {
+                var select = $("#" + unit);
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select Unit"
+                }));
+                $.each(stateData, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+
+            //GET BRAND LIST
+            $.getJSON("/Item/LoadBrandList", {},
+                           function (stateData) {
+                               brand.className = "form-control";
+                               brand.id = "Brand" + rowId;
+                               brand.name = "Brand" + rowId;
+                               var myoption1 = document.createElement("option");
+                               myoption1.text = "Select Brand";
+                               myoption1.value = "";
+                               brand.appendChild(myoption1);
+                               $.each(stateData, function (index, itemData) {
+                                   var myoption = document.createElement("option");
+                                   myoption.text = itemData.Text;
+                                   myoption.value = itemData.Value;
+                                   brand.appendChild(myoption);
+                               });
+                           });
+
+            //GET COLOR DDL
+            $.getJSON("/Item/LoadColorCode", {},
+            function (stateData) {
+                colorCode.className = "form-control";
+                colorCode.id = "colorCodeData" + rowId;
+                colorCode.name = "colorCodeData" + rowId;
+                var myoption1 = document.createElement("option");
+                myoption1.text = "Select Color Code";
+                myoption1.value = 0;
+                colorCode.appendChild(myoption1);
+                $.each(stateData, function (index, itemData) {
+                    var myoption = document.createElement("option");
+                    myoption.text = itemData.Text;
+                    myoption.value = itemData.Value;
+                    colorCode.appendChild(myoption);
+                });
+            });
+
+            //GET DESIGN NAME DDL
+            $.getJSON("/Item/LoadDesignCode", { type: document.getElementById("DDLSubCat").value },
+            function (stateData) {
+                var select = $("#" + designCode);
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select Design"
+                }));
+                $.each(stateData, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text
+                    }));
+                });
+            });
+
+            unorderedList.append(
+            "<div class='panel' id='" + row + "'> " +
+            "<div class='form-group'></div><div class='row'><div class='col-md-12 col-lg-12'>" +
+            "<div class='form-group col-md-3 col-lg-3'><label>Item Type<i style='color:red'>*</i></label><select id='ItemType" + rowId + "' name='ItemType" + rowId + "' class='form-control'><option value=''>Select Type Of Item</option><option value='Inventory'>Inventory</option><option value='Non-Inventory'>Non-Inventory</option></select></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><label>Item Description</label><textarea rows='1' placeholder='Item Description' class='form-control' name='itemDescription" + rowId + "' id='itemDescription" + rowId + "'/></div>" +
+            "<div class='form-group col-md-3 col-lg-3' id='" + select + "'><label>Type Of Material<i style='color:red'>*</i></label></div>" +
+            "<div class='form-group col-md-3 col-lg-3' id='" + colorCodeSelect + "'><label>Color Code<i style='color:red'>*</i></label></div>" +
+            "</div></div>" +
+
+            "<div class='row'><div class='col-md-12 col-lg-12'>" +
+            "<div class='form-group col-md-3 col-lg-3'><label>Design Code<i style='color:red'>*</i></label><select id='" + designCode + "' name='" + designCode + "' class='form-control'><option value=''>Select Design</option></select><input type='hidden' id='" + designname + "' name='" + designname + "'></input></div>" +
+            //"<div class='form-group col-md-3 col-lg-3'><label>Brand Name<i style='color:red'>*</i></label><select id='BrandName" + rowId + "' name='BrandName" + rowId + "' class='form-control'><option value='0'>Select Brand</option><option value='BombayDyeing'>Bombay Dyeing</option><option value='Portico'>Portico</option><option value='LouisPhillipse'>Louis Phillipse</option><option value='AllenSolly'>Allen Solly</option><option value='Provogue'>Provogue</option><option value='VanHeusen'>Van Heusen</option><option value='TommyHilFiger'>Tommy HilFiger</option></select></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><label>Brand<i style='color:red'>*</i></label><div id='" + selectbrand + "' name='" + selectbrand + "' ></div></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><label>Unit<i style='color:red'>*</i></label><select id='" + unit + "' name='" + unit + "' class='form-control' onchange='GetUnitDecimalType(" + rowId + ")'><option value=''>Select Unit</option></select><input type='hidden' id='" + unitnumbertype + "' name='" + unitnumbertype + "'/></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><label>Size<i style='color:red'>*</i></label><input type='text' placeholder='Size' class='form-control' name='Size" + rowId + "' id='Size" + rowId + "' onkeypress='return DontAllowWhiteSpace(event)' /></div>" +
+            "</div></div>" +
+
+            "<div class='row'><div class='col-md-12 col-lg-12'>" +
+             "<div class='form-group col-md-2 col-lg-2'><label>Cost Price<i style='color:red'>*</i></label><input type='text' placeholder='Cost Price' class='form-control' name='CostPrice" + rowId + "' id='CostPrice" + rowId + "' onkeypress='return AllowNumbers(event)'/></div>" +
+            "<div class='form-group col-md-2 col-lg-2'><label>Selling Price<i style='color:red'>*</i></label><input type='text' placeholder='Selling Price' class='form-control' name='SellingPrice" + rowId + "' id='SellingPrice" + rowId + "' onchange='CalcMRP(" + rowId + ");' onkeypress='return AllowNumbers(event)'/></div>" +
+            "<div class='form-group col-md-2 col-lg-2'><label>M.R.P.<i style='color:red'>*</i></label><input type='text' placeholder='M.R.P.' class='form-control' name='MRP" + rowId + "' id='MRP" + rowId + "' onchange='CalcSellingPrice(" + rowId + ");' onkeypress='return AllowNumbers(event)'/></div>" +
+            "<div class='form-group col-md-3 col-lg-3'><label>Commission In Percent<i style='color:red'>*</i></label><input type='text' placeholder='Commission In Percent' class='form-control' name='CommissionInPercent" + rowId + "' id='CommissionInPercent" + rowId + "' value='0' onkeypress='return AllowNumbers(event)' onchange='CalculateComm(" + rowId + ")' autocomplete='off'/></div>" +
+                "<div class='form-group col-md-3 col-lg-3'><label>Commission In Rupees<i style='color:red'>*</i></label><input type='text' placeholder='Commission In Rupees' class='form-control' name='CommissionInRupees" + rowId + "' id='CommissionInRupees" + rowId + "' value='0' onkeypress='return AllowNumbers(event)' onchange='CalculateComm(" + rowId + ")' autocomplete='off'/></div>" +
+            "</div></div></div>"
+            );
+
+            $("#hdnRowCount").val(rowId);
+            var finalList = document.getElementById(select);
+            finalList.appendChild(typeOfMaterial);
+            var finalList1 = document.getElementById(colorCodeSelect);
+            finalList1.appendChild(colorCode);
+            var FinalBrandList = document.getElementById(selectbrand);
+            FinalBrandList.appendChild(brand);
+
+            document.getElementById("Save").style.display = "inline";
+
+            //GET DESIGN NAME FROM DESIGN CODE
+            $("#" + designCode).change(function () {
+                var CODE = document.getElementById(designCode).value;
+                $.getJSON("/Item/GetDesignDetails", { code: CODE },
+                    function (data) {
+                        $("#" + designname).val(data);
+                    });
+            });
+        });
+    });
+</script>
+
+@*DYNAMIC ROW CREATION ON ENTER BUTTON*@
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+
+            if ($("#DDLSubCat").val() != "" && $("#item").val() != "") {
+
+                var rowId = document.getElementById("hdnRowCount").value;
+
+                //CHECK ALL DATA IS FILL OR NOT
+                var row = "row" + rowId;
+                var typeOfMaterial = "materialType" + rowId;
+                var colorCode = "colorCodeData" + rowId;
+                var designCode = "designCodeData" + rowId;
+                var designname = "designName" + rowId;
+                var description = "itemDescription" + rowId;
+                var size = "Size" + rowId;
+                var unit = "Unit" + rowId;
+                var brand = "Brand" + rowId;
+                var type = "ItemType" + rowId;
+                var costprice = "CostPrice" + rowId;
+                var sellingprice = "SellingPrice" + rowId;
+                var mrp = "MRP" + rowId;
+                var CommissionInPercent = "CommissionInPercent" + rowId;
+                var CommissionInRupees = "CommissionInRupees" + rowId;
+
+
+                if (document.getElementById(costprice) != null) {
+
+                    if ($("#" + type).val() == "") {
+                        alertbox("Please Select The Item Type");
+                        return false;
+                    }
+
+                    //If previous row is inventory then check all the validations
+                    if (document.getElementById(type).value == "Inventory") {
+                        if ($("#" + unit).val() == "") {
+                            alertbox("Please Select The Unit")
+                            return false;
+                        }
+                        else if ($("#" + size).val() == "") {
+                            alertbox("Please Enter The Size");
+                            return false;
+                        }
+                        else if ($("#" + typeOfMaterial).val() == "") {
+                            alertbox("Please Select The Type Of Material");
+                            return false;
+                        }
+                        else if ($("#" + colorCode).val() == "") {
+                            alertbox("Please Select The Color Code");
+                            return false;
+                        }
+                        else if ($("#" + designCode).val() == "") {
+                            alertbox("Please Select The Design Code");
+                            return false;
+                        }
+                        else if ($("#" + brand).val() == "") {
+                            alertbox("Please Select The Brand Name");
+                            return false;
+                        }
+                        else if ($("#" + costprice).val() == "") {
+                            alertbox("Please Enter The Cost Price");
+                            return false;
+                        }
+                        else if ($("#" + sellingprice).val() == "") {
+                            alertbox("Please Enter The Selling Price");
+                            return false;
+                        }
+                        else if ($("#" + mrp).val() == "") {
+                            alertbox("Please Enter The MRP");
+                            return false;
+                        }
+                        else if ($("#" + CommissionInRupees).val() == "" && $("#" + CommissionInPercent).val() == "") {
+                            alertbox("Please Enter The Commission");
+                            return false;
+                        }
+                        else {
+                            //CHECK IF SAME ITEM IS ALREADY CREATED THEN GET ALERT 
+                            var counter = 0;
+                            for (i = 1; i < rowId; i++) {
+                                var MATERIAL = "materialType" + i;
+                                var COLOR = "colorCodeData" + i;
+                                var COSTPRICE = "CostPrice" + i;
+                                var BRAND = "Brand" + i;
+                                var SIZE = "Size" + i;
+                                var DESIGN = "designCodeData" + i;
+                                var UNIT = "Unit" + i;
+
+                                var material = document.getElementById("materialType" + rowId).value;
+                                var color = document.getElementById("colorCodeData" + rowId).value;
+                                var costprice = document.getElementById("CostPrice" + rowId).value;
+                                var brand = document.getElementById("Brand" + rowId).value;
+                                var size = document.getElementById("Size" + rowId).value;
+                                var design = document.getElementById("designCodeData" + rowId).value;
+                                var unit = document.getElementById("Unit" + rowId).value;
+
+                                //IF ROW IS DELETED THEN CURRENT ITEM WON'T GET COMPARED
+                                if ($("#" + MATERIAL).val() == material && $("#" + COLOR).val() == color && $("#" + COSTPRICE).val() == costprice && $("#" + BRAND).val() == brand && $("#" + SIZE).val() == size && $("#" + DESIGN).val() == design && $("#" + UNIT).val() == unit) {
+                                    alert("The Item Is Already Created..");
+                                    counter = i;
+                                    break;
+                                }
+                            }
+
+                            if (counter == 0) {
+
+                                var material = document.getElementById("materialType" + rowId).value;
+                                var color = document.getElementById("colorCodeData" + rowId).value;
+                                var costprice = document.getElementById("CostPrice" + rowId).value;
+                                var brand = document.getElementById("Brand" + rowId).value;
+                                var size = document.getElementById("Size" + rowId).value;
+                                var design = document.getElementById("designCodeData" + rowId).value;
+                                var unit = document.getElementById("Unit" + rowId).value;
+                                var CAT = document.getElementById("ItemDetails_itemCategory").value;
+                                var SUBCAT = document.getElementById("DDLSubCat").value;
+
+                                //CHECK ITEM IS ALREADY CREATED IN THE DATABASE
+                                $.getJSON("/Item/GetAllItemDetails", { Material: material, Color: color, Costprice: costprice, Brand: brand, Size: size, Design: design, Unit: unit, Cat: CAT, SubCat: SUBCAT },
+                               function (stateData) {
+                                   if (stateData == "Present") {
+                                       alert("The Item Is Already Created..")
+                                   }
+                                   else {
+                                       //DISABLED THE PREVIOUS ROW
+                                       var row = "row" + rowId;
+                                       var typeOfMaterial = "materialType" + rowId;
+                                       var colorCode = "colorCodeData" + rowId;
+                                       var designCode = "designCodeData" + rowId;
+                                       var designname = "designName" + rowId;
+                                       var description = "itemDescription" + rowId;
+                                       var size = "Size" + rowId;
+                                       var unit = "Unit" + rowId;
+                                       var type = "ItemType" + rowId;
+                                       var costprice = "CostPrice" + rowId;
+                                       var sellingprice = "SellingPrice" + rowId;
+                                       var mrp = "MRP" + rowId;
+                                       var brand = "Brand" + rowId;
+                                       var CommissionInPercent = "CommissionInPercent" + rowId;
+                                       var CommissionInRupees = "CommissionInRupees" + rowId;
+
+
+                                       document.getElementById(typeOfMaterial).disabled = true;
+                                       document.getElementById(colorCode).disabled = true;
+                                       document.getElementById(designCode).disabled = true;
+                                       document.getElementById(description).disabled = true;
+                                       document.getElementById(size).disabled = true;
+                                       document.getElementById(unit).disabled = true;
+                                       document.getElementById(type).disabled = true;
+                                       document.getElementById(costprice).disabled = true;
+                                       document.getElementById(sellingprice).disabled = true;
+                                       document.getElementById(mrp).disabled = true;
+                                       document.getElementById(brand).disabled = true;
+                                       document.getElementById(CommissionInPercent).disabled = true;
+                                       document.getElementById(CommissionInRupees).disabled = true;
+                                       GenerateDynamicRows(rowId);
+                                   }
+                               });
+                            }
+                        }
+                    }
+                    else {
+                        if ($("#" + unit).val() == "") {
+                            alertbox("Please Select The Unit");
+                        }
+                        else {
+                            //CHECK IF SAME ITEM IS ALREADY CREATED THEN GET ALERT 
+                            var counter = 0;
+                            for (i = 1; i < rowId; i++) {
+                                var MATERIAL = "materialType" + i;
+                                var COLOR = "colorCodeData" + i;
+                                var COSTPRICE = "CostPrice" + i;
+                                var BRAND = "Brand" + i;
+                                var SIZE = "Size" + i;
+                                var DESIGN = "designCodeData" + i;
+                                var UNIT = "Unit" + i;
+
+                                var material = document.getElementById("materialType" + rowId).value;
+                                var color = document.getElementById("colorCodeData" + rowId).value;
+                                var costprice = document.getElementById("CostPrice" + rowId).value;
+                                var brand = document.getElementById("Brand" + rowId).value;
+                                var size = document.getElementById("Size" + rowId).value;
+                                var design = document.getElementById("designCodeData" + rowId).value;
+                                var unit = document.getElementById("Unit" + rowId).value;
+
+                                //IF ROW IS DELETED THEN CURRENT ITEM WON'T GET COMPARED
+                                if ($("#" + MATERIAL).val() == material && $("#" + COLOR).val() == color && $("#" + COSTPRICE).val() == costprice && $("#" + BRAND).val() == brand && $("#" + SIZE).val() == size && $("#" + DESIGN).val() == design && $("#" + UNIT).val() == unit) {
+                                    alert("The Item Is Already Created..");
+                                    counter = i;
+                                    break;
+                                }
+                            }
+
+                            if (counter == 0) {
+
+                                var material = document.getElementById("materialType" + rowId).value;
+                                var color = document.getElementById("colorCodeData" + rowId).value;
+                                var costprice = document.getElementById("CostPrice" + rowId).value;
+                                var brand = document.getElementById("Brand" + rowId).value;
+                                var size = document.getElementById("Size" + rowId).value;
+                                var design = document.getElementById("designCodeData" + rowId).value;
+                                var unit = document.getElementById("Unit" + rowId).value;
+                                var CAT = document.getElementById("ItemDetails_itemCategory").value;
+                                var SUBCAT = document.getElementById("DDLSubCat").value;
+
+                                //CHECK ITEM IS ALREADY CREATED IN THE DATABASE
+                                $.getJSON("/Item/GetAllItemDetails", { Material: material, Color: color, Costprice: costprice, Brand: brand, Size: size, Design: design, Unit: unit, Cat: CAT, SubCat: SUBCAT },
+                               function (stateData) {
+                                   if (stateData == "Present") {
+                                       alert("The Item Is Already Created..")
+                                   }
+                                   else {
+                                       //DISABLED THE PREVIOUS ROW
+                                       var row = "row" + rowId;
+                                       var typeOfMaterial = "materialType" + rowId;
+                                       var colorCode = "colorCodeData" + rowId;
+                                       var designCode = "designCodeData" + rowId;
+                                       var designname = "designName" + rowId;
+                                       var description = "itemDescription" + rowId;
+                                       var size = "Size" + rowId;
+                                       var unit = "Unit" + rowId;
+                                       var type = "ItemType" + rowId;
+                                       var costprice = "CostPrice" + rowId;
+                                       var sellingprice = "SellingPrice" + rowId;
+                                       var mrp = "MRP" + rowId;
+                                       var brand = "Brand" + rowId;
+                                       var CommissionInPercent = "CommissionInPercent" + rowId;
+                                       var CommissionInRupees = "CommissionInRupees" + rowId;
+
+                                       document.getElementById(typeOfMaterial).disabled = true;
+                                       document.getElementById(colorCode).disabled = true;
+                                       document.getElementById(designCode).disabled = true;
+                                       document.getElementById(description).disabled = true;
+                                       document.getElementById(size).disabled = true;
+                                       document.getElementById(unit).disabled = true;
+                                       document.getElementById(type).disabled = true;
+                                       document.getElementById(costprice).disabled = true;
+                                       document.getElementById(sellingprice).disabled = true;
+                                       document.getElementById(mrp).disabled = true;
+                                       document.getElementById(brand).disabled = true;
+                                       document.getElementById(CommissionInPercent).disabled = true;
+                                       document.getElementById(CommissionInRupees).disabled = true;
+                                       GenerateDynamicRows(rowId);
+                                   }
+                               });
+                            }
+                        }
+                    }
+                }
+                else {
+                    GenerateDynamicRows(rowId);
+                }
+            }
+            else {
+                alert("Please Fill Item Name..");
+            }
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    function GenerateDynamicRows(rowId) {
+        rowId = +rowId + 1;
+        var unorderedList = $("#CreateRow");
+        var row = "row" + rowId;
+        var select = "TypeOfMaterial" + rowId;
+        var colorCodeSelect = "ColorCode" + rowId;
+        var designname = "designName" + rowId;
+        var selectunit = "UnitList" + rowId;
+        var selectbrand = "BrandList" + rowId;
+        var unit = document.createElement("SELECT");
+        var type = "ItemType" + rowId;
+        var unitnumbertype = "NumberType" + rowId;
+        var typeOfMaterial = document.createElement("SELECT");
+        var colorCode = document.createElement("SELECT");
+        var brand = document.createElement("SELECT");
+        var designCode = "designCodeData" + rowId;
+        var category = document.getElementById("ItemDetails_itemCategory").value;
+
+        //GET TYPE OF MATERIAL DDL
+        $.getJSON("/Item/LoadTypeOfMaterial", {},
+        function (stateData) {
+            typeOfMaterial.className = "form-control";
+            typeOfMaterial.id = "materialType" + rowId;
+            typeOfMaterial.name = "materialType" + rowId;
+            var myoption1 = document.createElement("option");
+            myoption1.text = "Select Type Of Material";
+            myoption1.value = "";
+            typeOfMaterial.appendChild(myoption1);
+            $.each(stateData, function (index, itemData) {
+                var myoption = document.createElement("option");
+                myoption.text = itemData.Text;
+                myoption.value = itemData.Value;
+                typeOfMaterial.appendChild(myoption);
+            });
+        });
+
+        //GET COLOR DDL
+        $.getJSON("/Item/LoadColorCode", {},
+        function (stateData) {
+            colorCode.className = "form-control";
+            colorCode.id = "colorCodeData" + rowId;
+            colorCode.name = "colorCodeData" + rowId;
+            var myoption1 = document.createElement("option");
+            myoption1.text = "Select Color Code";
+            myoption1.value = "";
+            colorCode.appendChild(myoption1);
+            $.each(stateData, function (index, itemData) {
+                var myoption = document.createElement("option");
+                myoption.text = itemData.Text;
+                myoption.value = itemData.Value;
+                colorCode.appendChild(myoption);
+            });
+        });
+
+        //GET DESIGN NAME DDL
+        $.getJSON("/Item/LoadDesignCode", { type: document.getElementById("DDLSubCat").value },
+        function (stateData) {
+            var select = $("#" + designCode);
+            select.empty();
+            select.append($('<option/>', {
+                value: "",
+                text: "Select Design"
+            }));
+            $.each(stateData, function (index, itemData) {
+                select.append($('<option/>', {
+                    value: itemData.Value,
+                    text: itemData.Text
+                }));
+            });
+
+        });
+
+        //GET BRAND LIST
+        $.getJSON("/Item/LoadBrandList", {},
+                       function (stateData) {
+                           brand.className = "form-control";
+                           brand.id = "Brand" + rowId;
+                           brand.name = "Brand" + rowId;
+                           var myoption1 = document.createElement("option");
+                           myoption1.text = "Select Brand";
+                           myoption1.value = "";
+                           brand.appendChild(myoption1);
+                           $.each(stateData, function (index, itemData) {
+                               var myoption = document.createElement("option");
+                               myoption.text = itemData.Text;
+                               myoption.value = itemData.Value;
+                               brand.appendChild(myoption);
+                           });
+                       });
+
+        //GET UNIT LIST
+        $.getJSON("/Item/LoadUnitList", {},
+                       function (stateData) {
+                           unit.className = "form-control";
+                           unit.id = "Unit" + rowId;
+                           unit.name = "Unit" + rowId;
+                           var myoption1 = document.createElement("option");
+                           myoption1.text = "Select Unit";
+                           myoption1.value = "";
+                           unit.appendChild(myoption1);
+                           $.each(stateData, function (index, itemData) {
+                               var myoption = document.createElement("option");
+                               myoption.text = itemData.Text;
+                               myoption.value = itemData.Value;
+                               unit.appendChild(myoption);
+                           });
+                       });
+
+        unorderedList.append(
+        "<div class='panel' id='" + row + "'> " +
+        "<div class='form-group'></div><div class='row'><div class='col-md-12 col-lg-12'>" +
+        "<div class='form-group col-md-3 col-lg-3'><label>Item Type<i style='color:red'>*</i></label><select id='" + type + "' name='" + type + "' class='form-control'><option value=''>Select Type Of Item</option><option value='Inventory'>Inventory</option><option value='Non-Inventory'>Non-Inventory</option></select></div>" +
+        "<div class='form-group col-md-3 col-lg-3'><label>Description</label><textarea rows='1' placeholder='Item Description' class='form-control' name='itemDescription" + rowId + "' id='itemDescription" + rowId + "' autocomplete='off'/></div>" +
+        "<div class='form-group col-md-3 col-lg-3' id='" + select + "'><label>Type Of Material<i style='color:red'>*</i></label></div>" +
+        "<div class='form-group col-md-3 col-lg-3' id='" + colorCodeSelect + "'><label>Color Code<i style='color:red'>*</i></label></div>" +
+        "</div></div>" +
+        "<div class='row'><div class='col-md-12 col-lg-12'>" +
+
+        "<div class=' form-group col-md-3 col-lg-3'><label>Design Code<i style='color:red'>*</i></label><select id='" + designCode + "' name='" + designCode + "' class='form-control'><option value=''>Select Design</option></select><input type='hidden' id='" + designname + "' name='" + designname + "'></input></div>" +
+        //"<div class='form-group col-md-3 col-lg-3'><label>Brand Name<i style='color:red'>*</i></label><select id='BrandName" + rowId + "' name='BrandName" + rowId + "' class='form-control'><option value=''>Select Brand</option><option value='BombayDyeing'>Bombay Dyeing</option><option value='Portico'>Portico</option><option value='LouisPhillipse'>Louis Phillipse</option><option value='AllenSolly'>Allen Solly</option><option value='Provogue'>Provogue</option><option value='VanHeusen'>Van Heusen</option><option value='TommyHilFiger'>Tommy HilFiger</option></select></div>" +
+        "<div class='form-group col-md-3 col-lg-3'><label>Brand<i style='color:red'>*</i></label><div id='" + selectbrand + "' name='" + selectbrand + "' ></div></div>" +
+        "<div class='form-group col-md-3 col-lg-3'><label>Unit<i style='color:red'>*</i></label><div id='" + selectunit + "' name='" + selectunit + "' onchange='GetUnitDecimalType(" + rowId + ")'><input type='hidden' id='" + unitnumbertype + "' name='" + unitnumbertype + "'/></div></div>" +
+        "<div class='form-group col-md-3 col-lg-3'><label>Size<i style='color:red'>*</i></label><input type='text' placeholder='Size' class='form-control' name='Size" + rowId + "' id='Size" + rowId + "' onkeypress='return DontAllowWhiteSpace(event)' autocomplete='off'/></div>" +
+        "</div></div>" +
+
+        "<div class='row'><div class='col-md-12 col-lg-12'>" +
+        "<div class='form-group col-md-2 col-lg-2'><label>Cost Price<i style='color:red'>*</i></label><input type='text' placeholder='Cost Price' class='form-control' name='CostPrice" + rowId + "' id='CostPrice" + rowId + "' onkeypress='return AllowNumbers(event)' autocomplete='off'/></div>" +
+        "<div class='form-group col-md-2 col-lg-2'><label>Selling Price<i style='color:red'>*</i></label><input type='text' placeholder='Selling Price' class='form-control' name='SellingPrice" + rowId + "' onchange='CalcMRP(" + rowId + ");' id='SellingPrice" + rowId + "' onkeypress='return AllowNumbers(event)' autocomplete='off'/></div>" +
+        "<div class='form-group col-md-2 col-lg-2'><label>M.R.P.<i style='color:red'>*</i></label><input type='text' placeholder='M.R.P.' class='form-control' name='MRP" + rowId + "' id='MRP" + rowId + "' onchange='CalcSellingPrice(" + rowId + ");' onkeypress='return AllowNumbers(event)' autocomplete='off'/></div>" +
+        "<div class='form-group col-md-3 col-lg-3'><label>Commission In Percent<i style='color:red'>*</i></label><input type='text' placeholder='Commission In Percent' class='form-control' name='CommissionInPercent" + rowId + "' id='CommissionInPercent" + rowId + "' value='0' onkeypress='return AllowNumbers(event)' onchange='CalculateComm(" + rowId + ")' autocomplete='off'/></div>" +
+        "<div class='form-group col-md-3 col-lg-3'><label>Commission In Rupees<i style='color:red'>*</i></label><input type='text' placeholder='Commission In Rupees' class='form-control' name='CommissionInRupees" + rowId + "' id='CommissionInRupees" + rowId + "' value='0' onkeypress='return AllowNumbers(event)' onchange='CalculateComm(" + rowId + ")' autocomplete='off'/></div>" +
+        //"<div class=' form-group col-md-6 col-lg-6'></div>" +
+        "</div></div>" +
+
+        "<div class='row'>" +
+        "<div class='col-md-12 col-lg-12'>" +
+        "<a href='#' onclick='DeleteRow(" + rowId + ")' class='fa fa-trash fa-lg' style='color:red; float:right'></a>" +
+        "</div></div></div>"
+        );
+
+        $("#hdnRowCount").val(rowId);
+        var finalList = document.getElementById(select);
+        finalList.appendChild(typeOfMaterial);
+        var finalList1 = document.getElementById(colorCodeSelect);
+        finalList1.appendChild(colorCode);
+        var FinalUnitList = document.getElementById(selectunit);
+        FinalUnitList.appendChild(unit);
+        var FinalBrandList = document.getElementById(selectbrand);
+        FinalBrandList.appendChild(brand);
+
+        document.getElementById("Save").style.display = "inline";
+
+        //GET DESIGN NAME FROM DESIGN CODE
+        $("#" + designCode).change(function () {
+            var CODE = document.getElementById(designCode).value;
+            if (CODE != "") {
+                $.getJSON("/Item/GetDesignDetails", { code: CODE },
+                    function (data) {
+                        $("#" + designname).val(data);
+                    });
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function GetUnitDecimalType(rowid) {
+        $.getJSON("/Item/GetUnitType", { unit: $("#Unit" + rowid).val() },
+            function (data) {
+                $("#NumberType" + rowid).val(data);
+            });
+    }
+</script>
+
+<script type="text/javascript">
+
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function CalculateComm(id) {
+
+        var CommissionInPercent = "CommissionInPercent" + id;
+        var CommissionInRupees = "CommissionInRupees" + id;
+        if ($("#" + CommissionInPercent).val() != "0") {
+            if ($("#" + CommissionInPercent).val() >= 100) {
+                alert("Percent Commission Cannot Be Equal Or Greater Than 100");
+                $("#" + CommissionInPercent).val("0");
+                return false;
+            }
+            else {
+                $("#" + CommissionInRupees).attr("disabled", true);
+            }
+        }
+        else if ($("#" + CommissionInRupees).val() != "0") {
+            $("#" + CommissionInPercent).attr("disabled", true);
+        }
+        else {
+            $("#" + CommissionInPercent).attr("disabled", false);
+            $("#" + CommissionInRupees).attr("disabled", false);
+        }
+    }
+
+    function DontAllowWhiteSpace(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (keycode == 8 || keycode == 32) {
+            return false;
+        }
+    }
+
+    function DeleteRow(id) {
+        var row = "row" + id;
+        var agree = confirm("Are you sure you wish to delete this row?");
+        if (agree) {
+            $("#" + row).remove();
+        }
+    }
+</script>
+
+<script type="text/javascript">
+
+    $(document).ready(function () {
+        $("#Save").click(function () {
+
+            var rowId = document.getElementById("hdnRowCount").value;
+
+            var typeOfMaterial = "materialType" + rowId;
+            var colorCode = "colorCodeData" + rowId;
+            var designCode = "designCodeData" + rowId;
+            var description = "itemDescription" + rowId;
+            var size = "Size" + rowId;
+            var unit = "Unit" + rowId;
+            var type = "ItemType" + rowId;
+            var costprice = "CostPrice" + rowId;
+            var sellingprice = "SellingPrice" + rowId;
+            var mrp = "MRP" + rowId;
+            var brand = "Brand" + rowId;
+            var CommissionInPercent = "CommissionInPercent" + rowId;
+            var CommissionInRupees = "CommissionInRupees" + rowId;
+
+            if (document.getElementById(costprice) != null) {
+
+                if (document.getElementById(type).value == "") {
+                    alertbox("Please Select The Item Type")
+                    return false;
+                }
+
+                //If last row is inventory then check all the validations
+                if (document.getElementById(type).value == "Inventory") {
+                    if ($("#" + unit).val() == "") {
+                        alertbox("Please Select The Unit")
+                        return false;
+                    }
+                    else if ($("#" + size).val() == "") {
+                        alertbox("Please Enter The Size");
+                        return false;
+                    }
+                    else if ($("#" + typeOfMaterial).val() == "") {
+                        alertbox("Please Select The Type Of Material");
+                        return false;
+                    }
+                    else if ($("#" + colorCode).val() == "") {
+                        alertbox("Please Select The Color Code");
+                        return false;
+                    }
+                    else if ($("#" + designCode).val() == "") {
+                        alertbox("Please Select The Design Code");
+                        return false;
+                    }
+                    else if ($("#" + brand).val() == "") {
+                        alertbox("Please Select The Brand Name");
+                        return false;
+                    }
+                    else if ($("#" + costprice).val() == "") {
+                        alertbox("Please Enter The Cost Price");
+                        return false;
+                    }
+                    else if ($("#" + sellingprice).val() == "") {
+                        alertbox("Please Enter The Selling Price");
+                        return false;
+                    }
+                    else if ($("#" + mrp).val() == "") {
+                        alertbox("Please Enter The MRP");
+                        return false;
+                    }
+                    else if ($("#" + CommissionInRupees).val() == "" && $("#" + CommissionInPercent).val() == "") {
+                        alertbox("Please Enter The Commission");
+                        return false;
+                    }
+                    else {
+                        //CHECK IF SAME ITEM IS ALREADY CREATED THEN GET ALERT 
+                        var counter = 0;
+                        for (i = 1; i < rowId; i++) {
+                            var MATERIAL = "materialType" + i;
+                            var COLOR = "colorCodeData" + i;
+                            var COSTPRICE = "CostPrice" + i;
+                            var BRAND = "Brand" + i;
+                            var SIZE = "Size" + i;
+                            var DESIGN = "designCodeData" + i;
+                            var UNIT = "Unit" + i;
+
+                            var material = document.getElementById("materialType" + rowId).value;
+                            var color = document.getElementById("colorCodeData" + rowId).value;
+                            var costprice = document.getElementById("CostPrice" + rowId).value;
+                            var brand = document.getElementById("Brand" + rowId).value;
+                            var size = document.getElementById("Size" + rowId).value;
+                            var design = document.getElementById("designCodeData" + rowId).value;
+                            var unit = document.getElementById("Unit" + rowId).value;
+
+                            //IF ROW IS DELETED THEN CURRENT ITEM WON'T GET COMPARED
+                            if ($("#" + MATERIAL).val() == material && $("#" + COLOR).val() == color && $("#" + COSTPRICE).val() == costprice && $("#" + BRAND).val() == brand && $("#" + SIZE).val() == size && $("#" + DESIGN).val() == design && $("#" + UNIT).val() == unit) {
+                                alert("The Item Is Already Created..");
+                                counter = i;
+                                return false;
+                            }
+                        }
+                        if (counter == 0) {
+                            var material = document.getElementById("materialType" + rowId).value;
+                            var color = document.getElementById("colorCodeData" + rowId).value;
+                            var costprice = document.getElementById("CostPrice" + rowId).value;
+                            var brand = document.getElementById("Brand" + rowId).value;
+                            var size = document.getElementById("Size" + rowId).value;
+                            var design = document.getElementById("designCodeData" + rowId).value;
+                            var unit = document.getElementById("Unit" + rowId).value;
+                            var CAT = document.getElementById("ItemDetails_itemCategory").value;
+                            var SUBCAT = document.getElementById("DDLSubCat").value;
+
+                            //CHECK ITEM IS ALREADY CREATED IN THE DATABASE
+                            $.getJSON("/Item/GetAllItemDetails", { Material: material, Color: color, Costprice: costprice, Brand: brand, Size: size, Design: design, Unit: unit, Cat: CAT, SubCat: SUBCAT },
+                           function (stateData) {
+                               if (stateData == "Present") {
+                                   alert("The Item Is Already Created..")
+                                   return false;
+                               }
+
+                               else {
+                                   //DISABLED DYNAMIC ROW
+                                   for (var i = 1; i <= rowId; i++) {
+                                       var typeOfMaterial = "materialType" + i;
+                                       var colorCode = "colorCodeData" + i;
+                                       var designCode = "designCodeData" + i;
+                                       var description = "itemDescription" + i;
+                                       var size = "Size" + i;
+                                       var unit = "Unit" + i;
+                                       var type = "ItemType" + i;
+                                       var costprice = "CostPrice" + i;
+                                       var sellingprice = "SellingPrice" + i;
+                                       var mrp = "MRP" + i;
+                                       var brand = "Brand" + i;
+                                       var CommissionInPercent = "CommissionInPercent" + i;
+                                       var CommissionInRupees = "CommissionInRupees" + i;
+
+                                       document.getElementById("ItemDetails_itemCategory").disabled = false;
+                                       document.getElementById("DDLSubCat").disabled = false;
+                                       document.getElementById("itemname").disabled = false;
+                                       if (document.getElementById(costprice) != null) {
+                                           document.getElementById(typeOfMaterial).disabled = false;
+                                           document.getElementById(colorCode).disabled = false;
+                                           document.getElementById(designCode).disabled = false;
+                                           document.getElementById(description).disabled = false;
+                                           document.getElementById(size).disabled = false;
+                                           document.getElementById(unit).disabled = false;
+                                           document.getElementById(type).disabled = false;
+                                           document.getElementById(costprice).disabled = false;
+                                           document.getElementById(sellingprice).disabled = false;
+                                           document.getElementById(mrp).disabled = false;
+                                           document.getElementById(brand).disabled = false;
+                                           document.getElementById(CommissionInPercent).disabled = false;
+                                           document.getElementById(CommissionInRupees).disabled = false;
+                                       }
+                                   }
+                                   $("#Submit").trigger('click');
+                               }
+                           });
+                        }
+                    }
+                }
+                    // IF LAST ITEM IS NON INVENTORY THEN CHECK ONLY UNIT AND ITEMTYPE..
+                else {
+                    if ($("#" + unit).val() == "") {
+                        alertbox("Please Select The Unit");
+                        return false;
+                    }
+                    //DISABLED DYNAMIC ROW
+                    for (var i = 1; i <= rowId; i++) {
+                        var typeOfMaterial = "materialType" + i;
+                        var colorCode = "colorCodeData" + i;
+                        var designCode = "designCodeData" + i;
+                        var description = "itemDescription" + i;
+                        var size = "Size" + i;
+                        var unit = "Unit" + i;
+                        var type = "ItemType" + i;
+                        var costprice = "CostPrice" + i;
+                        var sellingprice = "SellingPrice" + i;
+                        var mrp = "MRP" + i;
+                        var brand = "Brand" + i;
+                        var CommissionInPercent = "CommissionInPercent" + i;
+                        var CommissionInRupees = "CommissionInRupees" + i;
+
+                        document.getElementById("ItemDetails_itemCategory").disabled = false;
+                        document.getElementById("DDLSubCat").disabled = false;
+                        document.getElementById("itemname").disabled = false;
+                        if (document.getElementById(costprice) != null) {
+                            document.getElementById(typeOfMaterial).disabled = false;
+                            document.getElementById(colorCode).disabled = false;
+                            document.getElementById(designCode).disabled = false;
+                            document.getElementById(description).disabled = false;
+                            document.getElementById(size).disabled = false;
+                            document.getElementById(unit).disabled = false;
+                            document.getElementById(type).disabled = false;
+                            document.getElementById(costprice).disabled = false;
+                            document.getElementById(sellingprice).disabled = false;
+                            document.getElementById(mrp).disabled = false;
+                            document.getElementById(brand).disabled = false;
+                            document.getElementById(CommissionInPercent).disabled = false;
+                            document.getElementById(CommissionInRupees).disabled = false;
+                        }
+                    }
+                    $("#Submit").trigger('click');
+                }
+            }
+                // IF LAST ITEM IS DELETED THEN WITHOUT VALIDATION SUBMIT THE DATA..
+            else {
+                for (var i = 1; i <= rowId; i++) {
+                    var typeOfMaterial = "materialType" + i;
+                    var colorCode = "colorCodeData" + i;
+                    var designCode = "designCodeData" + i;
+                    var description = "itemDescription" + i;
+                    var size = "Size" + i;
+                    var unit = "Unit" + i;
+                    var type = "ItemType" + i;
+                    var costprice = "CostPrice" + i;
+                    var sellingprice = "SellingPrice" + i;
+                    var mrp = "MRP" + i;
+                    var brand = "Brand" + i;
+                    var CommissionInPercent = "CommissionInPercent" + i;
+                    var CommissionInRupees = "CommissionInRupees" + i;
+
+                    document.getElementById("ItemDetails_itemCategory").disabled = false;
+                    document.getElementById("DDLSubCat").disabled = false;
+                    document.getElementById("item").disabled = false;
+
+                    if (document.getElementById(costprice) != null) {
+                        document.getElementById(typeOfMaterial).disabled = false;
+                        document.getElementById(colorCode).disabled = false;
+                        document.getElementById(designCode).disabled = false;
+                        document.getElementById(description).disabled = false;
+                        document.getElementById(size).disabled = false;
+                        document.getElementById(unit).disabled = false;
+                        document.getElementById(type).disabled = false;
+                        document.getElementById(costprice).disabled = false;
+                        document.getElementById(sellingprice).disabled = false;
+                        document.getElementById(mrp).disabled = false;
+                        document.getElementById(brand).disabled = false;
+                        document.getElementById(CommissionInPercent).disabled = false;
+                        document.getElementById(CommissionInRupees).disabled = false;
+                    }
+                }
+                $("#Submit").trigger('click');
+            }
+        });
+    });
+</script>
+
+
+@using (Html.BeginForm("NewItem", "Requisition", FormMethod.Post))
+{
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    <input type="hidden" id="hdnRowCount" name="hdnRowCount" />
+    <input type="hidden" id="SubCatTax" name="SubCatTax" />
+    <input type="hidden" id="GetItemListFrom" name="GetItemListFrom" />
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="col-md-12 col-lg-12">
+                <div style="height: 10px"></div>
+                <div class="col-md-12 col-lg-12">
+                    <div class="row">
+                        <div class="form-group col-md-3 col-lg-3">
+                            <label for="exampleInputname">Item Category<i style="color: red">*</i></label>
+                            @Html.TextBoxFor(model => model.ItemDetails.itemCategory, new { @placeholder = "Item Category Name", @class = "form-control" })
+                            @Html.ValidationMessageFor(model => model.ItemDetails.itemCategory)
+
+                        </div>
+                        <div class="form-group col-md-3 col-lg-3">
+                            <label for="exampleInputDistrict">Item Sub Category<i style="color: red">*</i></label>
+                            @Html.DropDownListFor(model => model.ItemDetails.itemSubCategory, Enumerable.Empty<SelectListItem>(), "Sub Category Name", new { id = "DDLSubCat", @class = "form-control", @disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.ItemDetails.itemSubCategory)
+                        </div>
+
+                        <div class="form-group col-md-3 col-lg-3">
+                            <label for="exampleInputDistrict">Item Name<i style="color: red">*</i></label>
+                            @Html.TextBoxFor(model => model.ItemDetails.itemName, new { @placeholder = "Item Name", id = "itemname", @class = "form-control", @disabled = "disabled" })
+                            @Html.ValidationMessageFor(model => model.ItemDetails.itemSubCategory)
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-12 col-lg-12">
+            <div id="CreateRow"></div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-6 col-md-6"></div>
+            <div class="col-lg-1 col-md-1">
+                <button type="button" class="btn btn-success" id="Save" style="display: none;">Save</button>
+                <button type="submit" class="btn btn-success" id="Submit" style="display: none;">Submit</button>
+            </div>
+
+        </div>
+    </div>
+}

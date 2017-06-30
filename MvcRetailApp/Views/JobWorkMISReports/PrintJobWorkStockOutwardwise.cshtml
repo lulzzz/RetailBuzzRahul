@@ -1,0 +1,94 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PrintJobWorkStockOutwardwise";
+}
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("OutwardNo").innerHTML = window.opener.document.getElementById("OutwardNo").value;
+    })
+</script>
+
+<table style="border: 1px double; width: 100%;">
+    <tr>
+        <td>
+            <table style="width:100%">
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px" />
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <label><b>A To Z DADAR T.T.</b></label><br />
+                        <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="8" style="text-align: center;">
+                        <label style="font-size: x-large"><b>Job Work Stock Report</b></label>
+                    </td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+    
+    <tr>
+        <td>
+            <table style="width: 100%">
+                <tr>
+                    <td><label style="font-weight:bold">Outward To Tailor No:</label><label style="font-weight:normal" id="OutwardNo"></label></td>
+                </tr>
+            </table>
+        </td>
+    </tr>
+
+    <tr>
+        <td>
+            <table>
+                <tr>
+                    <td style="height: 5px"></td>
+                </tr>
+            </table>
+            <table border="1" cellpadding="0" cellspacing="0" style="width: 100%">
+                <thead>
+                    <tr>
+                         <th style="text-align:center;">S.No.</th>
+                         <th style="text-align:center;">Item Name</th>
+                         <th style="text-align:center;">Quantity</th>
+                         <th style="text-align:center;">Narration</th>
+                         <th style="text-align:center;">Shop Name</th>
+                         <th style="text-align:center;">Date</th>
+                    </tr>
+                </thead>
+                <tbody id="itemlist">
+                    @{
+                        int rowid = 1;
+                    }
+                    @foreach (var data in Model.JobWorkStockList)
+                    {
+                        <tr>
+                            @{
+                        string date = Convert.ToDateTime(data.StockDate).ToString("dd/MM/yyyy");
+                            }
+                             <td style="text-align:center;">@rowid</td>
+                             <td style="text-align:center;">@data.ItemName</td>
+                             <td style="text-align:center;">@data.Quantity</td>
+                             <td style="text-align:center;">@data.Narration</td>
+                             <td style="text-align:center;">@data.ShopName</td>
+                             <td style="text-align:center;">@date</td>
+                            @{
+                                rowid += 1;
+                             }
+                        </tr>
+                    }
+                </tbody>
+            </table>
+
+        </td>
+    </tr>
+</table>
+
+
+

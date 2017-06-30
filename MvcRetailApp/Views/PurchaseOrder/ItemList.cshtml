@@ -1,0 +1,128 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "ItemList";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+
+<script type="text/javascript">
+    function CompletePO() {
+        var pono = document.getElementById("complete").value;
+        $.getJSON("/PurchaseOrder/CompletePO", { Pono: pono }, function (data) {
+            var rowid = window.opener.document.getElementById(pono).value;
+            window.opener.document.getElementById("ButtonDiv" + rowid).innerHTML = "";
+            window.opener.$("#ButtonDiv" + rowid).append("<label style='color:green;text-align:center;width:100%'>Completed</label>");
+            window.opener.document.getElementById("Status" + rowid).innerText = "Completed";
+            window.close();
+        });
+
+    }
+</script>
+
+<div class="col-lg-12 col-md-12">
+    <label style="font-weight: bold; font-size: 20px">Purchase Order Details</label>
+    <div style="height: 9px"></div>
+    <label style="font-weight: normal; font-size: 18px">P.O. No.: &nbsp @Model.InwardFromSupplierDetails.PoNo</label>
+</div>
+@{
+    if (Model.InwardItemsFromSupplierList != null || Model.InwardItemsFromSupplierList.Count() != 0)
+    {
+    <table class="table" id="ItemsFromPerforma" style="width: 100%; border: outset; border-color: #d2d2d2">
+        <thead>
+            <tr>
+                <th class="col-md-2 col-lg-2">
+                    <label class="CenterText">Item</label></th>
+                <th class="col-md-2 col-lg-2">
+                    <label class="CenterText">Description</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Design</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Ord Qty</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Rcd Qty</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Balance</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Unit</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Rate</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Disc(%)</label></th>
+                <th class="col-md-1 col-lg-1">
+                    <label class="CenterText">Amt</label></th>
+            </tr>
+        </thead>
+        <tbody>
+            @{   int count = 1;
+                 foreach (var item in Model.InwardItemsFromSupplierList)
+                 {
+                     string row = "row" + count;
+                     string orderedquantity = "orderedquantity" + count;
+                     string receivedquantity = "receivedquantity" + count;
+                     string rate = "rate" + count;
+                     string amount = "amount" + count;
+                     string amountvalue = "amountvalue" + count;
+                     string discount = "discount" + count;
+                     string balanceqty = "balanceqty" + count;
+                     string balanceqtyvalue = "balanceqtyvalue" + count;
+                     string prevbal = "prevbal" + count;
+                     string freeqty = "FreeQty" + count;
+                     string extraqty = "ExtraQty" + count;
+        
+                <tr id="@row">
+                    <td>
+                        <label style="font-weight: normal">@item.Item</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.Description</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.DesignName</label>
+                    </td>
+                    <td>
+                        <label id="@orderedquantity" style="font-weight:normal">@item.OrderedQuantity</label>
+                    </td>
+                    <td>
+                        <label id="@receivedquantity" style="font-weight:normal">@item.ReceivedQuantity</label>
+                    </td>
+                    <td>
+                        @{
+                     if (item.Balance == 0)
+                     {
+                            <label id="@balanceqtyvalue" style="font-weight:normal">@item.Balance</label>
+                     }
+                     else
+                     {
+                            <label id="@balanceqtyvalue" style="font-weight:normal;color:red">@item.Balance</label>
+                     }
+                        }
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.Unit</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.SellingPrice</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.Discount</label>
+                    </td>
+                    <td>
+                        <label style="font-weight: normal">@item.Amount</label>
+                    </td>
+                </tr>
+                     count++;
+                 }
+            }
+        </tbody>
+    </table>
+    }
+}
+
+<div class="col-lg-12 col-md-12" style="text-align: center">
+    <button type="button" id="complete" onclick="CompletePO()" value="@Model.InwardFromSupplierDetails.PoNo" class="btn btn-success">Complete</button>
+</div>

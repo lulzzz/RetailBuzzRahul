@@ -1,0 +1,137 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetSREditList";
+}
+
+<h2>GetSREditList</h2>
+
+
+<table style="border: 1px double;">
+        <tr>
+            <td>
+                <div class="col-md-12 col-lg-12">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="tile-body">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <div class="form-group"></div>
+                                                        <div class="col-md-12 col-lg-12">
+                                                             <div class="form-group col-md-12 col-lg-12">
+                                                                <div class="row" id="Godown_Details" >
+                                                                    <div class="col-md-2 col-lg-3">
+                                                                        <label>Godown Name</label>
+                                                                        @Html.DropDownListFor(model => model.ShopRequisitionGodown.GodownName, new SelectList(Model.GodownMasterList, "GdCode", "GodownName"), Model.ShopRequisitionGodown.GodownName, new { id = "ddlgodownnames", @class = "form-control" })
+                                                                    </div>
+                                                                    <div class="col-md-6 col-lg-3" style="display: none" id="Godown_Addresses">
+                                                                      <label>Godown Address</label>
+                                                                        @Html.DropDownListFor(model => model.ShopRequisitionGodown.Address, Enumerable.Empty<SelectListItem>(), "Addresses", new { id = "ddlgodownaddresses", @class = "form-control" })
+                                                                    </div>
+                                                                    <div class="col-md-6 col-lg-2" style="display: none" id="Delivery_Details">
+                                                                            <label>Contact Person: &nbsp</label>
+                                                                        <label id="Godown_Person" style="font-weight: normal"></label>
+                                                                        </div>
+                                                                      <div class="col-md-6 col-lg-2" style="display: none" id="Delivery_Details1">
+                                                                            <label>Contact Number: &nbsp</label>
+                                                                        <label id="Godown_Contact" style="font-weight: normal"></label>
+                                                                        </div>
+                                                                    <div class="col-md-6 col-lg-2" style="display: none" id="Delivery_Details2">
+                                                                            <label>Email : &nbsp</label>
+                                                                        <label id="Godown_Email" style="font-weight: normal"></label>
+                                                                        </div>
+                                                                </div>
+                                                        </div>
+                                                 </div>
+
+                                                <div class="col-md-12 col-lg-12" id="AddingRows" style="display: none";>
+                                                    <table style="border: 1px double; border: outset"; >
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="col-md-1 col-lg-1" >
+                                                                    <label>S.N.</label></th>
+                                                                 <th class="col-md-2 col-lg-2">
+                                                                    <label id="Headings">ItemCode</label></th>
+                                                                <th class="col-md-2 col-lg-2">
+                                                                    <label id="Headings">Item</label></th>
+                                                                <th class="col-md-3 col-lg-3">
+                                                                    <label id="DescriptionHeadings">Description</label></th>
+                                                                <th class="col-md-1 col-lg-1">
+                                                                    <label id="Headings">Quantity In Stock</label></th>
+                                                                <th class="col-md-1 col-lg-1">
+                                                                    <label id="Headings">Required Quantity</label></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                int count = 1;
+                                                                if (Model.ShopStockList != null && Model.ShopStockList.Any())
+                                                                {
+                                                                    foreach (var item in Model.ShopStockList)
+                                                                    {
+                                                                        string itemname = "itemname" + count;
+                                                                        string itemcode = "itemcode" + count;
+                                                                        string itemdescription = "itemdescription" + count;
+                                                                        string itemquantity = "itemquantity" + count;
+                                                                        string requiredquantity = "requiredquantity" + count;
+                                                                        <tr>
+                                                                        <td>@item.Id </td>
+                                                                        <td>@item.ItemCode<input type="hidden" id="@itemcode" name="@itemcode" value="@item.ItemCode" /></td>
+                                                                        <td>@item.ItemName<input type="hidden" id="@itemname" name="@itemname" value="@item.ItemName" /></td>
+                                                                        <td>@item.Description<input type="hidden" id="@itemdescription" name="@itemdescription" value="@item.Description" /> </td>
+                                                                        <td>@item.Quantity<input type="hidden" id="@itemquantity" name="@itemquantity" value="@item.Quantity" /> </td>
+                                                                        <td><input type="text" id="@requiredquantity" name="@requiredquantity"  class="form-control" placeholder="req.qty"/>
+                                                                        @{count += 1;}
+                                                                        </tr>
+                                                                    }
+                                                                }
+                                                               <input type="hidden" value="@Model.ShopStockList.Count()" id="totalrowcount" />
+                                                                <script>
+                                                                    document.getElementById("hdnrowcount").value = document.getElementById("totalrowcount").value;
+                                                                    </script>
+                                                            }
+                                                        </tbody>
+                                                        </table>
+                                                         <br/>
+                                                         <div>
+           <button type="button" id="CreateNewItem" class="btn btn-link col-md-offset-9 col-lg-offset-9" style="color: royalblue; float:right; text-align: right" onclick="OpenPopUp()">New Item</button>
+                                                        </div>
+                                         <div class="col-md-12 col-lg-12" id="acceptedid">
+                                        <div style="height: 15px"></div>
+                           
+                                   <br /><br />
+                                                <div class="col-md-3 col-lg-3">
+                                            <label>Prepare By<label style="color: red">*</label></label><br />
+                                            @Html.DropDownListFor(model => model.ShopRequisitionGodown.PrepareBy, new SelectList(Model.EmpList, "Name", "Name"), "Select Employee Name", new { @class = "form-control", id = "PrepareByDDL"})
+                                            @Html.ValidationMessageFor(model => model.SalesBillDetails.PrepareBy, null, new { style = "color:red" })
+                                        </div>
+                                        <div class="col-md-4 col-lg-4">
+                                            <label>Email-Id</label><br />
+                                            <label id="emailid" style="font-weight: normal"></label>
+                                        </div>
+                                        <div class="col-md-3 col-lg-3">
+                                            <label>Contact No.</label><br />
+                                            <label id="contactnoid" style="font-weight: normal"></label>
+                                        </div>
+                                        @{
+                                       string preparetimeid = DateTime.Now.ToShortTimeString();
+                                        }
+                                        <div class="col-md-2 col-lg-2">
+                                            <label>Prepare Time</label><br />
+                                            <label style="font-weight: normal">@preparetimeid</label>
+                                        </div>
+                                        <div style="height: 70px"></div>
+                                    </div>
+           
+                                                    </div>
+                                            </div>
+                                      </div>
+                                    </div>
+                                </div>
+                                </div>
+                              <div class="col-sm-offset-5">
+                              <button type="submit" id="Submit" class="btn btn-success">Submit</button>
+                                                    </div>
+                                </div>
+            </td>
+        </tr>
+    </table>

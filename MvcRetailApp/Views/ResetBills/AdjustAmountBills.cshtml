@@ -1,0 +1,158 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "AdjustAmountBills";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+@*CALCULATE BALANCE AFTER ADJUSTED AMOUNT*@
+<script type="text/javascript">
+    function CalcBal(count) {
+        var remainingadv = "RemainingAdvance" + count;
+        var adjustamount = "AdjustAmount" + count;
+        var bal = "Balance" + count;
+        var balval = "BalanceVal" + count;
+
+        var remainingadvval = +document.getElementById(remainingadv).innerHTML;
+        var adjustamountval = +document.getElementById(adjustamount).value;
+
+        if (adjustamountval > remainingadvval) {
+            alert("Amount Can Not Be adjusted More Than Advance..");
+            document.getElementById(adjustamount).value = document.getElementById(remainingadv).innerHTML;
+            document.getElementById(bal).innerHTML = 0;
+            document.getElementById(balval).value = 0;
+        }
+        else {
+            document.getElementById(bal).innerHTML = +(document.getElementById(remainingadv).innerHTML) - (+document.getElementById(adjustamount).value);
+            document.getElementById(balval).value = document.getElementById(bal).innerHTML;
+        }
+    }
+</script>
+
+@*calculate total adjusted amount*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Submit").click(function () {
+            var count = document.getElementById("hdnRowCount").value;
+            var totaladjustamount = 0;
+
+            for (i = 1; i <= count; i++) {
+                var adjustamount = "AdjustAmount" + i;
+                totaladjustamount = totaladjustamount + +(document.getElementById(adjustamount).value);
+            }
+            document.getElementById("TotalAdjustAmount").value = totaladjustamount;
+            if (totaladjustamount > (+$("#BillPayment").val())) {
+                alert("Amount Cannot Be Adjusted More Than Bill Amount");
+                return false;
+            }
+            else if (totaladjustamount == 0) {
+                alert("Please Enter Some Amount For Adjustment");
+                return false;
+            }
+            else {
+                id = document.getElementById("RetailBillId").value;
+                window.opener.CallTheDetailsPage(id);
+            }
+        })
+    })
+</script>
+
+
+
+@using (Html.BeginForm("AdjustAmountBills", "ResetBills", FormMethod.Post))
+{
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    {
+        int id = (int)TempData["LastRetailBillId"];
+        TempData["LastRetailBillId"] = id;
+    <input type="hidden" id="RetailBillId" value="@id" />
+        double? payment = Convert.ToDouble(TempData["BillPayment"]);
+        TempData["BillPayment"] = payment;
+    <input type="hidden" id="BillPayment" name="BillPayment" value="@payment" />
+    <input type="hidden" id="TotalAdjustAmount" name="TotalAdjustAmount" value="0" />
+    <br />
+    <br />
+    <div class="col-lg-12 col-md-12">
+        <label>Bill Amount: &nbsp;@payment </label>
+    </div>
+    }
+    <div class="col-lg-12 col-md-12">
+        <table class="table" border="1" style="border-collapse: collapse; width: 100%" cellpadding="0" cellspacing="0">
+            <thead>
+                <tr>
+                    <th style="text-align: center">BillNo</th>
+                    <th style="text-align: center">Advance<br />
+                        Payment</th>
+                    <th style="text-align: center">Remaining<br />
+                        Advance</th>
+                    <th style="text-align: center">Adjust<br />
+                        Amount</th>
+                    <th style="text-align: center">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+                @{
+    int count = 1;
+
+    foreach (var data in Model.SalesOrderList)
+    {
+        string billnumber = "BillNo" + count;
+        string billnumberval = "BillNoVal" + count;
+        string advancepayment = "AdvancePayment" + count;
+        string remainingadv = "RemainingAdvance" + count;
+        string adjustamount = "AdjustAmount" + count;
+        string balance = "Balance" + count;
+        string balanceval = "BalanceVal" + count;
+                
+                    <tr>
+                        <td>
+                            <label id="@billnumber">@data.OrderNo</label>
+                            <input type="hidden" id="@billnumberval" name="@billnumberval" value="@data.OrderNo"/>
+                        </td>
+                        <td>
+                            <label id="@advancepayment">@data.TotalAdvancePayment</label></td>
+                        <td>
+                            <label id="@remainingadv">@data.RemainingAdvance</label></td>
+                        <td>
+                            <input type="text" id="@adjustamount" name="@adjustamount" onchange="CalcBal(@count)" style="text-align:center" autocomplete="off" class="form-control" value="0"/></td>
+                        <td>
+                            <label id="@balance">@data.RemainingAdvance</label></td>
+                        <input type="hidden" id="@balanceval" name="@balanceval" value="@data.RemainingAdvance"/>
+                    </tr>
+        count++;
+    }
+                    <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="@Model.SalesOrderList.Count()" />
+                }
+            </tbody>
+        </table>
+
+        <div class="col-lg-12 col-md-12">
+            <br />
+        </div>
+
+        <div style="text-align: center">
+            <button type="submit" class="btn btn-success" id="Submit">Submit</button>
+        </div>
+    </div>
+}

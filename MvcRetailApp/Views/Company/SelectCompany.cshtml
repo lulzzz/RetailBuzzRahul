@@ -1,0 +1,180 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "SelectCompany";
+}
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        //$('input:radio[name=CompanyList]').click(function () {
+        //    var value = $(this).val();
+        //    //window.open("/Supplier/Create?comCode=" + value, "_self");
+        //});
+    });
+</script>
+
+<script type="text/javascript">
+    function SelectTheCompany(value) {
+        var compName = "companyName" + value;
+        var compCode = "companyCode" + value;
+        var financialyear = "financialYear" + value;
+        document.getElementById("CompanyCode").value = document.getElementById(compCode).value;
+        document.getElementById("CompanyName").value = document.getElementById(compName).value;
+        document.getElementById("FinancialYear").value = document.getElementById(financialyear).value;
+        $("#Submit").trigger('click');
+    }
+</script>
+<!-- Start: Main -->
+<body>
+    <section>
+        <div class="col-md-12 col-lg-12">
+            <div class="row">
+                @using (Html.BeginForm("SelectCompany", "Company", FormMethod.Post, new { enctype = "multipart/form-data", id = "frmCreate" }))
+                {
+                    @Html.ValidationSummary(true)
+                    <input type="hidden" id="CompanyCode" name="CompanyCode" />
+                    <input type="hidden" id="CompanyName" name="CompanyName" />
+                    <input type="hidden" id="FinancialYear" name="FinancialYear" />
+                    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                        <source src="" type="audio/ogg" />
+                    </audio>
+                    <div style="width: 100%; text-align: center; margin-top:25px;">
+                        <img src="~/Images/retail-logo.png" /><br />
+                        <h2 style="color: #102b58; margin-top: 10px; font-family: 'Good Times'; letter-spacing: 1px; font-size: 20px">Retail Management</h2>
+                    </div>
+                    <div class="col-lg-12 col-md-12 col-lg-offset-2 col-md-offset-2">
+                        <div class="row col-lg-12 col-md-12">
+                            <h2><strong class="caption" style="color: #102b58; font-size: 18px;">List Of Companies:</strong></h2>
+                            <div class="table-responsive">
+                                <table class="table-hover" style="width: 800px;">
+                                    <thead>
+                                        <tr>
+                                            <th style="font-size: 15px; color: #102b58">Company Code</th>
+                                            <th style="font-size: 15px; color: #102b58">Name</th>
+                                            <th style="font-size: 15px; color: #102b58; text-align: right">Financial Year</th>
+                                        </tr>
+                                        <tr>
+                                            <th colspan="3">
+                                                <div style="border: 1px dotted #666;"></div>
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    @{
+                    if (Model.CmpList != null && Model.CmpList.Any())
+                    {
+                        string compName = string.Empty;
+                        string compCode = string.Empty;
+                        string financialyear = string.Empty;
+                        int count = 1;
+                        foreach (var item in Model.CmpList)
+                        {
+                            compName = "companyName" + count;
+                            compCode = "companyCode" + count;
+                            financialyear = "financialYear" + count;
+                                        <tbody>
+                                            <tr>
+                                                <td>
+                                                    <input type="button" onclick="SelectTheCompany(@count)" id="@compCode" value="@item.CompanyCode" style="border:none;color:#ff6a00;background-color:transparent;font-size:large;"/>
+                                                </td>
+                                                <td>
+                                                    <a href="#" onclick="SelectTheCompany(@count)" style="text-decoration:none;color:#ff6a00;font-weight:bolder;font-size:large;font-family:'Goudy Old Style'">@item.companyName</a>
+                                                </td>
+                                                @{
+                            string financialfromdate = Convert.ToDateTime(item.FinancialYearFrom).ToString("dd-MM-yyyy");
+                            string financialtodate = Convert.ToDateTime(item.FinancialYearTo).ToString("dd-MM-yyyy");
+                                                }
+                                                <td><a href="#" onclick="SelectTheCompany(@count)" style="text-decoration:none;color:#ff6a00;font-weight:bolder;font-size:large;font-family:'Goudy Old Style';float:right">@financialfromdate To @financialtodate</a>
+                                                    <input type="hidden" id="@compName" value="@item.companyName" />
+                                                    <input type="hidden" id="@financialyear" value="@financialfromdate To @financialtodate" />
+                                                </td>
+                                            </tr>
+                                        </tbody>
+                            count++;
+                        }
+                    }
+                                    }
+                                </table>
+                                <table class="col-md-2 col-lg-2"></table>
+                            </div>
+                        </div>
+                        <br />
+                        <input type="submit" id="Submit" style="display: none" />
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+</body>
+<!-- End: Main -->
+

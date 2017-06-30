@@ -1,0 +1,391 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "Edit";
+}
+
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        // Create an example page animation. Really
+        // not suitable for production enviroments
+        var headerAnimate = setTimeout(function () {
+            // Animate Header from Top
+            $('header').css("display", "block").addClass('animated bounceInDown');
+        }, 300);
+
+        // Add an aditional delay to hide the loading spinner
+        // and animate body content from bottom of page
+        var bodyAnimate = setTimeout(function () {
+            // hide spinner
+            $('#page-loader').css("display", "none");
+
+            // show body and animate from bottom. At end of animation 
+            // add several css properties because the animation will bug 
+            // existing psuedo backgrounds(:after)
+            $('#main').css("display", "block").one('webkitAnimationEnd oanimationend msAnimationEnd animationend', function () {
+                $('body').css({ background: "#E6E6E6", overflow: "visible" });
+                $('#content, #sidebar').addClass('refresh');
+                // Init sparkline animations
+                sparkload();
+            });
+        }, 1150);
+
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+
+    $.ajax({
+        url: '/Godown/GetGodown',
+        type: 'Get',
+        success: function (data) {
+            $("#LoadList").html(data);
+        }
+    });
+</script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+</script>
+
+<script type="text/javascript">
+    function EditRow(rowcount, id, count) {
+        document.getElementById("SelectedRowid").value = count;
+
+        for (var i = 1; i <= rowcount; i++) {
+            var edit = "Edit" + i;
+            var row = "Row" + i;
+            document.getElementById(edit).disabled = true;
+            document.getElementById(row).style.background = "#F1DDE7";
+        }
+
+        var row = "Row" + count;
+        document.getElementById(row).style.background = "lightgreen";
+        document.getElementById("pagerdropdown").disabled = true;
+        document.getElementById("pagertextbox").disabled = true;
+        $("#first").attr("disabled", true);
+        $("#prev").attr("disabled", true);
+        $("#next").attr("disabled", true);
+        $("#last").attr("disabled", true);
+        document.getElementById("pager").style.display = "none";
+        document.getElementById("Search").disabled = true;
+        document.getElementById("SearchButton").disabled = true;
+
+        $.ajax({
+            data: { id: id },
+            url: '/Godown/EditPartial',
+            type: 'Get',
+            success: function (data) {
+                if (data != null) {
+                    $("#LoadDetails").html(data);
+                }
+            }
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    function UpdateData() {
+        var errorcount = 0;
+        if ($("#GodownDetails_ComponyName").val() == "" || $("#GodownDetails_GodownName").val() == "" ||
+            $("#GodownDetails_GodownEmail").val() == "" || $("#GodownDetails_ContactNo1").val() == "" ||
+            $("#GodownDetails_EmpName").val() == "") {
+            return false;
+        }
+        else if ($("#GodownDetails_ContactNo1").val().length > 14 || $("#GodownDetails_ContactNo1").val().length < 7) {
+            return false;
+        }
+
+        else {
+            if ($("#GodownDetails_ContactNo2").val() != "") {
+                if ($("#GodownDetails_ContactNo2").val().length > 14 || $("#GodownDetails_ContactNo2").val().length < 7) {
+                    alertbox("Contact No 2 should be between 7 and 14");
+                    errorcount++;
+                    return false;
+                }
+            }
+            if ($("#GodownDetails_ContactNo3").val() != "") {
+                if ($("#GodownDetails_ContactNo3").val().length > 14 || $("#GodownDetails_ContactNo3").val().length < 7) {
+                    alertbox("Contact No 3 should be between 7 and 14");
+                    errorcount++;
+                    return false;
+                }
+            }
+            if ($("#ddlareas").val() != 0) {
+                if ($("#GodownAddressDetails_Address").val() == "") {
+                    alertbox("Address field is required");
+                    return false;
+                }
+                else {
+                    UpdateAddress();
+                }
+            }
+        }
+        if ($("#GodownDetails_GodownEmail").val() != "") {
+            $.getJSON("/User/EmailValidate", { email: $("#GodownDetails_GodownEmail").val() },
+                function (data) {
+                    if (data != "true") {
+                        alertbox("Invalid Email Address");
+                        errorcount++;
+                        return false;
+                    }
+                    else {
+                        if (errorcount == 0) {
+
+                            var count = document.getElementById("SelectedRowid").value;
+                            var txt = document.getElementById("GodownDetails_GodownName").value;
+                            txt = txt.replace(/\w\S*/g, function (txt) {
+                                return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();
+                            });
+                            document.getElementById("GodownDetails_GodownName").value = txt;
+                            document.getElementById("GodownName" + count).innerHTML = txt;
+                            document.getElementById("Row" + count).style.background = "#F1DDE7";
+
+                            var godown = {
+                                GodownId: $("#GodownDetails_GodownId").val(),
+                                GdCode: $("#GodownDetails_GdCode").val(),
+                                ComponyName: $("#GodownDetails_ComponyName").val(),
+                                GoDownName: $("#GodownDetails_GodownName").val(),
+                                EmpName: $("#GodownDetails_EmpName").val(),
+                                ContactNo1: $("#GodownDetails_ContactNo1").val(),
+                                ContactNo2: $("#GodownDetails_ContactNo2").val(),
+                                ContactNo3: $("#GodownDetails_ContactNo3").val(),
+                                GodownEmail: $("#GodownDetails_GodownEmail").val(),
+                                EmpEmail: $("#GodownDetails_EmpEmail").val(),
+                                Designation: $("#GodownDetails_Designation").val(),
+                                ShortCode : $("#GodownDetails_ShortCode").val(),
+                            };
+
+                            $.ajax({
+                                url: '/Godown/EditPartial',
+                                type: 'Post',
+                                data: JSON.stringify(godown),
+                                contentType: "application/json; charset=utf-8",
+                                datatype: "json",
+                                success: function (data) {
+                                    $("#LoadDetails").html(data);
+                                }
+                            });
+                            var count = document.getElementById("getrows").value;
+
+                            for (var i = 1; i <= count; i++) {
+                                var edit = "Edit" + i;
+                                document.getElementById(edit).disabled = false;
+                            }
+
+                            document.getElementById("pagerdropdown").disabled = false;
+                            document.getElementById("pagertextbox").disabled = false;
+                            document.getElementById("pager").style.display = "inline";
+                            $("#first").attr("disabled", false);
+                            $("#prev").attr("disabled", false);
+                            $("#next").attr("disabled", false);
+                            $("#last").attr("disabled", false);
+                            document.getElementById("Search").disabled = false;
+                            document.getElementById("SearchButton").disabled = false;
+                        }
+                    }
+                });
+        }
+    }
+</script>
+
+<script>
+
+    function UpdateAddress() {
+        var id = $("#GodownAddressDetails_AddressId").val();
+        var area = $("#ddlareas").val();
+        var location = $("#GodownAddressDetails_Location").val();
+        var address = $("#GodownAddressDetails_Address").val();
+        var code = $("#GodownDetails_GdCode").val();
+
+        if (address == "") {
+            return false;
+        } else {
+            $.getJSON("/Godown/UpdateAddresses", { id: id, area: area, location: location, address: address, code: code }, function (data) {
+                document.getElementById("LocationDetails").style.display = "none";
+                $("#ddlareas").val("").attr("selected", "selected");
+            });
+        }
+
+        
+    }
+</script>
+
+<script>
+    $(document).ready(function () {
+        $("#SearchButton").click(function () {
+            var name = document.getElementById("Search").value;
+            $.ajax({
+                url: '/Godown/GodownSearch',
+                type: 'GET',
+                data: { name: name },
+                success: function (data) {
+                    if (data != null) {
+                        $("#LoadList").html(data);
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        @Html.Partial("../Shared/LeftMenu")
+        <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+            <source src="" type="audio/ogg" />
+        </audio>
+        <!-- End: Sidebar -->
+        <input type="hidden" id="SelectedRowid">
+        <!-- Start: Content -->
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+
+                <br />
+                <div class="row">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="form-group col-md-4 col-lg-4">
+                            <div class="form-group col-md-11 col-lg-11">
+                                <div class="row">
+                                    <div class="row">
+                                        <div class="row" id="SearchNames">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="row">
+                                                    <div class="form-group col-md-12 col-lg-12">
+                                                        @Html.Label("Search")
+                                                        <div class="row">
+                                                            <div class="form-group col-md-8 col-lg-8">
+                                                                @Html.TextBox("search", ViewData.TemplateInfo.FormattedModelValue, new { placeholder = "Search", @class = "form-control", id = "Search" })
+                                                            </div>
+                                                            <button type="button" id="SearchButton" class="btn btn-primary glyphicon glyphicon-search" style="width: 75px"></button>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div style="margin-left: 65px">
+                                            <label id="EmptyList" style="color: red; display: none; font-size: medium">Data Not Found</label>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="form-group col-md-12 col-lg-12">
+                                            <div class="form-group col-md-12 col-lg-12">
+                                                <div class="row">
+                                                    <div class="form-group col-md-12 col-lg-12">
+                                                        <div id="LoadList"></div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div style="float: left; min-height: 650px; width: 1px; background-color: lightgrey;"></div>
+                        </div>
+
+                        <div class="col-md-8 col-lg-8">
+                            <div id="LoadDetails"></div>
+                        </div>
+                    </div>
+                </div>
+
+
+            </div>
+        </div>
+    </div>
+</section>

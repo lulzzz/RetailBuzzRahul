@@ -1,0 +1,1265 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "LeftMenu";
+}
+
+<div class="leftpanel" style="position: fixed; top: 70px; height: 565px; overflow: scroll; overflow-x: hidden;">
+    <div style="height: 55px"></div>
+    @*<div class="navbar-default sidebar" id="sidemenu" role="navigation">
+    <div class="sidebar-nav navbar-collapse">*@
+    <ul class="nav nav-pills nav-stacked" id="side-menu">
+        @{
+            if (Model.userCredentialList != null && Model.userCredentialList.Any())
+            {
+                foreach (var item in Model.userCredentialList)
+                {
+                    if (item.UseName == "SuperAdmin" && item.ModuleId > 1 && item.ModuleId <= 2)
+                    {
+            <li>
+                <a href="index.html"><i class="glyphicons glyphicons-user"></i><span>Administrator</span> <span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" style="background-color: white;">
+                    <li>
+                        <a href="~/User/UserRights"><i class="fa fa-plus"></i><span>Assign User Credentials</span></a>
+                    </li>
+                    <li>
+                        <a href="~/ReplicaCompany/ReplicaCompany"><i class="fa fa-plus"></i><span>Replica Company</span></a>
+                    </li>
+                    <li>
+                        <a href="~/Carryforward/Create"><i class="fa fa-plus"></i><span>New Financial Year</span></a>
+                    </li>
+                </ul>
+            </li>
+                    }
+                }
+            }
+            string[] links = new string[100];
+
+            links[0] = "/Company/ReloadCompany";
+            links[1] = "/Company/Edit";
+            links[2] = "/Company/Delete";
+
+            links[3] = "/Bank/Create";
+            links[4] = "/Bank/Edit";
+            links[5] = "/Bank/Delete";
+
+            links[6] = "/Designation/CreateDesignation";
+            links[7] = "/Designation/EditDesignation";
+            links[8] = "/Designation/DeleteDesignation";
+
+            links[9] = "/Employee/Create";
+            links[10] = "/Employee/Edit";
+            links[11] = "/Employee/Delete";
+
+            links[12] = "/Commission/Create";
+            links[13] = "/Commission/Edit";
+            links[14] = "/Commission/Delete";
+
+            links[15] = "/Supplier/Create";
+            links[16] = "/Supplier/Edit";
+            links[17] = "/Supplier/Delete";
+
+            links[18] = "/Client/Create";
+            links[19] = "/Client/Edit";
+            links[20] = "/Client/Delete";
+
+            links[21] = "/Transport/Create";
+            links[22] = "/Transport/Edit";
+            links[23] = "/Transport/Delete";
+
+            links[24] = "/Design/Create";
+            links[25] = "/Design/Edit";
+            links[26] = "/Design/Delete";
+
+            links[27] = "/TypeOfMaterial/Create";
+            links[28] = "/TypeOfMaterial/Edit";
+            links[29] = "/TypeOfMaterial/Delete";
+
+            links[30] = "/Brand/CreateBrand";
+            links[31] = "/Brand/EditBrand";
+            links[32] = "/Brand/Deletebrand";
+
+            links[33] = "/Shop/Create";
+            links[34] = "/Shop/Edit";
+            links[35] = "/Shop/Delete";
+
+            links[36] = "/Godown/Create";
+            links[37] = "/Godown/Edit";
+            links[38] = "/Godown/Delete";
+
+            links[39] = "/Unit/Create";
+            links[40] = "/Unit/Edit";
+            links[41] = "/Unit/Delete";
+
+            links[42] = "/ItemTax/Create";
+            links[43] = "/ItemTax/Edit";
+            links[44] = "/ItemTax/Delete";
+
+            links[45] = "/Item/CreateCategory";
+            links[46] = "/Item/EditCategory";
+            links[47] = "/Item/DeleteCategory";
+
+            links[48] = "/Item/CreateSubCategory";
+            links[49] = "/Item/EditSubCategory";
+            links[50] = "/Item/DeleteSubCategory";
+
+            links[51] = "/Item/CreateItem";
+            links[52] = "/Item/EditItem";
+            links[53] = "/Item/DeleteItem";
+
+            links[54] = "/DiscountMaster/CreateDiscount";
+            links[55] = "/DiscountMaster/EditDiscount";
+            links[56] = "/DiscountMaster/DeleteDiscount";
+
+            links[57] = "/Catalogue/Create";
+            links[58] = "/Catalogue/Edit";
+            links[59] = "/Catalogue/Delete";
+            
+            int i = 0;
+            int count = 0;
+            int taxcount = 0;
+            int remainingmastercount = 0;
+            if (Model.userCredentialList != null && Model.userCredentialList.Any())
+            {
+            <li id="MasterEntries">
+                <a href="#"><i class="fa fa-list"></i><span>Master Entries</span><span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level" style="background-color: white;">
+                    @foreach (var item in Model.userCredentialList)
+                    {
+                        if (!string.IsNullOrEmpty(item.Status) && item.ModuleId <= 14)
+                        {
+                        <li>
+                            <a href="#"><i class="@item.Icon"></i><span>@item.Modules</span><span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                @if (item.Status.Contains("add"))
+                                {
+                               
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-plus-square"></i>&nbsp;<span>Create</span></a>
+                                    </li>
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+
+                                @if (item.Status.Contains("edit"))
+                                {
+                                
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-edit"></i><span>Update</span></a>
+                                    </li>
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+
+                                @if (item.Status.Contains("delete"))
+                                {
+                              
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-minus-square"></i><span>Delete</span></a>
+                                    </li>   
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+
+                            </ul>
+                            <!-- /.nav-third-level -->
+                        </li>
+                        }
+                        else
+                        //{ count++; }
+                        {
+                            count++;
+                            if (item.ModuleId <= 14)
+                            {
+                                i++; i++; i++;
+                            }
+                        }
+                    }
+
+                    <li id="TaxMaster">
+                        <a href="#"><i class="fa fa-inr"></i><span>Tax</span><span class="fa arrow"></span></a>
+                        @foreach (var item in Model.userCredentialList)
+                        {
+                            if (!string.IsNullOrEmpty(item.Status) && item.ModuleId == 15)
+                            {
+                            <ul class="nav nav-third-level">
+                                @if (item.Status.Contains("add"))
+                                {
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-plus-square"></i>&nbsp;<span>Create</span></a>
+                                    </li>
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+
+                                @if (item.Status.Contains("edit"))
+                                {
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-edit"></i><span>Update</span></a>
+                                    </li>
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+
+                                @if (item.Status.Contains("delete"))
+                                {
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-minus-square"></i><span>Delete</span></a>
+                                    </li>   
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+                            </ul>
+                            }
+                            else
+                            {
+                                taxcount++;
+                                if (item.ModuleId == 15)
+                                {
+                                    i++; i++; i++;
+                                }
+                            }
+                        }
+                    </li>
+                    @foreach (var item in Model.userCredentialList)
+                    {
+                        if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 16 && item.ModuleId <= 20)
+                        {
+                        <li>
+                            <a href="#"><i class="@item.Icon"></i><span>@item.Modules</span><span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                @if (item.Status.Contains("add"))
+                                {
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-plus-square"></i>&nbsp;<span>Create</span></a>
+                                    </li>
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+
+                                @if (item.Status.Contains("edit"))
+                                {
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-edit"></i><span>Update</span></a>
+                                    </li>
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+
+                                @if (item.Status.Contains("delete"))
+                                {
+                                    <li>
+                                        <a href="@links[i]"><i class="fa fa-minus-square"></i><span>Delete</span></a>
+                                    </li>   
+                                    i++;
+                                }
+                                else
+                                {
+                                    i++;
+                                }
+                            </ul>
+                        </li>
+                        }
+                        else
+                        {
+                            remainingmastercount++;
+                            if (item.ModuleId >= 16 && item.ModuleId <= 20)
+                            {
+                                i++; i++; i++;
+                            }
+                        }
+                    }
+                </ul>
+                <!-- /.nav-second-level -->
+            </li>
+                    if (@taxcount == Model.userCredentialList.Count())
+                    {
+            <script>
+                document.getElementById("TaxMaster").style.display = "none";
+            </script> 
+                    }
+                    if (@count == Model.userCredentialList.Count() && @taxcount == Model.userCredentialList.Count() && @remainingmastercount == Model.userCredentialList.Count())
+                    {
+            <script>
+                document.getElementById("MasterEntries").style.display = "none";
+            </script> 
+                    }
+            }
+        }
+
+
+        <li id="CashierReceipt">
+            <a href="#"><i class="fa fa-money"></i><span>Cashier Receipt</span><span class="fa arrow"></span></a>
+            @{  
+                string[] links1 = new string[100];
+                links1[0] = "/CashierReceipt/StartingBlankPage";
+                links1[1] = "/CashierReceipt/CreateCarryForward";
+                count = 0;
+                <ul class="nav nav-third-level">
+                    @if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                    {
+                        foreach (var item in Model.userCredentialList)
+                        {
+
+                            if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 21 && item.ModuleId <= 22)
+                            {
+                                if (item.Modules == "Cashier Receipt")
+                                {
+                        <li>
+
+                            <a href="@links1[0]"><i class="fa fa-money"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Balance Carry Forward")
+                                {
+                        <li>
+
+                            <a href="@links1[1]"><i class="glyphicon glyphicon-share-alt"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                            }
+                            else
+                            {
+                                count++;
+                            }
+                        }
+                    }
+                </ul>
+            }
+        </li>
+        @if (count == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("CashierReceipt").style.display = "none";
+            </script> 
+        }
+
+
+        <li id="Transactions">
+            <a href="#"><i class="fa fa-rotate-right fa-spin"></i><span>Transactions</span><span class="fa arrow"></span></a>
+            @{  
+                string[] links2 = new string[100];
+                links2[0] = "/CashierModule/CashierModule";
+                links2[1] = "/CashierModule/CashHandover";
+                links2[2] = "/CashierModule/CardChequeHandover";
+                links2[3] = "/CashierModule/EditCardChequeHandover";
+                links2[4] = "/IncomeExpenseVoucher/IncomeExpenseVoucherEntry";
+                count = 0;
+                int cashiercounter = 0;
+                int cardchequehandover = 0;
+                int incomeexchangecounter = 0;
+                <ul class="nav nav-third-level">
+                    @if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                    {
+                        foreach (var item in Model.userCredentialList)
+                        {
+
+                            if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 23 && item.ModuleId <= 24)
+                            {
+                                if (item.Modules == "Cashier")
+                                {
+                        <li>
+
+                            <a href="@links2[0]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Cash Handover")
+                                {
+                        <li>
+
+                            <a href="@links2[1]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                            }
+                            else
+                            {
+                                cashiercounter++;
+                            }
+                        }
+                        <li id="CardCheque">
+                            <a href="#"><i class="fa fa-inr"></i><span>Card-Cheque Handover</span><span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                @foreach (var item in Model.userCredentialList)
+                                {
+
+                                    if (!string.IsNullOrEmpty(item.Status) && item.ModuleId == 26)
+                                    {
+                                        if (item.Modules == "Card-Cheque Handover")
+                                        {
+                                            if (item.Status.Contains("add"))
+                                            {
+                                    <li>
+                                        <a href="@links2[2]"><i class="fa fa-plus-square"></i>&nbsp;<span>Create</span></a>
+                                    </li>      
+                                            }
+
+                                            if (item.Status.Contains("edit"))
+                                            { 
+                                    <li>
+                                        <a href="@links2[3]"><i class="fa fa-edit"></i><span>Update</span></a>
+                                    </li>  
+                                            }
+                                        }
+                                    }
+                                    else { cardchequehandover++; }
+                                }
+                            </ul>
+                        </li> 
+                                foreach (var item in Model.userCredentialList)
+                                {
+                                    if (!string.IsNullOrEmpty(item.Status) && item.ModuleId == 26)
+                                    {
+                                        if (item.Modules == "Income Expense Voucher Entry")
+                                        {
+                        <li>
+                            <a href="@links2[4]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+                        </li>    
+                                        }
+                                    }
+                                    else
+                                    {
+                                        incomeexchangecounter++;
+                                    }
+                                }
+                    }
+                </ul>
+            }
+        </li>
+        @if (cardchequehandover == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("CardCheque").style.display = "none";
+            </script> 
+        }
+        @if (cashiercounter == Model.userCredentialList.Count() && cardchequehandover == Model.userCredentialList.Count() && incomeexchangecounter == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("Transactions").style.display = "none";
+            </script> 
+        }
+
+
+        <li id="Purchase">
+            <a href="#"><i class="fa fa-rotate-right fa-spin"></i><span>Purchase</span><span class="fa arrow"></span></a>
+            @{  
+                string[] links3 = new string[100];
+                links3[0] = "/PurchaseOrder/PurchaseData";
+                links3[1] = "/PurchaseReturn/PurchaseReturn";
+                links3[2] = "/BillPayment/CreateBillPayment";
+                count = 0;
+                <ul class="nav nav-third-level">
+                    @if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                    {
+                        foreach (var item in Model.userCredentialList)
+                        {
+
+                            if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 27 && item.ModuleId <= 29)
+                            {
+                                if (item.Modules == "Purchase Order")
+                                {
+                        <li>
+
+                            <a href="@links3[0]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Purchase Return")
+                                {
+                        <li>
+
+                            <a href="@links3[1]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Bill Payment")
+                                {
+                        <li>
+
+                            <a href="@links3[2]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                            }
+                            else
+                            {
+                                count++;
+                            }
+                        }
+                    }
+                </ul>
+            }
+        </li>
+        @if (count == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("Purchase").style.display = "none";
+            </script> 
+        }
+
+        <li id="Inventory">
+            <a href="#"><i class="glyphicons glyphicons-shopping_cart"></i><span>Inventory</span><span class="fa arrow"></span></a>
+            @{
+                string[] links4 = new string[100];
+                links4[0] = "/Stock/Stock";
+                links4[1] = "/StockDistribution/StockDistribution";
+                links4[2] = "/Stock/PhysicalStockTaking";
+                links4[3] = "/Inward/SupplierInwards";
+                links4[4] = "/Inward/InwardFromStockDistribution";
+                links4[5] = "/Inward/InwardFromGodown";
+                links4[6] = "/Inward/InwardFromShopToGodown";
+                links4[7] = "/Inward/InwardInterShop";
+                links4[8] = "/Inward/InwardInterGodown";
+                links4[9] = "/Outward/OutwardToClient";
+                links4[10] = "/Outward/OutwardToShop";
+                links4[11] = "/Outward/OutwardShopToGodown";
+                links4[12] = "/Outward/OutwardInterShop";
+                links4[13] = "/Outward/OutwardInterGodown";
+
+                int stockcount = 0;
+                int stkdist = 0;
+                int inwardcount = 0;
+                int outwardcount = 0;
+                <ul class="nav nav-second-level" style="background-color: white;">
+                    @{  if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                        {
+                            foreach (var item in Model.userCredentialList)
+                            {
+                                if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 30 && item.ModuleId <= 32)
+                                {
+                                    if (item.Modules == "Stock")
+                                    {
+                        <li>
+                            <a href="@links4[0]"><i class="fa fa-database"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Stock Distribution")
+                                    {
+                        <li>
+                            <a href="@links4[1]"><i class="fa fa-arrows-alt"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Physical Stock Taking")
+                                    {
+                        <li>
+                            <a href="@links4[2]"><i class="fa fa-database"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                }
+                                else
+                                {
+                                    stockcount++;
+                                }
+                            }
+                        <li id="Inward">
+                            <a href="#"><i class="fa fa-arrow-right"></i><span>Inward</span><span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                @foreach (var item in Model.userCredentialList)
+                                {
+                                    if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 33 && item.ModuleId <= 38)
+                                    {
+
+                                        if (item.Modules == "Supplier Inwards")
+                                        {
+                                    <li>
+                                        <a href="@links4[3]"><i class="fa fa-arrow-right"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Inward Stock Distribution")
+                                        {
+                                    <li>
+                                        <a href="@links4[4]"><i class="fa fa-arrow-right"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Inward To Shop")
+                                        {
+                                    <li>
+                                        <a href="@links4[5]"><i class="fa fa-arrow-right"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Inward To Godown")
+                                        {
+                                    <li>
+                                        <a href="@links4[6]"><i class="fa fa-arrow-right"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Inward Inter Shop")
+                                        {
+                                    <li>
+                                        <a href="@links4[7]"><i class="fa fa-arrow-right"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Inward Inter Godown")
+                                        {
+                                    <li>
+                                        <a href="@links4[8]"><i class="fa fa-arrow-right"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        inwardcount++;
+                                    }
+                                }
+                            </ul>
+                        </li>
+                        <li id="Outward">
+                            <a href="#"><i class="fa fa-arrow-left"></i><span>Outward</span><span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                @foreach (var item in Model.userCredentialList)
+                                {
+                                    if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 39 && item.ModuleId <= 43)
+                                    {
+                                        if (item.Modules == "Outward To Client")
+                                        {
+                                    <li>
+                                        <a href="@links4[9]"><i class="fa fa-arrow-left"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Outward To Shop")
+                                        {
+                                    <li>
+                                        <a href="@links4[10]"><i class="fa fa-arrow-left"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Outward To Godown")
+                                        {
+                                    <li>
+                                        <a href="@links4[11]"><i class="fa fa-arrow-left"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Outward Inter Shop")
+                                        {
+                                    <li>
+                                        <a href="@links4[12]"><i class="fa fa-arrow-left"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                        if (item.Modules == "Outward Inter Godown")
+                                        {
+                                    <li>
+                                        <a href="@links4[13]"><i class="fa fa-arrow-left"></i><span>@item.Modules</span></a>
+                                    </li>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        outwardcount++;
+                                    }
+                                }
+                            </ul>
+                        </li> 
+                               
+                        }
+                    }
+                </ul>
+            }
+            <!-- /.nav-second-level -->
+        </li>
+        @{
+            
+            if (inwardcount == Model.userCredentialList.Count())
+            {
+            <script>
+                if (document.getElementById("Inward") != null) {
+                    document.getElementById("Inward").style.display = "none";
+                }
+            </script> 
+            }
+
+            if (outwardcount == Model.userCredentialList.Count())
+            {
+            <script>
+                if (document.getElementById("Outward") != null) {
+                    document.getElementById("Outward").style.display = "none";
+                }
+            </script> 
+            }
+
+            if (stockcount == Model.userCredentialList.Count() && inwardcount == Model.userCredentialList.Count() && outwardcount == Model.userCredentialList.Count() && stkdist == Model.userCredentialList.Count())
+            {
+            <script>
+                document.getElementById("Inventory").style.display = "none";
+            </script> 
+            }
+        }
+
+        @{  if (Model.userCredentialList != null && Model.userCredentialList.Any())
+            {
+                foreach (var item in Model.userCredentialList)
+                {
+                    if (!string.IsNullOrEmpty(item.Status) && item.ModuleId == 44)
+                    {
+            <li>
+                <a href="~/BarcodePrinting/BarcodePrinting"><i class="fa fa-barcode"></i><span>@item.Modules</span></a>
+            </li>
+                    }
+                }
+            }
+        }
+
+        @{  if (Model.userCredentialList != null && Model.userCredentialList.Any())
+            {
+                foreach (var item in Model.userCredentialList)
+                {
+                    if (!string.IsNullOrEmpty(item.Status) && item.ModuleId == 45)
+                    {
+            <li>
+                <a href="~/CostCodeCreation/CostCodeCreate"><i class="fa fa-barcode"></i><span>@item.Modules</span></a>
+            </li>
+                    }
+                }
+            }
+        }
+
+        <li id="Billing">
+            <a href="#"><i class="glyphicons glyphicons-shopping_cart"></i><span>Point Of Sale</span><span class="fa arrow"></span></a>
+            @{
+                string[] links5 = new string[100];
+                links5[0] = "/ProcessingQuotation/Quotation";
+                links5[1] = "/ProcessingQuotation/SalesOrder";
+                links5[2] = "/ProcessingQuotation/DeliveryChallan";
+                var username = HttpContext.Current.Session["UserName"].ToString();
+                if (username != "SuperAdmin")
+                {
+                    links5[3] = "/RetailBill/RetailBill";
+                }
+                else
+                {
+                    links5[3] = "/RetailBill/StartingBlankPage";
+                }
+                links5[4] = "/TemporaryCashMemo/TemporaryCashMemo";
+                links5[5] = "/SalesBill/SalesBill";
+                links5[6] = "/SalesReturn/SalesReturn";
+                links5[7] = "/ResetBills/StartingBlankPage";
+                count = 0;
+                <ul class="nav nav-third-level">
+                    @{  if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                        {
+                            foreach (var item in Model.userCredentialList)
+                            {
+
+                                if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 46 && item.ModuleId <= 53)
+                                {
+                                    if (item.Modules == "Quotation")
+                                    {
+                        <li>
+                            <a href="@links5[0]"><i class="fa fa-spinner fa-spin"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Sales Order")
+                                    {
+                        <li>
+                            <a href="@links5[1]"><i class="fa fa-spinner fa-spin"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Delivery Challan")
+                                    {
+                        <li>
+                            <a href="@links5[2]"><i class="fa fa-spinner fa-spin"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Retail Bill")
+                                    {
+                        <li>
+                            <a href="@links5[3]"><i class="fa fa-print"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Provisional Cash Memo")
+                                    {
+                        <li>
+                            <a href="@links5[4]"><i class="fa fa-print"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Sales Bill")
+                                    {
+                        <li>
+                            <a href="@links5[5]"><i class="fa fa-print"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Sales Return")
+                                    {
+                        <li>
+                            <a href="@links5[6]"><i class="fa fa-print"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                    if (item.Modules == "Reset Bill")
+                                    {
+                        <li>
+                            <a href="@links5[7]"><i class="fa fa-print"></i><span>@item.Modules</span></a>
+                        </li>      
+                                    }
+                                }
+                                else { count++; }
+                            }
+                        }
+                    }
+                </ul>
+            }
+            <!-- /.nav-second-level -->
+        </li>
+
+        @if (count == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("Billing").style.display = "none";
+            </script> 
+        }
+
+
+        <li id="Requisition">
+            <a href="#"><i class="fa fa-rotate-right fa-spin"></i><span>Requisition</span><span class="fa arrow"></span></a>
+            @{  
+                string[] links6 = new string[100];
+                links6[0] = "/Requisition/StockVerification";
+                links6[1] = "/Requisition/Requisition";
+                links6[2] = "/Requisition/ShopRequisitionForNewItems";
+                links6[3] = "/Requisition/RequisitionReports";
+                count = 0;
+                <ul class="nav nav-third-level">
+                    @if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                    {
+                        foreach (var item in Model.userCredentialList)
+                        {
+
+                            if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 54 && item.ModuleId <= 57)
+                            {
+                                if (item.Modules == "Stock Verification")
+                                {
+                        <li>
+
+                            <a href="@links6[0]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Requisition")
+                                {
+                        <li>
+
+                            <a href="@links6[1]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "New Requisition")
+                                {
+                        <li>
+
+                            <a href="@links6[2]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Requisition Reports")
+                                {
+                        <li>
+
+                            <a href="@links6[3]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                            }
+                            else
+                            {
+                                count++;
+                            }
+                        }
+                    }
+                </ul>
+            }
+        </li>
+        @if (count == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("Requisition").style.display = "none";
+            </script> 
+        }
+
+        <li id="MisReport">
+            <a href="#"><i class="glyphicons glyphicons-justify"></i><span>MIS Reports</span><span class="fa arrow"></span></a>
+            @{ string[] links7 = new string[100];
+
+               links7[0] = "/MisReports/EmployeeReport";
+               links7[1] = "/MisReports/SupplierReport";
+               links7[2] = "/MisReports/ClientReport";
+               links7[3] = "/MisReports/ItemWiseReport";
+               links7[4] = "/MisReports/ItemTaxReport";
+               links7[5] = "/MisReports/OpeningStockReport";
+               links7[6] = "/MisReports/PurchaseOrderReport";
+               links7[7] = "/MisReports/InwardsWithPOReports";
+               links7[8] = "/MisReports/InwardsWithoutPOReports";
+               links7[9] = "/MisReports/InwardToGodown";
+               links7[10] = "/MisReports/InwardToShop";
+               links7[11] = "/MisReports/InwardFromShopToGodownReports";
+               links7[12] = "/MisReports/InwardInterShopReport";
+               links7[13] = "/MisReports/InwardInterGodownReport";
+               links7[14] = "/MisReports/EntryStockReport";
+               links7[15] = "/MisReports/StockDistributionReport";
+               links7[16] = "/MisReports/ShopStockReport";
+               links7[17] = "/MisReports/GodownStockReport";
+               links7[18] = "/MisReports/OutwardToClientReports";
+               links7[19] = "/MisReports/OutwardToShopReports";
+               links7[20] = "/MisReports/OutwardFromShopToGodownReports";
+               links7[21] = "/MisReports/OutwardInterShopReports";
+               links7[22] = "/MisReports/OutwardInterGodownReports";
+               links7[23] = "/MisReports/BillingReports";
+               links7[24] = "/MisReports/PendingBillReports";
+               links7[25] = "/MisReports/CashierReports";
+               links7[26] = "/MisReports/DebitCreditNoteReports";
+               links7[27] = "/MisReports/StartingBlankPageForSalesReport";
+               links7[28] = "/MisReports/CommissionReport";
+               links7[29] = "/MisReports/CommissionReleaseReport";
+
+               count = 0;
+                <ul class="nav nav-third-level">
+                    @if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                    {
+                        foreach (var item in Model.userCredentialList)
+                        {
+                            if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 58 && item.ModuleId <= 87)
+                            {
+                                if (item.Modules == "Employee Report")
+                                {
+                        <li>
+                            <a href="@links7[0]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+
+                                if (item.Modules == "Supplier Report")
+                                {
+                        <li>
+                            <a href="@links7[1]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Client Report")
+                                {
+                        <li>
+                            <a href="@links7[2]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Item Wise Report")
+                                {
+                        <li>
+                            <a href="@links7[3]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "ItemTax Report")
+                                {
+                        <li>
+                            <a href="@links7[4]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                } if (item.Modules == "Opening Stock Report")
+                                {
+                        <li>
+                            <a href="@links7[5]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Purchase Order Report")
+                                {
+                        <li>
+                            <a href="@links7[6]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Inward With PO Report")
+                                {
+                        <li>
+                            <a href="@links7[7]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Inward Without PO Report")
+                                {
+                        <li>
+                            <a href="@links7[8]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Inward Stock Distribution Report")
+                                {
+                        <li>
+                            <a href="@links7[9]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Inward To Shop Report")
+                                {
+                        <li>
+                            <a href="@links7[10]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Inward To Godown Report")
+                                {
+                        <li>
+                            <a href="@links7[11]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Inward Inter Shop Report")
+                                {
+                        <li>
+                            <a href="@links7[12]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Inward Inter Godown Report")
+                                {
+                        <li>
+                            <a href="@links7[13]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Entry Stock Report")
+                                {
+                        <li>
+                            <a href="@links7[14]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Stock Distribution Report")
+                                {
+                        <li>
+                            <a href="@links7[15]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Shop Stock Report")
+                                {
+                        <li>
+                            <a href="@links7[16]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Godown Stock Report")
+                                {
+                        <li>
+                            <a href="@links7[17]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Outward To Client Report")
+                                {
+                        <li>
+                            <a href="@links7[18]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Outward To Shop Report")
+                                {
+                        <li>
+                            <a href="@links7[19]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Outward To Godown Report")
+                                {
+                        <li>
+                            <a href="@links7[20]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Outward Inter Shop Report")
+                                {
+                        <li>
+                            <a href="@links7[21]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Outward Inter Godown Report")
+                                {
+                        <li>
+                            <a href="@links7[22]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Billing Reports")
+                                {
+                        <li>
+                            <a href="@links7[23]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Pending Bills Reports")
+                                {
+                        <li>
+                            <a href="@links7[24]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Cashier Reports")
+                                {
+                        <li>
+                            <a href="@links7[25]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Credit/Debit Note Report")
+                                {
+                        <li>
+                            <a href="@links7[26]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Daily & Montly Sales Report")
+                                {
+                        <li>
+                            <a href="@links7[27]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Commission Report")
+                                {
+                        <li>
+                            <a href="@links7[28]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                                if (item.Modules == "Commission Release Report")
+                                {
+                        <li>
+                            <a href="@links7[29]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                        </li>
+                                }
+                            }
+                            else { count++; }
+                        }
+
+                    }
+                </ul>
+            }
+        </li>
+        @if (count == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("MisReport").style.display = "none";
+            </script> 
+        }
+
+        <li id="JobWork">
+            <a href="#"><i class="glyphicons glyphicon-user"></i><span>Job Work</span><span class="fa arrow"></span></a>
+            @{  
+                string[] links8 = new string[100];
+                links8[0] = "/JobWork/CreateJobWorker";
+                links8[1] = "/JobWork/CreateJobWorkType";
+                links8[2] = "/OutwardToTailor/Create";
+                links8[3] = "/JobWorkInward/InwardToTailor";
+                links8[4] = "/JobWorkInward/InwardFromTailor";
+                links8[5] = "/JobWork/JobWorkPayment";
+                links8[6] = "/JobWorkMISReports/JobWorkStockReport";
+                links8[7] = "/JobWorkMISReports/JobWorkerReport";
+                count = 0;
+                int jobworkreportcount = 0;
+                <ul class="nav nav-third-level">
+                    @if (Model.userCredentialList != null && Model.userCredentialList.Any())
+                    {
+                        foreach (var item in Model.userCredentialList)
+                        {
+
+                            if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 88 && item.ModuleId <= 93)
+                            {
+                                if (item.Modules == "Job Worker")
+                                {
+                        <li>
+
+                            <a href="@links8[0]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Job Work Type")
+                                {
+                        <li>
+
+                            <a href="@links8[1]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Outward To Tailor")
+                                {
+                        <li>
+
+                            <a href="@links8[2]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Sent Items To Tailor")
+                                {
+                        <li>
+
+                            <a href="@links8[3]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Inward From Tailor")
+                                {
+                        <li>
+
+                            <a href="@links8[4]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                                if (item.Modules == "Payment")
+                                {
+                        <li>
+
+                            <a href="@links8[5]"><i class="fa fa-inr"></i><span>@item.Modules</span></a>
+
+                        </li>      
+                                }
+                            }
+                            else
+                            {
+                                count++;
+                            }
+                        }
+                        
+                        <li id="JobWorkMisReports">
+                            <a href="#"><i class="fa fa-arrow-right"></i><span>Job Work Mis Reports</span><span class="fa arrow"></span></a>
+                            <ul class="nav nav-third-level">
+                                @foreach (var item in Model.userCredentialList)
+                                {
+
+                                    if (!string.IsNullOrEmpty(item.Status) && item.ModuleId >= 94 && item.ModuleId <= 95)
+                                    {
+                                        if (item.Modules == "Job Work Stock Report")
+                                        {
+                                    <li>
+                                        <a href="@links8[6]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                                    </li>      
+                                        }
+                                        if (item.Modules == "Job Worker Report")
+                                        {
+                                    <li>
+                                        <a href="@links8[7]"><i class="fa fa-file-text"></i><span>@item.Modules</span></a>
+                                    </li>      
+                                        }
+                                    }
+                                    else
+                                    {
+                                        jobworkreportcount++;
+                                    }
+                                }
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            }
+        </li>
+        @if (count == Model.userCredentialList.Count() && jobworkreportcount == Model.userCredentialList.Count())
+        {
+            <script>
+                document.getElementById("JobWork").style.display = "none";
+            </script> 
+        }
+        @if (jobworkreportcount == Model.userCredentialList.Count())
+        {
+            <script>
+                if (document.getElementById("JobWorkMisReports") != null) {
+                    document.getElementById("JobWorkMisReports").style.display = "none";
+                }
+            </script> 
+        }
+
+    </ul>
+</div>
+

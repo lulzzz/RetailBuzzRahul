@@ -1,0 +1,110 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "EditPartial";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8/jquery.validate.min.js"></script>
+
+<script type="text/javascript">
+    $("#BankDetails_MICRCode").change(function () {
+        var micr = $(this).val();
+        micr = micr.replace(/ /g, '');
+        $("#BankDetails_MICRCode").val(micr);
+    });
+</script>
+
+<div class="col-lg-12 col-md-12">
+    @using (Html.BeginForm())
+    {
+        @Html.HiddenFor(model => model.BankDetails.bankId)
+        @Html.HiddenFor(model => model.BankDetails.bankName)
+
+        <div class="row">
+            <div class="row">
+                <div class="row">
+                    <h2><strong>Bank </strong>Details</h2>
+
+                    <div class="form-group col-md-12 col-lg-12">
+                        <div class="row">
+
+                            <div class="form-group col-md-4 col-lg-4">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-group row">
+                                        <label>Branch<i style="color: red">*</i></label>
+                                        @Html.TextBoxFor(model => model.BankDetails.Branch, new { @class = "form-control", @placeholder = "branch" , @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.Branch, null, new { style = "color:red" })
+                                    </div>
+                                    <div class="form-group row">
+                                        <label>Address<i style="color: red">*</i></label>
+                                        @Html.TextBoxFor(model => model.BankDetails.address, new { @class = "form-control", @placeholder = "address", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.address, null, new { style = "color:red" })
+                                    </div>
+                                    <div class="form-group row">
+                                        <label>Bank IFSC No.<i style="color: red">*</i></label>
+                                        @Html.TextBoxFor(model => model.BankDetails.IFSC, new { @class = "form-control", @placeholder = "IFSC code", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.IFSC, null, new { style = "color:red" })
+                                    </div>
+                                    <div class="form-group row">
+                                        <label>MICR Code</label>
+                                        @Html.TextBoxFor(model => model.BankDetails.MICRCode, new { @class = "form-control", @placeholder = "MICR Code", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.MICRCode, null, new { style = "color:red" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-4 col-lg-4">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-group row">
+                                        <label>Pincode</label>
+                                        @Html.TextBoxFor(model => model.BankDetails.pinCode, new { @class = "form-control", @placeholder = "pincode", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.pinCode, null, new { style = "color:red" })
+                                    </div>
+                                    <div class="form-group row">
+                                        <label>Contact No. 1<i style="color: red">*</i></label>
+                                        @Html.TextBoxFor(model => model.BankDetails.ContactNo1, new { @class = "form-control", @placeholder = "Contact No 1", @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.ContactNo1, null, new { style = "color:red" })
+                                    </div>
+                                    <div class="form-group row">
+                                        <label>Contact No. 2</label>
+                                        @Html.TextBoxFor(model => model.BankDetails.ContactNo2, new { @class = "form-control", @placeholder = "Contact No 2" , @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.ContactNo2, null, new { style = "color:red" })
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-4 col-lg-4">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="form-group row">
+                                        <label>Contact No. 3</label>
+                                        @Html.TextBoxFor(model => model.BankDetails.ContactNo3, new { @class = "form-control", @placeholder = "Contact No 3" , @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.ContactNo3, null, new { style = "color:red" })
+                                    </div>
+                                    <div class="form-group row">
+                                        <label>Email<i style="color: red">*</i></label>
+                                        @Html.TextBoxFor(model => model.BankDetails.email, new { @class = "form-control", @placeholder = "email" , @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.email, null, new { style = "color:red" })
+                                    </div>
+                                    <div class="form-group row">
+                                        <label>Website</label>
+                                        @Html.TextBoxFor(model => model.BankDetails.website, new { @class = "form-control", @placeholder = "website" , @autocomplete = "off" })
+                                        @Html.ValidationMessageFor(model => model.BankDetails.website, null, new { style = "color:red" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-lg-offset-5">
+                        <button type="button" class="btn btn-success" onclick="UpdatePartial()">Update</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>

@@ -1,0 +1,93 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "PrintInwardFromShopToGodownDatewise";
+}
+
+    <script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("FromDate").innerHTML = window.opener.document.getElementById("fromdate").value;
+        document.getElementById("ToDate").innerHTML = window.opener.document.getElementById("todate").value;
+    })
+    </script>
+
+    <table style="border: 1px double; width: 100%;">
+        <tr>
+            <td>
+                <table style="width:100%">
+                    <tr>
+                        <td colspan="8" style="text-align: center;">
+                            <img src="~/Images/retail-logo.png" class="img-responsive" alt="logo" style="max-width: 100px;" />
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" style="text-align: center;">
+                            <label><b>A To Z DADAR T.T.</b></label><br />
+                            <label>Shopping Centre, Dadar T.T., Dadar East,Mumbai - 400014</label>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="8" style="text-align: center">
+                            <label style="font-size: x-large;"><b>Inward From Shop Report </b></label>
+                        </td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <table style="width: 100%">
+                    <tr>
+                        <td style="float:right"><label style="font-weight:bold">Date:</label>&nbsp;&nbsp<label id="FromDate" style="font-weight: normal"></label>&nbsp;&nbsp;To&nbsp;&nbsp;<label id="ToDate" style="font-weight: normal"></label></td>
+                    </tr>
+                </table>
+            </td>
+        </tr>
+
+        <tr>
+            <td>
+                <table>
+                    <tr>
+                        <td style="height: 5px"></td>
+                    </tr>
+                </table>
+                <table border="1" cellpadding="0" cellspacing="0" style="width: 100%">
+                    <thead>
+                        <tr>
+                            <th>S.No.</th>
+                            <th>Inward No.</th>
+                            <th>Inward Date</th>
+                            <th>Godown Name</th>
+                            <th>Salesman Name</th>
+                            <th>Shop Name</th>
+                        </tr>
+                    </thead>
+                    <tbody id="itemlist">
+                        @{
+                            int rowid = 1;
+                        }
+                        @foreach (var data in Model.InwardFromShopToGodownList)
+                        {
+                            <tr>
+                                @{
+
+                                    var date = Convert.ToDateTime(@data.Date).ToShortDateString();
+                                }
+                                <td>@rowid</td>
+                                <td>@data.InwardCode</td>
+                                <td>@date</td>
+                                <td>@data.GodownName</td>
+                                <td>@data.SalesmanName</td>
+                                <td>@data.ShopName</td>
+                                @{
+                                    rowid += 1;
+                                }
+                            </tr>
+                                    }
+                    </tbody>
+                </table>
+
+            </td>
+        </tr>
+    </table>

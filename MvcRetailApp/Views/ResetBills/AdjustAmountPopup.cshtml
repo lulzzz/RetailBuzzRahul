@@ -1,0 +1,40 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "AdjustAmountPopup";
+}
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+<script type="text/javascript">
+    function AdjustAdvance(value) {
+        if (value == "Yes") {
+            window.open("/ResetBills/AdjustAmountBills", "_blank", "width=500,height=300,top=150px,left=400px");
+        }
+        else {
+            id = document.getElementById("RetailBillId").value;
+            CallTheDetailsPage(id);
+            window.close();
+        }
+    }
+    function CallTheDetailsPage(id) {
+        window.opener.GoToDetailsPage(id);
+        window.close();
+    }
+</script>
+@{
+    int id = (int)TempData["LastRetailBillId"];
+    TempData["LastRetailBillId"] = id;
+    <input type="hidden" id="RetailBillId" value="@id" />
+}
+<br />
+<br />
+<br />
+<br />
+<div class="col-lg-12 col-md-12" style="text-align: center">
+    <label>Are You Want To Adjust Additional Advance..</label>
+</div>
+<div class="col-lg-12 col-md-12" style="text-align: center">
+    <button type="button" id="Yes" class="btn btn-success" onclick="AdjustAdvance('Yes')">Yes</button>
+    <button type="button" id="No" class="btn btn-danger" onclick="AdjustAdvance('No')">No</button>
+</div>

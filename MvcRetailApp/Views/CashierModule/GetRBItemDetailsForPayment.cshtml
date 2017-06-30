@@ -1,0 +1,153 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetRBItemDetailsForPayment";
+}
+<script type="text/javascript">
+    $(function () {
+        
+        var advancepayment = +document.getElementById("AdvancePayment").innerHTML;
+        document.getElementById("AdvancePayment").innerHTML = "<i class='fa fa-inr'></i>" + " " + addCommas(advancepayment.toFixed(2));
+
+        var grandtotal = +document.getElementById("GrandTotal").innerHTML;
+        document.getElementById("GrandTotal").innerHTML = "<i class='fa fa-inr'></i>" + " " + addCommas(grandtotal.toFixed(2));
+
+        var adjustamount = +document.getElementById("AdjustAmount").innerHTML;
+        document.getElementById("AdjustAmount").innerHTML = "<i class='fa fa-inr'></i>" + " " + addCommas(adjustamount.toFixed(2));
+
+    });
+</script>
+
+<table style="border: 1px double; width: 100%">
+    <tr>
+        <td>
+            <div class="col-md-12 col-lg-12">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>S.N.</th>
+                            <th>Item Code</th>
+                            <th>Item Name</th>
+                            <th>Color</th>
+                            <th>Unit</th>
+                            <th style="text-align: right">Qty</th>
+                            <th style="text-align: right">Rate</th>
+                            <th style="text-align: right">Disc<br />
+                                (%)</th>
+                            <th style="text-align: right"> Disc<br />
+                                (<i class="fa fa-inr"></i>)</th>
+                            <th style="text-align: right">Tax<br />
+                                (%)</th>
+                            <th style="text-align: right">Amt<br />
+                                (<i class="fa fa-inr"></i>)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            // IF RETAIL INVOICE IS SELECTED
+                             if (Model.RetailBillItemList != null && Model.RetailBillItemList.Any())
+                            {
+                                string row3 = string.Empty;
+                                int rowid = 1;
+
+                                foreach (var item in Model.RetailBillItemList)
+                                {
+                                    row3 = "row" + rowid;
+
+                                    double qty = Convert.ToDouble(@item.Quantity);
+                                    var Quantity = qty.ToString("#,###.00##");
+                                    double rate = Convert.ToDouble(@item.Rate);
+                                    var Rate = rate.ToString("#,###.00##");
+                                    double disrs = Convert.ToDouble(@item.DiscountRPS);
+                                    var DisRs = disrs.ToString("#,###.00##");
+                                    double disper = Convert.ToDouble(@item.DiscountPercent);
+                                    var DisPer = disper.ToString("#,###.00##");
+                                    double tax = Convert.ToDouble(@item.ItemTax);
+                                    var Tax = tax.ToString("#,###.00##");
+                                    double amt = Convert.ToDouble(@item.Amount);
+                                    var Amount = amt.ToString("#,###.00##");
+                                    
+                                    <tr id="@row3">
+                                        <td>@rowid</td>
+                                        <td>@item.ItemCode</td>
+                                        <td>@item.ItemName</td>
+                                        <td>@item.Color</td>
+                                        <td>@item.Unit</td>
+                                        <td style="text-align:right">@Quantity</td>
+                                        <td style="text-align:right">@Rate</td>
+                                        <td style="text-align: right">@DisRs</td>
+                                        <td style="text-align: right">@DisPer</td>
+                                        <td style="text-align: right">@Tax</td>
+                                        <td style="text-align:right">@Amount</td>
+                                    </tr>
+                                    rowid = rowid + 1;
+                                }
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </td>
+    </tr>
+</table>
+<br />
+
+             @{
+                 if (Model.RetailBillDetails != null)
+                 {
+                 <div class="col-lg-7 col-md-7"></div>
+                    <div class="col-lg-5 col-md-5">
+                    @*<div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align:right">
+                                <label style="font-size: 14px;">Total Amount:</label>
+                            </div>
+                        <div class="col-lg-5 col-md-5" style="text-align:right">
+                             <label id="TotalAmount" style="font-size: 14px;">@Html.DisplayFor(model => model.RetailBillDetails.TotalAmount)</label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align:right">
+                                <label style="font-size: 14px;">Tax Amount:</label>
+                            </div>
+                        <div class="col-lg-5 col-md-5" style="text-align:right">
+                            <label id="TotalTaxAmount" style="font-size: 14px;">@Html.DisplayFor(model => model.RetailBillDetails.TotalTaxAmount)</label>
+                        </div>
+                    </div>*@
+                    <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align:right">
+                                <label style="font-size: 14px;">Grand Total:</label>
+                            </div>
+                        <div class="col-lg-5 col-md-5" style="text-align:right">
+                             <label id="GrandTotal" style="font-size: 14px;">@Html.DisplayFor(model => model.RetailBillDetails.GrandTotal)</label>
+                        </div>
+                    </div>
+                        @{
+                     var adjamt = Model.RetailBillDetails.AdjustedAmount;
+                     if (adjamt != 0)
+                     {
+                         <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align:right">
+                                <label style="font-size: 14px;">Adjust Amount:</label>
+                            </div>
+                        <div class="col-lg-5 col-md-5" style="text-align:right">
+                            <label id="AdjustAmount" style="font-size: 14px;">@Html.DisplayFor(model => model.RetailBillDetails.AdjustedAmount)</label>
+                        </div>
+                    </div>
+                     }
+                        }
+                     <div class="row">
+                        <div class="col-lg-7 col-md-7" style="text-align:right">
+                                <label style="font-size: 14px;">Payment:</label>
+                            </div>
+                        <div class="col-lg-5 col-md-5" style="text-align:right">
+                            <label id="AdvancePayment" style="font-size: 14px; color:red">@Html.DisplayFor(model => model.RetailBillDetails.Payment)</label>
+                        </div>
+                    </div>
+
+                        <input type="hidden" value="@Model.RetailBillDetails.Refund" id="RetailRefund"/>
+                        <input type="hidden" value="@Model.RetailBillDetails.Balance" id="RetailBalance"/>
+                     </div>
+                     
+                 }
+             }
+    
+           

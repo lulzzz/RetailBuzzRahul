@@ -1,0 +1,67 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "SubCategoryEditPartial";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.validate.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.5.2/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.aspnetcdn.com/ajax/jquery.validate/1.8/jquery.validate.min.js"></script>
+
+@using (Html.BeginForm())
+{
+
+    @Html.HiddenFor(model => model.ItemSubCategoryDetails.ItemSubCategoryCode)
+    @Html.HiddenFor(model => model.ItemSubCategoryDetails.subCategoryId)
+    @Html.HiddenFor(model => model.ItemSubCategoryDetails.categoryName)
+
+      
+    <h2><strong>Item SubCategory </strong>Details</h2>
+    <br />
+
+    <div class="col-md-12 col-lg-12">
+        <div class="col-md-12 col-lg-12">
+
+            <div class="row">
+                <div class="form-group col-md-6 col-lg-6">
+                    <label for="exampleInputname">Item SubCategory Code</label>
+                </div>
+                <div class="form-group col-md-5 col-lg-5">
+                    @Html.DisplayFor(model => model.ItemSubCategoryDetails.ItemSubCategoryCode)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6 col-lg-6">
+                    <label>Category Name</label>
+                </div>
+                <div class="form-group col-md-5 col-lg-5">
+                    @Html.DisplayFor(model => model.ItemSubCategoryDetails.categoryName)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-6 col-lg-6">
+                    <label for="exampleInputname">Sub Category Name</label>
+                </div>
+                <div class="form-group col-md-5 col-lg-5">
+                    @Html.TextBoxFor(model => model.ItemSubCategoryDetails.subCategoryName, new { @class = "form-control" })
+                    @Html.ValidationMessageFor(model => model.ItemSubCategoryDetails.subCategoryName, null, new { style = "color:red" })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="row">
+
+            <div class="col-lg-offset-4">
+                <button type="button" class="btn btn-success" onclick="EditSubCategory()">Update</button>
+            </div>
+        </div>
+    </div>
+}

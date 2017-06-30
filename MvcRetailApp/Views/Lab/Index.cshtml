@@ -1,0 +1,57 @@
+﻿@model IEnumerable<CodeFirstEntities.LabMaster>
+
+@{
+    ViewBag.Title = "Index";
+}
+
+<h2>Index</h2>
+
+<p>
+    @Html.ActionLink("Create New", "Create")
+</p>
+<table>
+    <tr>
+        <th>
+            @Html.DisplayNameFor(model => model.labName)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.labDescription)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.logo)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.labStatus)
+        </th>
+        <th>
+            @Html.DisplayNameFor(model => model.modifiedOn)
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.labName)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.labDescription)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.logo)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.labStatus)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.modifiedOn)
+        </td>
+        <td>
+            @Html.ActionLink("Edit", "Edit", new { id=item.labId }) |
+            @Html.ActionLink("Details", "Details", new { id=item.labId }) |
+            @Html.ActionLink("Delete", "Delete", new { id=item.labId })
+        </td>
+    </tr>
+}
+
+</table>

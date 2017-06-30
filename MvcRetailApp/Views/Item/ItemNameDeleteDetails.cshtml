@@ -1,0 +1,67 @@
+﻿@{@model CodeFirstEntities.ItemName
+    @{
+        ViewBag.Title = "ItemNameDeleteDetails";
+    }
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            var boundry = document.getElementById("NumberOfRows").value;
+            var type = document.getElementById("ViewType").value;
+
+            for (var i = 1; i <= boundry; i++) {
+                Namedeleteid = "NameDeleteId" + i;
+                lableNameDeleteid = "LableNameDeleteId" + i;
+                if (document.getElementById(Subdeleteid) != null) {
+                    document.getElementById(Subdeleteid).style.display = "inline";
+                    document.getElementById(lableSubDeleteid).style.display = "none";
+                }
+            }
+        });
+    </script>
+
+    <h2><strong>Item Name </strong>Details</h2>
+    @{
+        string type = TempData["ViewType"].ToString();
+        TempData["ViewType"] = type;
+        <input type="hidden" id="ViewType" value="@type" />
+    }
+    <br />
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label>Item Category</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.ItemCategory)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label>Item Sub-Category</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.ItemSubcategory)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label for="exampleInputname">Item Name</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.Name)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label for="exampleInputname">Item Type</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.ItemType)
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,198 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "SelectDateForDailyMontlySalesReporPopup";
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+@*BY DEFAULT SELECTED TODAY'S DATE ON FROM AND TO DATE*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dat = new Date();
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById("fromdate").value = data;
+
+        var dat1 = new Date();
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat1.getDate() + "/" + month[dat1.getMonth()] + "/" + dat1.getFullYear();
+        document.getElementById("todate").value = data;
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "fromdate",
+            dateFormat: "%d/%M/%Y",
+        });
+        data.addOnSelectedDelegate(function () {
+            var selecteddate = document.getElementById("fromdate").value;
+            var todaysdate = new Date();
+
+            var dat = new Date(todaysdate);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            todaysdate = data;
+
+            todaysdate = new Date(todaysdate).getTime();
+            selecteddate = new Date(selecteddate).getTime();
+
+            if (selecteddate > todaysdate) {
+                alert("Date Should Be Not greater Than Today,s Date..");
+                document.getElementById("fromdate").value = data;
+                return false;
+            }
+        });
+
+        var data1 = new JsDatePick({
+            useMode: 2,
+            target: "todate",
+            dateFormat: "%d/%M/%Y",
+        });
+        data1.addOnSelectedDelegate(function () {
+            var selecteddate = document.getElementById("todate").value;
+            var todaysdate = new Date();
+
+            var dat = new Date(todaysdate);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var data1 = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            todaysdate = data1;
+
+            todaysdate = new Date(todaysdate).getTime();
+            selecteddate = new Date(selecteddate).getTime();
+
+            if (selecteddate > todaysdate) {
+                alert("Date Should Be Not greater Than Today,s Date..");
+                document.getElementById("todate").value = data1;
+                return false;
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function ResetData() {
+        document.getElementById("fromdate").value = "";
+        document.getElementById("todate").value = "";
+    }
+</script>
+
+<script type="text/javascript">
+    function GotoSalesReports() {
+        var FromDate = document.getElementById("fromdate").value;
+        var ToDate = document.getElementById("todate").value;
+        var billtype = document.getElementById("BillType").value;
+
+        if (FromDate != "" && ToDate != "") {
+            if (billtype == "RetailBill") {
+                window.opener.window.location.assign("/MisReports/RetailBillSalesReport?fromdate=" + FromDate + "&todate=" + ToDate);
+            }
+            else if (billtype == "SalesBill") {
+                window.opener.window.location.assign("/MisReports/SalesBillSalesReport?fromdate=" + FromDate + "&todate=" + ToDate);
+            }
+            window.close();
+        }
+        else {
+            if (FromDate == "" && ToDate != "") {
+                alert("Please Select The From Date..");
+            }
+            else if (ToDate == "" && FromDate != "") {
+                alert("Please Select The To Date..");
+            }
+            else {
+                alert("Please Select The From And To Date..");
+            }
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function CheckBill(type) {
+
+        if (type == 'RetailBill') {
+            document.getElementById("BillType").value = "RetailBill";
+            document.getElementById("DateDetailsDiv").style.display = 'inline';
+            $("#SalesBillRadioBtn").prop("checked", false);
+        }
+        else if (type == 'SalesBill') {
+            document.getElementById("BillType").value = "SalesBill";
+            document.getElementById("DateDetailsDiv").style.display = 'inline';
+            $("#RetailBillRadioBtn").prop("checked", false);
+        }
+    }
+</script>
+
+<input type="hidden" id="BillType" name="BillType"/>
+
+<div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+    <br />
+    <div class="row" style="text-align: center">
+        <h2>Sales Report</h2>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+            <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+                <input type="radio" id="RetailBillRadioBtn" name="RetailBillRadioBtn" onclick="CheckBill('RetailBill')" />
+                <label style="font-size:16px; color:blue">Retail Bill</label>
+            </div>
+            <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+                <input type="radio" id="SalesBillRadioBtn" name="SalesBillRadioBtn" onclick="CheckBill('SalesBill')" />
+                <label style="font-size:16px; color:blue">Sales Bill</label><br />
+            </div>
+        </div>
+    </div>
+
+    <div id="DateDetailsDiv" style="display: none">
+        <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12" style="text-align: center">
+            <label>Select the Date Range for the Details of all the Details Regarding Sales done in that Date Range</label>
+        </div>
+
+        <br />
+        <br />
+        <br />
+        <div class="row">
+            <div class="col-md-12 col-lg-12 col-sm-12 col-xs-12">
+                <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+                    <label>From Date<i style="color: red">*</i></label>
+                    <input type="text" id="fromdate" name="fromdate" placeholder="From Date" class="form-control" />
+                </div>
+                <div class="col-md-6 col-lg-6 col-sm-6 col-xs-6">
+                    <label>To Date<i style="color: red">*</i></label><br />
+                    <input type="text" id="todate" name="todate" placeholder="To Date" class="form-control" />
+                </div>
+            </div>
+        </div>
+        <br />
+
+        <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12" style="text-align: center">
+            <button type="button" id="Yes" class="btn btn-success" onclick="GotoSalesReports()" style="width: 65px">Ok</button>
+            <button type="button" id="No" class="btn btn-warning" onclick="ResetData()" style="width: 65px">Reset</button>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

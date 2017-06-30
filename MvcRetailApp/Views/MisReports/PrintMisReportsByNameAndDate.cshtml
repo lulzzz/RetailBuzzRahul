@@ -1,0 +1,96 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "PrintMisReports";
+}
+
+<h2>MisReports</h2>
+<script type="text/javascript">
+    $(document).ready(function () {
+        document.getElementById("fromdate").innerHTML = window.opener.document.getElementById("FromDate").value;
+        document.getElementById("todate").innerHTML = window.opener.document.getElementById("ToDate").value;
+        document.getElementById("suppname").innerHTML = window.opener.document.getElementById("suppliername").value;
+    });
+</script>
+<div class="col-lg-12 col-md-6">
+    <div class="col-lg-6 col-md-6">
+        <label>SupplierName</label>
+        <label id="suppname"></label>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <label>FromDate</label>
+        <label id="fromdate"></label>
+    </div>
+    <div class="col-lg-6 col-md-6">
+        <label>ToDate</label>
+        <label id="todate"></label>
+    </div>
+</div>
+
+<div class="col-lg-12 col-md-6">
+    <div class="col-lg-12 col-md-6">
+        <table border="1" style="width: 100%">
+            <thead>
+                <tr id="trlist">
+                    <th>
+                        <label style="vertical-align: middle; text-align: center; width: 100%;">Sr No</label></th>
+                    <th>
+                        <label style="vertical-align: middle; text-align: center; width: 100%;">Po No</label></th>
+                    <th>
+                        <label style="vertical-align: middle; text-align: center; width: 100%;">Delivary Date</label></th>
+
+                    <th>
+                        <label style="vertical-align: middle; text-align: center; width: 100%;">Email</label></th>
+                    <th>
+                        <label style="vertical-align: middle; text-align: center; width: 100%;">Delivary At.</label></th>
+                    <th>
+                        <label style="vertical-align: middle; text-align: center; width: 100%;">Amount </label>
+                    </th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.PurchaseListBySupplierNameAndDate != null && Model.PurchaseListBySupplierNameAndDate.Any())
+                {
+                    <script type="text/javascript">
+                        @{
+                    var z = 1;
+                                                            }
+                    </script>
+
+                    foreach (var item in Model.PurchaseListBySupplierNameAndDate)
+                    {
+                    <tr>
+                        <td>
+                            <label style="text-align: center; width: 100%; font-weight: normal;" id="idvalue">@z</label></td>
+                        <script type="text/javascript">
+                            @{
+                        z++;}
+                        </script>
+                        <td>
+                            <label style="text-align: center; width: 100%; font-weight: normal;">@Html.DisplayFor(modelItem => item.PoNo)</label></td>
+                        <td>
+                            <label style="text-align: center; width: 100%; font-weight: normal;">@item.DelDate.ToShortDateString()</label></td>
+
+                        <td>
+                            <label style="text-align: center; width: 100%; font-weight: normal;">@Html.DisplayFor(modelItem => item.SupplierEmail)</label></td>
+                        <td>
+                            <label style="text-align: center; width: 100%; font-weight: normal;">@Html.DisplayFor(modelItem => item.DelAt)</label></td>
+                        <script type="text/javascript">
+                            @{
+                        var i = @item.GrandTotal;
+                        double y = Convert.ToDouble(i);
+                        var bob = y.ToString("#,###.00##");
+                                                           }
+                        </script>
+                        <td>
+                            <label style="font-weight: normal">@bob</label></td>
+                    </tr>
+                    }
+                }
+
+            </tbody>
+        </table>
+        <div style="height: 15px"></div>
+    </div>
+</div>
+

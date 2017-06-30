@@ -1,0 +1,69 @@
+﻿@model CodeFirstEntities.ItemSubCategory
+@{
+    ViewBag.Title = "SubCategoryUpdateDetails";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var boundry = document.getElementById("NumberOfRows").value;
+        var type = document.getElementById("ViewType").value;
+        if (type == "Edit") {
+            for (var i = 1; i <= boundry; i++) {
+                Subeditid = "SubCategoryEditId" + i;
+                lableSubEditid = "LableSubEditId" + i;
+                if (document.getElementById(Subeditid) != null) {
+                    document.getElementById(Subeditid).style.display = "inline";
+                    document.getElementById(lableSubEditid).style.display = "none";
+                }
+            }
+        }
+        else {
+            for (var i = 1; i <= boundry; i++) {
+                Subdeleteid = "SubCategoryDeleteId" + i;
+                lableSubDeleteid = "LableSubDeleteId" + i;
+                if (document.getElementById(Subdeleteid) != null) {
+                    document.getElementById(Subdeleteid).style.display = "inline";
+                    document.getElementById(lableSubDeleteid).style.display = "none";
+                }
+            }
+        }
+    });
+</script>
+
+<h2><strong>Item SubCategory </strong>Details</h2>
+@{
+    string type = TempData["ViewType"].ToString();
+    TempData["ViewType"] = type;
+    <input type="hidden" id="ViewType" value="@type" />
+}
+<br />
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label>Item SubCategory Code</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.ItemSubCategoryCode)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label>Category Name</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.categoryName)
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="form-group col-md-6 col-lg-6">
+                <label for="exampleInputname">Sub Category Name</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.subCategoryName)
+            </div>
+        </div>
+    </div>
+</div>

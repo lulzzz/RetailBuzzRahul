@@ -1,0 +1,100 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetAllCreditNoteReport";
+}
+
+<table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr style="background-color: #eee">
+            <th style="text-align: center">Sr.No</th>
+            <th style="text-align: center">Client Name</th>
+            <th style="text-align: center">CreditNote No</th>
+            <th style="text-align: center">Sales Return No</th>
+            <th style="text-align: center">Bill Type</th>
+            <th style="text-align: center">Bill No</th>
+            <th style="text-align: center">Date</th>
+            <th style="text-align: center">Amount</th>
+            <th style="text-align: center">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int rowid = 1;
+            if (Model.CreditNoteList != null && Model.CreditNoteList.Any())
+            {
+                foreach (var data in Model.CreditNoteList)
+                {
+            <tr>
+                @{
+                    double amt = Convert.ToDouble(@data.Amount);
+                    var Amount = amt.ToString("#,###.00##");
+                }
+                <td style="text-align: center">@rowid</td>
+                <td style="text-align: center">@data.ClientName</td>
+                <td style="text-align: center">@data.CreditNoteNo</td>
+                <td style="text-align: center">@data.SalesReturnNo</td>
+                <td style="text-align: center">@data.BillType</td>
+                <td style="text-align: center">@data.BillNo</td>
+                <td style="text-align: center">@Convert.ToDateTime(data.Date).ToString("dd/MM/yyyy")</td>
+                <td style="text-align: center">@Amount</td>
+                <td style="text-align: center">
+                    @{
+                    if (data.Status == "Active")
+                    {
+                        <label style="color: red">Pending</label>
+                    }
+                    else
+                    {
+                        <label>Adjusted</label>
+                    }
+                    }
+                </td>
+                @{
+                    rowid += 1;
+                }
+            </tr>
+                }
+            }
+
+            int rowid1 = rowid;
+
+            if (Model.SalesBillCreditNoteList != null && Model.SalesBillCreditNoteList.Any())
+            {
+                foreach (var data in Model.SalesBillCreditNoteList)
+                {
+            <tr>
+                @{
+                    double amt = Convert.ToDouble(@data.Amount);
+                    var Amount = amt.ToString("#,###.00##");
+                }
+                <td style="text-align: center">@rowid1</td>
+                <td style="text-align: center">@data.ClientName</td>
+                <td style="text-align: center">@data.CreditNoteNo</td>
+                <td style="text-align: center">@data.SalesReturnNo</td>
+                <td style="text-align: center">@data.BillType</td>
+                <td style="text-align: center">@data.BillNo</td>
+                <td style="text-align: center">@Convert.ToDateTime(data.Date).ToString("dd/MM/yyyy")</td>
+                <td style="text-align: center">@Amount</td>
+                <td style="text-align: center">
+                    @{
+                    if (data.Status == "Active")
+                    {
+                        <label style="color: red">Pending</label>
+                    }
+                    else
+                    {
+                        <label>Adjusted</label>
+                    }
+                    }
+                </td>
+                @{
+                    rowid1 += 1;
+                }
+            </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+

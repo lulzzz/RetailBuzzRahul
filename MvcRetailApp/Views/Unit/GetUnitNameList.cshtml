@@ -1,0 +1,119 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetUnitNameList";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("table.tablesorter").tablesorter({ widthFixed: true, sortList: [[0, 0]] })
+       .tablesorterPager({ container: $("#pager"), size: $(".pagesize option:selected").val() });
+    });
+</script>
+
+<div class="col-md-12 col-lg-12">
+    <div class="row">
+        <div class="row">
+            <table class="tablesorter table">
+                <thead>
+                    <tr>
+                        <th style="color: royalblue">Code</th>
+                        <th style="color: royalblue">Categories</th>
+                        <th style="color: royalblue;text-align:center">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @{
+                        if (Model.UnitList != null || Model.UnitList.Any())
+                        {
+                            int count = 1;
+                            int bndry = Model.UnitList.Count();
+                            string type = TempData["Type"].ToString();
+                            TempData["Type"] = type;
+                            if (type == "edit")
+                            {
+                                foreach (var data in Model.UnitList)
+                                {
+                                    string editid = string.Empty;
+                                    string unitname = string.Empty;
+                                    string rowid = string.Empty;
+                                    editid = "EditId" + count;
+                                    rowid = "rowid" + count;
+                                    unitname = "unitname" + count;
+                                       
+                        <tr id="@rowid">
+                            <td>
+                                @Html.DisplayFor(modeldata => data.UnitCode)
+                            </td>
+                               
+                            <td style="text-align:center">
+                                @{var unitnm = data.UnitName;}
+                                <label id="@unitname" style="font-weight:normal">@unitnm</label>
+                            </td>
+
+                            <td style="text-align:center">
+                                <button type="button" class="btn btn-link" onclick="ChangeUnit(@data.UnitId,@bndry,@count)" id="@editid" style="color:dodgerblue; font-size:small">Edit</button>
+                                </td>
+                        </tr>
+                                  count = count + 1;
+                                }
+                            }
+                            else
+                            {
+                                foreach (var data in Model.UnitList)
+                                {
+                                    string unitname = string.Empty;
+                                    string rowid = string.Empty;
+                                    string deleteid = "DeleteId" + count;
+                                    rowid = "rowid" + count;
+                                    unitname = "unitname" + count;
+                                       
+                        <tr id="@rowid">
+                            <td>
+                                @Html.DisplayFor(modeldata => data.UnitCode)
+                            </td>
+                               
+                            <td style="text-align:center">
+                                @{var unitnm = data.UnitName;}
+                                <label id="@unitname" style="font-weight:normal">@unitnm</label>
+                            </td>
+
+                            <td style="text-align:center">
+                                <button type="button" class="btn btn-link" onclick="DeleteUnit(@data.UnitId,@bndry,@count)" id="@deleteid" style="color:dodgerblue; font-size:small">Delete</button>
+                                </td>
+                        </tr>
+                                  count = count + 1;
+                                }
+                            }
+                        }
+                    }
+                </tbody>
+            </table>
+            <br />
+            <div id="pager">
+                    <form>
+                        <img src="../Images/first.png" class="first" id="first" />
+                        <img src="../Images/prev.png" class="prev" id="prev" />
+                        <input type="text" class="pagedisplay" id="pagertextbox" />
+                        <img src="../Images/next.png" class="next" id="next" />
+                        <img src="../Images/last.png" class="last" id="last" />
+                        <select class="pagesize" id="pagerdropdown">
+                            <option selected="selected" value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                        </select>
+                    </form>
+                </div>
+        </div>
+    </div>
+</div>
+                       
+
+<!-- End: Main --> 
+
+
+
+    

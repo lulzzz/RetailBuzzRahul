@@ -1,0 +1,1022 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "IncomeExpenseVoucherEntry";
+}
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("select").keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields =
+$(this).parents('form:eq(0),body').find();
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+
+<!--custom Alerts-->
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function infoBox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('infoClass');
+        bootbox.alert('<i class="fa fa-2x fa-info-circle"></i><br>' + message + '<hr>');
+    }
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateItemWiseAmount(rowid, '');
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         var totalamount = 0;
+		         for (var i = 1; i <= rowid; i++) {
+		             var amount = "amount" + i;
+		             if (document.getElementById(amount) != null) {
+		                 totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+		             }
+		         }
+
+		         document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+		     }
+		 });
+    }
+</script>
+
+
+@*DISPLAY PARTIAL VIEW OF TYPE OF PAYMENT*@
+<script type="text/javascript">
+    function CashierModule(type) {
+        document.getElementById("save").disabled = false;
+        document.getElementById("PayType").value = type;
+
+        document.getElementById("IncomeExpenseVoucherDetails_PaymentType").value = type;
+
+        if (type == 'Cash') {
+
+            $.ajax({
+                url: "/IncomeExpenseVoucher/CashPayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+
+                    document.getElementById("TotalCash").value = document.getElementById("Amount").value;
+                }
+            });
+        }
+        else if (type == 'Card') {
+            $.ajax({
+                url: "/IncomeExpenseVoucher/CardPayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+        else if (type == 'Cheque') {
+            $.ajax({
+                url: "/IncomeExpenseVoucher/ChequePayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+        else if (type == 'CashCardCheque') {
+            $.ajax({
+                url: "/IncomeExpenseVoucher/CashCardChequePayment",
+                type: "GET",
+                success: function (data) {
+                    $("#PaymentType").html(data);
+                }
+            });
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function DisplayPaymentDetails() {
+        document.getElementById("TypeOfPaymentLabel").style.display = 'inline';
+        document.getElementById("TypeOfPaymentDiv").style.display = 'inline';
+    }
+</script>
+
+<script type="text/javascript">
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function AllowNumbersWithoutDecimal(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+</script>
+
+@*PART PAYMENT VALIDATIONS*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#save").click(function () {
+
+            var validationcount = 0;
+
+            var payment = document.getElementById("Amount").value;
+
+            var type = document.getElementById("PayType").value;
+            //CASH PAYMENT VALIDATIONS
+            if (type == "Cash") {
+
+                document.getElementById("Amt1").disabled = false;
+                document.getElementById("Amt2").disabled = false;
+                document.getElementById("Amt3").disabled = false;
+                document.getElementById("Amt4").disabled = false;
+                document.getElementById("Amt5").disabled = false;
+                document.getElementById("Amt6").disabled = false;
+                document.getElementById("Amt7").disabled = false;
+                document.getElementById("TotalCash").disabled = false;
+
+                if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                    alertbox("Please Enter Total Cash");
+                    validationcount = 1;
+                    return false;
+                }
+
+                //if part payment < total amount then get refund alert..
+                if (document.getElementById("TotalCash") != null) {
+                    var totalcash = +(document.getElementById("TotalCash").value);
+                    if (totalcash > payment) {
+                        var refund = (totalcash - payment).toFixed(2);
+                        var msg = alertbox(refund + " " + "Rupees Refunded..");
+                        document.getElementById("IncomeExpenseVoucherDetails_Refund").value = refund;
+                    }
+                }
+            }
+
+                //CARD PAYMENT VALIDATIONS
+            else if (type == "Card") {
+                if (document.getElementById("Card") != null) {
+                    var selectedcard = document.getElementById("Card").value;
+                }
+
+                if (selectedcard != "") {
+                    //if we select credit card then validations on credit card details..
+                    if (selectedcard == "CreditCard") {
+
+                        var creditamt = +(document.getElementById("IncomeExpenseVoucherDetails_CreditCardAmount").value);
+
+                        if ($("#IncomeExpenseVoucherDetails_CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if (creditamt != payment) {
+                            alertbox("Please Enter The Correct Amount For Payment");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                        //if we select debit card then validations on debit card details..
+                    else {
+
+                        var debitamt = +(document.getElementById("IncomeExpenseVoucherDetails_DebitCardAmount").value);
+
+                        if ($("#IncomeExpenseVoucherDetails_DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if (debitamt != payment) {
+                            alertbox("Please Enter The Correct Amount For Payment");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+                }
+                else {
+                    alertbox("Please Select The Card..");
+                    return false;
+                }
+            }
+
+                //CHEQUE PAYMENT VALIDATION
+            else if (type == "Cheque") {
+
+                var chequeamt = +(document.getElementById("IncomeExpenseVoucherDetails_ChequeAmount").value);
+
+                if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() == "") {
+                    alertbox("Please Enter Cheque No");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#IncomeExpenseVoucherDetails_ChequeAccNo").val() == "") {
+                    alertbox("Please Enter Cheque Account No");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#IncomeExpenseVoucherDetails_ChequeAmount").val() == "") {
+                    alertbox("Please Enter Cheque Amount");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#IncomeExpenseVoucherDetails_ChequeDate").val() == "") {
+                    alertbox("Please Enter Cheque Date");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#IncomeExpenseVoucherDetails_ChequeBank").val() == "") {
+                    alertbox("Please Enter Cheque Bank");
+                    validationcount = 1;
+                    return false;
+                }
+                else if ($("#IncomeExpenseVoucherDetails_ChequeBranch").val() == "") {
+                    alertbox("Please Enter Cheque Branch");
+                    validationcount = 1;
+                    return false;
+                }
+                else if (chequeamt != payment) {
+                    alertbox("Please Enter The Correct Amount For Payment");
+                    validationcount = 1;
+                    return false;
+                }
+            }
+
+                //CASH/CARD/CHEQUE VALIDATIONS
+            else if (type == "CashCardCheque") {
+
+                // cash card check combination
+                if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#IncomeExpenseVoucherDetails_ChequeNo").val() != "" && $("#Card").val() != "") {
+
+                    document.getElementById("Amt1").disabled = false;
+                    document.getElementById("Amt2").disabled = false;
+                    document.getElementById("Amt3").disabled = false;
+                    document.getElementById("Amt4").disabled = false;
+                    document.getElementById("Amt5").disabled = false;
+                    document.getElementById("Amt6").disabled = false;
+                    document.getElementById("Amt7").disabled = false;
+                    document.getElementById("TotalCash").disabled = false;
+
+                    if ($("#Card").val() == "CreditCard") {
+
+                        if ($("#IncomeExpenseVoucherDetails_CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() == "") {
+                            alertbox("Please Enter Cheque No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeAccNo").val() == "") {
+                            alertbox("Please Enter Cheque Account No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeAmount").val() == "") {
+                            alertbox("Please Enter Cheque Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeDate").val() == "") {
+                            alertbox("Please Enter Cheque Date");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeBank").val() == "") {
+                            alertbox("Please Enter Cheque Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeBranch").val() == "") {
+                            alertbox("Please Enter Cheque Branch");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                            alertbox("Please Enter Total Cash");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                    else {
+                        if ($("#IncomeExpenseVoucherDetails_DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() == "") {
+                            alertbox("Please Enter Cheque No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeAccNo").val() == "") {
+                            alertbox("Please Enter Cheque Account No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeAmount").val() == "") {
+                            alertbox("Please Enter Cheque Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeDate").val() == "") {
+                            alertbox("Please Enter Cheque Date");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeBank").val() == "") {
+                            alertbox("Please Enter Cheque Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_ChequeBranch").val() == "") {
+                            alertbox("Please Enter Cheque Branch");
+                            validationcount = 1;
+                            return false;
+                        }
+
+                        else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                            alertbox("Please Enter Total Cash");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                }
+
+                    //cash and cheque combination
+                else if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#IncomeExpenseVoucherDetails_ChequeNo").val() != "") {
+
+                    document.getElementById("Amt1").disabled = false;
+                    document.getElementById("Amt2").disabled = false;
+                    document.getElementById("Amt3").disabled = false;
+                    document.getElementById("Amt4").disabled = false;
+                    document.getElementById("Amt5").disabled = false;
+                    document.getElementById("Amt6").disabled = false;
+                    document.getElementById("Amt7").disabled = false;
+                    document.getElementById("TotalCash").disabled = false;
+
+                    if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() == "") {
+                        alertbox("Please Enter Cheque No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeAccNo").val() == "") {
+                        alertbox("Please Enter Cheque Account No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeAmount").val() == "") {
+                        alertbox("Please Enter Cheque Amount");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeDate").val() == "") {
+                        alertbox("Please Enter Cheque Date");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeBank").val() == "") {
+                        alertbox("Please Enter Cheque Bank");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeBranch").val() == "") {
+                        alertbox("Please Enter Cheque Branch");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                        alertbox("Please Enter Total Cash");
+                        validationcount = 1;
+                        return false;
+                    }
+                }
+
+                    //cash and card combination
+                else if (($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) && $("#Card").val() != "") {
+
+                    document.getElementById("Amt1").disabled = false;
+                    document.getElementById("Amt2").disabled = false;
+                    document.getElementById("Amt3").disabled = false;
+                    document.getElementById("Amt4").disabled = false;
+                    document.getElementById("Amt5").disabled = false;
+                    document.getElementById("Amt6").disabled = false;
+                    document.getElementById("Amt7").disabled = false;
+                    document.getElementById("TotalCash").disabled = false;
+
+                    if ($("#TotalCash").val() == "" || +($("#TotalCash").val()) == 0) {
+                        alertbox("Please Enter Total Cash");
+                        validationcount = 1;
+                        return false;
+                    }
+
+                    if ($("#Card").val() == "CreditCard") {
+
+                        if ($("#IncomeExpenseVoucherDetails_CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                        //if we select debit card then validations on debit card details..
+                    else {
+
+                        var debitamt = +(document.getElementById("IncomeExpenseVoucherDetails_DebitCardAmount").value);
+
+                        if ($("#IncomeExpenseVoucherDetails_DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+                }
+
+                    //card and cheque combination
+                else if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() != "" && ($("#Card").val() != "")) {
+
+                    if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() == "") {
+                        alertbox("Please Enter Cheque No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeAccNo").val() == "") {
+                        alertbox("Please Enter Cheque Account No");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeAmount").val() == "") {
+                        alertbox("Please Enter Cheque Amount");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeDate").val() == "") {
+                        alertbox("Please Enter Cheque Date");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeBank").val() == "") {
+                        alertbox("Please Enter Cheque Bank");
+                        validationcount = 1;
+                        return false;
+                    }
+                    else if ($("#IncomeExpenseVoucherDetails_ChequeBranch").val() == "") {
+                        alertbox("Please Enter Cheque Branch");
+                        validationcount = 1;
+                        return false;
+                    }
+
+                    if ($("#Card").val() == "CreditCard") {
+
+                        if ($("#IncomeExpenseVoucherDetails_CreditCardNo").val() == "") {
+                            alertbox("Please Enter Credit Card Number");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardAmount").val() == "") {
+                            alertbox("Please Enter Credit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardType").val() == "") {
+                            alertbox("Please Enter Credit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_CreditCardBank").val() == "") {
+                            alertbox("Please Enter Credit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+
+                        //if we select debit card then validations on debit card details..
+                    else {
+
+                        var debitamt = +(document.getElementById("IncomeExpenseVoucherDetails_DebitCardAmount").value);
+
+                        if ($("#IncomeExpenseVoucherDetails_DebitCardName").val() == "") {
+                            alertbox("Please Enter Debit Card Name");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardNo").val() == "") {
+                            alertbox("Please Enter Debit Card No");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardType").val() == "") {
+                            alertbox("Please Enter Debit Card Type");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardAmount").val() == "") {
+                            alertbox("Please Enter Debit Card Amount");
+                            validationcount = 1;
+                            return false;
+                        }
+                        else if ($("#IncomeExpenseVoucherDetails_DebitCardBank").val() == "") {
+                            alertbox("Please Enter Debit Card Bank");
+                            validationcount = 1;
+                            return false;
+                        }
+                    }
+                }
+
+                else if ($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) {
+                    alertbox("Please Select Only Cash Part Payment..");
+                    validationcount = 1;
+                }
+
+                else if ($("#Card").val() != "") {
+                    alertbox("Please Select Only Card Part Payment..");
+                    validationcount = 1;
+                }
+
+                else if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() != "") {
+                    alertbox("Please Select Only Cheque Part Payment..");
+                    validationcount = 1;
+                }
+
+                else {
+                    alertbox("Please Fill All The Part Payment Details Before Submit..")
+                    validationcount = 1;
+                }
+
+                // display alert gor refund amount in type cashcardcheque..
+                var creditamt = 0;
+                var debitamt = 0;
+                var chequeamt = 0;
+                var totalcashamt = 0;
+                if (document.getElementById("AddAdv") != null) {
+                    var addadv = document.getElementById("AddAdv").value;
+                }
+
+                if ($("#Card").val() != "") {
+                    if ($("#Card").val() == "CreditCard") {
+                        creditamt = +(document.getElementById("IncomeExpenseVoucherDetails_CreditCardAmount").value);
+                    }
+                    else {
+                        debitamt = +(document.getElementById("IncomeExpenseVoucherDetails_DebitCardAmount").value);
+                    }
+                }
+                if ($("#IncomeExpenseVoucherDetails_ChequeNo").val() != "") {
+                    var chequeamt = +(document.getElementById("IncomeExpenseVoucherDetails_ChequeAmount").value);
+                }
+                if ($("#TotalCash").val() != "" || +($("#TotalCash").val()) != 0) {
+                    var totalcashamt = +(document.getElementById("TotalCash").value);
+                }
+
+                var totalamt = creditamt + debitamt + chequeamt + totalcashamt;
+                var refund = (totalamt - payment).toFixed(2);
+
+                //get refund alert if cash part payment in included..
+                if ($("#TotalCash").val() != "" && +($("#TotalCash").val()) != 0) {
+                    if (refund >= 0) {
+                        alertbox(refund + " " + "Rupees Refunded..");
+                        document.getElementById("IncomeExpenseVoucherDetails_Refund").value = refund;
+                    }
+                    else {
+                        alertbox("Please Enter The Correct Amount For Payment");
+                        validationcount = 1;
+                    }
+                }
+                else {
+                    if (payment != totalamt) {
+                        alertbox("Please Enter The Correct Amount For Payment");
+                        validationcount = 1;
+                    }
+                }
+
+            }
+
+            if (validationcount == 0) {
+                $("#submit").trigger('click');
+            }
+
+        });
+    });
+</script>
+
+@using (Html.BeginForm("IncomeExpenseVoucherEntry", "IncomeExpenseVoucher", FormMethod.Post))
+{
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    
+    @Html.HiddenFor(model => model.IncomeExpenseVoucherDetails.Code)
+    @Html.HiddenFor(model => model.IncomeExpenseVoucherDetails.PaymentType);
+    @Html.HiddenFor(model => model.IncomeExpenseVoucherDetails.Refund)
+    
+    <!-- Start: Header -->
+    @Html.Partial("../Shared/Header")
+
+    <!-- End: Header --> 
+    <!-- Start: Main -->
+    <section>
+        <div class="mainwrapper">
+            <!-- End: Sidebar -->
+            @Html.Partial("../Shared/LeftMenu")
+
+            <!-- Start: Content -->
+
+            <div class="mainpanel">
+                <div class="col-lg-12 col-md-12">
+                    <br />
+
+                    <h2>Income Exchange Voucher Entry</h2>
+
+                    <input type="hidden" id="PayType" />
+                    @{
+                                                                            string shopcode = string.Empty;
+                                                                            string godowncode = string.Empty;
+                                                                            if (HttpContext.Current.Session["UserName"].ToString() != "SuperAdmin")
+                                                                            {
+                                                                                if (Session["LOGINSHOPGODOWNCODE"] != null)
+                                                                                {
+                                                                                    if (Session["LOGINSHOPGODOWNCODE"].ToString().Contains("SH"))
+                                                                                    {
+                                                                                        shopcode = Session["LOGINSHOPGODOWNCODE"].ToString();
+                                                                                    }
+                                                                                    else
+                                                                                    {
+                                                                                        godowncode = Session["LOGINSHOPGODOWNCODE"].ToString();
+                                                                                    }
+            
+                        <div style="text-align: right">
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">Login At:</label>
+                            <label style="font-family: 'Good Times'; font-size: small; color: red">@Session["SHOPGODOWNNAME"].ToString()</label>
+                        </div>
+                                                                                }
+                                                                            }
+                    }
+
+
+                    <table style="border: 1px double; width: 100%">
+                        <tr>
+                            <td>
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height: 10px"></div>
+                                </div>
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="col-md-9 col-lg-9 col-sm-9"></div>
+                                    <div class="col-md-3 col-lg-3 col-sm-3">
+                                        @{
+                                                                            string date = DateTime.Now.ToString("dd/MM/yyyy");
+                                                                            string Code = Model.IncomeExpenseVoucherDetails.Code;
+                                        }
+                                        <div class="row">
+                                            <label style="font-size: 14px;">Date:&nbsp;&nbsp;</label>
+                                            <label style="font-size: 16px;">@date</label>
+                                        </div>
+                                        <div class="row">
+                                            <label style="font-size: 14px;">Voucher No:&nbsp;&nbsp;</label>
+                                            <label style="font-size: 16px;" id="VoucherNo">@Code</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height: 15px"></div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12">
+                                    <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height: 15px"></div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div class="col-md-3 col-lg-3 col-sm-3">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <label>Voucher Type<i style="color: red">*</i></label>
+                                            </div>
+                                            <div class="row">
+                                                <select class="form-control" id="VoucherType" name="VoucherType">
+                                                    <option>Payment</option>
+                                                    <option>Receipt</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3 col-sm-3">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <label>Leisure</label>
+                                            </div>
+                                            <div class="row">
+                                                @Html.TextBoxFor(model => model.IncomeExpenseVoucherDetails.Leisure, new { @class = "form-control", @placeholder = "Leisure", @autocomplete = "Off" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3 col-sm-3">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <label>Narration</label>
+                                            </div>
+                                            <div class="row">
+                                                @Html.TextAreaFor(model => model.IncomeExpenseVoucherDetails.Narration, new { @class = "form-control", @placeholder = "Narration", @autocomplete = "Off" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3 col-sm-3">
+                                        <div class="col-md-12 col-lg-12 col-sm-12">
+                                            <div class="row">
+                                                <label>Amount<i style="color: red">*</i></label>
+                                            </div>
+                                            <div class="row">
+                                                @Html.TextBoxFor(model => model.IncomeExpenseVoucherDetails.Amount, new { @id = "Amount", @class = "form-control", @placeholder = "Amount", @autocomplete = "Off", @onchange = "DisplayPaymentDetails();" })
+                                                @Html.ValidationMessageFor(model => model.IncomeExpenseVoucherDetails.Amount, null, new { @style = "color:red" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height: 15px"></div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12">
+                                    <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                                </div>
+
+                                <div class="col-md-12 col-lg-12 col-sm-12">
+                                    <div style="height: 15px"></div>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12" id="TypeOfPaymentLabel" style="display: none;">
+                                    <label style="font-weight: bolder; font-size: 14px;">Type Of Payment</label>
+                                </div>
+
+                                <div class="col-lg-12 col-md-12" id="TypeOfPaymentDiv" style="display: none;">
+                                    <div class="col-md-3 col-lg-3">
+                                        <input type="radio" name="CashierRadioBtn" onclick="CashierModule('Cash')" />
+                                        <label>&nbsp Cash</label>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3">
+                                        <input type="radio" name="CashierRadioBtn" onclick="CashierModule('Card')" />
+                                        <label>&nbsp Card</label>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3">
+                                        <input type="radio" name="CashierRadioBtn" onclick="CashierModule('Cheque')" />
+                                        <label>&nbsp Cheque</label>
+                                    </div>
+                                    <div class="col-md-3 col-lg-3">
+                                        <input type="radio" name="CashierRadioBtn" onclick="CashierModule('CashCardCheque')" />
+                                        <label>&nbsp Cash/Card/Cheque</label>
+                                    </div>
+                                </div>
+
+                                <div id="PaymentType"></div>
+
+                                <div class="col-md-12 col-lg-12" style="text-align: right;" id="preparedbydiv">
+                                    <label style="font-size: 13px">Prepared By,</label>
+                                    <br />
+                                    <label id="preparedby">@Session["EmpName"].ToString()</label>
+                                </div>
+
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div class="col-md-12 col-lg-12 col-sm-12">
+                        <div style="height: 10px"></div>
+                    </div>
+
+                    <div style="text-align: center">
+                        @*<button type="submit" id="save" class="btn btn-success">Save</button>*@
+                        <button type="button" class="btn btn-success" id="save" disabled="disabled">Save</button>
+                        <button type="submit" class="btn btn-success" id="submit" style="display: none;">Submit</button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+}

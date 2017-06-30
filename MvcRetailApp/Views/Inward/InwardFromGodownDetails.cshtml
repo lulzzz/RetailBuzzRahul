@@ -1,0 +1,344 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "InwardFromGodownDetails";
+}
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $.getJSON("/Inward/EncodeInwardId", { id: document.getElementById("InwardFromGodownDetails_Id").value },
+                     function (encodevalue) {
+                         window.open("/Inward/PrintInwardFromGodown?id=" + encodevalue, "_target", "width=900,height=842,top=200px,left=250px")
+                     });
+		     }
+		     else {
+		         window.location.assign("/Inward/InwardFromGodown");
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#Print").click(function () {
+            confirmbox("Do You Want To Print This Inward??");
+        });
+    });
+</script>
+
+<style type="text/css">
+    .CenterText {
+        text-align: center;
+        width: 100%;
+    }
+</style>
+@Html.Partial("../Shared/Header")
+<section>
+    <div class="mainwrapper">
+
+        @Html.Partial("../Shared/LeftMenu")
+
+        <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+            <source src="" type="audio/ogg" />
+        </audio>
+
+        @Html.HiddenFor(model => model.InwardFromGodownDetails.Id)
+        <div class="mainpanel">
+            <div class="col-md-12 col-lg-12">
+                <div class="col-md-12 col-lg-12">
+                    <div class="row">
+                        <br />
+                        <h2>Inward From Godown Details</h2>
+                        <table style="border: 1px double; width: 100%">
+                            <tr>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-md-12 col-lg-12">
+                                            <div class="row">
+                                                <div class="form-group col-md-4 col-lg-4">
+                                                    <div class="col-lg-12 col-md-12">
+                                                        <label style="font-size: 15px">Godown Details</label><br />
+                                                        <div class="col-md-12 col-lg-12">
+                                                            <label>Name: &nbsp</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.GodownName)<br />
+                                                            <label>Contact Number: &nbsp;</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.GodownNumber)<br />
+                                                            <label>Contact Person: &nbsp</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.GodownContactPerson)<br />
+                                                            <label>Email: &nbsp</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.GodownEmail)<br />
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-md-4 col-lg-4">
+                                                    <div class="col-md-12 col-lg-12">
+                                                        <div style="float: left; min-height: 200px; width: 1px; background-color: GrayText;"></div>
+                                                        <div class="col-md-11 col-lg-11">
+                                                            <label style="font-size: 15px">Shop Details</label>
+                                                            @*<div class="row">*@
+                                                            <div class="col-md-12 col-lg-12">
+                                                                <label>Shop Name: &nbsp</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.ShopName)<br />
+                                                                <label>Shop Address: &nbsp</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.ShopAddress)<br />
+                                                                <label>Contact Number: &nbsp</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.ShopContactNo)<br />
+                                                                <label>Email: &nbsp</label>@Html.DisplayFor(model => model.InwardFromGodownDetails.ShopEmail)<br />
+                                                            </div>
+                                                            @*</div>*@
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group col-md-4 col-lg-4">
+                                                    <div style="float: left; min-height: 200px; width: 1px; background-color: GrayText;"></div>
+                                                    <div class="row">
+                                                        <div class="col-md-11 col-lg-11">
+                                                            @{
+                                                                string date = Convert.ToDateTime(Model.InwardFromGodownDetails.Date).ToString("MM/dd/yyyy");
+                                                            }
+                                                            <table class="table">
+                                                                <tr>
+                                                                    <td>
+                                                                        <div style="height: 2px"></div>
+                                                                        <label>Date : </label>
+                                                                    </td>
+                                                                    <td>
+                                                                        <label style="font-weight: normal" id="date">&nbsp @date</label>
+                                                                    </td>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>
+                                                                        <label>Inward No : </label>
+                                                                    </td>
+                                                                    <td>
+                                                                        <label style="font-weight: normal" id="pono">&nbsp @Model.InwardFromGodownDetails.InwardCode</label>
+                                                                    </td>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>
+                                                                        <label>Outward No : </label>
+                                                                    </td>
+                                                                    <td>
+                                                                        <label style="font-weight: normal">&nbsp @Html.DisplayFor(model => model.InwardFromGodownDetails.OutwardNo)</label>
+                                                                    </td>
+                                                                </tr>
+
+                                                                <tr>
+                                                                    <td>
+                                                                        <div style="height: 6px"></div>
+                                                                        <label>Reference No : </label>
+                                                                    </td>
+                                                                    <td>
+                                                                        <label style="font-weight: normal">&nbsp @Html.DisplayFor(model => model.InwardFromGodownDetails.GatePass)</label>
+                                                                    </td>
+                                                                </tr>
+
+                                                            </table>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <br />
+                                                <div class="col-lg-12 col-md-12">
+                                                    <label style="font-size: medium">&nbsp Item Details</label>
+                                                </div>
+                                                <div class="form-group col-md-12 col-lg-12">
+                                                    <table border="1" width="100%" style="border-collapse: collapse;" cellpadding="0" cellspacing="0">
+                                                        <thead>
+                                                            <tr>
+                                                                <th class="col-lg-1 col-md-1">S No.</th>
+                                                                <th class="col-md-2 col-lg-2">
+                                                                    <label class="CenterText">Item</label></th>
+                                                                <th class="col-md-2 col-lg-2">
+                                                                    <label class="CenterText">Description</label></th>
+                                                                <th class="col-md-1 col-lg-1">
+                                                                    <label class="CenterText">Color</label></th>
+                                                                <th class="col-md-1 col-lg-1">
+                                                                    <label class="CenterText">Material</label></th>
+                                                                <th class="col-md-2 col-lg-2">
+                                                                    <label class="CenterText">Design</label></th>
+                                                                <th class="col-md-1 col-lg-1">
+                                                                    <label class="CenterText">Unit</label></th>
+                                                                <th class="col-md-1 col-lg-1">
+                                                                    <label class="CenterText">Rate</label></th>
+                                                                <th class="col-md-1 col-lg-1">
+                                                                    <label class="CenterText">Quantity</label></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody>
+                                                            @{
+                                                                int count = 1;
+                                                                foreach (var item in Model.InwardItemFromGodownlist)
+                                                                {
+                                                                <tr>
+                                                                    @{
+                                                                    string qty = Convert.ToDouble(item.Quantity).ToString("#,###.00##");
+                                                                    string rate = Convert.ToDouble(item.MRP).ToString("#,###.00##");
+                                                                    string balamt = string.Empty;
+                                                                    }
+                                                                    <td class="col-lg-1 col-md-1">@count</td>
+                                                                    <td class="col-md-2 col-lg-2" style="text-align: left">
+                                                                        <label style="font-weight: normal">@item.ItemName</label></td>
+                                                                    <td class="col-md-2 col-lg-2" style="text-align: left">
+                                                                        <label style="font-weight: normal">@item.ItemDescription</label></td>
+                                                                    <td class="col-md-1 col-lg-1" style="text-align: left">
+                                                                        <label style="font-weight: normal">@item.Color</label></td>
+                                                                    <td class="col-md-1 col-lg-1" style="text-align: left">
+                                                                        <label style="font-weight: normal">@item.Material</label></td>
+                                                                    <td class="col-md-2 col-lg-2" style="text-align: left">
+                                                                        <label style="font-weight: normal">@item.DesignName</label></td>
+                                                                    <td class="col-md-1 col-lg-1" style="text-align: left">
+                                                                        <label style="font-weight: normal">@item.Unit</label></td>
+                                                                    <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                                        <label style="font-weight: normal">@rate</label></td>
+                                                                    <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                                        <label style="font-weight: normal">@qty</label></td>
+                                                                </tr>
+                                                                    count++;
+                                                                }
+                                                            }
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+
+                                                <div class="col-lg-12 col-md-12">
+                                                    <div class="col-lg-10 col-md-10"></div>
+                                                    <div class="col-lg-2 col-md-2">
+                                                        <label>Prepared By</label>
+                                                        <br />
+                                                        <label style="font-weight: normal">@Html.DisplayFor(model => model.InwardFromGodownDetails.EmpName)</label>
+                                                    </div>
+                                                </div>
+
+                                                @{
+                                                    if (Model.InwardFromGodownDetails.Narration != null)
+                                                    { 
+                                                    <div class="col-lg-12 col-md-12">
+                                                        <div class="col-lg-2 col-md-2">
+                                                            <label>Narration</label>
+                                                        </div>
+                                                        <div class="col-lg-10 col-md-10">
+                                                            @Html.DisplayFor(model => model.InwardFromGodownDetails.Narration)
+                                                        </div>
+                                                    </div>
+                                                    }
+                                                }
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        </table>
+                        <br />
+                        <div class="row">
+                            <input type="button" id="Print" class="col-md-offset-6 col-lg-offset-6 btn btn-blue" value="Print" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+@{
+    if (ViewData["GodownInwardNoChanged"] != null)
+    {
+        string previnwardno = ViewData["GodownInwardNoChanged"].ToString();
+    <input type="hidden" id="GodownInwardNoChanged" value="@previnwardno" />
+    <script type="text/javascript">
+        alertbox(document.getElementById("GodownInwardNoChanged").value);
+    </script>
+    }
+}

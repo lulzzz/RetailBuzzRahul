@@ -1,0 +1,63 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetDebitNoteReportsByDate";
+}
+
+<table border="1" class="table" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+    <thead>
+        <tr style="background-color: #eee">
+            <th style="text-align: center">Sr.No</th>
+            <th style="text-align: center">Supplier Name</th>
+            <th style="text-align: center">DebitNote No</th>
+            <th style="text-align: center">Purchase Return No</th>
+            <th style="text-align: center">Inward No</th>
+            <th style="text-align: center">Date</th>
+            <th style="text-align: center">Amount</th>
+            <th style="text-align: center">Status</th>
+        </tr>
+    </thead>
+    <tbody>
+        @{
+            int rowid = 1;
+            if (Model.DebitNoteList != null && Model.DebitNoteList.Any())
+            {
+                foreach (var data in Model.DebitNoteList)
+                {
+            <tr>
+                @{
+                    double amt = Convert.ToDouble(@data.Amount);
+                    var Amount = amt.ToString("#,###.00##");
+                }
+                <td style="text-align: center">@rowid</td>
+                <td style="text-align: center">@data.SupplierName</td>
+                <td style="text-align: center">@data.DebitNoteNo</td>
+                <td style="text-align: center">@data.PurchaseReturnNo</td>
+                <td style="text-align: center">@data.InwardNo</td>
+                <td style="text-align: center">@Convert.ToDateTime(data.DebitNoteDate).ToString("dd/MM/yyyy")</td>
+                <td style="text-align: center">@Amount</td>
+                <td style="text-align: center">
+                    @{
+                    if (data.Status == "Active")
+                    {
+                        <label style="color: red">Pending</label>
+                    }
+                    else
+                    {
+                        <label>Adjusted</label>
+                    }
+                    }
+                </td>
+                @{
+                    rowid += 1;
+                }
+            </tr>
+                }
+            }
+        }
+    </tbody>
+</table>
+
+
+
+
+

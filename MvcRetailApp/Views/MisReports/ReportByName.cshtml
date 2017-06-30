@@ -1,0 +1,105 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ReportByName";
+}
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+
+    $("#FromDate").click(function () {
+        new JsDatePick({
+            useMode: 2,
+            target: "FromDate",
+            dateFormat: "%d/%M/%Y"
+        });
+        $("#ToDate").click(function () {
+            new JsDatePick({
+                useMode: 2,
+                target: "ToDate",
+                dateFormat: "%d/%M/%Y"
+            });
+
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#suppliername").autocomplete({
+            source: "/MisReports/GetSupplierName",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#suppliername").val(ui.item.value);
+                }
+                var idmodel = document.getElementById("suppliername").value;
+
+
+                //$.ajax({
+                //    url: '/MisReports/getDetailsBySupplierName',
+                //    data: { name: idmodel },
+                //    type: "GET",
+                //    success: function (data) 
+                //    {
+                //        $("#LoadReport").html(data);
+
+                //    }
+
+                //});
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function GetData() {
+        var suppname = document.getElementById("suppliername").value;
+        var fromdate = document.getElementById("FromDate").value;
+        var todate = document.getElementById("ToDate").value;
+
+
+        $.ajax({
+            url: '/MisReports/getDetailsBySupplierNameAndDate',
+            data: { name: suppname, fromdate: fromdate, todate: todate },
+            type: "GET",
+            success: function (data) {
+                //document.getElementById("name").style.display = "none";
+                $("#LoadReport").html(data);
+            }
+        });
+    }
+
+</script>
+
+<div class="row">
+    <div class="col-lg-12 col-md-5">
+        <div class="col-lg-3">
+            <label>Supplier Name</label>
+            <input type="text" id="suppliername" name="suppliername" class="form-control" />
+        </div>
+
+        <div class="col-lg-2">
+            <label>From Date</label>
+            <input type="text" id="FromDate" class="form-control" />
+        </div>
+        <div class="col-lg-2">
+            <label>To Date</label>
+            <input type="text" id="ToDate" class="form-control" />
+        </div>
+        <div class="col-lg-2">
+            <div style="height: 21px;"></div>
+            <input type="button" value="Submit" class="btn btn-success" onclick="GetData();" />
+        </div>
+    </div>
+    <br />
+    <br />
+    @*<div class="col-lg-9">
+<div class="col-lg-3">
+  <label id="name">Supplier Name</label>  </div> <div class="col-lg-2"> <label id="suppliernamevalue"  style="font-weight:normal" ></label>
+  </div>
+         </div>*@
+</div>
+
+
+

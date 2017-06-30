@@ -1,0 +1,71 @@
+﻿@model CodeFirstEntities.TypeOfMaterial
+@{
+    ViewBag.Title = "UpdateDetails";
+}
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var boundry = document.getElementById("NumberOfRows").value;
+        var type = document.getElementById("ViewType").value;
+        if (type == "edit") {
+            for (var i = 1; i <= boundry; i++) {
+                editid = "EditId" + i;
+                lableEditid = "LableEditId" + i;
+                if (document.getElementById(editid) != null) {
+                    document.getElementById(editid).style.display = "inline";
+                    document.getElementById(lableEditid).style.display = "none";
+                }
+            }
+        }
+        else {
+            for (var i = 1; i <= boundry; i++) {
+                deleteid = "DeleteId" + i;
+                lableDeleteId = "LableDeleteId" + i;
+                if (document.getElementById(deleteid) != null) {
+                    document.getElementById(deleteid).style.display = "inline";
+                }
+            }
+        }
+    });
+</script>
+
+
+<div class="row">
+    <h2><strong>Material</strong>Details</h2>
+    @{
+        string type = TempData["Type"].ToString();
+        TempData["Type"] = type;
+        <input type="hidden" id="ViewType" value="@type" />   
+    }
+    <div class="form-group col-md-12 col-lg-12">
+        <div class="col-md-12 col-lg-12">
+            <div class="row">
+                <div class="form-group col-md-8 col-lg-8">
+                    <label for="exampleInputname">Material Code: </label>
+                    @Html.DisplayFor(model => model.MaterialCode, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-8 col-lg-8">
+                    <label for="exampleInputname">Material Name: </label>
+                    @Html.DisplayFor(model => model.MaterialName, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-8 col-lg-8">
+                    <label for="exampleInputname">Material Name: </label>
+                    @Html.DisplayFor(model => model.MaterialShortName, new { @class = "form-control" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-8 col-lg-8">
+                    <label for="exampleInputname">Material Name: </label>
+                    @Html.DisplayFor(model => model.MaterialDescription, new { @class = "form-control" })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

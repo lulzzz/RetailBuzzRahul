@@ -1,0 +1,77 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DeletePartial";
+}
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.DesignDetails.DesignId)
+@Html.HiddenFor(model => model.DesignDetails.DesignCode)
+@Html.HiddenFor(model => model.DesignDetails.DesignName)
+@Html.HiddenFor(model => model.DesignDetails.DesignDescription)
+@*@Html.HiddenFor(model=>model.DesignDetails.DesignSize)*@
+@Html.HiddenFor(model => model.DesignDetails.DesignPhoto)
+@Html.HiddenFor(model => model.DesignDetails.CategoryCode)
+@Html.HiddenFor(model => model.DesignDetails.SubCategoryName)
+@Html.HiddenFor(model => model.DesignDetails.DesignPhoto)
+
+
+<h2><strong>Design</strong>Details</h2>
+
+<div class="col-md-12 col-lg-12">
+
+    @{
+        string photo = string.Empty;
+        photo = Model.DesignDetails.DesignPhoto;
+    }
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Code</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            @Html.DisplayFor(model => model.DesignDetails.DesignCode)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Name</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            @Html.DisplayFor(model => model.DesignDetails.DesignName)
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Description</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            @Html.DisplayFor(model => model.DesignDetails.DesignDescription)
+        </div>
+    </div>
+
+    @* <div class="row">
+            <div class="form-group col-md-4 col-lg-4">
+                <label for="exampleInputname">Design Size</label>
+            </div>
+            <div class="form-group col-md-5 col-lg-5">
+                @Html.DisplayFor(model => model.DesignDetails.DesignSize)
+            </div>
+        </div>*@
+
+    <div class="row">
+        <div class="form-group col-md-4 col-lg-4">
+            <label for="exampleInputname">Design Photo</label>
+        </div>
+        <div class="form-group col-md-5 col-lg-5">
+            <img src="@photo" width="100" height="100"/>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-offset-3">
+            <button type="submit" class="btn btn-success" onclick="DesignDetailsDelete()">Delete</button>
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,303 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GetOutwardInterGodownDetailsForDelete";
+}
+
+<script type="text/javascript">
+    $(function () {
+
+        var temp = $("#date").text();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+
+        $("#delete").click(function () {
+            confirmbox("Do You Want To Delete This Outward?");
+        });
+    });
+</script>
+
+@using (Html.BeginForm("GetOutwardInterGodownDetailsForDelete", "Outward", FormMethod.Post))
+{
+    @Html.Partial("../Shared/Header")
+    @Html.HiddenFor(model => model.OutwardInterGodownDetails.OutwardId)
+
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-12 col-md-12">
+            <table style="border: 1px double; width: 100%">
+
+                <tr>
+                    <td>
+                        <div class="col-lg-12 col-md-12">
+
+                            <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 200px;">
+                                <div style="height: 10px"></div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <label style="font-size: large">From Godown:</label>
+                                                    <div class="col-md-12 col-lg-12">
+                                                        <label>Name: &nbsp</label>
+                                                        @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownname)<br />
+
+                                                        <label>Contact Person: &nbsp</label>
+                                                        @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownContactNo)<br />
+
+                                                        <label>Contact Number: &nbsp</label>
+                                                        @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownContactNo)<br />
+
+                                                        <label>Email: &nbsp</label>
+                                                        @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownEmail)
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 200px;">
+                                <div style="height: 10px"></div>
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="row">
+                                        <label style="font-size: large">To Godown:</label>
+                                        <div class="col-md-12 col-lg-12">
+                                            <label>Name: &nbsp</label>
+                                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.ToGodownname)<br />
+                                            <label>Address: &nbsp</label>
+                                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.ToDeliveryAt)<br />
+                                            <label>Contact Person: &nbsp</label>
+                                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.ToGodownContactPerson)<br />
+                                            <label>Contact Number: &nbsp</label>
+                                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.ToGodownContactNo)<br />
+                                            <label>Email: &nbsp</label>
+                                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.ToGodownEmail)
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="col-md-12 col-lg-12">
+                                    @{
+    string outwardcode = Model.OutwardInterGodownDetails.OutwardCode;
+                                    }
+                                    <div style="height: 10px"></div>
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Date:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <div class="row">
+                                                        @{
+    var date = Convert.ToDateTime(Model.OutwardInterGodownDetails.OutwardDate).ToString("MM/dd/yyyy");
+                                                        }
+                                                        <label id="date" style="font-size: 14px; font-weight: normal">@date</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Outward No:</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px; font-weight: normal">
+                                                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.OutwardCode)
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Reference No. :</label>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-lg-6 col-md-6">
+                                            <div class="row">
+                                                <div class="row">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px; font-weight: normal">
+                                                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.GatePass)
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div style="height: 15px"></div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="col-md-12 col-lg-12">
+                            <label style="font-size: medium">Item Details</label>
+                            <div class="form-group row">
+                                <table border="1" style="border-collapse: collapse; width: 100%;" cellpadding="0" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center">
+                                                <label>S.N0.</label></th>
+                                            <th style="text-align: center">
+                                                <label>Item</label></th>
+                                            <th style="text-align: center">
+                                                <label>Description</label></th>
+                                            <th style="text-align: center">
+                                                <label>Color</label></th>
+                                            <th style="text-align: center">
+                                                <label>Material</label></th>
+                                            <th style="text-align: center">
+                                                <label>Design</label></th>
+                                            <th style="text-align: center">
+                                                <label>Quantity</label></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @{
+    if (Model.OutwardItemInterGodownList != null && Model.OutwardItemInterGodownList.Any())
+    {
+        int count = 1;
+        foreach (var data in Model.OutwardItemInterGodownList)
+        {                                                                        
+                                            <tr>
+                                                @{
+            double outqty = Convert.ToDouble(@data.QuantityTransfer);
+            var Quantity = outqty.ToString("#,###.00##");
+            double bal = Convert.ToDouble(@data.Balance);
+            var Balance = bal.ToString("#,###.00##");
+                                                }
+                                                <td>
+                                                    <label style="font-weight: normal">&nbsp;@count</label>
+                                                </td>
+                                                <td>
+                                                    <label style="font-weight: normal">&nbsp;@data.ItemName</label>
+                                                </td>
+                                                <td>
+                                                    <label style="font-weight: normal">&nbsp;@data.Description</label>
+                                                </td>
+                                                <td style="text-align: left">
+                                                    <label style="font-weight: normal">@data.ColorCode&nbsp;</label>
+                                                </td>
+                                                <td style="text-align: left">
+                                                    <label style="font-weight: normal">@data.TypeOfMaterial&nbsp;</label>
+                                                </td>
+                                                <td style="text-align: left">
+                                                    <label style="font-weight: normal">@data.DesignName&nbsp;</label>
+                                                </td>
+                                                <td style="text-align: right">
+                                                    <label style="font-weight: normal">@Quantity&nbsp;</label>
+                                                </td>
+                                            </tr>
+            count += 1;
+        }
+    }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="col-lg-12 col-md-12">
+                            <label style="font-size: medium">Store Keeper Details</label>
+                        </div>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-3 col-md-3">
+                                <label>Name</label><br />
+                                @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperName)
+                            </div>
+                            <div class="col-lg-3 col-md-3">
+                                <label>Designation</label><br />
+                                @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperDesignation)
+                            </div>
+                            <div class="col-lg-3 col-md-3">
+                                <label>Email</label><br />
+                                @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperEmail)
+                            </div>
+                            <div class="col-lg-3 col-md-3">
+                                <label>Contact No</label><br />
+                                @Html.DisplayFor(model => model.OutwardInterGodownDetails.FromGodownStoreKeeperContactNo)
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+                <tr>
+                    <td>
+                        <div class="col-lg-12 col-md-12" style="float: right; text-align: right">
+                            <label>Prepare By,</label><br />
+                            @Html.DisplayFor(model => model.OutwardInterGodownDetails.PrepareBy)
+                        </div>
+                    </td>
+                </tr>
+
+                @{
+    if (Model.OutwardInterGodownDetails.Narration != null)
+    { 
+                    <tr>
+                        <td>
+                            <div class="row">
+                                <div class="col-lg-12 col-md-12">
+                                    <div class="col-lg-2 col-md-2">
+                                        <label>Narration</label>
+                                    </div>
+                                    <div class="col-lg-10 col-md-10">
+                                        @Html.DisplayFor(model => model.OutwardInterGodownDetails.Narration)
+                                    </div>
+                                </div>
+                            </div>
+                        </td>
+                    </tr>
+    }
+                }
+
+            </table>
+        </div>
+
+        <div class="col-lg-12 col-md-12">
+            <div style="height: 10px"></div>
+        </div>
+
+        <br />
+        <div class="col-lg-offset-5 col-md-ofset-5">
+            <button type="button" id="delete" class="btn btn-danger">Delete</button>
+            <button type="submit" id="Delete" class="btn btn-danger" style="display: none">Delete</button>
+        </div>
+    </div>
+}

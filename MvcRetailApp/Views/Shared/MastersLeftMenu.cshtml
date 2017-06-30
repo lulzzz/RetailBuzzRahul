@@ -1,0 +1,239 @@
+﻿@{
+    ViewBag.Title = "MastersLeftMenu";
+}
+
+                    				@* <a href="../Company/Create" onclick="Company();">
+                                         	<div id="company">&nbsp;Company</div></a>
+                                     <a href="#" onclick="ActiveCompany();">
+                                     		<div id="company_active" style="display:none;">&nbsp;Company</div></a>
+                                      <a href="../BankMaster/Create" onclick="Bank();">
+                                      		<div id="Bank" >&nbsp;Bank</div></a>
+                                      <a href="#" onclick="ActiveBank();">
+                                      		<div id="Bank_active" style="display:none;">&nbsp;Bank</div></a>
+                                      <a href="~/ClientMaster/Create" onclick="Client();">
+                                      		<div id="Client">&nbsp;Client</div></a>
+                                      <a href="../ClientMaster/Create" onclick="ActiveClient();">
+                                      		<div id="Client_active" style="display:none;">&nbsp;Client</div></a>
+                                      <a href="~/SupplierMaster/Create" onclick="Suppliers();">
+                                      		<div id="Suppliers">&nbsp;Suppliers</div></a>
+                                       <a href="#" onclick="ActiveSuppliers();">
+                                       		<div id="Suppliers_active" style="display:none;">&nbsp;Suppliers</div></a>
+                                      <a href="~/Tax/Create" onclick="Tax();">
+                                      		<div id="Tax">&nbsp;Tax</div></a>
+                                       <a href="#" onclick="ActiveTax();">
+                                       		<div id="Tax_active" style="display:none;">&nbsp;Tax</div>
+                                       </a>
+                                      <a href="~/ItemMaster/Create" onclick="Item();"><div id="Item">&nbsp;Item</div></a>
+                                      <a href="#" onclick="ActiveItem();">
+                                            <div id="Item_active" style="display:none;">&nbsp;Item</div>
+                                      </a>
+                                      <a href="#" onclick="Employee();"><div id="Employee">&nbsp;Employee</div></a>
+                                       <a href="#" onclick="Employee_active();">
+                                       <div id="Employee_active" style="display:none;">&nbsp;Employee</div></a>
+                                      <a href="#" onclick="Unit();"><div id="Unit">&nbsp;Unit</div></a>
+                                      <a href="#" onclick="Unit_active();">
+                                        <div id="Unit_active" style="display:none;">&nbsp;Unit</div>
+                                      </a>
+                                      <a href="#" onclick="Category();">
+                                      <div id="Category">&nbsp;Category</div></a>
+                                      <a href="#" onclick="ActiveCategory();">
+                                      <div id="Category_active" style="display:none;">&nbsp;Category</div>
+                                      </a>
+                                      <a href="#"  onclick="Lab();"><div id="Lab">&nbsp;Lab</div></a>
+                                      <a href="#" onclick="ActiveLab();">
+                                      <div id="Lab_active" style="display:none;">&nbsp;Lab</div>
+                                      </a>
+                                      <a href="#" onclick="Size();"><div id="Size">&nbsp;Size</div></a>
+                                      <a href="#" onclick="ActiveSize();">
+                                      <div id="Size_active" style="display:none;">&nbsp;Size</div>
+                                      </a>
+                                      <a href="#" onclick="Design();"><div id="Design">&nbsp;Design</div></a>
+                                      <a href="#" onclick="ActiveDesign();">
+                                      <div id="Design_active" style="display:none;">&nbsp;Design</div>
+                                      </a>
+                                      <a href="#" onclick="Barcode();"><div id="Barcode">&nbsp;Barcode</div></a>
+                                      <a href="#"  onclick="ActiveBarcode();">
+                                      <div id="Barcode_active" style="display:none;">&nbsp;Barcode</div>
+                                      </a>
+                                      <a href="#" onclick="Stock();"><div id="Stock">&nbsp;Stock</div></a>
+                                      <a href="#" onclick="ActiveStock();">
+                                         <div id="Stock_active" style="display:none;">&nbsp;Stock</div>
+                                       </a>
+                                      <a href="#" onclick="CostEst();">
+                                      <div id="CostEst">&nbsp;Cost Estimation & Article</div></a>
+                                      <a href="#"onclick="ActiveCostEst();">
+                                       <div id="CostEst_active" style="display:none;">&nbsp;Cost Estimation & Article</div></a>
+                                      <a href="#" onclick="Order_Processing();">
+                                      <div id="Order_Processing">&nbsp;Order Processing</div></a>
+                                       <a href="#" onclick="ActiveOrder_Processing();">
+                                       <div id="Order_Processing_active" style="display:none;">&nbsp;Order Processing</div></a>
+                                      <a href="#">
+                                      <div id="PurOrder" onclick="PurOrder();">&nbsp;Purchase Order</div></a>
+                                      <a href="#" onclick="ActivePurOrder();">
+                                      <div id="PurOrder_active" style="display:none;">&nbsp;Purchase Order</div></a>
+                                      <a href="#" onclick="IssuedMateril();">
+                                      <div id="IssuedMateril">&nbsp;Issued Material</div></a>
+                                       <a href="#" onclick="ActiveIssuedMateril();">
+                                       <div id="IssuedMateril_active" style="display:none;">&nbsp;Issued Material</div></a>
+                                      <a href="#" onclick="Inward();"><div id="Inward">&nbsp;Inward</div></a>
+                                       <a href="#" onclick="ActiveInward();">
+                                       <div id="Inward_active" style="display:none;">&nbsp;Inward</div></a>
+                                      <a href="#" onclick="Testing();"><div id="Testing">&nbsp;Testing</div></a>
+                                      <a href="#" onclick="ActiveTesting();">
+                                      <div id="Testing_active" style="display:none;">&nbsp;Testing</div></a>
+                                      <a href="#"onclick="InwardTested();">
+                                      <div id="InwardTested">&nbsp;Inward Tested From Lab</div></a>
+                                      <a href="#" onclick="ActiveInwardTested();">
+                                      <div id="InwardTested_active" style="display:none;">&nbsp;Inward Tested From Lab</div>
+                                      </a>
+                                      <a href="#" onclick="TaxInvoice();"><div id="TaxInvoice">&nbsp;Tax Invoice</div></a>
+                                      <a href="#" onclick="ActiveTaxInvoice();">
+                                      <div id="TaxInvoice_active" style="display:none;">&nbsp;Tax Invoice</div></a>
+                                     *@
+@*<script language="javascript" type="text/javascript" src="retail_left_menu.js"></script>*@
+<script src="http://code.jquery.com/jquery-1.10.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.min.js"></script>
+<script src="http://code.jquery.com/jquery-1.9.0.js"></script>
+<script src="http://code.jquery.com/jquery-migrate-1.2.1.js"></script>
+<link rel="stylesheet" href="font-awesome-4.0.3/font-awesome-4.0.3/css/font-awesome.css" />
+<link rel="stylesheet" href="font-awesome-4.0.3/font-awesome-4.0.3/css/font-awesome.min.css" />
+<style type="text/css">
+
+
+.sidebar {
+				width: 230px;
+				float: left;
+				display: block;
+				color: #777;
+				position: relative;
+			}
+	.sidebar #nav {
+					display: block;
+					width: 100%;
+					margin: 0 auto;
+					position: relative;
+					z-index: 60;
+					}
+		.sidebar ul {
+						padding: 0px;
+						
+					}
+         .content {
+            position: absolute;
+            margin: 50px 0 0 0;
+            -webkit-font-smoothing: antialiased;
+            box-sizing: border-box;
+            color: rgb(102, 102, 102);
+            display: block;
+            font-family: 'Open Sans', sans-serif;
+            font-size: 13px;
+            height: 100%;
+            line-height: 22px;
+            width: 1349px;
+        }
+
+		.sidebar li {
+					
+						background:#474f57;
+						border-bottom: 1px solid #3C434A;
+						border-top: 1px solid #4F5861;
+						height:35px;
+						padding-top:5px;
+						padding-left:5px;	
+						text-shadow: 0px 1px 1px rgba(0, 0, 0, 0.6);
+						color:#b7bebe;
+					}
+    footer {
+        background-color: #333;
+        padding: 10px 0px;
+        color: #777;
+        font-size: 12px;
+        border-top: 1px solid #333;
+        bottom:0px;
+    }
+
+   </style>
+<div class="content">
+			<div class="sidebar">
+            	<ul id="nav">
+                	<a href="#" class="set1">
+                	<li style="list-style:none;">&nbsp;Company<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li> 
+                    </a>
+                    <a href="#" class="set1">
+                    <li style="list-style:none">&nbsp;Bank<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                    <li style="background-color:#3c434a; color:#FFF;">&nbsp;Suppliers<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li> 
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Item<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Employees<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Unit<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li> 
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Category<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                      <li style="list-style:none">&nbsp;Lab<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li> 
+                     </a>
+                     <a href="#" class="set1">
+                    <li style="list-style:none">&nbsp;Size<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                    <li style="list-style:none">&nbsp;Design<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Barcode<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li> 
+                     </a>
+                     <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Stock<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Cost Estimation & Article<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li> 
+                    </a>
+                    <a href="#" class="set1">
+                    <li style="list-style:none">&nbsp;Order Processing<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Purchase Order<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Issued Material<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li> 
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Inward<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                    <li style="list-style:none">&nbsp;Testing<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Inward Tested From Lab<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    <a href="#" class="set1">
+                     <li style="list-style:none">&nbsp;Tax Invoice<i class="fa fa-chevron-left" style="float:right; padding-top:5px;"> &nbsp;</i></li>
+                    </a>
+                    </ul>              
+           </div>
+    </div>
+   @* <div id="footer">
+   Powered by Maria Infotech Pvt.Ltd
+  </div>*@
+    @*<div>
+  <footer>&nbsp;Powered by Maria Infotech Pvt.Ltd</footer>
+
+    </div>*@
+
+
+ 
+
+
+
+
+
+
+
+

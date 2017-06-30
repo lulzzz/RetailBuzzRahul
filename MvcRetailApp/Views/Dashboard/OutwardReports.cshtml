@@ -1,0 +1,203 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "OutwardReports";
+}
+@{
+    string EmpDesignation = (string)TempData["EmployeeDesignation"];
+    TempData["EmployeeDesignation"] = EmpDesignation;
+    string EmpDepartment = (string)TempData["EmployeeDepartment"];
+    TempData["EmployeeDepartment"] = EmpDepartment;
+
+    string GodownToShopCard = "No";
+    string ShopToGodownCard = "No";
+    string InterGodownCard = "No";
+    string InterShopCard = "No";
+    string ToClientCard = "No";
+
+    if (Model.userCredentialList != null && Model.userCredentialList.Any())
+    {
+        foreach (var data in Model.userCredentialList)
+        {
+            if (data.AssignDashboardId == "D40")
+            {
+                GodownToShopCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D41")
+            {
+                ShopToGodownCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D43")
+            {
+                InterGodownCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D42")
+            {
+                InterShopCard = "Yes";
+            }
+
+            if (data.AssignDashboardId == "D39")
+            {
+                ToClientCard = "Yes";
+            }
+        }
+    }
+    
+
+    //Outward Created For Shop In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || GodownToShopCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-tomatored">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-left fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var outwardtoshop = (IEnumerable<CodeFirstEntities.OutwardToShop>)TempData["OutwardToShop"];
+        TempData["OutwardToShop"] = outwardtoshop;
+         <div class="huge">@outwardtoshop.Count()</div>
+                        }
+                        <div>Godown To Shop</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="OutwardToShopByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Outward Created For Godown In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || ShopToGodownCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-tomatored">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-left fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var outwardshoptogodown = (IEnumerable<CodeFirstEntities.OutwardShopToGodown>)TempData["OutwardShopToGodown"];
+        TempData["OutwardShopToGodown"] = outwardshoptogodown;
+        <div class="huge">@outwardshoptogodown.Count()</div>
+                        }
+                        <div>Shop To Godown</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="OutwardShopToGodownByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Outward Created Inter Godown In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || InterGodownCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-tomatored">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-2">
+                        <i class="fa fa-arrow-left fa-3x"></i>
+                    </div>
+                    <div class="col-xs-10 text-right">
+                        @{
+        var outwardintergodown = (IEnumerable<CodeFirstEntities.OutwardInterGodown>)TempData["OutwardInterGodown"];
+        TempData["OutwardInterGodown"] = outwardintergodown;
+        <div class="huge">@outwardintergodown.Count()</div>
+                        }
+                        <div>Inter Godown</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="OutwardInterGodownByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Outward Created Inter Shop In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || InterShopCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-tomatored">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-left fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var outwardintershop = (IEnumerable<CodeFirstEntities.OutwardInterShop>)TempData["OutwardInterShop"];
+        TempData["OutwardInterShop"] = outwardintershop;
+        <div class="huge">@outwardintershop.Count()</div>
+                        }
+                        <div>Inter Shop</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="OutwardInterShopByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+
+    //Outward Created For Clients In Current Date 
+    if (HttpContext.Current.Session["UserName"].ToString() == "SuperAdmin" || ToClientCard=="Yes")
+    {
+    <div class="col-lg-4 col-md-4">
+        <div class="panel panel-tomatored">
+            <div class="panel-heading">
+                <div class="row">
+                    <div class="col-xs-3">
+                        <i class="fa fa-arrow-left fa-3x"></i>
+                    </div>
+                    <div class="col-xs-9 text-right">
+                        @{
+        var outwardtoclient = (IEnumerable<CodeFirstEntities.OutwardToClient>)TempData["OutwardToClient"];
+        TempData["OutwardToClient"] = outwardtoclient;
+        <div class="huge">@outwardtoclient.Count()</div>
+                        }
+                        <div>To Client</div>
+                    </div>
+                </div>
+            </div>
+            <a href="#" onclick="OutwardToClientByDate()">
+                <div class="panel-footer">
+                    <span class="pull-left">View Details</span>
+                    <span class="pull-right"><i class="fa fa-arrow-circle-right"></i></span>
+                    <div class="clearfix"></div>
+                </div>
+            </a>
+        </div>
+    </div>
+    }
+}

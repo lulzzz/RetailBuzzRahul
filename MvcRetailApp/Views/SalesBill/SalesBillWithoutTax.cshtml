@@ -1,0 +1,2520 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "SalesBillWithoutTax";
+}
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateAmount(rowid);
+		         CalculateTotalAmount();
+		         CalculateTaxSummary();
+		         CalcGrandTotal();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function NumberToWords() {
+        var junkVal = (+removeCommas(document.getElementById('Grand_Total').innerHTML));
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+        }
+        else if (Number(junkVal) == 0) {
+            return 'Rupees Zero Only';
+        }
+        else {
+            alertbox('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alertbox('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+</script>
+
+@*VALIDATION ON UNIT AND RATE*@
+<script type="text/javascript">
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function AllowDecimal(key, rowid) {
+        var numbertype = $("#NumberType" + rowid).val();
+        var quantity = $("#Quantity" + rowid).val();
+        var pointFoundCount = 0;
+        for (var i = 0; i <= quantity.length; i++) {
+            if (quantity[i] == '.') {
+                pointFoundCount++;
+            }
+        }
+
+        var pointposition = quantity.indexOf(".");
+        var digitupto = 0;
+        if (pointposition != -1) {
+            digitupto = quantity.substr(pointposition, quantity.length).length;
+        }
+
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (numbertype == 'Whole') { //if unit type is whole number then don't allow point
+            if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+        }
+        else if (keycode == 46) { //if decimal point is inserted
+            if (pointFoundCount > 0 && pointFoundCount < 2) { // more than one decimal point is inserted then don't allow to insert it
+                return false;
+            }
+        }
+        else if (digitupto != 0) { // if unit type is decimal then wait for decimal point to be insert then execute this condition 
+            if (numbertype == '2Digit') { // if unit type is 2 digit the then allow 2 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 3) {
+                    return false;
+                }
+            }
+            else { // if unit type is 2 digit the then allow 3 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 4) {
+                    return false;
+                }
+            }
+        }
+        else { //don't allow any decimal point or character until first digit occurs
+            if (quantity.length == 0) // if first digit is point in quantity field then don't allow it and characters too
+            {
+                if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+            else { //don't allow any character until the above else if condition meets
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+
+<script>
+    $(function () {
+        $.getJSON("/SalesBill/GetLastSalesDate", function (data) {
+            var dat = new Date(data);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var lastrowdate = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            document.getElementById("saledate").value = lastrowdate;
+        });
+    });
+</script>
+
+@*SALES PERSON NAME AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#SalesPerson").autocomplete({
+            source: "/SalesBill/GetEmployeeName",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#SalesPerson").val(ui.item.value);
+                    var empname = document.getElementById("SalesPerson").value;
+
+                    $.getJSON("/SalesBill/GetEmployeeDetails", { name: empname },
+                   function (data) {
+
+                       document.getElementById("SalesBillDetails_SalesPersonContact").value = data.MobileNo;
+                       document.getElementById("SalesBillDetails_SalesPersonEmail").value = data.Email;
+                       document.getElementById("SalesBillDetails_SalesPersonAddress").value = data.Address;
+                       document.getElementById("SalesBillDetails_SalesPersonDesignation").value = data.Designation;
+                   });
+                }
+            }
+        });
+    });
+</script>
+
+@*GET LOGIN EMPLOYEE DETAILS (PREPAID BY)*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        var shopcode = document.getElementById("LoginShopCode").value;
+        $.getJSON("/SalesBill/GetShopDetails", { code: shopcode },
+                  function (data) {
+                      document.getElementById("SalesBillDetails_ShopContactPerson").value = data.EmpName;
+                      document.getElementById("SalesBillDetails_ShopAddress").value = data.ShopAddress;
+                      document.getElementById("SalesBillDetails_ShopName").value = data.ShopName;
+                      document.getElementById("SalesBillDetails_ShopEmail").value = data.ShopEmail;
+                  });
+        document.getElementById("PreparedByEmail").innerHTML = document.getElementById("preparedby").value;
+        var preparedbyemail = document.getElementById("PreparedByEmail").innerHTML;
+
+        $.getJSON("/SalesBill/GetPreparedByEmpDetails", { email: preparedbyemail },
+                  function (data) {
+                      document.getElementById("PreparedByName").innerHTML = data.Name;
+                      document.getElementById("PreparedByContact").innerHTML = data.MobileNo;
+                      document.getElementById("SalesBillDetails_PreparedBy").value = data.Name;
+                  });
+    });
+</script>
+
+@*CLIENT NAME AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#ClientName").autocomplete({
+            source: "/SalesBill/GetClientName",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#ClientName").val(ui.item.value);
+
+                    var clientname = document.getElementById("ClientName").value;
+                    $("#ItemCode1").attr("disabled", false);
+
+                    var shopcode = document.getElementById("LoginShopCode").value;
+
+
+                    // DISPLAY CLIENT DETAILS ON CLIENT NAME CHANGE EVENT
+                    $.getJSON("/SalesBill/GetClientDetails", { name: clientname },
+                    function (data) {
+                        document.getElementById("Barcode1").disabled = false;
+                        document.getElementById("ddltypeofmode").disabled = false;
+                        document.getElementById("clientdetails").style.display = 'inline';
+                        document.getElementById("Client_Address").innerHTML = data.Address;
+                        document.getElementById("Client_State").innerHTML = data.State;
+                        document.getElementById("Client_Contact").innerHTML = data.ContactNo1;
+                        document.getElementById("Client_Email").innerHTML = data.Email;
+
+
+                        if (data.ClientType == "Registered") {
+                            $("#Registered").prop("checked", true);
+                        }
+                        else {
+                            $("#NonRegistered").prop("checked", true);
+                        }
+                        if (data.ConsumeResell == "Consumer") {
+                            $("#Consumer").prop("checked", true);
+                        }
+                        else {
+                            $("#Reseller").prop("checked", true);
+                        }
+                        if (data.FormType != "" && data.FormType != null) {
+                            document.getElementById("formtypeid").style.display = "inline";
+                            $("#ddlformtypes").val(data.FormType).attr("selected", true);
+                            $("#YesRadioButton").attr("checked", true);
+                            $("#YesRadioButton").attr("disabled", false);
+                            $("#NoRadioButton").attr("disabled", false);
+                        }
+                        else {
+                            document.getElementById("formtypeid").style.display = "none";
+                        }
+                        if (data.State == "Maharashtra") {
+                            document.getElementById("formtypeid").style.display = "none";
+                            $("#ddlformtypes").val("").attr("selected", true);
+                            $("#NoRadioButton").prop("checked", true);
+                            $("#YesRadioButton").attr("disabled", true);
+                            $("#NoRadioButton").attr("disabled", true);
+                        }
+                        document.getElementById("SalesBillDetails_ConsumeResell").value = data.ConsumeResell;
+                        document.getElementById("SalesBillDetails_ClientAddress").value = data.Address;
+                        document.getElementById("SalesBillDetails_ClientState").value = data.State;
+                        document.getElementById("SalesBillDetails_ClientContactNo").value = data.ContactNo1;
+                        document.getElementById("SalesBillDetails_ClientEmail").value = data.Email;
+                        document.getElementById("SalesBillDetails_ClientType").value = data.ClientType;
+                    });
+                }
+            }
+        });
+
+        //GET TRANSPORT NAME BY TRANSPORT MODE DDL CHANGE EVENT
+        $("#ddltypeofmode").change(function () {
+            var mode = document.getElementById("ddltypeofmode").value;
+            document.getElementById("TrnsprtName").style.display = 'inline';
+            if (mode != "") {
+                $.getJSON("/Inward/GetTransportNames", { mode: mode },
+                function (data) {
+                    var select = $("#ddltransportnames");
+                    select.empty();
+                    select.append($('<option/>', {
+                        text: "Select Name",
+                        value: "",
+                    }));
+                    $.each(data, function (index, itemdata) {
+                        select.append($('<option/>', {
+                            text: itemdata.Text,
+                            value: itemdata.Value,
+                        }));
+                    });
+                });
+            }
+            else {
+                var select = $("#ddltransportnames");
+                select.empty();
+                select.append($('<option/>', {
+                    text: "Select Name",
+                    value: "",
+                }));
+            }
+        });
+
+        //GET TRANSPORT DETAILS BY TRANSPORT NAME DDL CHANGE EVENT
+        $("#ddltransportnames").change(function () {
+            var name = document.getElementById("ddltransportnames").value;
+            if (name != "") {
+                $.getJSON("/Inward/GetTransportDetails", { name: name },
+                    function (data) {
+                        document.getElementById("SalesBillDetails_TransportContact").value = data.no;
+                    });
+            }
+        });
+    });
+</script>
+
+@*QUOTATION NO AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#QuotationNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/SalesBill/GetQuotationNo", { SearchTerm: request.term },
+                function (data) {
+                    if (data != "Fail") {
+                        response(data);
+                    }
+                    else {
+                        alertbox("Please Enter Correct Bill No..");
+                        document.getElementById("QuotationNo").value = "";
+                    }
+                });
+            },
+
+            minLength: 1,
+            @*DISPLAY BILL DETAILS IN POP-UP PAGE*@
+            select: function (event, ui) {
+                //JSON IS CALLED AFTER BILL NO SELECTED
+                if (ui.item) {
+                    $("#QuotationNo").val(ui.item.value);
+                    var orderno = $("#QuotationNo").val();
+                    $.getJSON("/SalesBill/GetClientDetailsOfBill", { BillNo: orderno },
+                              function (data) {
+
+                                  document.getElementById("SalesPerson").value = data.SalesPersonName;
+                                  document.getElementById("SalesBillDetails_SalesPersonAddress").value = data.SalesPersonAddress;
+                                  document.getElementById("SalesBillDetails_SalesPersonContact").value = data.SalesPersonContact;
+                                  document.getElementById("SalesBillDetails_SalesPersonDesignation").value = data.SalesPersonDesignation;
+                                  document.getElementById("SalesBillDetails_SalesPersonEmail").value = data.SalesPersonEmail;
+
+                                  document.getElementById("SalesOrderNo").value = "";
+                                  document.getElementById("ChallanNo").value = "";
+                                  var rowid = document.getElementById("hdnRowCount").value;
+                                  document.getElementById("Barcode" + rowid).disabled = false;
+                                  document.getElementById("SalesOrderNo").disabled = "true";
+                                  document.getElementById("ChallanNo").disabled = "true";
+
+                                  document.getElementById("Client_Address").innerHTML = data.ClientAddress;
+                                  document.getElementById("Client_State").innerHTML = data.ClientState;
+                                  document.getElementById("Client_Contact").innerHTML = data.ClientContactNo;
+                                  document.getElementById("Client_Email").innerHTML = data.ClientEmail;
+
+                                  document.getElementById("SalesBillDetails_TransportContact").value = data.TransportContactNo;
+                                  $("#ddltypeofmode").val(data.TransportMode).attr("selected", true);
+                                  var transportname = data.TransportName;
+                                  $.getJSON("/Inward/GetTransportNames", { mode: data.TransportMode },
+                                        function (data) {
+                                            var select = $("#ddltransportnames");
+                                            select.empty();
+                                            select.append($('<option/>', {
+                                                text: "Select Name",
+                                                value: "",
+                                            }));
+                                            $.each(data, function (index, itemdata) {
+                                                select.append($('<option/>', {
+                                                    text: itemdata.Text,
+                                                    value: itemdata.Value,
+                                                }));
+                                            });
+                                            document.getElementById("TrnsprtName").style.display = 'inline';
+                                            $("#ddltransportnames").val(transportname).attr("selected", true);
+                                        });
+
+                                  if (data.ClientType == "Registered") {
+                                      $("#Registered").attr("checked", true);
+                                  }
+                                  else {
+                                      $("#NonRegistered").attr("checked", true);
+                                  }
+                                  if (data.ConsumeResell == "Consumer") {
+                                      $("#Consumer").attr("checked", true);
+                                  }
+                                  else {
+                                      $("#Reseller").attr("checked", true);
+                                  }
+                                  if (data.FormType != "" && data.FormType != null) {
+                                      document.getElementById("formtypeid").style.display = "inline";
+                                      $("#ddlformtypes").val(data.FormType).attr("selected", true);
+                                      $("#YesRadioButton").attr("checked", true);
+                                      $("#YesRadioButton").attr("disabled", false);
+                                      $("#NoRadioButton").attr("disabled", false);
+                                  }
+                                  else {
+                                      document.getElementById("formtypeid").style.display = "none";
+                                  }
+
+                                  document.getElementById("ClientName").disabled = true;
+                                  document.getElementById("ddlformtypes").disabled = true;
+                                  $("#Registered").attr("disabled", true);
+                                  $("#NonRegistered").attr("disabled", true);
+                                  $("#Consumer").attr("disabled", true);
+                                  $("#Reseller").attr("disabled", true);
+                                  $("#YesRadioButton").attr("disabled", true);
+                                  $("#NoRadioButton").attr("disabled", true);
+                                  $("#ddltypeofmode").attr("disabled", false);
+
+                                  document.getElementById("ClientName").value = data.ClientName;
+                                  document.getElementById("SalesBillDetails_ConsumeResell").value = data.ConsumeResell;
+                                  document.getElementById("SalesBillDetails_ClientAddress").value = data.ClientAddress;
+                                  document.getElementById("SalesBillDetails_ClientState").value = data.ClientState;
+                                  document.getElementById("SalesBillDetails_ClientContactNo").value = data.ClientContactNo;
+                                  document.getElementById("SalesBillDetails_ClientEmail").value = data.ClientEmail;
+                                  document.getElementById("SalesBillDetails_ClientType").value = data.ClientType;
+                              });
+
+                    document.getElementById("Submit").disabled = false;
+                    var shopcode = document.getElementById("LoginShopCode").value;
+                    window.open("/SalesBill/GetClientPendingBills?BillNo=" + orderno + "&ShopCode=" + shopcode, "_target", "width=800,height=500,top=150px,left=350px");
+                }
+            }
+        });
+    });
+</script>
+
+@*SALES ORDER NO AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#SalesOrderNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/SalesBill/GetSalesOrderNo", { SearchTerm: request.term },
+                function (data) {
+                    if (data != "Fail") {
+                        response(data);
+                    }
+                    else {
+                        alertbox("Please Enter Correct Bill No..");
+                        document.getElementById("SalesOrderNo").value = "";
+                    }
+                });
+            },
+
+            minLength: 1,
+            @*DISPLAY BILL DETAILS IN POP-UP PAGE*@
+            select: function (event, ui) {
+                //JSON IS CALLED AFTER BILL NO SELECTED
+                if (ui.item) {
+                    $("#SalesOrderNo").val(ui.item.value);
+                    var orderno = $("#SalesOrderNo").val();
+                    $.getJSON("/SalesBill/GetClientDetailsOfBill", { BillNo: orderno },
+                              function (data) {
+
+                                  document.getElementById("SalesPerson").value = data.SalesPersonName;
+                                  document.getElementById("SalesBillDetails_SalesPersonAddress").value = data.SalesPersonAddress;
+                                  document.getElementById("SalesBillDetails_SalesPersonContact").value = data.SalesPersonContact;
+                                  document.getElementById("SalesBillDetails_SalesPersonDesignation").value = data.SalesPersonDesignation;
+                                  document.getElementById("SalesBillDetails_SalesPersonEmail").value = data.SalesPersonEmail;
+
+                                  document.getElementById("QuotationNo").value = "";
+                                  document.getElementById("ChallanNo").value = "";
+                                  var rowid = document.getElementById("hdnRowCount").value;
+                                  document.getElementById("Barcode" + rowid).disabled = false;
+                                  document.getElementById("QuotationNo").disabled = "true";
+                                  document.getElementById("ChallanNo").disabled = "true";
+
+                                  document.getElementById("Client_Address").innerHTML = data.ClientAddress;
+                                  document.getElementById("Client_State").innerHTML = data.ClientState;
+                                  document.getElementById("Client_Contact").innerHTML = data.ClientContactNo;
+                                  document.getElementById("Client_Email").innerHTML = data.ClientEmail;
+
+                                  document.getElementById("SalesBillDetails_TransportContact").value = data.TransportContactNo;
+                                  $("#ddltypeofmode").val(data.TransportMode).attr("selected", true);
+                                  var transportname = data.TransportName;
+
+                                  $.getJSON("/Inward/GetTransportNames", { mode: data.TransportMode },
+                                        function (data) {
+                                            var select = $("#ddltransportnames");
+                                            select.empty();
+                                            select.append($('<option/>', {
+                                                text: "Select Name",
+                                                value: "",
+                                            }));
+                                            $.each(data, function (index, itemdata) {
+                                                select.append($('<option/>', {
+                                                    text: itemdata.Text,
+                                                    value: itemdata.Value,
+                                                }));
+                                            });
+                                            document.getElementById("TrnsprtName").style.display = 'inline';
+                                            $("#ddltransportnames").val(transportname).attr("selected", true);
+                                        });
+
+                                  if (data.ClientType == "Registered") {
+                                      $("#Registered").attr("checked", true);
+                                  }
+                                  else {
+                                      $("#NonRegistered").attr("checked", true);
+                                  }
+                                  if (data.ConsumeResell == "Consumer") {
+                                      $("#Consumer").attr("checked", true);
+                                  }
+                                  else {
+                                      $("#Reseller").attr("checked", true);
+                                  }
+                                  if (data.FormType != "" && data.FormType != null) {
+                                      document.getElementById("formtypeid").style.display = "inline";
+                                      $("#ddlformtypes").val(data.FormType).attr("selected", true);
+                                      $("#YesRadioButton").attr("checked", true);
+                                      $("#YesRadioButton").attr("disabled", false);
+                                      $("#NoRadioButton").attr("disabled", false);
+                                  }
+                                  else {
+                                      document.getElementById("formtypeid").style.display = "none";
+                                  }
+
+                                  document.getElementById("ClientName").disabled = true;
+                                  document.getElementById("ddlformtypes").disabled = true;
+                                  $("#Registered").attr("disabled", true);
+                                  $("#NonRegistered").attr("disabled", true);
+                                  $("#Consumer").attr("disabled", true);
+                                  $("#Reseller").attr("disabled", true);
+                                  $("#YesRadioButton").attr("disabled", true);
+                                  $("#NoRadioButton").attr("disabled", true);
+                                  $("#ddltypeofmode").attr("disabled", false);
+
+                                  document.getElementById("ClientName").value = data.ClientName;
+                                  document.getElementById("SalesBillDetails_ConsumeResell").value = data.ConsumeResell;
+                                  document.getElementById("SalesBillDetails_ClientAddress").value = data.ClientAddress;
+                                  document.getElementById("SalesBillDetails_ClientState").value = data.ClientState;
+                                  document.getElementById("SalesBillDetails_ClientContactNo").value = data.ClientContactNo;
+                                  document.getElementById("SalesBillDetails_ClientEmail").value = data.ClientEmail;
+                                  document.getElementById("SalesBillDetails_ClientType").value = data.ClientType;
+                              });
+
+                    document.getElementById("Submit").disabled = false;
+                    var shopcode = document.getElementById("LoginShopCode").value;
+                    window.open("/SalesBill/GetClientPendingBills?BillNo=" + orderno + "&ShopCode=" + shopcode, "_target", "width=700,height=500,top=150px,left=350px");
+                }
+            }
+        });
+    });
+</script>
+
+@*DELIVERY CHALLAN AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#ChallanNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/SalesBill/GetDeliveryChallanNo", { SearchTerm: request.term },
+                function (data) {
+                    if (data != "Fail") {
+                        response(data);
+                    }
+                    else {
+                        alertbox("Please Enter Correct Bill No..");
+                        document.getElementById("ChallanNo").value = "";
+                    }
+                });
+            },
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#ChallanNo").val(ui.item.value);
+                    var challanno = $("#ChallanNo").val();
+
+                    $.getJSON("/SalesBill/GetClientDetailsOfBill", { BillNo: challanno },
+                               function (data) {
+
+                                   document.getElementById("SalesPerson").value = data.SalesPersonName;
+                                   document.getElementById("SalesBillDetails_SalesPersonAddress").value = data.SalesPersonAddress;
+                                   document.getElementById("SalesBillDetails_SalesPersonContact").value = data.SalesPersonContact;
+                                   document.getElementById("SalesBillDetails_SalesPersonDesignation").value = data.SalesPersonDesignation;
+                                   document.getElementById("SalesBillDetails_SalesPersonEmail").value = data.SalesPersonEmail;
+
+                                   document.getElementById("QuotationNo").value = "";
+                                   document.getElementById("SalesOrderNo").value = "";
+                                   var rowid = document.getElementById("hdnRowCount").value;
+                                   document.getElementById("Barcode" + rowid).disabled = false;
+                                   document.getElementById("SalesOrderNo").disabled = "true";
+                                   document.getElementById("QuotationNo").disabled = "true";
+
+                                   document.getElementById("Client_Address").innerHTML = data.ClientAddress;
+                                   document.getElementById("Client_State").innerHTML = data.ClientState;
+                                   document.getElementById("Client_Contact").innerHTML = data.ClientContactNo;
+                                   document.getElementById("Client_Email").innerHTML = data.ClientEmail;
+
+                                   document.getElementById("SalesBillDetails_TransportContact").value = data.TransportContactNo;
+                                   $("#ddltypeofmode").val(data.TransportMode).attr("selected", true);
+                                   var transportname = data.TransportName;
+                                   $.getJSON("/Inward/GetTransportNames", { mode: data.TransportMode },
+                                         function (data) {
+                                             var select = $("#ddltransportnames");
+                                             select.empty();
+                                             select.append($('<option/>', {
+                                                 text: "Select Name",
+                                                 value: "",
+                                             }));
+                                             $.each(data, function (index, itemdata) {
+                                                 select.append($('<option/>', {
+                                                     text: itemdata.Text,
+                                                     value: itemdata.Value,
+                                                 }));
+                                             });
+                                             document.getElementById("TrnsprtName").style.display = 'inline';
+                                             $("#ddltransportnames").val(transportname).attr("selected", true);
+                                         });
+
+                                   if (data.ClientType == "Registered") {
+                                       $("#Registered").attr("checked", true);
+                                   }
+                                   else {
+                                       $("#NonRegistered").attr("checked", true);
+                                   }
+                                   if (data.ConsumeResell == "Consumer") {
+                                       $("#Consumer").attr("checked", true);
+                                   }
+                                   else {
+                                       $("#Reseller").attr("checked", true);
+                                   }
+                                   if (data.FormType != "" && data.FormType != null) {
+                                       document.getElementById("formtypeid").style.display = "inline";
+                                       $("#ddlformtypes").val(data.FormType).attr("selected", true);
+                                       $("#YesRadioButton").attr("checked", true);
+                                       $("#YesRadioButton").attr("disabled", false);
+                                       $("#NoRadioButton").attr("disabled", false);
+                                   }
+                                   else {
+                                       document.getElementById("formtypeid").style.display = "none";
+                                   }
+
+                                   document.getElementById("ClientName").disabled = true;
+                                   document.getElementById("ddlformtypes").disabled = true;
+                                   $("#Registered").attr("disabled", true);
+                                   $("#NonRegistered").attr("disabled", true);
+                                   $("#Consumer").attr("disabled", true);
+                                   $("#Reseller").attr("disabled", true);
+                                   $("#YesRadioButton").attr("disabled", true);
+                                   $("#NoRadioButton").attr("disabled", true);
+                                   $("#ddltypeofmode").attr("disabled", false);
+
+                                   document.getElementById("ClientName").value = data.ClientName;
+                                   document.getElementById("SalesBillDetails_ConsumeResell").value = data.ConsumeResell;
+                                   document.getElementById("SalesBillDetails_ClientAddress").value = data.ClientAddress;
+                                   document.getElementById("SalesBillDetails_ClientState").value = data.ClientState;
+                                   document.getElementById("SalesBillDetails_ClientContactNo").value = data.ClientContactNo;
+                                   document.getElementById("SalesBillDetails_ClientEmail").value = data.ClientEmail;
+                                   document.getElementById("SalesBillDetails_ClientType").value = data.ClientType;
+                               });
+
+                    document.getElementById("Submit").disabled = false;
+                    var shopcode = document.getElementById("LoginShopCode").value;
+                    window.open("/SalesBill/GetClientPendingBills?BillNo=" + challanno + "&ShopCode=" + shopcode, "_target", "width=700,height=500,top=150px,left=350px");
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "SalesBillDetails_Date",
+            dateFormat: "%d/%M/%Y",
+        });
+
+        var temp = $("#Date").val();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var salesbilldate = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('SalesBillDetails_Date').value = salesbilldate;
+
+        data.addOnSelectedDelegate(function () {
+
+            var lastrowdate = document.getElementById("saledate").value;
+            var selecteddate = document.getElementById("SalesBillDetails_Date").value;
+            var todaydate = new Date();
+
+            var dat = new Date(lastrowdate);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            lastrowdate = data;
+            document.getElementById("saledate").value = lastrowdate;
+
+            var dat = new Date(todaydate);
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+            todaydate = data;
+
+            lastrowdate = new Date(lastrowdate).getTime();
+            todaydate = new Date(todaydate).getTime();
+            selecteddate = new Date(selecteddate).getTime();
+
+            if (todaydate < selecteddate) {
+                alertbox("You Cannot Select The Date Beyond Today's Date");
+                document.getElementById("SalesBillDetails_Date").value = salesbilldate;
+                return false;
+            }
+            else if (selecteddate < lastrowdate) {
+                alertbox("You Cannot Select The Date Prior To Last Sales Bill Generated");
+                document.getElementById("SalesBillDetails_Date").value = salesbilldate;
+            }
+        });
+    });
+</script>
+
+@*GET ITEM DETAILS ON BARCOIDE CHANGE EVENT*@
+<script type="text/javascript">
+    function GetItemsByBarcode(rowid) {
+
+        document.getElementById("QuotationNo").disabled = "true";
+        document.getElementById("SalesOrderNo").disabled = "true";
+        document.getElementById("ChallanNo").disabled = "true";
+
+        //CHECK IF SAME BARCODE IS ALREADY SELECTED THEN ENABLES PREVIOUS ROW
+        Barcode = "Barcode" + rowid;
+        var rowcount = document.getElementById("hdnRowCount").value;
+        var barcode = document.getElementById(Barcode).value;
+        var counter = 0;
+        var validationcounter = 0;
+        for (i = 1; i < rowcount; i++) {
+            var BARCODE = "Barcode" + i;
+            var ITEMNAME = "ItemName" + i;
+            //var NARRATION = "Narration" + i;
+            var QUANTITY = "Quantity" + i;
+            var DISCOUNTPER = "DisPer" + i;
+            var DISCOUNTRS = "DisRs" + i;
+
+            //IF ITEM IS ALREADY SELECTED THEN GET ALERT
+            if (document.getElementById(BARCODE) != null) {
+                if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                    if ($("#" + BARCODE).val().toUpperCase() == barcode.toUpperCase()) {
+                        alertbox("The Item Is Already Selected Please Change The Quantity..");
+                        //document.getElementById(NARRATION).disabled = false;
+                        document.getElementById(QUANTITY).disabled = false;
+                        document.getElementById(DISCOUNTRS).disabled = false;
+                        document.getElementById(DISCOUNTPER).disabled = false;
+
+                        //ITEM IS ALREADY SELECTED THEN EMPTY CURRENT ROW
+                        var BARCODE = "Barcode" + rowcount;
+                        var ITEMNAME = "ItemName" + rowcount;
+                        var ITEMCODE = "ItemCode" + rowcount;
+                        //var NARRATION = "Narration" + rowcount;
+                        var STKQUAN = "StkQty" + rowcount;
+                        var SHOPQUAN = "ShopQty" + rowcount;
+                        var QUANTITY = "Quantity" + rowcount;
+                        var DISCOUNTPER = "DisPer" + rowcount;
+                        var DISCOUNTRS = "DisRs" + rowcount;
+                        var UNIT = "Unit" + rowcount;
+                        var RATE = "Rate" + rowcount;
+                        var AMOUNT = "Amount" + rowcount;
+
+                        document.getElementById(BARCODE).value = "";
+                        document.getElementById(ITEMNAME).value = "";
+                        document.getElementById(ITEMCODE).value = "";
+                        document.getElementById(STKQUAN).innerHTML = "";
+                        document.getElementById(SHOPQUAN).innerHTML = "";
+                        document.getElementById(QUANTITY).value = "";
+                        document.getElementById(DISCOUNTPER).value = "";
+                        document.getElementById(DISCOUNTRS).value = "";
+                        document.getElementById(UNIT).innerHTML = "";
+                        document.getElementById(RATE).value = "";
+                        document.getElementById(AMOUNT).innerHTML = "";
+
+                        counter = i;
+                        break;
+                    }
+                }
+            }
+        }
+
+        //IF COUNTER IS 0 THAT MEANS CURRENT BARCODE IS NOT SELECED IN PREVIOUS ROWS
+        if (counter == 0) {
+            //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+            for (i = 1; i < rowcount; i++) {
+                var ITEMNAME = "ItemName" + i;
+                var ITEMTYPE = "ItemType" + i;
+                var QUANTITY = "Quantity" + i;
+                var RATE = "Rate" + i;
+                var DISCOUNTPER = "DisPer" + i;
+                var DISCOUNTRS = "DisRs" + i;
+                if ($("#" + ITEMNAME).val() == "") {
+                    alertbox("Please Select The Item");
+                    var BARCODE = "Barcode" + rowcount;
+                    document.getElementById(BARCODE).value = "";
+                    validationcounter++;
+                }
+                else if ($("#" + QUANTITY).val() == "" || +$("#" + QUANTITY).val() == 0) {
+                    alertbox("Please Fill The Quantity");
+                    var BARCODE = "Barcode" + rowcount;
+                    document.getElementById(BARCODE).value = "";
+                    validationcounter++;
+                }
+                else if ($("#" + RATE).val() == "" || (+$("#" + RATE).val()) == 0) {
+                    alertbox("Please Fill The Rate");
+                    var BARCODE = "Barcode" + rowcount;
+                    document.getElementById(BARCODE).value = "";
+                    validationcounter++;
+                }
+
+                else {
+                    if (document.getElementById(QUANTITY) != null) {
+                        if (document.getElementById(ITEMTYPE).value == "Inventory") {
+                            document.getElementById(QUANTITY).disabled = true;
+                            document.getElementById(DISCOUNTPER).disabled = true;
+                            document.getElementById(DISCOUNTRS).disabled = true;
+                        }
+                    }
+                }
+            }
+
+            if (validationcounter == 0) {
+                var formtype;
+                if (document.getElementById("formtypeid").style.display == "none") {
+                    formtype = "";
+                }
+                else {
+                    document.getElementById("ddlformtypes").disabled = 'true';
+                    if (document.getElementById("ddlformtypes").value == "") {
+                        formtype = "";
+                    }
+                    else {
+                        formtype = $("#ddlformtypes").val();
+                    }
+                }
+                //DISPLAY DETAILS ON BARCODE CHANGE EVENT
+                var barcodevalue = document.getElementById("Barcode" + rowid).value;
+                var shopcode = document.getElementById("LoginShopCode").value;
+                if (barcodevalue != "") {
+                    document.getElementById("Quantity" + rowid).disabled = false;
+                    $.getJSON("/SalesBill/GetBarcodeItemDetails", {
+                        barcode: barcodevalue,
+                        shop: shopcode,
+                        ClientType: $("#SalesBillDetails_ClientType").val(),
+                        ClientState: $("#SalesBillDetails_ClientState").val(),
+                        Formtype: formtype,
+                        ConsumeResell: $("#SalesBillDetails_ConsumeResell").val()
+                    },
+                          function (data) {
+                              if (data != "Fail") {
+                                  document.getElementById("ItemCode" + rowid).innerHTML = data.ItemCode;
+                                  document.getElementById("ItemCodeVal" + rowid).value = data.ItemCode;
+                                  document.getElementById("ItemName" + rowid).value = data.ItemName;
+                                  document.getElementById("StkQty" + rowid).innerHTML = data.totalstkqty;
+                                  document.getElementById("ShopQty" + rowid).innerHTML = data.Quantity;
+                                  document.getElementById("Unit" + rowid).innerHTML = data.Unit;
+                                  document.getElementById("UnitVal" + rowid).value = data.Unit;
+                                  document.getElementById("NumberType" + rowid).value = data.NumberType;
+                                  document.getElementById("Rate" + rowid).value = data.MRP;
+                                  document.getElementById("SellingPrice" + rowid).value = data.SellingPrice;
+                                  document.getElementById("CostPrice" + rowid).value = data.costprice;
+                                  document.getElementById("Color" + rowid).value = data.Color;
+                                  document.getElementById("Material" + rowid).value = data.Material;
+                                  document.getElementById("Size" + rowid).value = data.Size;
+                                  document.getElementById("Brand" + rowid).value = data.Brand;
+                                  document.getElementById("DesignCode" + rowid).value = data.DesignCode;
+                                  document.getElementById("DesignName" + rowid).value = data.DesignName;
+                                  document.getElementById("Description" + rowid).value = data.Description;
+                                  document.getElementById("ItemTaxVal" + rowid).value = data.taxPercent;
+                                  document.getElementById("DisPer" + rowid).value = data.discount;
+                                  document.getElementById("DisRs" + rowid).value = data.discountrps;
+                                  document.getElementById("DisPer" + rowid).disabled = false;
+                                  document.getElementById("DisRs" + rowid).disabled = false;
+
+                                  //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                                  //on each item which is applied
+                                  var tax = data.taxPercent;
+                                  if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                                      var taxcount = document.getElementById("ItemTaxCount").value;
+                                      if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                                          $("#ItemTaxNumber" + taxcount).val(tax);
+                                          $("#AddedTax1").text(tax + "%");
+                                      }
+                                      else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                                          var taxpresent = 0;
+                                          for (var i = 1; i <= taxcount; i++) {
+                                              var taxno = "ItemTaxNumber" + i;
+                                              //if tax is already present then no need to make other taxnumbers
+                                              if (tax == $("#" + taxno).val()) {
+                                                  taxpresent++;
+                                              }
+                                          }
+                                          if (taxpresent == 0) {
+                                              taxcount++;
+                                              var taxno = "ItemTaxNumber" + taxcount;
+                                              var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                              $("#AllTaxesNumbersValue").append(data);
+                                              var addedtaxno = "AddedTax" + taxcount;
+                                              var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                              var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                              var addedamount = "AddedAmount" + taxcount;
+                                              var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                              var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                              newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                              newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                              $("#AddTaxes").append(newlabel);
+                                              $("#ItemTaxCount").val(taxcount);
+                                          }
+                                      }
+                                  }
+                                  var CostPrice = +$("#CostPrice" + rowid).val();
+                                  var Tax = +$("#ItemTaxVal" + rowid).val();
+                                  var MRP = +$("#Rate" + rowid).val();
+                                  taxoncostprice = (CostPrice * Tax) / 100;
+                                  var taxpercentoncostprice = CostPrice / (CostPrice + taxoncostprice) * Tax;
+                                  var Sellingprice = MRP - (MRP * +taxpercentoncostprice / 100);
+                                  $("#SellingPrice" + rowid).val(Sellingprice.toFixed(2));
+                              }
+                              else {
+                                  alertbox("Invalid Barcode..");
+                              }
+                          });
+                }
+            }
+        }
+    }
+</script>
+
+
+@*DYNAMIC ROW GENERATION ON ENTER KEY*@
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+
+            //CREATE DYNAMIC ROWS IN DIRECT RETAIL BILL
+            if ($("#QuotationNo").val() == "" && $("#SalesOrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                var rowid = document.getElementById("hdnRowCount").value;
+                var prevBarcode = "Barcode" + rowid;
+                var prevQuantity = "Quantity" + rowid;
+                var prevDiscount = "DisPer" + rowid;
+                var prevDiscountRs = "DisRs" + rowid;
+                var prevItemName = "ItemName" + rowid;
+                var prevNarration = "Narration" + rowid;
+                var previtemtype = "ItemType" + rowid;
+
+                if (document.getElementById(prevBarcode) != null) {
+                    if ($("#" + prevBarcode).val() == "") {
+                        alertbox("Please Select The Barcode");
+                    }
+                    else if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                        alertbox("Please Fill The Quantity");
+                    }
+                    else {
+                        if ($("#" + previtemtype).val() == "Inventory") {
+                            document.getElementById(prevBarcode).disabled = true;
+                            document.getElementById(prevNarration).disabled = true;
+                            document.getElementById(prevQuantity).disabled = true;
+                            document.getElementById(prevDiscount).disabled = true;
+                            document.getElementById(prevDiscountRs).disabled = true;
+                            document.getElementById(prevItemName).disabled = true;
+                            DynamicRows();
+                        }
+                    }
+                }
+                else {
+                    DynamicRows();
+                }
+            }
+                //CREATE DYNAMIC ROWS IN RETAIL BILL WITH MILTIPLE BILLS
+            else {
+                DynamicRows();
+
+            }
+        }
+
+    });
+
+    function DynamicRows() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        rowid = +rowid + 1;
+        var row = "row" + rowid;
+        var Barcode = "Barcode" + rowid;
+        var ItemCode = "ItemCode" + rowid;
+        var ItemCodeVal = "ItemCodeVal" + rowid;
+        var ItemName = "ItemName" + rowid;
+        var Narration = "Narration" + rowid;
+        var Description = "Description" + rowid;
+        var StockQuantity = "StkQty" + rowid;
+        var ShopQuantity = "ShopQty" + rowid;
+        var Quantity = "Quantity" + rowid;
+        var Unit = "Unit" + rowid;
+        var UnitVal = "UnitVal" + rowid;
+        var NumberType = "NumberType" + rowid;
+        var Rate = "Rate" + rowid;
+        var SellingPrice = "SellingPrice" + rowid;
+        var costprice = "CostPrice" + rowid;
+        var Brand = "Brand" + rowid;
+        var Size = "Size" + rowid;
+        var DesignCode = "DesignCode" + rowid;
+        var DesignName = "DesignName" + rowid;
+        var DiscountPer = "DisPer" + rowid;
+        var DiscountRs = "DisRs" + rowid;
+        var AmountVal = "AmountVal" + rowid;
+        var Amount = "Amount" + rowid;
+        var Color = "Color" + rowid;
+        var Material = "Material" + rowid;
+        var itemtype = "ItemType" + rowid;
+        var ItemTaxVal = "ItemTaxVal" + rowid;
+        var ItemTaxAmt = "ItemTaxAmt" + rowid;
+        var proportionatetaxvalue = "proportionatetaxvalue" + rowid;
+        var proportionatetaxamount = "proportionatetaxamount" + rowid;
+        var ItemList = $("#AddItemRows");
+
+        var data = "<tr id='" + row + "'><td style='text-align:center'>" + rowid + "</td>";
+        data += "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + Barcode + "' id='" + Barcode + "' autocomplete='off' class='form-control' onchange='GetItemsByBarcode(" + rowid + ")' style='text-align:center' /></td>";
+        data += "<td><label id='" + ItemCode + "' style='font-weight: normal'></label><input type='hidden' id='" + ItemCodeVal + "' name='" + ItemCodeVal + "' /></td>";
+        data += "<td class='col-md-2 col-lg-2 col-sm-2'><input type='text' name='" + ItemName + "' id='" + ItemName + "' autocomplete='off' class='form-control'style='text-align:center' disabled='disabled'/></td>";
+        data += "<td class='col-md-2 col-lg-2 col-sm-2'><textarea id='" + Narration + "' name='" + Narration + "' class='form-control' placeholder='Narration' style='text-align: center' rows='1' disabled='disabled'></textarea></td>";
+        data += "<td style='text-align:center'><a id='" + StockQuantity + "' href='#' onclick='ShowQuantity(" + rowid + ")'></a></td>";
+        data += "<td style='text-align:center'><a id='" + ShopQuantity + "' href='#' onclick='ShopRequisition(" + rowid + ")'></a></td>";
+        data += "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + Quantity + "' id='" + Quantity + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"quantity\"' + ")' onkeypress='return AllowDecimal(event," + rowid + ")' disabled/></td>";
+        data += "<td><label id='" + Unit + "' style='font-weight: normal'></label><input type='hidden' id='" + UnitVal + "' name='" + UnitVal + "' /><input type='hidden' id='" + NumberType + "' name='" + NumberType + "' /><input type='hidden' id='" + Description + "' name='" + Description + "' /></td>";
+        data += "<td style='text-align:center'><input type='text' id='" + Rate + "' name='" + Rate + "' style='text-align: center' class='form-control' disabled='disabled' onkeypress='return AllowNumbers(event)'/><input type='hidden' id='" + SellingPrice + "' name='" + SellingPrice + "' /><input type='hidden' id='" + costprice + "' name='" + costprice + "' /><input type='hidden' id='" + DesignCode + "' name='" + DesignCode + "' /><input type='hidden' id='" + DesignName + "' name='" + DesignName + "' /></td>";
+        data += "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountPer + "' id='" + DiscountPer + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"percent\"' + ")' onkeypress='return AllowNumbers(event)' disabled value='0' placeholder='0%' /></td>";
+        data += "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountRs + "' id='" + DiscountRs + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + rowid + ',' + '\"rps\"' + ")' onkeypress='return AllowNumbers(event)' disabled value='0.00' placeholder='0' /><input type='hidden' id='" + Brand + "' name='" + Brand + "' /><input type='hidden' id='" + Size + "' name='" + Size + "' /></td>";
+        data += "<td style='text-align:center'><label id='" + Amount + "' style='font-weight: normal'></label><input type='hidden' id='" + AmountVal + "' name='" + AmountVal + "' /><input type='hidden' id='" + ItemTaxVal + "' name='" + ItemTaxVal + "' /><input type='hidden' id='" + ItemTaxAmt + "' name='" + ItemTaxAmt + "' /><input type='hidden' id='" + proportionatetaxvalue + "' name='" + proportionatetaxvalue + "' /><input type='hidden' id='" + proportionatetaxamount + "' name='" + proportionatetaxamount + "' /><input type='hidden' id='" + itemtype + "' name='" + itemtype + "' value='Inventory' /></td>";
+        data += "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + rowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td><input type='hidden' name='" + Color + "' id='" + Color + "' /><input type='hidden' name='" + Material + "' id='" + Material + "' /></tr>";
+
+        ItemList.append(data);
+
+        $("#hdnRowCount").val(rowid);
+    }
+</script>
+
+@*CREATE NON-INVENTORY ITEMS*@
+<script type="text/javascript">
+    $(function () {
+        $("#NonInvButton").click(function () {
+            var noninvrowid = document.getElementById("hdnRowCount").value;
+
+            var prevBarcode = "Barcode" + noninvrowid;
+            var prevQuantity = "Quantity" + noninvrowid;
+            var prevDiscount = "DisPer" + noninvrowid;
+            var prevDiscountRs = "DisRs" + noninvrowid;
+            var prevItemName = "ItemName" + noninvrowid;
+            var prevNarration = "Narration" + noninvrowid;
+
+            if ($("#" + prevQuantity).val() == "" || +$("#" + prevQuantity).val() == 0) {
+                alertbox("Please Fill The Quantity");
+            }
+            else {
+                if ($("#QuotationNo").val() == "" && $("#OrderNo").val() == "" && $("#ChallanNo").val() == "") {
+                    if (document.getElementById(prevBarcode) != null) {
+                        document.getElementById(prevBarcode).disabled = true;
+                        document.getElementById(prevNarration).disabled = true;
+                        document.getElementById(prevQuantity).disabled = true;
+                        document.getElementById(prevDiscount).disabled = true;
+                        document.getElementById(prevDiscountRs).disabled = true;
+                        document.getElementById(prevItemName).disabled = true;
+                    }
+                }
+                noninvrowid = +noninvrowid + 1;
+                row = "row" + noninvrowid;
+                var ItemCode = "ItemCode" + noninvrowid;
+                var ItemCodeVal = "ItemCodeVal" + noninvrowid;
+                var ItemName = "ItemName" + noninvrowid;
+                var ItemNameVal = "ItemNameVal" + noninvrowid;
+                var Narration = "Narration" + noninvrowid;
+                var Description = "Description" + noninvrowid;
+                var StockQuantity = "StkQty" + noninvrowid;
+                var ShopQuantity = "ShopQty" + noninvrowid;
+                var Quantity = "Quantity" + noninvrowid;
+                var Unit = "Unit" + noninvrowid;
+                var UnitVal = "UnitVal" + noninvrowid;
+                var NumberType = "NumberType" + noninvrowid;
+                var Rate = "Rate" + noninvrowid;
+                var SellingPrice = "SellingPrice" + noninvrowid;
+                var costprice = "CostPrice" + noninvrowid;
+                var Size = "Size" + noninvrowid;
+                var DesignCode = "DesignCode" + noninvrowid;
+                var DesignName = "DesignName" + noninvrowid;
+                var Brand = "Brand" + noninvrowid;
+                var DiscountPer = "DisPer" + noninvrowid;
+                var DiscountRs = "DisRs" + noninvrowid;
+                var AmountVal = "AmountVal" + noninvrowid;
+                var Amount = "Amount" + noninvrowid;
+                var Color = "Color" + noninvrowid;
+                var Material = "Material" + noninvrowid;
+                var itemtype = "ItemType" + noninvrowid;
+                var ItemTaxVal = "ItemTaxVal" + noninvrowid;
+                var ItemTaxAmt = "ItemTaxAmt" + noninvrowid;
+                var proportionatetaxvalue = "proportionatetaxvalue" + noninvrowid;
+                var proportionatetaxamount = "proportionatetaxamount" + noninvrowid;
+                var ItemList = $("#AddItemRows");
+
+                ItemList.append(
+                "<tr id='" + row + "'><td style='text-align:center'>" + noninvrowid + "</td>" +
+                "<td style='text-align:center'><label>----</label></td>" +
+                "<td style='text-align:center'><label id='" + ItemCode + "' style='font-weight: normal'>-----</label><input type='hidden' id='" + ItemCodeVal + "' name='" + ItemCodeVal + "' /></td>" +
+                "<td class='col-md-2 col-lg-2'><select id='" + ItemName + "' name='" + ItemName + "' class='form-control'><option>Select Item</option></select><input type='hidden' id='" + ItemNameVal + "' name='" + ItemNameVal + "' /></td>" +
+                "<td class='col-md-2 col-lg-2 col-sm-2'><textarea id='" + Narration + "' name='" + Narration + "' class='form-control' placeholder='Narration' style='text-align: center' rows='1'></textarea></td>" +
+                "<td style='text-align:center'><label>----</label></td>" +
+                "<td style='text-align:center'><label>----</label></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + Quantity + "' id='" + Quantity + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"quantity\"' + ")' onkeypress='return AllowDecimal(event," + noninvrowid + ")'/></td>" +
+                "<td><label id='" + Unit + "' style='font-weight: normal'></label><input type='hidden' id='" + UnitVal + "' name='" + UnitVal + "' /><input type='hidden' id='" + NumberType + "' name='" + NumberType + "' /><input type='hidden' id='" + Description + "' name='" + Description + "' /></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1' style='text-align:center'> <input type='text' name='" + Rate + "' id='" + Rate + "' autocomplete='off' class='form-control'style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"quantity\"' + ")' onkeypress='return AllowNumbers(event)' /><input type='hidden' id='" + SellingPrice + "' name='" + SellingPrice + "' /><input type='hidden' id='" + costprice + "' name='" + costprice + "' /></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountPer + "' id='" + DiscountPer + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"percent\"' + ")' onkeypress='return AllowNumbers(event)' value='0' placeholder='0%' /></td>" +
+                "<td class='col-md-1 col-lg-1 col-sm-1'><input type='text' name='" + DiscountRs + "' id='" + DiscountRs + "' autocomplete='off' class='form-control' style='text-align:center' onchange='CalculateAmount(" + noninvrowid + ',' + '\"rps\"' + ")' onkeypress='return AllowNumbers(event)' value='0.00' placeholder='0' /><input type='hidden' id='" + Brand + "' name='" + Brand + "' /><input type='hidden' id='" + DesignCode + "' name='" + DesignCode + "' /><input type='hidden' id='" + DesignName + "' name='" + DesignName + "' /></td>" +
+                "<td style='text-align:center'><label id='" + Amount + "' style='font-weight: normal'></label><input type='hidden' id='" + AmountVal + "' name='" + AmountVal + "' /><input type='hidden' id='" + ItemTaxVal + "' name='" + ItemTaxVal + "' /><input type='hidden' id='" + ItemTaxAmt + "' name='" + ItemTaxAmt + "' /><input type='hidden' id='" + itemtype + "' name='" + itemtype + "' value='NonInventory' /><input type='hidden' id='" + Size + "' name='" + Size + "' /><input type='hidden' id='" + proportionatetaxvalue + "' name='" + proportionatetaxvalue + "' /><input type='hidden' id='" + proportionatetaxamount + "' name='" + proportionatetaxamount + "' /></td>" +
+                "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + noninvrowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td><input type='hidden' name='" + Color + "' id='" + Color + "' /><input type='hidden' name='" + Material + "' id='" + Material + "' /></tr>"
+                );
+
+                //FILL NON INVENTORY ITEM DDL ON ENTER CLICK EVENT
+                $.getJSON("/SalesBill/GetNonInventoryItems",
+                function (data) {
+
+                    var select = $("#" + ItemName);
+                    select.empty();
+                    select.append($('<option/>', {
+                        text: "Select Item",
+                        value: "",
+                    }));
+                    $.each(data, function (index, itemdata) {
+                        select.append($('<option/>', {
+                            text: itemdata.Text + " " + itemdata.Value,
+                            value: itemdata.Value,
+                        }));
+                    });
+                });
+
+
+                //GET ITEM DETAILS FROM ITEMNAME
+                $("#" + ItemName).change(function () {
+                    var noninvitemcode = document.getElementById(ItemName).value;
+                    var rowcount = document.getElementById("hdnRowCount").value;
+
+                    // EMPTY STOCK QUANTITY AND QUANTITY BECOZ IF WE CHANGE ITEM PREVIOUS ROWS STOCK QUANTITY AND QUANTITY IS EMPTY
+                    var qty = "Quantity" + rowcount;
+                    var amt = "Amount" + rowcount;
+                    var narration = "Narration" + rowcount;
+                    var disrs = "DisRs" + rowcount;
+                    var disper = "DisPer" + rowcount;
+                    //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                    if (document.getElementById(qty) != null) {
+                        document.getElementById(qty).value = "";
+                        document.getElementById(narration).value = "";
+                        document.getElementById(amt).innerHTML = "";
+                        document.getElementById(disrs).value = "0";
+                        document.getElementById(disper).value = "0";
+                        $("#Rate" + noninvrowid).val("");
+                        $("#StkQty" + noninvrowid).text("");
+                        $("#ShopQty" + noninvrowid).text("");
+                        $("#Unit" + noninvrowid).text("");
+                    }
+
+                    //IF COUNTER IS 0 THAT MEANS CURRENT ITEM IS NOT SELECED IN PREVIOUS ROWS
+                    var nonvalidationcount = 0;
+                    for (i = 1; i < rowcount; i++) {
+                        //VALIDATIONS ON QUANTITY OR ITEM IS EMPTY
+                        var preitem = "ItemCode" + i;
+                        var prequantity = "Quantity" + i;
+                        var prerate = "Rate" + i;
+                        var ITEM = $("#" + preitem).html();
+                        var QUANTITY = $("#" + prequantity).val();
+                        var RATE = $("#" + prerate).val();
+
+                        if (document.getElementById(preitem) != null) {
+                            if (ITEM == "") {
+                                alertbox("Please Select The Item ");
+                                nonvalidationcount++;
+                                $("#ItemCode" + noninvrowid).val("").attr("selected", true);
+                                break;
+                            }
+                            else if (QUANTITY == "" || +QUANTITY == 0) {
+                                alertbox("Please Fill The Quantity");
+                                nonvalidationcount++;
+                                $("#ItemCode" + noninvrowid).val("").attr("selected", true);
+                                break;
+                            }
+                            else if (RATE == "" || +RATE == 0) {
+                                alertbox("Please Fill The Rate");
+                                nonvalidationcount++;
+                                $("#ItemCode" + noninvrowid).val("").attr("selected", true);
+                                break;
+                            }
+                        }
+                    }
+
+                    if (nonvalidationcount == 0) {
+                        //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+                        for (i = 1; i < rowcount; i++) {
+                            var QUANTITY = "Quantity" + i;
+                            var RATE = "Rate" + i;
+                            var NARRATION = "Narration" + i;
+                            var DISRS = "DisRs" + i;
+                            var DISPER = "DisPer" + i;
+                            var ITEMTYPE = "ItemType" + i;
+                            //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                            if (document.getElementById(QUANTITY) != null) {
+                                if (document.getElementById(ITEMTYPE) == "Inventory") {
+                                    document.getElementById(QUANTITY).disabled = true;
+                                    document.getElementById(RATE).disabled = true;
+                                    document.getElementById(DISPER).disabled = true;
+                                    document.getElementById(DISRS).disabled = true;
+                                    document.getElementById(NARRATION).disabled = true;
+                                }
+                            }
+                        }
+
+                        if (noninvitemcode != "") {
+                            var formtype;
+                            if (document.getElementById("formtypeid").style.display == "none") {
+                                formtype = "";
+                            }
+                            else {
+                                document.getElementById("ddlformtypes").disabled = 'true';
+                                if (document.getElementById("ddlformtypes").value == "") {
+                                    formtype = "";
+                                }
+                                else {
+                                    formtype = $("#ddlformtypes").val();
+                                }
+                            }
+                            $.getJSON("/SalesBill/GetNonInvItemdetailsByItemCode", {
+                                ItemCode: noninvitemcode,
+                                ClientType: $("#SalesBillDetails_ClientType").val(),
+                                ClientState: $("#SalesBillDetails_ClientState").val(),
+                                Formtype: formtype,
+                                ConsumeResell: $("#SalesBillDetails_ConsumeResell").val()
+                            },
+                               function (data) {
+                                   $("#" + ItemCode).text(data.itemCode);
+                                   $("#" + ItemCodeVal).val(data.itemCode);
+                                   $("#" + ItemNameVal).val(data.itemName);
+                                   $("#" + Brand).val(data.brandName);
+                                   $("#" + Size).val(data.size);
+                                   $("#" + DesignCode).val(data.designCode);
+                                   $("#" + DesignName).val(data.designName);
+                                   $("#" + Unit).text(data.unit);
+                                   $("#" + UnitVal).val(data.unit);
+                                   $("#" + Description).val(data.description);
+                                   $("#" + NumberType).val(data.NumberType);
+                                   $("#" + Color).val(data.colorCode);
+                                   $("#" + Rate).val(data.mrp);
+                                   $("#" + SellingPrice).val(data.sellingprice);
+                                   $("#" + costprice).val(data.costprice);
+                                   $("#" + Material).val(data.typeOfMaterial);
+                                   $("#" + ItemTaxVal).val(data.taxPercent);
+                                   $("#" + DiscountPer).val(data.discount);
+                                   $("#" + DiscountRs).val(data.discountrps);
+
+                                   //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                                   //on each item which is applied
+                                   var tax = data.taxPercent;
+                                   if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                                       var taxcount = document.getElementById("ItemTaxCount").value;
+                                       if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                                           $("#ItemTaxNumber" + taxcount).val(tax);
+                                           $("#AddedTax1").text(tax + "%");
+                                       }
+                                       else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                                           var taxpresent = 0;
+                                           for (var i = 1; i <= taxcount; i++) {
+                                               var taxno = "ItemTaxNumber" + i;
+                                               //if tax is already present then no need to make other taxnumbers
+                                               if (tax == $("#" + taxno).val()) {
+                                                   taxpresent++;
+                                               }
+                                           }
+                                           if (taxpresent == 0) {
+                                               taxcount++;
+                                               var taxno = "ItemTaxNumber" + taxcount;
+                                               var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                               $("#AllTaxesNumbersValue").append(data);
+                                               var addedtaxno = "AddedTax" + taxcount;
+                                               var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                               var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                               var addedamount = "AddedAmount" + taxcount;
+                                               var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                               var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                               newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                               newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                               $("#AddTaxes").append(newlabel);
+                                               $("#ItemTaxCount").val(taxcount);
+                                           }
+                                       }
+                                   }
+
+                                   var CostPrice = +$("#CostPrice" + noninvrowid).val();
+                                   var Tax = +$("#ItemTaxVal" + noninvrowid).val();
+                                   var MRP = +$("#Rate" + noninvrowid).val();
+                                   taxoncostprice = (CostPrice * Tax) / 100;
+                                   var taxpercentoncostprice = CostPrice / (CostPrice + taxoncostprice) * Tax;
+                                   var Sellingprice = MRP - (MRP * +taxpercentoncostprice / 100);
+                                   $("#SellingPrice" + noninvrowid).val(Sellingprice.toFixed(2));
+
+                               });
+                        }
+                        else { alertbox("Please Select Item First"); }
+                    }
+                });
+
+                $("#hdnRowCount").val(noninvrowid);
+            }
+        });
+    });
+</script>
+
+
+@*CALCULATE AMOUNT + CALCULATE AMOUNT USING DISCOUNT IN RS OR PERCENT*@
+<script type="text/javascript">
+    function CalculateAmount(count, type) {
+        if (type == "rps") {
+            document.getElementById("discountType").value = "rps";
+        }
+        else if (type == "percent") {
+            document.getElementById("discountType").value = "percent"
+        }
+        var packandforwd = (+document.getElementById("SalesBillDetails_PackAndForwd").value);
+        if (packandforwd != 0 || packandforwd != "") {
+            var rowid = document.getElementById("hdnRowCount").value;
+            for (var i = 1; i <= rowid; i++) {
+                var quantity = "Quantity" + i;
+                var stockquantity = "StkQty" + i;
+                var shopquantity = "ShopQty" + i;
+                var rate = "Rate" + i;
+                var costprice = "CostPrice" + i;
+                var amount = "Amount" + i;
+                var amountvalue = "AmountVal" + i;
+                var disper = "DisPer" + i;
+                var disrs = "DisRs" + i;
+                var sellprice = "SellingPrice" + i;
+                var itemtaxval = "ItemTaxVal" + i;
+
+                if (document.getElementById(quantity) != null) {
+                    var percent = (+document.getElementById(disper).value) / 100;
+                    var rupees = (+document.getElementById(disrs).value);
+
+                    var taxoncostprice = +$("#" + costprice).val();
+                    if (+taxoncostprice != 0) {
+                        taxoncostprice = taxoncostprice * +$("#" + itemtaxval).val() / 100;
+                        var taxpercentoncostprice = +$("#" + costprice).val() / (+$("#" + costprice).val() + taxoncostprice) * +$("#" + itemtaxval).val();
+                        var sellingprice = (+$("#" + rate).val()) - (+$("#" + rate).val() * +taxpercentoncostprice / 100);
+                        $("#" + sellprice).val(sellingprice.toFixed(2));
+                    }
+                    else { $("#" + sellprice).val($("#" + rate).val()); }
+
+                    if (document.getElementById(shopquantity) != null) {
+                        var shopqty = document.getElementById(shopquantity).innerHTML;
+                        var qty = +document.getElementById(quantity).value;
+
+                        // if quantity > shop stock quantity then it gives an alert
+                        if (shopqty != "----") {
+                            shopqty = +shopqty;
+                            if (qty > shopqty) {
+                                alertbox("Can Not Exceed Above Shop Quantity..");
+                                document.getElementById(quantity).value = "";
+                            }
+                        }
+                    }
+
+                    var dynamicamount = (+document.getElementById(quantity).value) * (+document.getElementById(rate).value);
+
+                    //CALCULATE AMOUNT USING DISCOUNT
+                    var discounttype = document.getElementById("discountType").value;
+                    var QuanVal = +(document.getElementById(quantity).value);
+                    var RateVal = +(document.getElementById(rate).value);
+
+                    if (QuanVal == 0 || RateVal == 0) {
+                        document.getElementById(disper).value = "0";
+                        document.getElementById(disrs).value = "0.00";
+                    }
+
+                    else if (discounttype == "percent") {
+                        if (percent != 0) {
+                            var valueafterdiscount = dynamicamount * percent;
+                            document.getElementById(disrs).value = valueafterdiscount.toFixed(2);
+                            dynamicamount = dynamicamount - valueafterdiscount;
+
+                        }
+                        else { document.getElementById(disrs).value = "0.00"; }
+                    }
+                    else {
+                        if (rupees != 0) {
+                            var valueafterdiscount = rupees / dynamicamount * 100;
+                            document.getElementById(disper).value = valueafterdiscount.toFixed(1);
+                            dynamicamount = dynamicamount - rupees;
+                        }
+                        else { document.getElementById(disper).value = 0; }
+                    }
+                    document.getElementById(amount).innerHTML = addCommas(dynamicamount.toFixed(2));
+                    document.getElementById(amountvalue).value = dynamicamount.toFixed(2);
+                }
+            }
+            var totalamount = 0;
+            for (var i = 1; i <= rowid; i++) {
+                var amount = "Amount" + i;
+                if (document.getElementById(amount) != null) {
+                    totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+                }
+            }
+            document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+            document.getElementById("Total_Amount_Value").value = totalamount.toFixed(2);
+
+            var totalamountwithpackandforwd = 0;
+            for (var i = 1; i <= rowid; i++) {
+                var amount = "Amount" + i;
+                var amountvalue = "AmountValue" + i;
+                var proportionatetaxvalue = "proportionatetaxvalue" + i;
+                var proportionateamount = "proportionatetaxamount" + i;
+                if (document.getElementById(amount) != null) {
+                    var propotaxpercent = (+removeCommas(document.getElementById(amount).innerHTML)) / (+document.getElementById("Total_Amount_Value").value);
+                    document.getElementById(proportionatetaxvalue).value = (propotaxpercent * 100).toFixed(2);
+                    var packandforwdpropoamount = propotaxpercent * packandforwd;
+                    document.getElementById(proportionateamount).value = packandforwdpropoamount.toFixed(2);
+                }
+            }
+            CalculateTaxSummary();
+            CalculateTotalAmount();
+            CalculateTotalDiscount();
+            CalcGrandTotal();
+        }
+        else {
+            var proportionatecount = document.getElementById("hdnRowCount").value;
+            for (var i = 1; i <= proportionatecount; i++) {
+                var proportionate = "proportionatetaxvalue" + i;
+                var proporamount = "proportionatetaxamount" + i;
+                if (document.getElementById(proportionate) != null) {
+                    document.getElementById(proportionate).value = 0;
+                    document.getElementById(proporamount).value = 0;
+                }
+            }
+            var quantity = "Quantity" + count;
+            var stockquantity = "StkQty" + count;
+            var shopquantity = "ShopQty" + count;
+            var rate = "Rate" + count;
+            var costprice = "CostPrice" + count;
+            var amount = "Amount" + count;
+            var amountvalue = "AmountVal" + count;
+            var disper = "DisPer" + count;
+            var disrs = "DisRs" + count;
+            var sellprice = "SellingPrice" + count;
+            var itemtaxval = "ItemTaxVal" + count;
+
+            if (document.getElementById(quantity) != null) {
+                var percent = (+document.getElementById(disper).value) / 100;
+                var rupees = (+document.getElementById(disrs).value);
+
+                if (document.getElementById(shopquantity) != null) {
+                    var shopqty = document.getElementById(shopquantity).innerHTML;
+                    var qty = +document.getElementById(quantity).value;
+
+                    // if quantity > shop stock quantity then it gives an alert
+                    if (shopqty != "----") {
+                        shopqty = +shopqty;
+                        if (qty > shopqty) {
+                            alertbox("Can Not Exceed Above Shop Quantity..");
+                            document.getElementById(quantity).value = "";
+                        }
+                    }
+                }
+
+                var taxoncostprice = +$("#" + costprice).val();
+                if (+taxoncostprice != 0) {
+                    taxoncostprice = taxoncostprice * +$("#" + itemtaxval).val() / 100;
+                    var taxpercentoncostprice = +$("#" + costprice).val() / (+$("#" + costprice).val() + taxoncostprice) * +$("#" + itemtaxval).val();
+                    var sellingprice = (+$("#" + rate).val()) - (+$("#" + rate).val() * +taxpercentoncostprice / 100);
+                    $("#" + sellprice).val(sellingprice.toFixed(2));
+                }
+                else { $("#" + sellprice).val($("#" + rate).val()); }
+                var dynamicamount = (+document.getElementById(quantity).value) * (+document.getElementById(rate).value);
+
+                //CALCULATE AMOUNT USING DISCOUNT
+                var discounttype = document.getElementById("discountType").value;
+                var QuanVal = +(document.getElementById(quantity).value);
+                var RateVal = +(document.getElementById(rate).value);
+
+                if (QuanVal == 0 || RateVal == 0) {
+                    document.getElementById(disper).value = "0";
+                    document.getElementById(disrs).value = "0.00";
+                }
+
+                else if (discounttype == "percent") {
+                    if (percent != 0) {
+                        var valueafterdiscount = dynamicamount * percent;
+                        document.getElementById(disrs).value = valueafterdiscount.toFixed(2);
+                        dynamicamount = dynamicamount - valueafterdiscount;
+
+                    }
+                    else { document.getElementById(disrs).value = "0.00"; }
+                }
+                else {
+                    if (rupees != 0) {
+                        var valueafterdiscount = rupees / dynamicamount * 100;
+                        document.getElementById(disper).value = valueafterdiscount.toFixed(1);
+                        dynamicamount = dynamicamount - rupees;
+                    }
+                    else { document.getElementById(disper).value = 0; }
+                }
+                document.getElementById(amount).innerHTML = addCommas(dynamicamount.toFixed(2));
+                document.getElementById(amountvalue).value = dynamicamount.toFixed(2);
+            }
+            CalculateTaxSummary();
+            CalculateTotalAmount();
+            CalculateTotalDiscount();
+            CalcGrandTotal();
+        }
+    }
+</script>
+
+@*CALCULATE ITEM TAX IN MULTIPLE BILL POPUP*@
+<script type="text/javascript">
+    function CalculateItemTaxNumber() {
+        var rowcount = +document.getElementById("hdnRowCount").value;
+        for (i = 1; i <= rowcount; i++) {
+            var tax = document.getElementById("ItemTaxVal" + i).value;
+            if (tax != 0) {//if tax is '0' no need to add new taxnumber
+                CalculateItemTax(tax);
+            }
+        }
+        CalculateTaxSummary();
+    }
+
+    function CalculateItemTax(tax) {
+        var taxcount = document.getElementById("ItemTaxCount").value;
+        if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+            $("#ItemTaxNumber" + taxcount).val(tax);
+            $("#AddedTax1").text(tax + "%");
+        }
+        else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+            var taxpresent = 0;
+            for (var i = 1; i <= taxcount; i++) {
+                var taxno = "ItemTaxNumber" + i;
+                //if tax is already present then no need to make other taxnumbers
+                if (tax == $("#" + taxno).val()) {
+                    taxpresent++;
+                }
+            }
+            if (taxpresent == 0) {
+                taxcount++;
+                var taxno = "ItemTaxNumber" + taxcount;
+                var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                $("#AllTaxesNumbersValue").append(data);
+                var addedtaxno = "AddedTax" + taxcount;
+                var addedtaxamount = "AddedTaxAmount" + taxcount;
+                var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                var addedamount = "AddedAmount" + taxcount;
+                var addedamounthdn = "AddedAmounthdn" + taxcount;
+                var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                $("#AddTaxes").append(newlabel);
+                $("#ItemTaxCount").val(taxcount);
+            }
+        }
+
+    }
+</script>
+
+@*CALCULATE TOTAL AMOUNT*@
+<script type="text/javascript">
+    function CalculateTotalAmount() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalamount = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var Amount = "Amount" + i;
+            if (document.getElementById(Amount) != null) {
+                totalamount = totalamount + (+removeCommas(document.getElementById(Amount).innerHTML));
+            }
+        }
+
+        document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + " " + addCommas(totalamount.toFixed(2));
+        document.getElementById("Total_Amount_Value").value = totalamount.toFixed(2);
+    }
+</script>
+
+<script type="text/javascript">
+    //CALCULATE GRAND TOTAL
+    function CalcGrandTotal() {
+        var ttlamt = 0;
+        var amt = +removeCommas(document.getElementById("Total_Amount").innerHTML);
+        var totaltaxamt = 0;
+        var TaxCount = (+document.getElementById("ItemTaxCount").value);
+        if (+($("#ItemTaxNumber1").val()) != 0) {
+            for (var i = 1; i <= TaxCount; i++) {
+                var addedtaxamount = "AddedTaxAmount" + i;
+                totaltaxamt = totaltaxamt + (+removeCommas(document.getElementById(addedtaxamount).innerHTML));
+            }
+            document.getElementById("hdnTotalTaxAmount").value = totaltaxamt.toFixed(2);
+        }
+
+        if ($("#SalesBillDetails_PackAndForwd").val() != "") {
+            amt += +$("#SalesBillDetails_PackAndForwd").val();
+        }
+        amt = Math.round(amt.toFixed(2));
+        document.getElementById("Grand_Total").innerHTML = "<i class='fa fa-rupee'></i>" + " " + addCommas(amt.toFixed(2));
+        document.getElementById("Grand_Total_Value").value = amt.toFixed(2);
+        document.getElementById("In_Words").innerHTML = NumberToWords();
+    }
+</script>
+<script type="text/javascript">
+    function DeleteRow(rowid) {
+        var row = "row" + rowid;
+        confirmbox("Are you sure you want to delete this row?", row);
+    }
+</script>
+
+<script type="text/javascript">
+    function CheckRegistered(value) {
+        if (value == 'yes') {
+            document.getElementById("SalesBillDetails_ClientType").value = "Registered";
+            if (document.getElementById("SalesBillDetails_ConsumeResell").value == "Reseller") {
+                if (document.getElementById("SalesBillDetails_ClientState").value != "Maharashtra") {
+                    $("#ddlformtypes").val("").attr("selected", "selected");
+                    document.getElementById("YesRadioButton").disabled = false;
+                    document.getElementById("NoRadioButton").checked = true;
+                    document.getElementById("NoRadioButton").disabled = false;
+                    document.getElementById("formtypeid").style.display = "none";
+                }
+            }
+            else if (document.getElementById("SalesBillDetails_ConsumeResell").value == "Consumer") {
+                document.getElementById("YesRadioButton").disabled = true;
+                document.getElementById("NoRadioButton").disabled = true;
+            }
+        }
+        else if (value == "no") {
+            document.getElementById("SalesBillDetails_ClientType").value = "Non-Registered";
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            document.getElementById("YesRadioButton").disabled = true;
+            document.getElementById("NoRadioButton").checked = true;
+            document.getElementById("NoRadioButton").disabled = true;
+            document.getElementById("formtypeid").style.display = "none";
+        }
+
+        else if (value == "Consumer") {
+            document.getElementById("SalesBillDetails_ConsumeResell").value = "Consumer";
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            $("#YesRadioButton").attr("disabled", true);
+            $("#NoRadioButton").attr("disabled", true);
+            document.getElementById("NoRadioButton").checked = true;
+            document.getElementById("formtypeid").style.display = "none";
+        }
+        else {
+            document.getElementById("SalesBillDetails_ConsumeResell").value = "Reseller";
+            if (document.getElementById("SalesBillDetails_ClientState").value != "Maharashtra") {
+                if (document.getElementById("SalesBillDetails_ClientType").value == "Registered") {
+                    $("#YesRadioButton").attr("disabled", false);
+                    $("#NoRadioButton").attr("disabled", false);
+                    document.getElementById("formtypeid").style.display = "none";
+                }
+            }
+        }
+    }
+
+    function DisplayForm(type) {
+        if (type == "yes") {
+            document.getElementById("formtypeid").style.display = "inline";
+        }
+        else {
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            document.getElementById("formtypeid").style.display = "none";
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function ShowQuantity(row) {
+        var itemcode = document.getElementById("ItemCode" + row).innerHTML;
+        window.open("/Stock/ShowAllQuantity?code=" + itemcode, "_blank", "width=500,height=300,top=150px,left=400px");
+    }
+
+    function ShopRequisition(row) {
+        var itemcode = document.getElementById("ItemCode" + row).innerHTML;
+        window.open("/Requisition/ShopRequisitionForSalesBill?code=" + itemcode, "_blank", "width=625,height=500,top=150px,left=150px");
+    }
+
+    function CalculatePackAndForwd() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalamount = 0;
+        var valueaftertax = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var amount = "Amount" + i;
+            if (document.getElementById(amount) != null) {
+                totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+            }
+        }
+        var finaltotalamount = totalamount;
+        var packandforwd = (+document.getElementById("SalesBillDetails_PackAndForwd").value);
+        for (var i = 1; i <= rowid; i++) {
+            CalculateAmount(i, "");
+        }
+    }
+
+     @*CALCULATE TRADE DISCOUNT*@
+    function CalculateTotalDiscount() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalamount = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var disinrs = "DisRs" + i;
+            if (document.getElementById(disinrs) != null) {
+                totalamount = (+totalamount) + (+removeCommas(document.getElementById(disinrs).value));
+            }
+        }
+        document.getElementById("TotalDiscountValue").innerHTML = addCommas(totalamount.toFixed(2));
+        document.getElementById("SalesBillDetails_TotalDiscount").value = totalamount.toFixed(2);
+    };
+</script>
+
+@*CALCULATE AMOUNT IN MULTIPLE BILL POPUP WITH BALANCE AS QUANTITY*@
+<script type="text/javascript">
+    function CalculateItemWiseAmount() {
+        var rowid = +document.getElementById("hdnRowCount").value;
+        for (var i = 1; i <= rowid; i++) {
+            CalculateItemAmtWithBalAsQty(i);
+        }
+        CalculateTaxSummary();
+    }
+
+    function CalculateItemAmtWithBalAsQty(i) {
+        var quantity = "Quantity" + i;
+        var rate = "Rate" + i;
+        var amount = "Amount" + i;
+        var amountvalue = "AmountVal" + i;
+        var disper = "DisPer" + i;
+        var disrs = "DisRs" + i;
+
+        var percent = (+document.getElementById(disper).value) / 100;
+        var rupees = (+document.getElementById(disrs).value);
+        var dynamicamount = (+document.getElementById(quantity).value) * (+document.getElementById(rate).value);
+
+        //CALCULATE AMOUNT USING DISCOUNT
+        var discounttype = "percent";
+        var QuanVal = +(document.getElementById(quantity).value);
+        var RateVal = +(document.getElementById(rate).value);
+
+        if (QuanVal == 0 || RateVal == 0) {
+            document.getElementById(disper).value = "0";
+            document.getElementById(disrs).value = "0.00";
+        }
+
+        else if (discounttype == "percent") {
+            if (percent != 0) {
+                var valueafterdiscount = dynamicamount * percent;
+                document.getElementById(disrs).value = valueafterdiscount.toFixed(2);
+                dynamicamount = dynamicamount - valueafterdiscount;
+
+            }
+            else { document.getElementById(disrs).value = "0.00"; }
+        }
+        else {
+            if (rupees != 0) {
+                var valueafterdiscount = rupees / dynamicamount * 100;
+                document.getElementById(disper).value = valueafterdiscount.toFixed(1);
+                dynamicamount = dynamicamount - rupees;
+            }
+            else { document.getElementById(disper).value = 0; }
+        }
+        document.getElementById(amount).innerHTML = dynamicamount.toFixed(2);
+        document.getElementById(amountvalue).value = dynamicamount.toFixed(2);
+
+    }
+</script>
+
+@*CALCULATE TAX SUMMARY *@
+<script type="text/javascript">
+    function CalculateTaxSummary() {
+        var TaxCount = document.getElementById("ItemTaxCount").value;
+        var rowid = +document.getElementById("hdnRowCount").value;
+        var packandforwd = +document.getElementById("SalesBillDetails_PackAndForwd").value;
+
+        var TotalAmountAfterSellingPrice = 0;
+        for (var j = 1; j <= rowid; j++) {
+            var discount = "DisPer" + j;
+            if (document.getElementById(discount) != null) {
+                var discountpercent = (+document.getElementById(discount).value / 100);
+                var sellingpriceamount = +$("#Quantity" + j).val() * +$("#SellingPrice" + j).val();
+                if (discountpercent != 0) {
+                    var valueafterdiscount = sellingpriceamount * discountpercent;
+                    sellingpriceamount = sellingpriceamount - valueafterdiscount;
+                }
+                TotalAmountAfterSellingPrice = TotalAmountAfterSellingPrice + sellingpriceamount;
+            }
+        }
+        TotalAmountAfterSellingPrice = +TotalAmountAfterSellingPrice.toFixed(2);
+        for (var i = 1; i <= TaxCount; i++) {
+            var TotalTaxAmount = 0;
+            var itemtaxno = "ItemTaxNumber" + i;
+            var addedtaxamount = "AddedTaxAmount" + i;
+            var addedtaxamounthdn = "AddedTaxAmounthdn" + i;
+            var addedamount = "AddedAmount" + i;
+            var addedamounthdn = "AddedAmounthdn" + i;
+            for (var j = 1; j <= rowid; j++) {
+                var itemtaxvalue = "ItemTaxVal" + j;
+                var itemtaxamt = "ItemTaxAmt" + j;
+                var amount = "Amount" + j;
+                var proporamount = "proportionatetaxamount" + j;
+                var discount = "DisPer" + j;
+                if (document.getElementById(amount) != null) {
+                    if ($("#" + itemtaxno).val() == $("#" + itemtaxvalue).val()) {
+                        var discountpercent = (+document.getElementById(discount).value / 100);
+                        var sellingpriceamount = +$("#Quantity" + j).val() * +$("#SellingPrice" + j).val();
+                        if (discountpercent != 0) {
+                            var valueafterdiscount = sellingpriceamount * discountpercent;
+                            sellingpriceamount = sellingpriceamount - valueafterdiscount;
+                        }
+                        var propotaxpercent = sellingpriceamount / TotalAmountAfterSellingPrice;
+                        var packandforwdpropoamount = propotaxpercent * packandforwd;
+                        document.getElementById(itemtaxamt).value = (sellingpriceamount * (+document.getElementById(itemtaxno).value / 100)).toFixed(2);
+                        TotalTaxAmount = TotalTaxAmount + sellingpriceamount + packandforwdpropoamount;
+                    }
+                }
+            }
+            document.getElementById(addedamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedamounthdn).value = TotalTaxAmount.toFixed(2);
+            TotalTaxAmount = TotalTaxAmount * (+document.getElementById(itemtaxno).value / 100);
+            document.getElementById(addedtaxamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedtaxamounthdn).value = TotalTaxAmount.toFixed(2);
+        }
+    }
+</script>
+
+
+@*IF SALES ORDER NO OR DELIVERY CHALLAN NO IS EMPTY THEN GIVE ALERT MESSAGE*@
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Submit").click(function () {
+            document.getElementById("QuotationNo").disabled = false;
+            document.getElementById("SalesOrderNo").disabled = false;
+            document.getElementById("ChallanNo").disabled = false;
+            var rowid = document.getElementById("hdnRowCount").value;
+            var qtycounter = 0;
+            var validationcounter = 0;
+            for (i = 1; i <= rowid; i++) {
+                var quantity = "Quantity" + i;
+                var shopquantity = "ShopQty" + i;
+
+                if (document.getElementById(shopquantity) != null) {
+                    var shopqty = document.getElementById(shopquantity).innerHTML;
+                    var qty = +document.getElementById(quantity).value;
+
+                    // if quantity > shop stock quantity then it gives an alert
+                    if (shopqty != "----") {
+                        shopqty = +shopqty;
+                        if (qty > shopqty) {
+                            alertbox("Can Not Exceed Above Shop Quantity..");
+                            document.getElementById(quantity).value = "";
+                            qtycounter = 1;
+                        }
+                    }
+                }
+            }
+            if (qtycounter == 0) {
+
+                document.getElementById("ClientName").disabled = false;
+                if (document.getElementById("formtypeid").style.display == "inline") {
+                    document.getElementById("ddlformtypes").disabled = false;
+                }
+                for (i = 1; i <= rowid; i++) {
+                    var itemname = "ItemName" + i;
+                    var quantity = "Quantity" + i;
+                    var rate = "Rate" + i;
+                    if (document.getElementById(itemname) != null) {
+                        if ($("#" + itemname).val() == "") {
+                            alertbox("Please Select The Item");
+                            validationcounter = 1;
+                            break;
+                        }
+                        else if ($("#" + quantity).val() == "" || +$("#" + quantity).val() == 0) {
+                            alertbox("Please Fill The Quantity");
+                            validationcounter = 1;
+                            break;
+                        }
+                        else if ($("#" + rate).val() == "" || (+$("#" + rate).val()) == 0) {
+                            alertbox("Please Fill The Rate");
+                            validationcounter = 1;
+                            break;
+                        }
+                    }
+                }
+                if (validationcounter == 0) {
+                    if ($("#ClientName").val() == "" || $("#ddltypeofmode").val() == "" || $("#ddltransportnames").val() == "" || $("#SalesPerson").val() == "") {
+                        validationcounter++;
+                    }
+                    var emptyrowcount = 0;
+                    for (var i = 1; i <= rowid; i++) {
+                        var prevbarcode = "Barcode" + i;
+                        var previtemname = "ItemName" + i;
+                        var previtemtype = "ItemType" + i;
+                        var prevquantity = "Quantity" + i;
+                        var prevrate = "Rate" + i;
+                        var prevdiscountpercent = "DisPer" + i;
+                        var prevdiscountrps = "DisRs" + i;
+                        var prevNarration = "Narration" + i;
+                        if (document.getElementById(previtemname) != null) {
+                            if (document.getElementById(previtemtype).value == "Inventory") {
+                                document.getElementById(prevbarcode).disabled = false;
+                            }
+                            document.getElementById(previtemname).disabled = false;
+                            document.getElementById(prevquantity).disabled = false;
+                            document.getElementById(prevrate).disabled = false;
+                            document.getElementById(prevdiscountpercent).disabled = false;
+                            document.getElementById(prevdiscountrps).disabled = false;
+                            document.getElementById(prevNarration).disabled = false;
+                        }
+                        else { emptyrowcount++ };
+                    }
+                    if (emptyrowcount == rowid) {
+                        alertbox("Please Insert At Least One Item...");
+                        validationcounter = 1;
+                        return false;
+                    }
+                }
+            }
+            else { return false; }
+
+            if (qtycounter == 0) {
+                if (validationcounter == 0) {
+                    setTimeout(function () {
+                        document.getElementById("Submit").disabled = true;
+                    }, 100);
+                }
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Edit").click(function () {
+            window.location.assign("/SalesBill/SalesBillEdit");
+        });
+
+        $("#Print").click(function () {
+            window.location.assign("/SalesBill/SalesBillPrint");
+        });
+    });
+</script>
+<!-- Start: Header -->
+
+
+<!-- End: Header -->
+<!-- Start: Main -->
+<!-- Start: Sidebar -->
+
+<!-- End: Sidebar -->
+@using (Html.BeginForm("SalesBill", "SalesBill", FormMethod.Post))
+{
+    @Html.HiddenFor(model => model.SalesBillCode)
+    @Html.HiddenFor(model => model.SalesBillDetails.ClientAddress)
+    @Html.HiddenFor(model => model.SalesBillDetails.ClientContactNo)
+    @Html.HiddenFor(model => model.SalesBillDetails.ClientEmail)
+    @Html.HiddenFor(model => model.SalesBillDetails.ClientState)
+    @Html.HiddenFor(model => model.SalesBillDetails.ClientType)
+    @Html.HiddenFor(model => model.SalesBillDetails.TransportContact)
+    @Html.HiddenFor(model => model.SalesBillDetails.ConsumeResell)
+    @Html.HiddenFor(model => model.SalesBillDetails.SalesPersonAddress)
+    @Html.HiddenFor(model => model.SalesBillDetails.SalesPersonContact)
+    @Html.HiddenFor(model => model.SalesBillDetails.SalesPersonEmail)
+    @Html.HiddenFor(model => model.SalesBillDetails.SalesPersonDesignation)
+    @Html.HiddenFor(model => model.SalesBillDetails.ShopAddress)
+    @Html.HiddenFor(model => model.SalesBillDetails.ShopContactPerson)
+    @Html.HiddenFor(model => model.SalesBillDetails.ShopEmail)
+    @Html.HiddenFor(model => model.SalesBillDetails.ShopName)
+    @Html.HiddenFor(model => model.SalesBillDetails.PreparedBy)
+    @Html.HiddenFor(model => model.SalesBillDetails.TotalDiscount, new { @Value = 0 })
+            
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    <input type="hidden" value="1" id="hdnRowCount" name="hdnRowCount" />
+    <div id="AllTaxesNumbersValue">
+        <input type="hidden" id="ItemTaxCount" name="ItemTaxCount" value="1" />
+        <input type="hidden" id="ItemTaxNumber1" name="ItemTaxNumber1" value="0" />
+    </div>        
+    <input type="hidden" id="hdnTotalTaxAmount" name="hdnTotalTaxAmount" value="0" />
+    <input type="hidden" id="saledate" value="" />
+    <input type="hidden" id="discountType" value="percent" />
+    <input type="hidden" value="0" id="mainpageBillItemCounts" />
+    <input type="hidden" id="ViewType" value="Dynamic" />
+    <input type="hidden" id="TaxStatus" name="TaxStatus" />
+    <input type="hidden" id="preparedby" value="@HttpContext.Current.Session["UserEmail"]"/>
+    <!-- Start: Content -->
+           
+    <div class="col-lg-12 col-md-12">
+        <div class="col-lg-12 col-md-12">
+            <table style="border: 1px double; width: 100%">
+                <tr>
+                    <td>
+                        <div class="col-lg-12 col-md-12">
+                            <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 310px;">
+                                <div style="height: 10px"></div>
+                                <div class="row">
+                                    <label>Client Name<label style="color: red">*</label></label><br />
+                                    <div class="col-lg-10 col-md-10">
+                                        <div class="row">
+                                            @Html.TextBoxFor(model => model.SalesBillDetails.ClientName, new { id = "ClientName", @placeholder = "Client Name", @class = "form-control" })
+                                            @Html.ValidationMessageFor(model => model.SalesBillDetails.ClientName, null, new { style = "color:red" })
+                                        </div>
+                                    </div>
+                                </div>
+                                <div style="height: 7px"></div>
+                                <div class="row" id="clientdetails" style="display: inline">
+                                    <div class="row">
+                                        <label>Address: &nbsp</label><label id="Client_Address" style="font-weight: normal"></label><br />
+                                        <label>Contact Number: &nbsp</label><label id="Client_Contact" style="font-weight: normal"></label><br />
+                                        <label>Email: &nbsp</label><label id="Client_Email" style="font-weight: normal"></label><br />
+                                        <label>State: &nbsp</label><label id="Client_State" style="font-weight: normal"></label><br />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 310px;">
+                                <div style="height: 10px"></div>
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12">
+                                        <label>Type: &nbsp</label>
+                                        <input type="radio" id="Registered" name="Registered" onclick="CheckRegistered('yes')" />
+                                        Registered
+                                        <input type="radio" id="NonRegistered" name="Registered" onclick="CheckRegistered('no')" />
+                                        Non-Registered
+                                        <br />
+                                        <input type="radio" id="Consumer" name="ConsumeResell" onclick="CheckRegistered('Consumer')" />
+                                        Consumer
+                                        <input type="radio" id="Reseller" name="ConsumeResell" onclick="CheckRegistered('Reseller')" />
+                                        Reseller
+                                        <div class="row">
+                                            <div class="col-lg-6 col-md-6">
+                                                <label for="exampleInputSalesTax">Form Applicable</label><br />
+                                                <input type="radio" id="YesRadioButton" name="RadioButton" disabled="disabled" onclick="DisplayForm('yes')" />Yes &nbsp
+                                                <input type="radio" id="NoRadioButton" name="RadioButton" disabled="disabled" checked="checked" onclick="DisplayForm('no')" />No                                   
+                                            </div>
+                                            <div class="col-lg-5 col-md-5">
+                                                <div class="row">
+                                                    <div id="formtypeid" style="display: none">
+                                                        <label>Form Type</label>
+                                                        @Html.DropDownListFor(model => model.SalesBillDetails.FormType, new List<SelectListItem> { new SelectListItem { Text = "C-Form" }, new SelectListItem { Text = "E1-Form" }, new SelectListItem { Text = "E2-Form" } }, "Select Type", new { id = "ddlformtypes", @class = "form-control" })<br />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="row">
+                                    <div class="col-lg-12 col-md-12">
+                                        <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                                        <div style="height: 10px"></div>
+                                        <div class="row" id="TrnsprtMode">
+                                            <div class="col-md-12 col-lg-12">
+                                                <label>Transport Details</label>
+                                            </div>
+                                            <br />
+                                            <div class="col-md-6 col-lg-6">
+                                                <label>Mode <i style="color: red">*</i></label>
+                                                @Html.DropDownListFor(model => model.SalesBillDetails.TransportMode, new List<SelectListItem> { new SelectListItem { Text = "Road" }, new SelectListItem { Text = "Train" }, new SelectListItem { Text = "Air" } }, "Select Mode", new { id = "ddltypeofmode", @class = "form-control", @disabled = "disabled" })
+                                                @Html.ValidationMessageFor(model => model.SalesBillDetails.TransportMode, null, new { style = "color:red" })
+                                            </div>
+                                            <div class="col-md-6 col-lg-6" id="TrnsprtName" style="display: none">
+                                                <label>Name <i style="color: red">*</i></label>
+                                                @Html.DropDownListFor(model => model.SalesBillDetails.TransportName, Enumerable.Empty<SelectListItem>(), "Select Name", new { id = "ddltransportnames", @class = "form-control" })
+                                                @Html.ValidationMessageFor(model => model.SalesBillDetails.TransportName, null, new { style = "color:red" })
+                                            </div>
+                                        </div>
+                                        <div style="height: 10px"></div>
+                                        <div class="row">
+                                            <div class="col-md-12 col-lg-12">
+                                                <label style="font-size: 14px;">Sales Person Name:<i style="color: red">*</i></label>
+                                            </div>
+                                        </div>
+                                        <div class="row form-group">
+                                            <div class="col-md-9 col-lg-9">
+                                                @Html.TextBoxFor(model => model.SalesBillDetails.SalesPersonName, new { id = "SalesPerson", @class = "form-control", @autocomplete = "off", @placeholder = "Sales Person Name" })
+                                                @Html.ValidationMessageFor(model => model.SalesBillDetails.SalesPersonName, null, new { @style = "color:#f00" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-4 col-md-4">
+                                <div class="col-md-12 col-lg-12">
+                                    @{
+    string date = DateTime.Now.ToString("MM/dd/yyyy");
+    string salesbillno = Model.SalesBillCode;
+        
+                                    }
+                                    <div style="height: 10px"></div>
+                                    <div class="row">
+                                        <div class="col-lg-5 col-md-5">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Date</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-7 col-md-7">
+                                            <div class="row">
+                                                @Html.TextBoxFor(model => model.SalesBillDetails.Date, new { @class = "form-control" })
+                                                <input type="hidden" id="Date" value="@date" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="height: 7px"></div>
+                                    <div class="row">
+                                        <div class="col-lg-5 col-md-5">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Invoice No.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-7 col-md-7">
+                                            <div class="row">
+                                                <label style="font-size: 16px;" id="retailno">@salesbillno</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row form-group">
+                                        <div class="col-lg-5 col-md-5">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Quotation No.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-7 col-md-7">
+                                            <div class="row">
+                                                @Html.TextBoxFor(model => model.SalesBillDetails.QuotationNo, new { id = "QuotationNo", @placeholder = "Quotation No", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-lg-5 col-md-5">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Sales Order No.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-7 col-md-7">
+                                            <div class="row">
+                                                @Html.TextBoxFor(model => model.SalesBillDetails.SalesOrderNo, new { id = "SalesOrderNo", @placeholder = "Order No", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row form-group">
+                                        <div class="col-lg-5 col-md-5">
+                                            <div class="row">
+                                                <label style="font-size: 14px;">Challan No.</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-7 col-md-7">
+                                            <div class="row">
+                                                @Html.TextBoxFor(model => model.SalesBillDetails.DeliveryChallanNo, new { id = "ChallanNo", @placeholder = "Challan No", @class = "form-control" })
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="height: 10px"></div>
+
+
+                        <div class="col-md-12 col-lg-12 col-sm-12">
+                            <div class="row" id="DynamicRowsDiv">
+                                <table class="table" id="AddItemRows" style="border-color: #d2d2d2; border: outset">
+                                    <thead>
+                                        <tr>
+                                            <th style="text-align: center">Sr<br />
+                                                No</th>
+                                            <th style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barcode<b style="color: #f00">*</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                                            <th style="text-align: center">Item<br />
+                                                Code</th>
+                                            <th style="text-align: center">Item<br />
+                                                Name<b style="color: #f00">*</b></th>
+                                            <th style="text-align: center">Narration</th>
+                                            <th style="text-align: center">Stk<br />
+                                                Qty</th>
+                                            <th style="text-align: center">Shop<br />
+                                                Qty</th>
+                                            <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Tran<br />
+                                                Qty<b style="color: #f00">*</b></th>
+                                            <th style="text-align: center">Unit</th>
+                                            <th style="text-align: center">Rate<b style="color: #f00">*</b><br />
+                                                (<i class="fa fa-rupee"></i>)</th>
+                                            <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Disc<br />
+                                                (%)</th>
+                                            <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Disc<br />
+                                                (<i class="fa fa-inr"></i>)</th>
+                                            <th style="text-align: center">Amt<br />
+                                                (<i class="fa fa-rupee"></i>)</th>
+                                            <th style="text-align: center"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="ItemDetails">
+                                        <tr style="height: 30px;" id="row1">
+                                            <td style="text-align: center">1</td>
+                                            <td class="col-md-1 col-lg-1 col-sm-1">
+                                                <input type="text" id="Barcode1" name="Barcode1" style="text-align: center" class="form-control" disabled="disabled" onchange="GetItemsByBarcode(1)" autocomplete="off" />
+                                            </td>
+                                            <td>
+                                                <label id="ItemCode1" style="font-weight: normal"></label>
+                                                <input type="hidden" name="ItemCodeVal1" id="ItemCodeVal1" />
+                                            </td>
+                                            <td class="col-md-2 col-lg-2 col-sm-2">
+                                                <input type="text" id="ItemName1" name="ItemName1" style="text-align: center" class="form-control" onchange="GetItemsByItemCode(1)" autocomplete="off" disabled="disabled" />
+                                            </td>
+                                            <td class="col-md-2 col-lg-2 col-sm-2">
+                                                <textarea class="form-control" style="text-align: center" id="Narration1" name="Narration1" disabled="disabled" placeholder="Narration" rows="1"></textarea></td>
+                                            <td style="text-align: center">
+                                                <a href="#" onclick="ShowQuantity(1)" id="StkQty1" style="font-weight: normal"></a>
+                                            </td>
+                                            <td style="text-align: center">
+                                                <a href="#" onclick="ShopRequisition(1)" id="ShopQty1" style="font-weight: normal"></a>
+                                            </td>
+                                            <td>
+                                                <input type="text" name="Quantity1" id="Quantity1" style="text-align: center" class="form-control" onchange="CalculateAmount(1,'quantity')" onkeypress="return AllowDecimal(event,1)" autocomplete="off" disabled="disabled" /></td>
+                                            <td>
+                                                <label id="Unit1" style="font-weight: normal"></label>
+                                                <input type="hidden" name="UnitVal1" id="UnitVal1" />
+                                                <input type="hidden" name="NumberType1" id="NumberType1" />
+                                            </td>
+                                            <td style="text-align: center" class="col-md-1 col-lg-1 col-sm-1">
+                                                <input type="text" id="Rate1" name="Rate1" style="text-align: center" class="form-control" disabled="disabled" onkeypress="return AllowNumbers(event)" />
+                                                <input type="hidden" name="SellingPrice1" id="SellingPrice1" />
+                                                <input type="hidden" name="CostPrice1" id="CostPrice1" />
+                                            </td>
+                                            <td>
+                                                <input type="text" name="DisPer1" id="DisPer1" style="text-align: center" class="form-control" autocomplete="off" onkeypress="return AllowNumbers(event)" onchange="CalculateAmount(1,'percent')" value="0" /></td>
+                                            <td>
+                                                <input type="text" name="DisRs1" id="DisRs1" style="text-align: center" class="form-control" autocomplete="off" onkeypress="return AllowNumbers(event)" onchange="CalculateAmount(1,'rps')" value="0.00" /></td>
+                                            <td style="text-align: center">
+                                                <label id="Amount1" style="font-weight: normal;">0</label>
+                                                <input type="hidden" name="Amountval1" id="AmountVal1" />
+                                            </td>
+                                            <td>
+                                                <a href='#' onclick="DeleteRow(1)" class='fa fa-trash fa-lg' style='color: red;'></a>
+                                                <input type="hidden" name="Size1" id="Size1" />
+                                                <input type="hidden" name="Brand1" id="Brand1" />
+                                                <input type="hidden" name="DesignCode1" id="DesignCode1" />
+                                                <input type="hidden" name="DesignName1" id="DesignName1" />
+                                                <input type="hidden" name="Description1" id="Description1" />
+                                                <input type="hidden" name="Color1" id="Color1" />
+                                                <input type="hidden" name="Material1" id="Material1" />
+                                                <input type="hidden" id="ItemType1" name="ItemType1" value="Inventory" />
+                                                <input type="hidden" name="ItemTaxVal1" id="ItemTaxVal1" />
+                                                <input type="hidden" name="ItemTaxAmt1" id="ItemTaxAmt1" />
+                                                <input type="hidden" name="proportionatetaxvalue1" id="proportionatetaxvalue1" />
+                                                <input type="hidden" name="proportionatetaxamount1" id="proportionatetaxamount1" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12" style="text-align: right">
+                            <div class="row">
+                                <button class="btn btn-link" id="NonInvButton" type="button" style="float: right; text-align: right; color: orangered; font-size: small">Non-Inventory Item</button>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-12 col-lg-12">
+                                <div class="col-md-5 col-lg-5">
+                                    <div class="row">
+                                        <div class="col-md-5 col-lg-5">
+                                            <label style="font-size: 14px;">Total Discount:</label>
+                                        </div>
+                                        <div class="col-md-7 col-lg-7">
+                                            <i class="fa fa-inr" style="font-size: 14px"></i>
+                                            <label id="TotalDiscountValue" style="font-size: 14px">0.00</label>
+                                        </div>
+                                    </div>
+                                    <div id="AddTaxes" style="display: none">
+                                        <div class="row">
+                                            <div class="col-lg-12 col-md-12">
+                                                <label style="font-size: 14px">Tax Summary:</label>
+                                            </div>
+                                        </div>
+                                        <div style="height: 10px"></div>
+                                        <div class="row">
+                                            <div class="col-md-3 col-lg-3">
+                                                <label id="AddedAmount1">0</label>
+                                                <input type="hidden" id="AddedAmounthdn1" name="AddedAmounthdn1" value="0" />
+                                            </div>
+                                            <div class="col-md-2 col-lg-2">
+                                                <label id="AddedTax1"></label>
+                                            </div>
+                                            <div class="col-md-7 col-lg-7">
+                                                <label id="AddedTaxAmount1">0</label>
+                                                <input type="hidden" id="AddedTaxAmounthdn1" name="AddedTaxAmounthdn1" value="0" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-md-7 col-lg-7">
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="col-lg-5 col-md-5">
+                                                <label style="font-size: 14px; float: right">Total Amount</label>
+                                            </div>
+                                            <div style="text-align: right">
+                                                <div class="col-lg-7 col-md-7">
+                                                    <label id="Total_Amount" style="font-size: 16px;">0</label>
+                                                    <input type="hidden" id="Total_Amount_Value" name="Total_Amount_Value" value="0" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="col-lg-5 col-md-5">
+                                                <label style="font-size: 14px; float: right">Packing and Forwarding</label>
+                                            </div>
+                                            <div class="col-lg-2 col-md-2"></div>
+                                            <div style="text-align: right">
+                                                <div class="col-lg-5 col-md-5">
+                                                    @Html.TextBoxFor(model => model.SalesBillDetails.PackAndForwd, new { @class = "form-control", @autocomplete = "off", @placeholder = "0", @Value = "0", @style = "text-align:right", @onchange = "CalculatePackAndForwd()" })
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-ld-12 col-md-12">
+                            <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                            <div class="form-group"></div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-5 col-lg-5 col-sm-5"></div>
+                            <div class="col-md-7 col-lg-7 col-sm-7">
+                                <div class="row">
+                                    <div class="col-md-5 col-lg-5 col-sm-5">
+                                        <label style="font-size: 14px; float: right">Grand Total</label>
+                                    </div>
+                                    <div class="col-md-7 col-lg-7 col-sm-7" style="text-align: right">
+                                        <div class="col-md-12 col-lg-12">
+                                            <div class="col-md-12 col-lg-12">
+                                                <label id="Grand_Total" style="font-size: 16px;">0</label>
+                                                <input type="hidden" id="Grand_Total_Value" name="Grand_Total_Value" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-lg-2 col-md-2" id="inwrds">
+                            <label style="font-size: larger">In Words</label>
+                        </div>
+                        <div class="col-lg-10 col-md-10">
+                            <div class="row">
+                                <div class="row">
+                                    <div class="row">
+                                        <label id="In_Words"></label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-ld-12 col-md-12">
+                            <div style="height: 15px"></div>
+                            <div style="width: 100%; height: 1px; background-color: black"></div>
+                            <div style="height: 10px"></div>
+                        </div>
+
+                        <div class="col-md-12 col-lg-12" id="acceptedid">
+                            <div class="row">
+                                <div style="height: 15px"></div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Prepared By</label><br />
+                                    <label id="PreparedByName" style="font-weight: normal"></label>
+                                </div>
+                                <div class="col-md-4 col-lg-4">
+                                    <label>Email-Id</label><br />
+                                    <label id="PreparedByEmail" style="font-weight: normal"></label>
+                                </div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Contact No.</label><br />
+                                    <label id="PreparedByContact" style="font-weight: normal"></label>
+                                </div>
+                                @{
+    string preparetimeid = DateTime.Now.ToShortTimeString();
+                                }
+                                <div class="col-md-2 col-lg-2">
+                                    <label>Prepare Time</label><br />
+                                    <label style="font-weight: normal">@preparetimeid</label>
+                                </div>
+                                <div style="height: 70px"></div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+
+            </table>
+
+            <div style="height: 10px"></div>
+            <div class="col-md-9 col-lg-9">
+                <button type="submit" id="Submit" class="col-lg-offset-7 col-md-offset-7 btn btn-success">Save</button>
+            </div>
+            <div class="col-lg-3 col-md-3" style="text-align: right">
+                <button type="button" id="Edit" class="btn btn-warning" data-toggle="tooltip" title="Edit"><i class="fa fa-pencil"></i></button>
+                <button type="button" id="Print" class="btn btn-primary" data-toggle="tooltip" title="Print"><i class="fa fa-print" title="Print"></i></button>
+            </div>
+            <div style="float: right">
+                <a href="~/Client/Create" style="font-weight: bold; color: blue; text-align: right">Create New Client</a>
+            </div>
+        </div>
+    </div>
+}
+

@@ -1,0 +1,444 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "SalesBillDetails";
+}
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<!--custom Alerts-->
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         var salesbill = document.getElementById("SalesBillNo").value;
+		         window.location.assign("/ResetBills/ResetSalesBill?salesbill=" + salesbill);
+		         window.close();
+		     }
+		     else {
+		         window.location.assign("/ResetBills/StartingBlankPage");
+		         window.close();
+		     }
+		 });
+    }
+</script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#Reset").click(function () {
+            confirmbox("Are You Sure.. You Want To Reset This Sales Bill..");
+        });
+    });
+</script>
+
+<!-- Start: Header -->
+@Html.Partial("../Shared/Header")
+<!-- End: Header -->
+<!-- Start: Main -->
+<section>
+    <div class="mainwrapper">
+        <div class="col-md-12 col-lg-12">
+            <!-- Start: Sidebar -->
+            @Html.Partial("../Shared/LeftMenu")
+            <!-- End: Sidebar -->
+            <!-- Start: Content -->
+
+            <div class="mainpanel">
+
+                <input type="hidden" id="SalesBillNo" name="SalesBillNo" value="@Model.SalesBillDetails.SalesBillNo"/>
+
+                <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                    <source src="" type="audio/ogg" />
+                </audio>
+
+                <div class="col-lg-12 col-md-12">
+                    <br />
+                </div>
+
+                <div class="col-lg-12 col-md-12">
+                    <label style="font-weight: bolder; font-size: x-large">Sales Bill Details</label>
+                    <table style="border: 1px double; width: 100%">
+                        <tr>
+                            <td>
+                                <div class="col-lg-12 col-md-12">
+
+                                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 150px;">
+                                        <div style="height: 10px"></div>
+                                        <div class="row">
+                                            <label style="font-weight: bolder; font-size: larger">Client Details</label>
+                                        </div>
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="row">
+                                                <label>Name:</label>
+                                                @Html.DisplayFor(model => model.SalesBillDetails.ClientName)
+                                            </div>
+                                            <div class="row">
+                                                <label>Address:</label>
+                                                @Html.DisplayFor(model => model.SalesBillDetails.ClientAddress)
+                                            </div>
+                                            <div class="row">
+                                                <label>Contact No:</label>
+                                                @Html.DisplayFor(model => model.SalesBillDetails.ClientContactNo)
+                                            </div>
+                                            <div class="row">
+                                                <label>Email:</label>
+                                                @Html.DisplayFor(model => model.SalesBillDetails.ClientEmail)
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-4" style="border-right: 1px solid #999; height: 150px;">
+                                        <div class="col-lg-12 col-md-12">
+                                            <div style="height: 10px"></div>
+                                            <div class="row">
+                                                <label style="font-weight: bolder; font-size: larger">Sales Person Details</label>
+                                            </div>
+                                            <div class="col-lg-12 col-md-12">
+                                                <div class="row">
+                                                    <label>Name:</label>
+                                                    @Html.DisplayFor(model => model.SalesBillDetails.SalesPersonName)
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-lg-4 col-md-4">
+                                        <div style="height: 10px"></div>
+                                        <div class="col-lg-12 col-md-12">
+                                            <div class="row">
+                                                <div class="col-lg-5 col-md-5">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px;">Date</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                         @Convert.ToDateTime(Model.SalesBillDetails.Date).ToShortDateString();
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-lg-5 col-md-5">
+                                                    <div class="row">
+                                                        <label style="font-size: 14px;">Bill No.</label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div class="row">
+                                                        @Html.DisplayFor(model => model.SalesBillDetails.SalesBillNo)
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <br />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="col-md-12 col-lg-12">
+                                    <label style="font-weight: bolder; font-size: larger">Item Details:</label>
+                                </div>
+                                <table style="border: 1px double; width: 100%">
+                                    <tr>
+                                        <td>
+                                            <div class="col-md-12 col-lg-12">
+                                                <table class="table">
+                                                    <thead>
+                                                        <tr>
+                                                            <th style="text-align: center">S.N.</th>
+                                                            <th style="text-align: center">Bill No</th>
+                                                            <th style="text-align: center">Barcode</th>
+                                                            <th style="text-align: center">ItemCode</th>
+                                                            <th style="text-align: center">ItemName</th>
+                                                            <th style="text-align: right">Qty</th>
+                                                            <th style="text-align: right">Unit</th>
+                                                            <th style="text-align: right">Selling<br />
+                                                                Price</th>
+                                                            <th style="text-align: right">MRP</th>
+                                                            <th style="text-align: right">Cash<br />
+                                                                Disc<br />
+                                                                (%)</th>
+                                                            <th style="text-align: right">Cash<br />
+                                                                Disc<br />
+                                                                (<i class="fa fa-inr"></i>)</th>
+                                                            <th style="text-align: right">Tax<br />
+                                                                (%)</th>
+                                                            <th style="text-align: right">Amt<br />
+                                                                (<i class="fa fa-inr"></i>)</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody>
+                                                        @{
+                                                            if (Model.SalesBillItemList != null && Model.SalesBillItemList.Any())
+                                                            {
+                                                                string row = string.Empty;
+                                                                int rowid = 1;
+
+                                                                foreach (var item in Model.SalesBillItemList)
+                                                                {
+                                                                    row = "row" + rowid;
+                                                            <tr id="@row">
+                                                                @{
+                                                                    double sellprice = Convert.ToDouble(@item.SellingPrice);
+                                                                    var sellingprice = sellprice.ToString("#,###.00##");
+                                                                    double mrpval = Convert.ToDouble(@item.MRP);
+                                                                    var mrp = mrpval.ToString("#,###.00##");
+                                                                    double disrs = Convert.ToDouble(@item.DiscountRPS);
+                                                                    var DisRs = disrs.ToString("#,###.00##");
+                                                                    double disper = Convert.ToDouble(@item.DiscountPercent);
+                                                                    var DisPer = disper.ToString("#,###.00##");
+                                                                    double tax = Convert.ToDouble(@item.ItemTax);
+                                                                    var Tax = tax.ToString("#,###.00##");
+                                                                    double Amt = Convert.ToDouble(@item.Amount);
+                                                                    var amount = Amt.ToString("#,###.00##");
+                                                                }
+                                                                <td style="text-align: center">@rowid</td>
+                                                                @{
+                                                                    if (@item.BillNo != null)
+                                                                    {
+                                                                    <td style="text-align: center">@item.BillNo</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                    <td style="text-align: center">----</td>
+                                                                    }
+                                                                }
+                                                                @{
+                                                                    if (@item.Barcode != null && @item.Barcode != "")
+                                                                    {
+                                                                    <td style="text-align: center">@item.Barcode.Substring(0, 9)</td>
+                                                                    }
+                                                                    else
+                                                                    {
+                                                                    <td style="text-align: center">----</td>
+                                                                    }
+                                                                }
+                                                                <td style="text-align: center">@item.ItemCode</td>
+                                                                <td style="text-align: center">@item.ItemName</td>
+                                                                <td style="text-align: right">@item.Quantity</td>
+                                                                <td style="text-align: center">@item.Unit</td>
+                                                                <td style="text-align: right">@sellingprice</td>
+                                                                <td style="text-align: right">@mrp</td>
+                                                                <td style="text-align: right">@DisPer</td>
+                                                                <td style="text-align: right">@DisRs</td>
+                                                                <td style="text-align: right">@Tax</td>
+                                                                <td style="text-align: right">@amount</td>
+                                                            </tr>
+                                                                    rowid = rowid + 1;
+                                                                }
+                                                            }
+                                                        }
+
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <br />
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <div class="col-lg-8 col-md-8"></div>
+                                <div class="col-lg-4 col-md-4">
+                                    @{
+                                        double ttlamt = Convert.ToDouble(@Model.SalesBillDetails.TotalAmount);
+                                        var TtlAmt = ttlamt.ToString("#,###.00##");
+                                        double packforwd = Convert.ToDouble(@Model.SalesBillDetails.PackAndForwd);
+                                        var PackAndForwd = packforwd.ToString("#,###.00##");
+                                        double ttltaxamt = Convert.ToDouble(@Model.SalesBillDetails.TotalTaxAmount);
+                                        var TtlTaxAmt = ttltaxamt.ToString("#,###.00##");
+                                        double grndttl = Convert.ToDouble(@Model.SalesBillDetails.GrandTotal);
+                                        var GrndTtl = grndttl.ToString("#,###.00##");
+                                        double pay = Convert.ToDouble(@Model.SalesBillDetails.PaymentReceived);
+                                        var Pay = pay.ToString("#,###.00##");
+                                        double adjustamt = Convert.ToDouble(@Model.SalesBillDetails.AdjustedAmount);
+                                        var AdjustAmt = adjustamt.ToString("#,###.00##");
+                                        double bal = Convert.ToDouble(@Model.SalesBillDetails.Balance);
+                                        var Bal = bal.ToString("#,###.00##");
+                                        double refund = Convert.ToDouble(@Model.SalesBillDetails.Refund);
+                                        var Refund = refund.ToString("#,###.00##");
+                                    }
+                                    <div class="row">
+                                        <div class="col-lg-7 col-md-7">
+                                            <label style="font-size: 14px;">Total Amount</label>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                                            @TtlAmt
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-7 col-md-7">
+                                            <label style="font-size: 14px;">Tax Amount</label>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                                            @TtlTaxAmt
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-7 col-md-7">
+                                            <label style="font-size: 14px;">Packing And Forwarding</label>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                                            @PackAndForwd
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-7 col-md-7">
+                                            <label style="font-size: 14px;">Grand Total</label>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                                            @GrndTtl
+                                        </div>
+                                    </div>
+                                    @{
+                                        if (Model.SalesBillDetails.AdjustedAmount != 0)
+                                        {
+                                        <div class="row">
+                                            <div class="col-lg-7 col-md-7">
+                                                <label style="font-size: 14px;">Adjust Amount</label>
+                                            </div>
+                                            <div class="col-lg-5 col-md-5" style="text-align: right">
+                                                @AdjustAmt
+                                            </div>
+                                        </div>
+                                        }
+                                    }
+                                    <div class="row">
+                                        <div class="col-lg-7 col-md-7">
+                                            <label style="font-size: 14px;">Payment</label>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                                            @Pay
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-7 col-md-7">
+                                            <label style="font-size: 14px;">Balance</label>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                                            @Bal
+                                        </div>
+                                    </div>
+                                    <div class="row">
+                                        <div class="col-lg-7 col-md-7">
+                                            <label style="font-size: 14px;">Refund</label>
+                                        </div>
+                                        <div class="col-lg-5 col-md-5" style="text-align: right">
+                                            @Refund
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+
+                    </table>
+
+                    <div class="col-lg-12 col-md-12" style="text-align: center">
+                        <div style="height: 10px"></div>
+                        @{
+                            if (Model.SalesBillAdjAmtDetailList != null && Model.SalesBillAdjAmtDetailList.Any())
+                            {
+                                foreach (var item in Model.SalesBillAdjAmtDetailList)
+                                {
+                            <label style="color: red; font-size: 14px"><i class="fa fa-inr"></i>&nbsp;@item.AdjustedAmount&nbsp;</label><label style="color: red; font-size: 14px">Adjusted From Sales Order&nbsp;</label><label style="color: red; font-size: 14px">@item.AdjustedBill</label><br />
+                                }
+                            }
+                        }
+                    </div>
+
+                    <div class="col-lg-12 col-md-12" style="text-align: center">
+                        <button type="button" class="btn btn-danger" id="Reset">Reset</button>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+<!-- End: Main -->

@@ -1,0 +1,168 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetTempCashMemoItemsWithMRP";
+}
+
+@*DISPLAY TOTAL STOCK IN POPUP*@
+<script>
+    function StockQuantityDetails(itemcode) {
+        window.open("/Stock/ShowAllQuantity?code=" + itemcode, "_target", "width=500,height=300,top=150px,left=400px");
+    }
+</script>
+
+<div class="row">
+    <div class="col-md-12 col-lg-12">
+        <div style="width: 100%; height: 2px; background-color: gray;"></div>
+    </div>
+    <br />
+    <div class="col-md-12 col-lg-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th style="text-align: center">Sr<br />
+                        No</th>
+                    <th style="text-align: center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Barcode<b style="color: #f00">*</b>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</th>
+                    <th style="text-align: center">Item<br />
+                        Code</th>
+                    <th style="text-align: center">Item<br />
+                        Name<b style="color: #f00">*</b></th>
+                    <th>
+                        <label style="text-align: center; width: 100%">Narration</label>
+                    <th style="text-align: center">Stk<br />
+                        Qty</th>
+                    <th style="text-align: center">Shop<br />
+                        Qty</th>
+                    <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Tran<br />
+                        Qty<b style="color: #f00">*</b></th>
+                    <th style="text-align: center">Unit</th>
+                    <th style="text-align: center">Rate<b style="color: #f00">*</b><br />
+                        (<i class="fa fa-rupee"></i>)</th>
+                    <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Disc<br />
+                        (%)</th>
+                    <th class="col-md-1 col-lg-1 col-sm-1" style="text-align: center">Disc<br />
+                        (<i class="fa fa-inr"></i>)</th>
+                    <th style="text-align: center">Amt<br />
+                        (<i class="fa fa-rupee"></i>)</th>
+                    <th style="text-align: center"></th>
+                </tr>
+            </thead>
+            <tbody id="DynamicRows">
+                @{
+                    if (Model.TemporaryCashMemoItemList != null && Model.TemporaryCashMemoItemList.Any())
+                    {
+                        int count = 1;
+
+                        foreach (var item in Model.TemporaryCashMemoItemList)
+                        {
+                            string row = "row" + count;
+                            string billnoval = "BillNoVal" + count;
+                            string narration = "Narration" + count;
+                            string itemcode = "ItemCode" + count;
+                            string itemcodeval = "ItemCodeVal" + count;
+                            string itemname = "ItemName" + count;
+                            string quantity = "Quantity" + count;
+                            string stkqty = "StkQty" + count;
+                            string shopqty = "ShopQty" + count;
+                            string itemtype = "ItemType" + count;
+                            string unit = "Unit" + count;
+                            string unitval = "UnitVal" + count;
+                            string numbertype = "NumberType" + count;
+                            string sellingprice = "SellingPrice" + count;
+                            string mrp = "MRP" + count;
+                            string costprice = "CostPrice" + count;
+                            string amount = "Amount" + count;
+                            string amountval = "AmountVal" + count;
+                            string description = "Description" + count;
+                            string color = "Color" + count;
+                            string material = "Material" + count;
+                            string designcode = "DesignCode" + count;
+                            string designname = "DesignName" + count;
+                            string brand = "Brand" + count;
+                            string size = "Size" + count;
+                            string disinrs = "DisRs" + count;
+                            string disinper = "DisPer" + count;
+                            string itemtax = "ItemTax" + count;
+                            string itemtaxval = "ItemTaxVal" + count;
+                            string itemtaxamt = "ItemTaxAmt" + count;
+                            string barcode = "Barcode" + count;
+                            
+                    <tr style="height: 30px;" id="row1">
+                        <td style="text-align: center">
+                            <label style="font-weight: normal">@count</label></td>
+                        <td class="col-md-1 col-lg-1 col-sm-1">
+                            <input type="text" id="@barcode" name="@barcode" value="@item.Barcode" style="text-align: center" class="form-control" disabled="disabled"/>
+                        </td>
+                        <td>
+                            <label id="@itemcode" style="font-weight: normal">@item.ItemCode</label>
+                            <input type="hidden" name="@itemcodeval" id="@itemcodeval" value="@item.ItemCode"/>
+                        </td>
+                        <td class="col-md-2 col-lg-2 col-sm-2">
+                            <input type="text" id="@itemname" name="@itemname" value="@item.ItemName" style="text-align: center" class="form-control" onchange="GetItemsByItemCode(1)" autocomplete="off" disabled="disabled"/>
+                        </td>
+                        <td class="col-md-2 col-lg-2 col-sm-2">
+                            <textarea class="form-control" style="text-align: center" id="@narration" name="@narration" placeholder="Narration" rows="1">@item.Narration</textarea></td>
+                        <td style="text-align: center">
+                            <a href="#" onclick="StockQuantityDetails('@item.ItemCode')" id="@stkqty" style="font-weight: normal">@item.ReadOnlyTotalStockQuantity</a>
+                        </td>
+                        <td style="text-align: center">
+                            <label id="@shopqty" style="font-weight: normal">@item.ReadOnlyShopQuantity</label>
+                        </td>
+                        <td>
+                            <input type="text" name="@quantity" id="@quantity" value="@item.Quantity" style="text-align: center" class="form-control" onchange="CalculateAmount(1,'quantity')" onkeypress="return AllowDecimal(event,1)" autocomplete="off" disabled="disabled"/></td>
+                        <td>
+                            <label id="@unit" style="font-weight: normal">@item.Unit</label>
+                            <input type="hidden" name="@unitval" id="@unitval" value="@item.Unit"/>
+                            <input type="hidden" name="@numbertype" id="@numbertype" value="@item.NumberType"/>
+                        </td>
+                        <td style="text-align: center" class="col-md-1 col-lg-1 col-sm-1">
+                            <input type="text" id="@mrp" name="@mrp" value="@item.MRP" style="text-align: center" class="form-control" disabled="disabled"/>
+                        </td>
+                        <td>
+                            <input type="text" name="@disinper" id="@disinper" value="@item.DiscountPercent" style="text-align: center" class="form-control" autocomplete="off" onchange="CalculateAmount(1,'percent')" onclick="PutTheDiscountType('percent')" /></td>
+                        <td>
+                            <input type="text" name="@disinrs" id="@disinrs" value="@item.DiscountRPS" style="text-align: center" class="form-control" autocomplete="off" onchange="CalculateAmount(1,'rps')" onclick="PutTheDiscountType('rps')" /></td>
+                        <td style="text-align: center">
+                            <label id="@amount" style="font-weight: normal;">@(item.Quantity * item.MRP)</label>
+                            <input type="hidden" name="@amountval" id="@amountval" value="@(item.Quantity * item.MRP)"/>
+                        </td>
+                        <td>
+                            <a href='#' onclick="DeleteRow(1)" class='fa fa-trash fa-lg' style='color: red;' />
+                            <input type="hidden" name="@sellingprice" id="@sellingprice" value="@item.SellingPrice"/>
+                            <input type="hidden" name="@costprice" id="@costprice"/>
+                            <script type="text/javascript">
+                                function GetItemsCostPrice(itemcode, itemtype) {
+                                    $.getJSON("/RetailBill/GetItemsCostPrice", { itemcode: itemcode, itemtype: itemtype },
+                                        function (data) {
+                                            document.getElementById("CostPrice" + "@count").value = data;
+                                        });
+                                    }
+                                    GetItemsCostPrice("@item.ItemCode", "@item.ItemType");
+                            </script>
+                            <input type="hidden" name="@billnoval" id="@billnoval" value="@item.BillNo"/>
+                            <input type="hidden" name="@size" id="@size" value="@item.Size"/>
+                            <input type="hidden" name="@brand" id="@brand" value="@item.Brand'"/>
+                            <input type="hidden" name="@designcode" id="@designcode" value="@item.DesignCode"/>
+                            <input type="hidden" name="@designname" id="@designname" value="@item.DesignName"/>
+                            <input type="hidden" name="@description" id="@description" value="@item.Description"/>
+                            <input type="hidden" name="@color" id="@color" value="@item.Color"/>
+                            <input type="hidden" name="@material" id="@material" value="@item.Material"/>
+                            <input type="hidden" id="@itemtype" name="@itemtype" value="@item.ItemType" />
+                            <input type="hidden" name="@itemtaxval" id="@itemtaxval" value="@item.ItemTax"/>
+                            <input type="hidden" name="@itemtaxamt" id="@itemtaxamt" value="@item.ItemTaxAmt"/>
+                        </td>
+                    </tr>
+                            
+                            count = count + 1;
+
+                        }
+                    <input type="hidden" id="hdnRowCountForTempCashMemo" name="hdnRowCountForTempCashMemo" value="@count"/>
+                    }
+                }
+            </tbody>
+
+        </table>
+    </div>
+    <div class="col-md-12 col-lg-12">
+        <div style="width: 100%; height: 2px; background-color: gray;"></div>
+    </div>
+</div>

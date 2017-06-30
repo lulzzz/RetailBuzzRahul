@@ -1,0 +1,2638 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GetQuotationEditList";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" rel="stylesheet" />
+<link href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" rel="stylesheet" />
+<script src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+<script src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+
+@*SALES PERSON NAME AUTO COMPLETE*@
+<script type="text/javascript">
+    $(function () {
+        $("#SalesPerson").autocomplete({
+            source: "/RetailBill/GetEmployeeName",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#SalesPerson").val(ui.item.value);
+                    var empname = document.getElementById("SalesPerson").value;
+
+                    $.getJSON("/RetailBill/GetEmployeeDetails", { name: empname },
+                   function (data) {
+
+                       document.getElementById("QuotationDetails_SalesPersonContact").value = data.MobileNo;
+                       document.getElementById("QuotationDetails_SalesPersonEmail").value = data.Email;
+                       document.getElementById("QuotationDetails_SalesPersonAddress").value = data.Address;
+                       document.getElementById("QuotationDetails_SalesPersonDesignation").value = data.Designation;
+                   });
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(function () {
+
+        var temp = $("#QuotationDetails_QuotDate").val();
+        var dat = new Date(temp);
+        var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+        var data = dat.getDate() + "/" + month[dat.getMonth()] + "/" + dat.getFullYear();
+        document.getElementById('date').innerHTML = data;
+
+        var mode = $("#ddltypeofmode").val();
+        var name = document.getElementById("transportname").value;
+        $.getJSON("/Inward/GetTransportNames", { mode: mode },
+                function (data) {
+                    var select = $("#ddltransportnames");
+                    select.empty();
+                    select.append($('<option/>', {
+                        text: "Select Name",
+                        value: "",
+                    }));
+                    $.each(data, function (index, itemdata) {
+                        select.append($('<option/>', {
+                            text: itemdata.Text,
+                            value: itemdata.Value,
+                        }));
+                    });
+                    $("#ddltransportnames").val(name).attr("selected", true);
+                });
+        document.getElementById("In_Words").innerText = NumberToWords();
+    });
+</script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, row) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + row).remove();
+		         var rowid = document.getElementById("hdnRowCount").value;
+		         CalculateItemWiseAmount(rowid, '');
+		         CalculateTotalDiscount();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        /*Get Client Details*/
+        $("#QuotationDetails_ClientName").autocomplete({
+            source: "/Client/GetActiveAndMaharashtraClients",
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#QuotationDetails_ClientName").val(ui.item.value);
+                    var idmodel = document.getElementById("QuotationDetails_ClientName").value;
+                    var rowid = +document.getElementById("hdnRowCount").value;
+
+                    $("#QuotationDetails_ClientName").change(function () {
+                        $("#ddltypeofmode").val("Select Mode").attr("selected", "selected");
+                        var select = $("#ddltransportnames");
+                        select.empty();
+                        select.append($('<option/>', {
+                            text: "Select Name",
+                            value: "",
+                        }));
+                        document.getElementById("ClientDetails").style.display = "none";
+                        document.getElementById("FormTypeDetails").style.display = "none";
+                        document.getElementById("TransportDetails").style.display = "none";
+                        document.getElementById("Submit").disabled = false;
+                    });
+
+                    $.getJSON("/ProcessingQuotation/GetClientDetails", { name: idmodel },
+                        function (data) {
+                            $("#ClientName").text(data.ClientName);
+                            $("#ClientAddress").text(data.Address);
+                            $("#ClientState").text(data.State);
+                            $("#ClientContactNo").text(data.ContactNo1);
+                            $("#ClientEmail").text(data.Email);
+
+                            document.getElementById("QuotationDetails_ConsumeResell").value = data.ConsumeResell;
+
+                            if (data.State == "Maharashtra") {
+                                document.getElementById("formtypeid").style.display = "none";
+                                document.getElementById("YesRadioButton").disabled = true;
+                                document.getElementById("NoRadioButton").disabled = true;
+                                document.getElementById("NoRadioButton").checked = true;
+                            }
+                            else {
+                                document.getElementById("YesRadioButton").disabled = false;
+                                document.getElementById("NoRadioButton").disabled = false;
+                            }
+
+                            if (data.ClientType == "Registered") {
+                                $("#Registered").attr("checked", true);
+                            }
+                            else {
+                                $("#NonRegistered").attr("checked", true);
+                            }
+                            if (data.ConsumeResell == "Consumer") {
+                                $("#Consumer").attr("checked", true);
+                            }
+                            else {
+                                $("#Reseller").attr("checked", true);
+                            }
+                            if (data.FormType != null) {
+                                document.getElementById("formtypeid").style.display = "inline";
+                                $("#ddlformtypes").val(data.FormType).attr("selected", true);
+                                $("#YesRadioButton").prop("checked", true);
+                            }
+                            else {
+                                document.getElementById("formtypeid").style.display = "none";
+                                $("#NoRadioButton").prop("checked", true);
+                            }
+
+                            $("#QuotationDetails_ClientAddress").val(data.Address);
+                            $("#QuotationDetails_ClientState").val(data.State);
+                            $("#QuotationDetails_ClientContactNo").val(data.ContactNo1);
+                            $("#QuotationDetails_ClientEmail").val(data.Email);
+                            $("#QuotationDetails_ClientType").val(data.ClientType);
+
+                            for (i = 1; i <= rowid; i++) {
+                                GetTaxForAlreadyPresentItems(i);
+                            }
+
+                            document.getElementById("ClientDetails").style.display = "inline";
+                            document.getElementById("FormTypeDetails").style.display = "inline";
+                            document.getElementById("TransportDetails").style.display = "inline";
+                            document.getElementById("Submit").disabled = false;
+
+                        });
+
+                }
+            }
+        });
+        $("#ddltypeofmode").change(function () {
+            var mode = document.getElementById("ddltypeofmode").value;
+            if (mode != "") {
+                $.getJSON("/Inward/GetTransportNames", { mode: mode },
+                function (data) {
+                    var select = $("#ddltransportnames");
+                    select.empty();
+                    select.append($('<option/>', {
+                        text: "Select Name",
+                        value: "",
+                    }));
+                    $.each(data, function (index, itemdata) {
+                        select.append($('<option/>', {
+                            text: itemdata.Text,
+                            value: itemdata.Value,
+                        }));
+                    });
+                });
+            }
+            else {
+                var select = $("#ddltransportnames");
+                select.empty();
+                select.append($('<option/>', {
+                    text: "Select Name",
+                    value: "",
+                }));
+                document.getElementById("TransportName&No").style.display = "none";
+            }
+        });
+
+        $("#ddltransportnames").change(function () {
+            var name = document.getElementById("ddltransportnames").value;
+            if (name != "") {
+                $.getJSON("/Inward/GetTransportDetails", { name: name },
+                    function (data) {
+                        document.getElementById("QuotationDetails_TransportContactNo").value = data.no;
+                    });
+            }
+        });
+    });
+
+    function GetTaxForAlreadyPresentItems(rowid) {
+        var itemtax = "ItemTax" + rowid;
+        var itemtaxvalue = "ItemTaxValue" + rowid;
+        var subcat = "SubCat" + rowid;
+        var ItemType = "ItemType" + rowid;
+        var formtype;
+        if (document.getElementById("ddlformtypes").style.display == "none") {
+            formtype = "";
+        }
+        else {
+            formtype = document.getElementById("ddlformtypes").value;
+        }
+        $.getJSON("/ProcessingQuotation/GetTaxForAlreadyPresentItems", { itemcode: $("#itemCode" + rowid).val(), Formtype: $("#ddlformtypes").val(), State: $("#QuotationDetails_ClientState").val(), ConsumeResell: $("#QuotationDetails_ConsumeResell").val(), type: $("#QuotationDetails_ClientType").val(), itemtype: $("#" + ItemType).val() },
+        function (data) {
+            document.getElementById(itemtax).innerHTML = data;
+            document.getElementById(itemtaxvalue).value = data;
+            var tax = data;
+            if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                var taxcount = document.getElementById("ItemTaxCount").value;
+                if ($("#ItemTaxNumber" + taxcount).val() == 0) {
+                    $("#ItemTaxNumber" + taxcount).val(tax);
+                    document.getElementById("AddTaxes").style.display = "inline";
+                    $("#AddedTax1").text(tax + "%");
+                }
+                else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                    var taxpresent = 0;
+                    for (var i = 1; i <= taxcount; i++) {
+                        var taxno = "ItemTaxNumber" + i;
+                        if (tax == $("#" + taxno).val()) {
+                            taxpresent++;
+                        }
+                    }
+                    if (taxpresent == 0) {
+                        taxcount++;
+                        var taxno = "ItemTaxNumber" + taxcount;
+                        var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                        $("#AllTaxesNumbersValue").append(data);
+                        var addedtaxno = "AddedTax" + taxcount;
+                        var addedtaxamount = "AddedTaxAmount" + taxcount;
+                        var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                        var addedamount = "AddedAmount" + taxcount;
+                        var addedamounthdn = "AddedAmounthdn" + taxcount;
+                        var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                        newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                        newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                        $("#AddTaxes").append(newlabel);
+                        $("#ItemTaxCount").val(taxcount);
+                    }
+                }
+            }
+            CalculateTaxSummary(rowid);
+        });
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).keypress(function (e) {
+        if (e.which == 13) {
+            if ($("#QuotationDetails_ClientName").val() != "") {
+                $("#ddlformtypes").attr("disabled", true);
+                $("#YesRadioButton").attr("disabled", true);
+                $("#NoRadioButton").attr("disabled", true);
+                $("#Registered").attr("disabled", true);
+                $("#NonRegistered").attr("disabled", true);
+                $("#Consumer").attr("disabled", true);
+                $("#Reseller").attr("disabled", true);
+                document.getElementById("QuotationDetails_ClientName").disabled = true;
+
+                var previousRowValidationCount = 0;
+                var presentrows = +$("#AlreadyPresentItems").val();
+                for (var i = 1; i <= presentrows; i++) {
+                    var allprevitemCode = "itemCode" + i;
+                    var allprevnarration = "narration" + i;
+                    var allprevquantity = "quantity" + i;
+                    var allprevsellingprice = "SellingPrice" + i;
+                    var allprevmrp = "MRP" + i;
+                    var allprevdiscountpercent = "discountpercent" + i;
+                    var allprevdiscountrps = "discountrps" + i;
+                    if (document.getElementById(allprevitemCode) != null) {
+                        if ($("#" + allprevitemCode).val() == "") {
+                            alertbox("Please Select The Item");
+                            previousRowValidationCount++;
+                            break;
+                        }
+                        else if ((+$("#" + allprevquantity).val()) == 0 || $("#" + allprevquantity).val() == "") {
+                            alertbox("Please Fill The Quantity");
+                            previousRowValidationCount++;
+                            break;
+                        }
+                        else if ($("#" + allprevsellingprice).val() == "" || (+$("#" + allprevsellingprice).val()) == 0) {
+                            alertbox("Please Fill The SellingPrice");
+                            previousRowValidationCount++;
+                            break;
+                        }
+                        else if ($("#" + allprevmrp).val() == "" || (+$("#" + allprevmrp).val()) == 0) {
+                            alertbox("Please Fill The MRP");
+                            previousRowValidationCount++;
+                            break;
+                        }
+                    }
+                }
+
+                var rowid = document.getElementById("hdnRowCount").value;
+
+                if (previousRowValidationCount == 0) {
+                    var presentrows = +$("#AlreadyPresentItems").val();
+                    for (var i = 1; i <= presentrows; i++) {
+                        var allprevitemCode = "itemCode" + i;
+                        var allprevnarration = "narration" + i;
+                        var allprevquantity = "quantity" + i;
+                        var allprevsellingprice = "SellingPrice" + i;
+                        var allprevmrp = "MRP" + i;
+                        var allprevdiscountpercent = "discountpercent" + i;
+                        var allprevdiscountrps = "discountrps" + i;
+                        if (document.getElementById(allprevitemCode) != null) {
+                            document.getElementById(allprevitemCode).disabled = true;
+                            document.getElementById(allprevnarration).disabled = true;
+                            document.getElementById(allprevquantity).disabled = true;
+                            document.getElementById(allprevsellingprice).disabled = true;
+                            document.getElementById(allprevmrp).disabled = true;
+                            document.getElementById(allprevdiscountpercent).disabled = true;
+                            document.getElementById(allprevdiscountrps).disabled = true;
+                            //GetTaxForAlreadyPresentItems(i);
+                        }
+                    }
+
+                    var previtemCode = "itemCode" + rowid;
+                    var prevnarration = "narration" + rowid;
+                    var prevquantity = "quantity" + rowid;
+                    var prevsellingprice = "SellingPrice" + rowid;
+                    var prevmrp = "MRP" + rowid;
+                    var prevdiscountpercent = "discountpercent" + rowid;
+                    var prevdiscountrps = "discountrps" + rowid;
+                    //If Row was Not DELETED
+                    if (document.getElementById(previtemCode) != null) {
+                        //If Required Fields are Empty of Previous Row
+                        if ($("#" + previtemCode).val() == "") {
+                            alertbox("Please Select Item");
+                        }
+                        else if ((+$("#" + prevquantity).val()) == 0 || $("#" + prevquantity).val() == "") {
+                            alertbox("Please Fill The Quantity");
+                        }
+                        else if ($("#" + prevsellingprice).val() == "" || (+$("#" + prevsellingprice).val()) == 0) {
+                            alertbox("Please Fill The SellingPrice");
+                        }
+                        else if ($("#" + prevmrp).val() == "" || (+$("#" + prevmrp).val()) == 0) {
+                            alertbox("Please Fill The MRP");
+                        }
+                            //If Required Fields are Not Empty then Generate Row
+                        else {
+                            if (document.getElementById(previtemCode) != null) {
+                                document.getElementById(previtemCode).disabled = true;
+                                document.getElementById(prevnarration).disabled = true;
+                                document.getElementById(prevquantity).disabled = true;
+                                document.getElementById(prevsellingprice).disabled = true;
+                                document.getElementById(prevmrp).disabled = true;
+                                document.getElementById(prevdiscountpercent).disabled = true;
+                                document.getElementById(prevdiscountrps).disabled = true;
+                            }
+                            GenerateDynamicRow(rowid);
+                        }
+                    }
+                        //If row was DELETED then Generate Row
+                    else {
+                        if (document.getElementById(previtemCode) != null) {
+                            document.getElementById(previtemCode).disabled = true;
+                            document.getElementById(prevnarration).disabled = true;
+                            document.getElementById(prevquantity).disabled = true;
+                            document.getElementById(prevsellingprice).disabled = true;
+                            document.getElementById(prevmrp).disabled = true;
+                            document.getElementById(prevdiscountpercent).disabled = true;
+                            document.getElementById(prevdiscountrps).disabled = true;
+                        }
+                        GenerateDynamicRow(rowid);
+                    }
+                }
+            }
+            else {
+                alertbox("Please Select The Client Name");
+            }
+        }
+    });
+</script>
+<script type="text/javascript">
+    function GenerateDynamicRow(rowid) {
+        rowid = +rowid + 1;
+        var subcat = "SubCat" + rowid;
+        var ItemType = "ItemType" + rowid;
+        var row = "row" + rowid;
+        var itemCode = "itemCode" + rowid;
+        var itemName = "itemName" + rowid;
+        var barcode = "Barcode" + rowid;
+        var description = "description" + rowid;
+        var narration = "narration" + rowid;
+        var materialvalue = "materialvalue" + rowid;
+        var designlist = "designlist" + rowid;
+        var color = "color" + rowid;
+        var colorvalue = "colorvalue" + rowid;
+        var quantity = "quantity" + rowid;
+        var sellingprice = "SellingPrice" + rowid;
+        var mrp = "MRP" + rowid;
+        var costprice = "CostPrice" + rowid;
+        var discountpercent = "discountpercent" + rowid;
+        var amount = "amount" + rowid;
+        var amountvalue = "amountvalue" + rowid;
+        var itemtax = "ItemTax" + rowid;
+        var itemtaxvalue = "ItemTaxValue" + rowid;
+        var itemtaxamount = "ItemTaxAmount" + rowid;
+        var unit = "unit" + rowid;
+        var unitvalue = "unitvalue" + rowid;
+        var numbertype = "numberType" + rowid;
+        var design = "design" + rowid;
+        var designName = "designName" + rowid;
+        var brand = "Brand" + rowid;
+        var size = "Size" + rowid;
+        var unorderedList = $("#AddingRows");
+        var data = "<tr id='" + row + "'><input type='hidden' id='" + subcat + "' name='" + subcat + "' />";
+        data += "<td><select id='" + itemCode + "' name='" + itemCode + "' class='form-control col-md-2 col-lg-2'><option value=''>Select</option></select><input type='hidden' id='" + itemName + "' name='" + itemName + "' /><input type='hidden' id='" + barcode + "' name='" + barcode + "' /><input type='hidden' id='" + ItemType + "' name='" + ItemType + "' value='Inventory'/><input type='hidden' id='" + brand + "' name='" + brand + "' /><input type='hidden' id='" + size + "' name='" + size + "' /></td>";
+        data += "<td><input type='hidden' id='" + description + "' name='" + description + "' /><textarea id='" + narration + "' name='" + narration + "' rows='1' class='form-control col-md-2 col-lg-2' placeholder='Narration'  style='text-align:center' /><input type='hidden' id='" + designName + "' name='" + designName + "' /><input type='hidden' id='" + design + "' name='" + design + "' /><input type='hidden' id='" + materialvalue + "' name='" + materialvalue + "' /><input type='hidden' id='" + colorvalue + "' name='" + colorvalue + "' /></td>";
+        data += "<td><input type='text' id='" + quantity + "' name='" + quantity + "' autocomplete='off' class='form-control col-md-1 col-lg-1' placeholder='Qty' style='text-align:center;width:100%' onchange='CalculateItemWiseAmount(" + rowid + ',' + '\"\"' + ")' onkeypress='return AllowDecimal(event," + rowid + ")' /></td>";
+        data += "<td style='text-align:center'><label id='" + unit + "' style='font-weight:normal'></label><input type='hidden' name='" + unitvalue + "' id='" + unitvalue + "'><input type='hidden' name='" + numbertype + "' id='" + numbertype + "'></td>";
+        data += "<td><input type='text' id='" + sellingprice + "' name='" + sellingprice + "' autocomplete='off' class='form-control col-md-2 col-lg-2' placeholder='Sell Price' style='text-align:center;width:100%' onchange='CalculateItemWiseAmount(" + rowid + ',' + '\"sellingprice\"' + ")' onkeypress='return AllowNumbers(event)' /></td>";
+        data += "<td><input type='text' id='" + mrp + "' name='" + mrp + "' autocomplete='off' class='form-control col-md-2 col-lg-2' placeholder='MRP' style='text-align:center;width:100%' onchange='CalculateItemWiseAmount(" + rowid + ',' + '\"mrp\"' + ")' onkeypress='return AllowNumbers(event)' /><input type='hidden' id='" + costprice + "' name='" + costprice + "'/></td>";
+        data += "<td><input type='text' id='" + discountpercent + "' name='" + discountpercent + "' autocomplete='off' class='form-control col-md-1 col-lg-1' value='0' placeholder='0%' style='font-weight:normal; text-align:center;width:100%' onchange='CalculateItemWiseAmount(" + rowid + ',' + '\"percent\"' + ")' onkeypress='return AllowNumbers(event)' /></td>";
+        data += "<td><input type='text' id='discountrps" + rowid + "' name='discountrps" + rowid + "'  autocomplete='off' class='form-control col-md-1 col-lg-1' value='0.00' placeholder='0' style='font-weight:normal; text-align:center;width:100%' onchange='CalculateItemWiseAmount(" + rowid + ',' + '\"rps\"' + ")' onkeypress='return AllowNumbers(event)' /></td>";
+        data += "<td style='text-align:center'><label id='" + itemtax + "' style='font-weight:normal'>0</label><input type='hidden' id='" + itemtaxvalue + "' name='" + itemtaxvalue + "' value='0'/><input type='hidden' id='" + itemtaxamount + "' name='" + itemtaxamount + "' value='0'/></td>";
+        data += "<td style='text-align:right'><label id='" + amount + "' style='font-weight:normal'>0</label><input type='hidden' id='" + amountvalue + "' name='" + amountvalue + "' value='0'/></td>";
+        data += "<td style='text-align:right'><label id='proportionatetax" + rowid + "'>0</label><input type='hidden' id='proportionatetaxamount" + rowid + "' name='proportionatetaxamount" + rowid + "' value='0'/><input type='hidden' id='proportionatetaxvalue" + rowid + "' name='proportionatetaxvalue" + rowid + "' value='0'/></td>";
+        data += "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + rowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td></tr>";
+        unorderedList.append(data);
+
+        var code = document.getElementById("QuotationDetails_ShopCode").value;
+        $.getJSON("/ProcessingQuotation/LoadItemBySubCategoryFromStkDist", { subcat: $("#ddlSubcat").val(), code: code },
+        function (data) {
+            var select = $("#" + itemCode);
+            select.empty();
+            select.append($('<option/>', {
+                value: "",
+                text: "Select"
+            }));
+            $.each(data, function (index, itemData) {
+                select.append($('<option/>', {
+                    value: itemData.Value,
+                    text: itemData.Text + " " + itemData.Value
+                }));
+            });
+        });
+        $("#" + itemCode).change(function () {
+            var name = document.getElementById(itemCode).value;
+            var formtype;
+            if (document.getElementById("formtypeid").style.display == "none") {
+                formtype = "";
+            }
+            else {
+                if (document.getElementById("ddlformtypes").value == "")
+                { formtype = ""; }
+                else { formtype = $("#QuotationDetails_FormType").val(); }
+
+            }
+            if (name != "") {
+                var currentrowid = 0;
+                for (var i = rowid - 1; i >= 1; i--) {
+                    var previousitemname = "itemCode" + i;
+                    if (name == $("#" + previousitemname).val()) {
+                        currentrowid = i;
+                        break;
+                    }
+                }
+                if (currentrowid == 0) {
+                    var validationcount = 0;
+                    for (var i = 1; i < rowid; i++) {
+                        var prevquantity = "quantity" + i;
+                        var prevsellingprice = "SellingPrice" + i;
+                        var prevmrp = "MRP" + i;
+                        var prevnarration = "narration" + i;
+                        if (document.getElementById(prevquantity) != null) {
+                            if ((+$("#" + prevquantity).val()) == 0 || $("#" + prevquantity).val() == "") {
+                                alertbox("Please Fill The Quantity");
+                                validationcount++;
+                            }
+                            else if ($("#" + prevsellingprice).val() == "" || (+$("#" + prevsellingprice).val()) == 0) {
+                                alertbox("Please Fill The SellingPrice");
+                                validationcount++;
+                            }
+                            else if ($("#" + prevmrp).val() == "" || (+$("#" + prevmrp).val()) == 0) {
+                                alertbox("Please Fill The MRP");
+                                validationcount++;
+                            }
+                            else {
+                                if (document.getElementById(prevquantity) != null) {
+                                    if (document.getElementById(prevquantity).disabled == false) {
+                                        document.getElementById(prevquantity).disabled = true;
+                                        document.getElementById(prevnarration).disabled = true;
+                                        document.getElementById(prevsellingprice).disabled = true;
+                                        document.getElementById(prevmrp).disabled = true;
+                                        document.getElementById("discountpercent" + i).disabled = true;
+                                        document.getElementById("discountrps" + i).disabled = true;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    if (validationcount == 0) {
+                        $("#Submit").attr("disabled", false);
+                        var ShopCode = document.getElementById("QuotationDetails_ShopCode").value;
+                        $.getJSON("/ProcessingQuotation/GetItemDetailsFromItems",
+                            {
+                                itemname: name,
+                                type: $("#QuotationDetails_ClientType").val(),
+                                State: $("#QuotationDetails_ClientState").val(),
+                                Formtype: $("#ddlformtypes").val(),
+                                ConsumeResell: $("#QuotationDetails_ConsumeResell").val(),
+                                shopcode: ShopCode,
+                            },
+                     function (data) {
+                         document.getElementById("quantity" + rowid).value = "";
+                         document.getElementById("amount" + rowid).innerHTML = 0.00;
+                         document.getElementById("amountvalue" + rowid).innerHTML = 0.00;
+                         $("#" + itemName).val(data.ItemName);
+                         $("#" + barcode).val(data.Barcode);
+                         $("#" + description).val(data.Description);
+                         $("#" + costprice).val(data.costprice);
+                         $("#" + sellingprice).val(data.SellingPrice);
+                         $("#" + mrp).val(data.MRP);
+                         $("#" + materialvalue).val(data.typematerial);
+                         $("#" + colorvalue).val(data.colorname);
+                         $("#" + unit).text(data.Unit);
+                         $("#" + unitvalue).val(data.Unit);
+                         $("#" + numbertype).val(data.NumberType);
+                         $("#" + itemtax).text(data.taxPercent);
+                         $("#" + itemtaxvalue).val(data.taxPercent);
+                         $("#" + design).val(data.DesignCode);
+                         $("#" + designName).val(data.DesignName);
+                         $("#" + brand).val(data.Brand);
+                         $("#" + size).val(data.Size);
+                         $("#" + discountpercent).val(data.discount);
+                         $("#discountrps" + rowid).val(data.discountrps);
+
+                         window.open("/ProcessingQuotation/PopUpPage?code=" + data.DesignCode + "&item=" + name + "&type=Inventory", "_target", "width=1000,height=200,top=280px,left=200px");
+
+                         //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                         //on each item which is applied
+                         var tax = data.taxPercent;
+                         if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                             var taxcount = document.getElementById("ItemTaxCount").value;
+                             if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                                 $("#ItemTaxNumber" + taxcount).val(tax);
+                                 document.getElementById("AddTaxes").style.display = "inline";
+                                 $("#AddedTax1").text(tax + "%");
+                             }
+                             else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                                 var taxpresent = 0;
+                                 for (var i = 1; i <= taxcount; i++) {
+                                     var taxno = "ItemTaxNumber" + i;
+                                     //if tax is already present then no need to make other taxnumbers
+                                     if (tax == $("#" + taxno).val()) {
+                                         taxpresent++;
+                                     }
+                                 }
+                                 if (taxpresent == 0) {
+                                     taxcount++;
+                                     var taxno = "ItemTaxNumber" + taxcount;
+                                     var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                     $("#AllTaxesNumbersValue").append(data);
+                                     var addedtaxno = "AddedTax" + taxcount;
+                                     var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                     var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                     var addedamount = "AddedAmount" + taxcount;
+                                     var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                     var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                     newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                     newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                     $("#AddTaxes").append(newlabel);
+                                     $("#ItemTaxCount").val(taxcount);
+                                 }
+                             }
+                         }
+                         var CostPrice = +$("#" + costprice).val();
+                         var Tax = +$("#" + itemtaxvalue).val();
+                         var MRP = +$("#" + mrp).val();
+                         taxoncostprice = (CostPrice * Tax) / 100;
+                         var taxpercentoncostprice = CostPrice / (CostPrice + taxoncostprice) * Tax;
+                         var Sellingprice = MRP - (MRP * +taxpercentoncostprice / 100);
+                         $("#SellingPrice" + rowid).val(Sellingprice.toFixed(2));
+                     });
+
+                    }
+                    else {
+                        $("#itemCode" + rowid).val("").attr("selected", true);
+                    }
+                }
+                else {
+                    alertbox("Item Name Already Selected Please change the quantity");
+                    document.getElementById("quantity" + currentrowid).disabled = false;
+                    document.getElementById("narration" + currentrowid).disabled = false;
+                    document.getElementById("SellingPrice" + currentrowid).disabled = false;
+                    document.getElementById("MRP" + currentrowid).disabled = false;
+                    document.getElementById("discountpercent" + currentrowid).disabled = false;
+                    document.getElementById("discountrps" + currentrowid).disabled = false;
+
+                    $("#itemCode" + rowid).val("").attr("selected", true);
+                    document.getElementById("quantity" + rowid).value = 0.000;
+                    document.getElementById("amount" + rowid).innerHTML = 0.00;
+                    document.getElementById("proportionatetax" + rowid).innerHTML = 0;
+                    $("#narration" + rowid).val("");
+                    $("#SellingPrice" + rowid).val(0.00);
+                    $("#MRP" + rowid).val(0.00);
+                    $("#discountrps" + rowid).val("0.00");
+                    $("#discountpercent" + rowid).val("0");
+                    $("#unit" + rowid).text("---");
+                    $("#ItemTax" + rowid).text("0");
+                    CalculateItemWiseAmount(rowid, '');
+                }
+            }
+            else {
+                alertbox("Please Select Item First");
+                $("#itemCode" + rowid).val("").attr("selected", true);
+                document.getElementById("quantity" + rowid).value = 0;
+                document.getElementById("amount" + rowid).innerHTML = 0.00;
+                document.getElementById("proportionatetax" + rowid).innerHTML = 0;
+                $("#narration" + rowid).val("");
+                $("#SellingPrice" + rowid).val(0.00);
+                $("#MRP" + rowid).val(0.00);
+                $("#discountrps" + rowid).val(0.00);
+                $("#discountpercent" + rowid).val(0.00);
+                $("#unit" + rowid).text("---");
+                $("#ItemTax" + rowid).text("0");
+                CalculateItemWiseAmount(rowid, '');
+            }
+        });
+        $("#hdnRowCount").val(rowid);
+    }
+</script>
+<script type="text/javascript">
+    function addCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function removeCommas(yourNumber) {
+        var components = yourNumber.toString().split(".");
+        if (components.length === 1)
+            components[0] = yourNumber;
+        components[0] = components[0].replace(/\D/g, "").replace(/\B(?=(\d{3})+(?!\d))/g, '');
+        if (components.length === 2)
+            components[1] = components[1].replace(/\D/g, "");
+        return components.join(".");
+    }
+
+    function NumberToWords() {
+        var junkVal = (+removeCommas(document.getElementById('Grand_Total').innerHTML));
+        junkVal = Math.floor(junkVal);
+        var obStr = new String(junkVal);
+        numReversed = obStr.split("");
+        actnumber = numReversed.reverse();
+        if (Number(junkVal) > 0) {
+            //do nothing
+        }
+        else if (Number(junkVal) == 0) {
+            //document.getElementById('container').innerHTML = obStr + '' + 'Rupees Zero Only';
+            return 'Rupees Zero Only';
+        }
+        else {
+            alertbox('wrong Number cannot be converted');
+            return false;
+        }
+
+        if (actnumber.length > 9) {
+            alertbox('Oops!!!! the Number is too big to covertes');
+            return false;
+        }
+
+        var iWords = ["Zero", " One", " Two", " Three", " Four", " Five", " Six", " Seven", " Eight", " Nine"];
+        var ePlace = ['Ten', ' Eleven', ' Twelve', ' Thirteen', ' Fourteen', ' Fifteen', ' Sixteen', ' Seventeen', ' Eighteen', ' Nineteen'];
+        var tensPlace = ['dummy', ' Ten', ' Twenty', ' Thirty', ' Forty', ' Fifty', ' Sixty', ' Seventy', ' Eighty', ' Ninety'];
+
+        var iWordsLength = numReversed.length;
+        var totalWords = "";
+        var inWords = new Array();
+        var finalWord = "";
+        j = 0;
+        for (i = 0; i < iWordsLength; i++) {
+            switch (i) {
+                case 0:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + ' Only';
+                    break;
+                case 1:
+                    tens_complication();
+                    break;
+                case 2:
+                    if (actnumber[i] == 0) {
+                        inWords[j] = '';
+                    }
+                    else if (actnumber[i - 1] != 0 && actnumber[i - 2] != 0) {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred and';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]] + ' Hundred';
+                    }
+                    break;
+                case 3:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Thousand";
+                    }
+                    break;
+                case 4:
+                    tens_complication();
+                    break;
+                case 5:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    if (actnumber[i + 1] != 0 || actnumber[i] > 0) {
+                        inWords[j] = inWords[j] + " Lakh";
+                    }
+                    break;
+                case 6:
+                    tens_complication();
+                    break;
+                case 7:
+                    if (actnumber[i] == 0 || actnumber[i + 1] == 1) {
+                        inWords[j] = '';
+                    }
+                    else {
+                        inWords[j] = iWords[actnumber[i]];
+                    }
+                    inWords[j] = inWords[j] + " Crore";
+                    break;
+                case 8:
+                    tens_complication();
+                    break;
+                default:
+                    break;
+            }
+            j++;
+        }
+
+        function tens_complication() {
+            if (actnumber[i] == 0) {
+                inWords[j] = '';
+            }
+            else if (actnumber[i] == 1) {
+                inWords[j] = ePlace[actnumber[i - 1]];
+            }
+            else {
+                inWords[j] = tensPlace[actnumber[i]];
+            }
+        }
+        inWords.reverse();
+        for (i = 0; i < inWords.length; i++) {
+            finalWord += inWords[i];
+        }
+        // obStr + '  '+ finalWord;
+        return finalWord;
+    }
+
+    function DeleteRow(id) {
+        var row = "row" + id;
+        confirmbox("Are you sure you wish to delete this row?", row);
+    }
+
+
+
+@*CALCULATE TRADE DISCOUNT*@
+    function CalculateTotalDiscount() {
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalamount = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var disinrs = "discountrps" + i;
+            if (document.getElementById(disinrs) != null) {
+                totalamount = (+totalamount) + (+removeCommas(document.getElementById(disinrs).value));
+            }
+        }
+        document.getElementById("TotalDiscountValue").innerHTML = addCommas(totalamount.toFixed(2));
+        document.getElementById("QuotationDetails_TotalDiscount").value = totalamount.toFixed(2);
+    };
+
+
+    function CalculateTaxSummary(rowid) {
+        var TaxCount = document.getElementById("ItemTaxCount").value;
+
+        var currentitemtaxvalue = "ItemTaxValue" + rowid;
+        var currentamount = "amount" + rowid;
+        var currentproportionateamount = "proportionatetaxamount" + rowid;
+        var currenttaxamount = "ItemTaxAmount" + rowid;
+
+        if (document.getElementById(currentamount) != null) {
+            document.getElementById(currenttaxamount).value = (((+removeCommas(document.getElementById(currentamount).innerHTML)) + (+document.getElementById(currentproportionateamount).value)) * (+document.getElementById(currentitemtaxvalue).value / 100)).toFixed(2);
+        }
+
+        for (var i = 1; i <= TaxCount; i++) {
+            var TotalTaxAmount = 0;
+            var itemtaxno = "ItemTaxNumber" + i;
+            var addedtaxamount = "AddedTaxAmount" + i;
+            var addedtaxamounthdn = "AddedTaxAmounthdn" + i;
+            var addedamount = "AddedAmount" + i;
+            var addedamounthdn = "AddedAmounthdn" + i;
+            for (var j = 1; j <= rowid; j++) {
+                var itemtaxvalue = "ItemTaxValue" + j;
+                var amount = "amount" + j;
+                var proportionateamount = "proportionatetaxamount" + j;
+                if (document.getElementById(amount) != null) {
+                    if ($("#" + itemtaxno).val() == $("#" + itemtaxvalue).val()) {
+                        TotalTaxAmount = (+TotalTaxAmount) + (+removeCommas(document.getElementById(amount).innerHTML)) + (+document.getElementById(proportionateamount).value);
+                    }
+                }
+            }
+            document.getElementById(addedamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedamounthdn).value = TotalTaxAmount.toFixed(2);
+            TotalTaxAmount = TotalTaxAmount * (+document.getElementById(itemtaxno).value / 100);
+            document.getElementById(addedtaxamount).innerHTML = "<i class='fa fa-inr'></i>" + addCommas(TotalTaxAmount.toFixed(2));
+            document.getElementById(addedtaxamounthdn).value = TotalTaxAmount.toFixed(2);
+        }
+    }
+
+    function CalculateItemWiseAmount(count, type) {
+        var packandforwd = (+document.getElementById("QuotationDetails_PackAndForwd").value);
+        if (type == "rps") {
+            document.getElementById("discountType").value = "rps";
+        }
+        else if (type == "percent") {
+            document.getElementById("discountType").value = "percent"
+        }
+
+        if (packandforwd != 0 || packandforwd != "") {
+            var rowid = document.getElementById("hdnRowCount").value;
+            for (var i = 1; i <= rowid; i++) {
+                var quantity = "quantity" + i;
+                var sellingprice = "SellingPrice" + i;
+                var mrp = "MRP" + i;
+                var costprice = "CostPrice" + i;
+                var amount = "amount" + i;
+                var discountpercent = "discountpercent" + i;
+                var discountrps = "discountrps" + i;
+                var amountvalue = "amountvalue" + i;
+                var unit = "unit" + i;
+                var itemtaxval = "ItemTaxValue" + i;
+
+                if (document.getElementById(quantity) != null) {
+                    var percent = (+document.getElementById(discountpercent).value) / 100;
+                    var rupees = (+document.getElementById(discountrps).value);
+                    var roundupqty = (+document.getElementById(quantity).value);
+                    document.getElementById(quantity).value = roundupqty;
+
+                    if (type == "mrp") {
+                        var taxoncostprice = +$("#" + costprice).val() * +$("#" + itemtaxval).val() / 100;
+                        var taxpercentoncostprice = +$("#" + costprice).val() / (+$("#" + costprice).val() + taxoncostprice) * +$("#" + itemtaxval).val();
+                        var sellingpriceval = (+$("#" + mrp).val()) - (+$("#" + mrp).val() * +taxpercentoncostprice / 100);
+                        $("#" + sellingprice).val(sellingpriceval.toFixed(2));
+                    }
+                    else if (type == "sellingprice") {
+                        var calculatedmrpfromsellprice = +$("#" + sellingprice).val() * +$("#" + itemtaxval).val() / 100;
+                        calculatedmrpfromsellprice = +$("#" + sellingprice).val() + calculatedmrpfromsellprice;
+                        $("#" + mrp).val(calculatedmrpfromsellprice.toFixed(2));
+                    }
+
+                    var calculatedvalue = 0;
+                    if ($("#" + unit).text() == "Dozens") {
+                        calculatedvalue = ((+document.getElementById(quantity).value) * 12) * (+document.getElementById(sellingprice).value);
+                    }
+                    else {
+                        calculatedvalue = (+document.getElementById(quantity).value) * (+document.getElementById(sellingprice).value);
+                    }
+
+                    var discounttype = document.getElementById("discountType").value;
+                    if (type == "" || type == "sellingprice" || type == "mrp") {
+                        discounttype = "percent";
+                    }
+                    if (roundupqty == 0 || (+document.getElementById(sellingprice).value) == 0 || (+document.getElementById(mrp).value) == 0) {
+                        document.getElementById(discountrps).value = "0.00";
+                    }
+                    else if (discounttype == "percent") {
+                        if (percent != 0) {
+                            var valueafterdiscount = calculatedvalue * percent;
+                            document.getElementById(discountrps).value = valueafterdiscount.toFixed(2);
+                            calculatedvalue -= valueafterdiscount;
+
+                        }
+                        else { document.getElementById(discountrps).value = "0.00"; }
+                    }
+                    else {
+                        if (rupees != 0) {
+                            var valueafterdiscount = rupees / calculatedvalue * 100;
+                            document.getElementById(discountpercent).value = valueafterdiscount.toFixed(1);
+                            calculatedvalue -= rupees;
+                        }
+                        else { document.getElementById(discountpercent).value = 0; }
+                    }
+
+                    document.getElementById(amountvalue).value = calculatedvalue.toFixed(2);
+                    document.getElementById(amount).innerHTML = addCommas(calculatedvalue.toFixed(2));
+                }
+            }
+
+            var totalamount = 0;
+            for (var i = 1; i <= rowid; i++) {
+                var amount = "amount" + i;
+                if (document.getElementById(amount) != null) {
+                    totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+                }
+            }
+            CalculateTotalDiscount();
+            document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+            document.getElementById("Total_Amount_Value").value = totalamount.toFixed(2);
+
+
+            for (var i = 1; i <= rowid; i++) {
+                var amount = "amount" + i;
+                var amountvalue = "amountvalue" + i;
+                var proportionate = "proportionatetax" + i;
+                var proportionatetaxvalue = "proportionatetaxvalue" + i;
+                var proportionateamount = "proportionatetaxamount" + i;
+                if (document.getElementById(amount) != null) {
+                    var propotaxpercent = (+removeCommas(document.getElementById(amount).innerHTML)) / (+document.getElementById("Total_Amount_Value").value);
+                    document.getElementById(proportionate).innerHTML = (propotaxpercent * 100).toFixed(2);
+                    document.getElementById(proportionatetaxvalue).value = (propotaxpercent * 100).toFixed(2);
+                    var packandforwdpropoamount = propotaxpercent * packandforwd;
+                    document.getElementById(proportionateamount).value = packandforwdpropoamount.toFixed(2);
+                    if (document.getElementById(proportionate).innerHTML.toString() == "NaN") {
+                        document.getElementById(proportionate).innerHTML = "0";
+                    }
+                    CalculateTaxSummary(i);
+                }
+            }
+            totalamount += packandforwd;
+            var totaltaxamt = 0;
+            var TaxCount = (+document.getElementById("ItemTaxCount").value);
+            if (+($("#ItemTaxNumber1").val()) != 0) {
+                for (var i = 1; i <= TaxCount; i++) {
+                    var addedtaxamount = "AddedTaxAmount" + i;
+                    totaltaxamt = totaltaxamt + (+removeCommas(document.getElementById(addedtaxamount).innerHTML));
+                }
+                document.getElementById("TotalTaxAmount").innerHTML = addCommas(totaltaxamt.toFixed(2));
+                document.getElementById("QuotationDetails_TotalTaxAmount").value = totaltaxamt.toFixed(2);
+            }
+            totalamount += totaltaxamt;
+            totalamount = Math.round(totalamount.toFixed(2));
+            document.getElementById("Grand_Total_Value").value = totalamount.toFixed(2);
+            document.getElementById("Grand_Total").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+            document.getElementById("In_Words").innerHTML = NumberToWords();
+            document.getElementById("AmountWithWords").style.display = "inline";
+        }
+        else {
+            var proportionatecount = document.getElementById("hdnRowCount").value;
+            for (var i = 1; i <= proportionatecount; i++) {
+                var proportionate = "proportionatetax" + i;
+                var proportionatetaxvalue = "proportionatetaxvalue" + i;
+                var proporamount = "proportionatetaxamount" + i;
+                if (document.getElementById(proportionate) != null) {
+                    document.getElementById(proportionate).innerHTML = "0";
+                    document.getElementById(proportionatetaxvalue).value = 0;
+                    document.getElementById(proporamount).value = 0;
+                }
+            }
+            var quantity = "quantity" + count;
+            var sellingprice = "SellingPrice" + count;
+            var mrp = "MRP" + count;
+            var costprice = "CostPrice" + count;
+            var amount = "amount" + count;
+            var discountpercent = "discountpercent" + count;
+            var discountrps = "discountrps" + count;
+            var amountvalue = "amountvalue" + count;
+            var unit = "unit" + count;
+            var itemtaxval = "ItemTaxValue" + count;
+
+            var totalamount = 0;
+            if (document.getElementById(quantity) != null) {
+                var percent = (+document.getElementById(discountpercent).value) / 100;
+                var rupees = (+document.getElementById(discountrps).value);
+                var roundupqty = (+document.getElementById(quantity).value);
+                document.getElementById(quantity).value = roundupqty;
+
+                if (type == "mrp") {
+                    var taxoncostprice = +$("#" + costprice).val() * +$("#" + itemtaxval).val() / 100;
+                    var taxpercentoncostprice = +$("#" + costprice).val() / (+$("#" + costprice).val() + taxoncostprice) * +$("#" + itemtaxval).val();
+                    var sellingpriceval = (+$("#" + mrp).val()) - (+$("#" + mrp).val() * +taxpercentoncostprice / 100);
+                    $("#" + sellingprice).val(sellingpriceval.toFixed(2));
+                }
+                else if (type == "sellingprice") {
+                    var calculatedmrpfromsellprice = +$("#" + sellingprice).val() * +$("#" + itemtaxval).val() / 100;
+                    calculatedmrpfromsellprice = +$("#" + sellingprice).val() + calculatedmrpfromsellprice;
+                    $("#" + mrp).val(calculatedmrpfromsellprice.toFixed(2));
+                }
+
+
+                var calculatedvalue = 0;
+                if ($("#" + unit).text() == "Dozens") {
+                    calculatedvalue = ((+document.getElementById(quantity).value) * 12) * (+document.getElementById(sellingprice).value);
+                }
+                else {
+                    calculatedvalue = (+document.getElementById(quantity).value) * (+document.getElementById(sellingprice).value);
+                }
+                var discounttype = document.getElementById("discountType").value;
+                if (type == "" || type == "sellingprice" || type == "mrp") {
+                    discounttype = "percent";
+                }
+
+                if (roundupqty == 0 || (+document.getElementById(sellingprice).value) == 0 || (+document.getElementById(mrp).value) == 0) {
+                    document.getElementById(discountrps).value = "0.00";
+                }
+                else if (discounttype == "percent") {
+                    if (percent != 0) {
+                        var valueafterdiscount = calculatedvalue * percent;
+                        document.getElementById(discountrps).value = valueafterdiscount.toFixed(2);
+                        calculatedvalue -= valueafterdiscount;
+
+                    }
+                    else { document.getElementById(discountrps).value = "0.00"; }
+                }
+                else {
+                    if (rupees != 0) {
+                        var valueafterdiscount = rupees / calculatedvalue * 100;
+                        document.getElementById(discountpercent).value = valueafterdiscount.toFixed(1);
+                        calculatedvalue -= rupees;
+                    }
+                    else { document.getElementById(discountpercent).value = 0; }
+                }
+
+                document.getElementById(amountvalue).value = calculatedvalue.toFixed(2);
+                document.getElementById(amount).innerHTML = addCommas(calculatedvalue.toFixed(2));
+            }
+            var rowid = document.getElementById("hdnRowCount").value;
+            for (var i = 1; i <= rowid; i++) {
+                var amount = "amount" + i;
+                if (document.getElementById(amount) != null) {
+                    totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+                }
+            }
+            document.getElementById("Total_Amount").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+            document.getElementById("Total_Amount_Value").value = totalamount.toFixed(2);
+            CalculateTaxSummary(rowid);
+            CalculateTotalDiscount();
+            var totaltaxamt = 0;
+            var TaxCount = (+document.getElementById("ItemTaxCount").value);
+            if (+($("#ItemTaxNumber1").val()) != 0) {
+                for (var i = 1; i <= TaxCount; i++) {
+                    var addedtaxamount = "AddedTaxAmount" + i;
+                    totaltaxamt = totaltaxamt + (+removeCommas(document.getElementById(addedtaxamount).innerHTML));
+                }
+                document.getElementById("TotalTaxAmount").innerHTML = "<i class='fa fa-inr'></i>" + addCommas(totaltaxamt.toFixed(2));
+                document.getElementById("QuotationDetails_TotalTaxAmount").value = totaltaxamt.toFixed(2);
+            }
+            totalamount += totaltaxamt;
+            totalamount = Math.round(totalamount.toFixed(2));
+            if (totalamount < 0) {
+                document.getElementById("Grand_Total_Value").value = totalamount.toFixed(2);
+                document.getElementById("Grand_Total").innerHTML = "-" + "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+                document.getElementById("In_Words").innerHTML = NumberToWords();
+                document.getElementById("AmountWithWords").style.display = "inline";
+            }
+            else {
+                document.getElementById("Grand_Total_Value").value = totalamount.toFixed(2);
+                document.getElementById("Grand_Total").innerHTML = "<i class='fa fa-rupee'></i>" + addCommas(totalamount.toFixed(2));
+                document.getElementById("In_Words").innerHTML = NumberToWords();
+                document.getElementById("AmountWithWords").style.display = "inline";
+            }
+
+        }
+
+        var rowid = document.getElementById("hdnRowCount").value;
+        var previtemCode = "itemCode" + rowid;
+        var prevnarration = "narration" + rowid;
+        var prevquantity = "quantity" + rowid;
+        var prevsellingprice = "SellingPrice" + rowid;
+        var prevmrp = "MRP" + rowid;
+        var prevdiscountpercent = "discountpercent" + rowid;
+        if (document.getElementById(previtemCode) != null) {
+            document.getElementById(previtemCode).disabled = false;
+            document.getElementById(prevnarration).disabled = false;
+            document.getElementById(prevquantity).disabled = false;
+            document.getElementById(prevsellingprice).disabled = false;
+            document.getElementById(prevmrp).disabled = false;
+            document.getElementById(prevdiscountpercent).disabled = false;
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function CalculatePackAndForwd(type) {
+        var rowid = document.getElementById("hdnRowCount").value;
+        var totalamount = 0;
+        var valueaftertax = 0;
+        for (var i = 1; i <= rowid; i++) {
+            var amount = "amount" + i;
+            if (document.getElementById(amount) != null) {
+                totalamount = (+totalamount) + (+removeCommas(document.getElementById(amount).innerHTML));
+            }
+        }
+        var finaltotalamount = totalamount;
+        var packandforwd = (+document.getElementById("QuotationDetails_PackAndForwd").value);
+        document.getElementById("PackAndForwd").innerHTML = addCommas(packandforwd.toFixed(2));
+        for (var i = 1; i <= rowid; i++) {
+            CalculateItemWiseAmount(i, '');
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+        $("#Submit").click(function () {
+            var rowid = document.getElementById("hdnRowCount").value;
+            var allitemsdeleted = 0;
+            document.getElementById("QuotationDetails_ClientName").disabled = false;
+            if (document.getElementById("formtypeid").style.display == "inline") {
+                document.getElementById("ddlformtypes").disabled = false;
+            }
+            var validationcounter = 0;
+            if ($("#QuotationDetails_ClientName").val() == "" || $("#ddltypeofmode").val() == "" || $("#ddltransportnames").val() == "" || $("#SalesPerson").val() == "") {
+                validationcounter++;
+            }
+            for (var i = 1; i <= rowid; i++) {
+                var itemCode = "itemCode" + i;
+                var quantity = "quantity" + i;
+                var sellingprice = "SellingPrice" + rowid;
+                var mrp = "MRP" + rowid;
+                if (document.getElementById(itemCode) != null) {
+                    if ($("#" + itemCode).val() == "") {
+                        alertbox("Please Select The Item");
+                        validationcounter++;
+                        return false;
+                        break;
+                    }
+                    else if ($("#" + quantity).val() == "" || (+$("#" + quantity).val()) == 0) {
+                        alertbox("Please Fill The Quantity");
+                        validationcounter++;
+                        return false;
+                        break;
+                    }
+                    else if ($("#" + sellingprice).val() == "" || (+$("#" + sellingprice).val()) == 0) {
+                        alertbox("Please Fill The SellingPrice");
+                        validationcounter++;
+                        return false;
+                        break;
+                    }
+                    else if ($("#" + mrp).val() == "" || (+$("#" + mrp).val()) == 0) {
+                        alertbox("Please Fill The MRP");
+                        validationcounter++;
+                        return false;
+                        break;
+                    }
+                    else {
+                        var previtemCode = "itemCode" + i;
+                        var prevnarration = "narration" + i;
+                        var prevquantity = "quantity" + i;
+                        var prevsellingprice = "SellingPrice" + i;
+                        var prevmrp = "MRP" + i;
+                        var prevdiscountpercent = "discountpercent" + i;
+                        var prevdiscountrps = "discountrps" + i;
+                        document.getElementById(previtemCode).disabled = false;
+                        document.getElementById(prevnarration).disabled = false;
+                        document.getElementById(prevquantity).disabled = false;
+                        document.getElementById(prevsellingprice).disabled = false;
+                        document.getElementById(prevmrp).disabled = false;
+                        document.getElementById(prevdiscountpercent).disabled = false;
+                        document.getElementById(prevdiscountrps).disabled = false;
+                    }
+                }
+                else { allitemsdeleted++; }
+            }
+            if (allitemsdeleted == rowid) {
+                alertbox("Please Insert At Least One Item");
+                validationcounter++;
+                return false;
+            }
+            if (validationcounter == 0) {
+                setTimeout(function () {
+                    document.getElementById("Submit").disabled = true;
+                }, 100);
+            }
+        });
+    });
+</script>
+
+<script>
+    $("#PrepaidByDDL").change(function () {
+        var empname = $(this).val();
+        if (empname != "") {
+            $.getJSON("/Outward/GetEmployeeDetails", { name: empname },
+            function (data) {
+                document.getElementById("emailid").innerHTML = data.Email;
+                document.getElementById("contactnoid").innerHTML = data.MobileNo;
+                $("#QuotationDetails_PrepareEmail").val(data.Email);
+                $("#QuotationDetails_PrepareContact").val(data.MobileNo);
+            });
+        }
+        else {
+            document.getElementById("emailid").innerHTML = "";
+            document.getElementById("contactnoid").innerHTML = "";
+        }
+    });
+</script>
+
+<script>
+    function CheckRegistered(value) {
+        if (value == 'yes') {
+            document.getElementById("QuotationDetails_ClientType").value = "Registered";
+            if (document.getElementById("QuotationDetails_ConsumeResell").value == "Reseller") {
+                if (document.getElementById("SalesBillDetails_ClientState").value != "Maharashtra") {
+                    $("#ddlformtypes").val("").attr("selected", "selected");
+                    document.getElementById("YesRadioButton").disabled = false;
+                    document.getElementById("NoRadioButton").checked = true;
+                    document.getElementById("NoRadioButton").disabled = false;
+                    document.getElementById("formtypeid").style.display = "none";
+                }
+            }
+            else if (document.getElementById("QuotationDetails_ConsumeResell").value == "Consumer") {
+                document.getElementById("YesRadioButton").disabled = true;
+                document.getElementById("NoRadioButton").disabled = true;
+            }
+        }
+        else if (value == "no") {
+            document.getElementById("QuotationDetails_ClientType").value = "Non-Registered";
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            document.getElementById("YesRadioButton").disabled = true;
+            document.getElementById("NoRadioButton").checked = true;
+            document.getElementById("NoRadioButton").disabled = true;
+            document.getElementById("formtypeid").style.display = "none";
+        }
+
+        else if (value == "Consumer") {
+            document.getElementById("QuotationDetails_ConsumeResell").value = "Consumer";
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            $("#YesRadioButton").attr("disabled", true);
+            $("#NoRadioButton").attr("disabled", true);
+            document.getElementById("NoRadioButton").checked = true;
+            document.getElementById("formtypeid").style.display = "none";
+        }
+        else {
+            document.getElementById("QuotationDetails_ConsumeResell").value = "Reseller";
+            if (document.getElementById("SalesBillDetails_ClientState").value != "Maharashtra") {
+                if (document.getElementById("QuotationDetails_ClientType").value == "Registered") {
+                    $("#YesRadioButton").attr("disabled", false);
+                    $("#NoRadioButton").attr("disabled", false);
+                    document.getElementById("formtypeid").style.display = "none";
+                }
+            }
+        }
+    }
+
+    function DisplayForm(type) {
+        if (type == "yes") {
+            document.getElementById("formtypeid").style.display = "inline";
+        }
+        else {
+            $("#ddlformtypes").val("").attr("selected", "selected");
+            document.getElementById("formtypeid").style.display = "none";
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    function GetSelectedItemsAndDesign(subcat, id, item, design, itemtype) {
+        id = +id;
+        if (itemtype == "Inventory") {
+            var code = document.getElementById("QuotationDetails_ShopCode").value;
+            $.getJSON("/ProcessingQuotation/LoadItemBySubCategoryFromStkDist", { code: code },
+                function (data) {
+                    var select = $("#itemCode" + id);
+                    select.empty();
+                    select.append($('<option/>', {
+                        value: "",
+                        text: "Select"
+                    }));
+                    $.each(data, function (index, itemData) {
+                        select.append($('<option/>', {
+                            value: itemData.Value,
+                            text: itemData.Text + " " + itemData.Value
+                        }));
+                    });
+                    $("#itemCode" + id).val(item).attr("selected", true);
+                });
+        }
+        else {
+            $.getJSON("/ProcessingQuotation/GetNonInventoryItemsForQuotation",
+            function (data) {
+                var select = $("#itemCode" + id);
+                select.empty();
+                select.append($('<option/>', {
+                    value: "",
+                    text: "Select"
+                }));
+                $.each(data, function (index, itemData) {
+                    select.append($('<option/>', {
+                        value: itemData.Value,
+                        text: itemData.Text + " " + itemData.Value
+                    }));
+                });
+                $("#itemCode" + id).val(item).attr("selected", true);
+            });
+        }
+    }
+
+    function GetItemDetails(count) {
+        $("#ddlformtypes").attr("disabled", true);
+        $("#YesRadioButton").attr("disabled", true);
+        $("#NoRadioButton").attr("disabled", true);
+        $("#Registered").attr("disabled", true);
+        $("#NonRegistered").attr("disabled", true);
+        $("#Consumer").attr("disabled", true);
+        $("#Reseller").attr("disabled", true);
+        document.getElementById("QuotationDetails_ClientName").disabled = true;
+        var item = $("#itemCode" + count).val();
+        if (item != "") {
+            var rows = document.getElementById("hdnRowCount").value;
+            var currentrowid = 0;
+            var subcat = "SubCat" + count;
+            var row = "row" + count;
+            var itemCode = "itemCode" + count;
+            var itemName = "itemName" + count;
+            var barcode = "Barcode" + count;
+            var description = "description" + count;
+            var materialvalue = "materialvalue" + count;
+            var colorvalue = "colorvalue" + count;
+            var designname = "designName" + count;
+            var design = "design" + count;
+            var brand = "Brand" + count;
+            var size = "Size" + count;
+            var quantity = "quantity" + count;
+            var sellingprice = "SellingPrice" + count;
+            var mrp = "MRP" + count;
+            var costprice = "CostPrice" + count;
+            var discountrps = "discountrps" + count;
+            var discountpercent = "discountpercent" + count;
+            var amount = "amount" + count;
+            var amountvalue = "amountvalue" + count;
+            var itemtax = "ItemTax" + count;
+            var itemtaxvalue = "ItemTaxValue" + count;
+            var itemtaxamount = "ItemTaxAmount" + count;
+            var unit = "unit" + count;
+            var unitvalue = "unitvalue" + count;
+            var numbertype = "numberType" + count;
+            var itemtype = "ItemType" + count;
+
+            for (var i = 1; i <= rows; i++) {
+                var previousitemname = "itemCode" + i;
+                if (count != i) {
+                    if ($("#" + itemCode).val() == $("#" + previousitemname).val()) {
+                        currentrowid = i;
+                        break;
+                    }
+                }
+            }
+
+            if (currentrowid == 0) {
+                var formtype;
+                if (document.getElementById("formtypeid").style.display == "none") {
+                    formtype = "";
+                }
+                else {
+                    document.getElementById("ddlformtypes").disabled = 'true';
+                    if (document.getElementById("ddlformtypes").value == "") {
+                        formtype = "";
+                    }
+                    else {
+                        formtype = $("#ddlformtypes").val();
+                    }
+                }
+                if ($("#" + itemtype).val() == "Inventory") {
+                    var ShopCode = document.getElementById("QuotationDetails_ShopCode").value;
+                    $.getJSON("/ProcessingQuotation/GetItemDetailsFromItems",
+                        {
+                            itemname: item,
+                            type: $("#QuotationDetails_ClientType").val(),
+                            FormType: $("#ddlformtypes").val(),
+                            State: $("#QuotationDetails_ClientState").val(),
+                            ConsumeResell: $("#QuotationDetails_ConsumeResell").val(),
+                            shopcode: ShopCode,
+                        },
+                 function (data) {
+                     document.getElementById("quantity" + count).value = "";
+                     document.getElementById("amount" + count).innerHTML = 0.00;
+                     document.getElementById("amountvalue" + count).innerHTML = 0.00;
+                     $("#" + subcat).val(data.subcat);
+                     $("#" + itemName).val(data.ItemName);
+                     $("#" + barcode).val(data.Barcode);
+                     $("#" + description).val(data.Description);
+                     $("#" + costprice).val(data.costprice);
+                     $("#" + sellingprice).val(data.SellingPrice);
+                     $("#" + mrp).val(data.MRP);
+                     $("#" + materialvalue).val(data.typematerial);
+                     $("#" + colorvalue).val(data.colorname);
+                     $("#" + unit).text(data.Unit);
+                     $("#" + unitvalue).val(data.Unit);
+                     $("#" + numbertype).val(data.NumberType);
+                     $("#" + itemtax).text(data.taxPercent);
+                     $("#" + itemtaxvalue).val(data.taxPercent);
+                     $("#" + design).val(data.DesignCode);
+                     $("#" + designname).val(data.DesignName);
+                     $("#" + brand).val(data.Brand);
+                     $("#" + size).val(data.Size);
+                     $("#" + discountpercent).val(data.discount);
+                     $("#" + discountrps).val(data.discountrps);
+
+                     //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                     //on each item which is applied
+                     var tax = data.taxPercent;
+                     if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                         var taxcount = document.getElementById("ItemTaxCount").value;
+                         if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                             $("#ItemTaxNumber" + taxcount).val(tax);
+                             document.getElementById("AddTaxes").style.display = "inline";
+                             $("#AddedTax1").text(tax + "%");
+                         }
+                         else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                             var taxpresent = 0;
+                             for (var i = 1; i <= taxcount; i++) {
+                                 var taxno = "ItemTaxNumber" + i;
+                                 if (tax == $("#" + taxno).val()) {
+                                     taxpresent++;
+                                 }
+                             }
+                             if (taxpresent == 0) {
+                                 taxcount++;
+                                 var taxno = "ItemTaxNumber" + taxcount;
+                                 var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                 $("#AllTaxesNumbersValue").append(data);
+                                 var addedtaxno = "AddedTax" + taxcount;
+                                 var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                 var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                 var addedamount = "AddedAmount" + taxcount;
+                                 var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                 var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                 newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                 newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                 $("#AddTaxes").append(newlabel);
+                                 $("#ItemTaxCount").val(taxcount);
+                             }
+                         }
+                     }
+                     var CostPrice = +$("#" + costprice).val();
+                     var Tax = +$("#" + itemtaxvalue).val();
+                     var MRP = +$("#" + mrp).val();
+                     taxoncostprice = (CostPrice * Tax) / 100;
+                     var taxpercentoncostprice = CostPrice / (CostPrice + taxoncostprice) * Tax;
+                     var Sellingprice = MRP - (MRP * +taxpercentoncostprice / 100);
+                     $("#SellingPrice" + count).val(Sellingprice.toFixed(2));
+                     window.open("/ProcessingQuotation/PopUpPage?code=" + data.DesignCode + "&item=" + item + "&type=Inventory", "_target", "width=1000,height=200,top=280px,left=200px");
+                 });
+                }
+                else {
+                    $.getJSON("/ProcessingQuotation/GetNonInvItemdetailsByItemCodeforQuot", { ItemCode: item, subcat: $("#" + subcat).val(), ClientState: $("#QuotationDetails_ClientState").val(), ClientType: $("#QuotationDetails_ClientType").val(), FormType: $("#ddlformtypes").val(), ConsumeResell: $("#QuotationDetails_ConsumeResell").val() },
+                               function (data) {
+                                   $("#" + subcat).val(data.subcat);
+                                   $("#" + itemName).val(data.itemName);
+                                   $("#" + description).val(data.description);
+                                   $("#" + colorvalue).val(data.colorCode);
+                                   $("#" + design).val(data.designCode);
+                                   $("#" + designname).val(data.designName);
+                                   $("#" + brand).val(data.brandName);
+                                   $("#" + size).val(data.size);
+                                   $("#" + unit).text(data.unit);
+                                   $("#" + unitvalue).val(data.unit);
+                                   $("#" + numbertype).val(data.NumberType);
+                                   $("#" + costprice).val(data.costprice);
+                                   $("#" + sellingprice).val(data.sellingprice);
+                                   $("#" + mrp).val(data.mrp);
+                                   $("#" + materialvalue).val(data.typeOfMaterial);
+                                   $("#" + itemtax).text(data.taxPercent);
+                                   $("#" + itemtaxvalue).val(data.taxPercent);
+                                   $("#" + discountpercent).val(data.discount);
+                                   $("#" + discountrps).val(data.discountrps);
+                                   $("#" + quantity).val("");
+                                   $("#" + amount).text("0.00");
+                                   $("#" + itemtaxamount).val("0");
+
+                                   //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                                   //on each item which is applied
+                                   var tax = data.taxPercent;
+                                   if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                                       var taxcount = document.getElementById("ItemTaxCount").value;
+                                       if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                                           $("#ItemTaxNumber" + taxcount).val(tax);
+                                           document.getElementById("AddTaxes").style.display = "inline";
+                                           $("#AddedTax1").text(tax + "%");
+                                       }
+                                       else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                                           var taxpresent = 0;
+                                           for (var i = 1; i <= taxcount; i++) {
+                                               var taxno = "ItemTaxNumber" + i;
+                                               //if tax is already present then no need to make other taxnumbers
+                                               if (tax == $("#" + taxno).val()) {
+                                                   taxpresent++;
+                                               }
+                                           }
+                                           if (taxpresent == 0) {
+                                               taxcount++;
+                                               var taxno = "ItemTaxNumber" + taxcount;
+                                               var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                               $("#AllTaxesNumbersValue").append(data);
+                                               var addedtaxno = "AddedTax" + taxcount;
+                                               var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                               var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                               var addedamount = "AddedAmount" + taxcount;
+                                               var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                               var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                               newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                               newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                               $("#AddTaxes").append(newlabel);
+                                               $("#ItemTaxCount").val(taxcount);
+                                           }
+                                       }
+                                   }
+                                   var CostPrice = +$("#" + costprice).val();
+                                   var Tax = +$("#" + itemtaxvalue).val();
+                                   var MRP = +$("#" + mrp).val();
+                                   taxoncostprice = (CostPrice * Tax) / 100;
+                                   var taxpercentoncostprice = CostPrice / (CostPrice + taxoncostprice) * Tax;
+                                   var Sellingprice = MRP - (MRP * +taxpercentoncostprice / 100);
+                                   $("#SellingPrice" + count).val(Sellingprice.toFixed(2));
+                               });
+                }
+            }
+            else {
+                alertbox("Item Name Already Selected Please change the quantity");
+                document.getElementById("quantity" + count).value = 0.000;
+                document.getElementById("narration" + count).disabled = false;
+                document.getElementById("discountrps" + count).value = 0.000;
+                document.getElementById("discountpercent" + count).value = 0.000;
+                document.getElementById("amount" + count).innerHTML = 0.00;
+                document.getElementById("proportionatetax" + count).innerHTML = 0;
+                $("#narration" + count).val("");
+                $("#SellingPrice" + count).val(0.00);
+                $("#MRP" + count).val(0.00);
+                $("#unit" + count).text("---");
+                $("#ItemTax" + count).text("0");
+                CalculateItemWiseAmount(count, '');
+                CalculateTaxSummary(count);
+            }
+        }
+        else {
+            alertbox("Please Select Item First");
+            document.getElementById("quantity" + count).value = 0;
+            document.getElementById("amount" + count).innerHTML = 0.00;
+            document.getElementById("proportionatetax" + count).innerHTML = 0;
+            $("#narration" + count).val("");
+            $("#SellingPrice" + count).val(0.00);
+            $("#MRP" + count).val(0.00);
+            $("#unit" + count).text("---");
+            $("#ItemTax" + count).text("0");
+            document.getElementById("discountrps" + count).value = 0.000;
+            document.getElementById("discountpercent" + count).value = 0.000;
+            CalculateItemWiseAmount(count, '');
+            CalculateTaxSummary(count);
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $("#NonInvButton").click(function () {
+            if ($("#QuotationDetails_ClientName").val() != "") {
+                $("#ddlformtypes").attr("disabled", true);
+                $("#YesRadioButton").attr("disabled", true);
+                $("#NoRadioButton").attr("disabled", true);
+                $("#Registered").attr("disabled", true);
+                $("#NonRegistered").attr("disabled", true);
+                $("#Consumer").attr("disabled", true);
+                $("#Reseller").attr("disabled", true);
+                document.getElementById("QuotationDetails_ClientName").disabled = true;
+
+                var noninvrowid = document.getElementById("hdnRowCount").value;
+                var validationcounter = 0;
+                for (var i = 1; i <= noninvrowid; i++) {
+                    var previtemCode = "itemCode" + i;
+                    var prevnarration = "narration" + i;
+                    var prevquantity = "quantity" + i;
+                    var prevsellingprice = "SellingPrice" + i;
+                    var prevmrp = "MRP" + i;
+                    var prevdiscountpercent = "discountpercent" + i;
+                    var prevdiscountrps = "discountrps" + i;
+                    //If Row was Not DELETED
+                    if (document.getElementById(previtemCode) != null) {
+                        //If Required Fields are Empty of Previous Row
+                        if ($("#" + previtemCode).val() == "") {
+                            alertbox("Please Select The Item");
+                            validationcounter++;
+                            break;
+                        }
+                        else if ($("#" + prevquantity).val() == "" || (+$("#" + prevquantity).val()) == 0) {
+                            alertbox("Please Fill The Quantity");
+                            validationcounter++;
+                            break;
+                        }
+                        else if ($("#" + prevsellingprice).val() == "" || (+$("#" + prevsellingprice).val()) == 0) {
+                            alertbox("Please Fill The SellingPrice");
+                            validationcounter++;
+                            break;
+                        }
+                        else if ($("#" + prevmrp).val() == "" || (+$("#" + prevmrp).val()) == 0) {
+                            alertbox("Please Fill The MRP");
+                            validationcounter++;
+                            break;
+                        }
+                        else {
+                            if (document.getElementById(previtemCode).disabled != true) {
+                                document.getElementById(previtemCode).disabled = true;
+                                document.getElementById(prevnarration).disabled = true;
+                                document.getElementById(prevquantity).disabled = true;
+                                document.getElementById(prevsellingprice).disabled = true;
+                                document.getElementById(prevmrp).disabled = true;
+                                document.getElementById(prevdiscountpercent).disabled = true;
+                                document.getElementById(prevdiscountrps).disabled = true;
+                            }
+                        }
+                    }
+                }
+
+                if (validationcounter == 0) {
+                    noninvrowid = +noninvrowid + 1;
+                    var row = "row" + noninvrowid;
+                    var subcat = "SubCat" + noninvrowid;
+                    var ItemType = "ItemType" + noninvrowid;
+                    var noninvitem = "itemCode" + noninvrowid;
+                    var nondescription = "description" + noninvrowid;
+                    var nonnarration = "narration" + noninvrowid;
+                    var noninvcolor = "color" + noninvrowid;
+                    var noninvcostprice = "CostPrice" + noninvrowid;
+                    var noninvsellingprice = "SellingPrice" + noninvrowid;
+                    var noninvmrp = "MRP" + noninvrowid;
+                    var noninvquantity = "quantity" + noninvrowid;
+                    var noninvdisper = "discountpercent" + noninvrowid;
+                    var noninvdisrs = "discountrps" + noninvrowid;
+                    var noninvunit = "unit" + noninvrowid;
+                    var noninvamount = "amount" + noninvrowid;
+                    var noninvitemtax = "ItemTax" + noninvrowid;
+                    var noninvproportionatetax = "proportionatetax" + noninvrowid;
+
+                    var noninvitemname = "itemName" + noninvrowid;
+                    var noninvdesigncode = "design" + noninvrowid;
+                    var noninvdesignname = "designName" + noninvrowid;
+                    var noninvbrand = "Brand" + noninvrowid;
+                    var noninvsize = "Size" + noninvrowid;
+                    var noninvcolorvalue = "colorvalue" + noninvrowid;
+                    var noninvmaterialvalue = "materialvalue" + noninvrowid;
+                    var noninvunitvalue = "unitvalue" + noninvrowid;
+                    var noninvnumbertype = "numberType" + noninvrowid;
+                    var noninvamountvalue = "amountvalue" + noninvrowid;
+                    var noninvitemtaxvalue = "ItemTaxValue" + noninvrowid;
+                    var noninvitemtaxamount = "ItemTaxAmount" + noninvrowid;
+                    var noninvproptaxvalue = "proportionatetaxvalue" + noninvrowid;
+                    var noninvproptaxamount = "proportionatetaxamount" + noninvrowid;
+                    var barcode = "Barcode" + noninvrowid;
+
+                    var unorderlist = $("#AddingRows");
+
+                    unorderlist.append(
+                        "<tr id='" + row + "'>" +
+                        "<td style='text-align:center'><select id='" + noninvitem + "' name='" + noninvitem + "' class='form-control'><option>Select Item</option></select><input type='hidden' id='" + noninvitemname + "' name='" + noninvitemname + "' /><input type='hidden' id='" + subcat + "' name='" + subcat + "' /><input type='hidden' id='" + ItemType + "' name='" + ItemType + "' value='NonInventory' /><input type='hidden' id='" + barcode + "' name='" + barcode + "'/></td>" +
+                        "<td style='text-align:center'><input type='hidden' id='" + nondescription + "' name='" + nondescription + "' /><textarea class='form-control' style='text-align: center' id='" + nonnarration + "' name='" + nonnarration + "' placeholder='Narration' rows='1'></textarea><input type='hidden' id='" + noninvdesignname + "' name='" + noninvdesignname + "' /><input type='hidden' id='" + noninvdesigncode + "' name='" + noninvdesigncode + "' /><input type='hidden' id='" + noninvcolorvalue + "' name='" + noninvcolorvalue + "'/></td>" +
+                        "<td style='text-align:center' class='col-lg-1 col-md-1'><input type='text' class='form-control' name='" + noninvquantity + "' id='" + noninvquantity + "' autocomplete='off' onchange='CalculateItemWiseAmount(" + noninvrowid + ',' + '\"\"' + ")' style='text-align:center' placeholder='Qty' /><input type='hidden' id='" + noninvbrand + "' name='" + noninvbrand + "'/><input type='hidden' id='" + noninvsize + "' name='" + noninvsize + "'/></td>" +
+                        "<td style='text-align:center'><label id='" + noninvunit + "' name='" + noninvunit + "' style='font-weight:normal'>---</label><input type='hidden' id='" + noninvunitvalue + "' name='" + noninvunitvalue + "'/><input type='hidden' name='" + noninvnumbertype + "' id='" + noninvnumbertype + "'><input type='hidden' id='" + noninvmaterialvalue + "' name='" + noninvmaterialvalue + "'/></td>" +
+                        "<td style='text-align:center' class='col-lg-1 col-md-1'><input type='text' class='form-control' id='" + noninvsellingprice + "' name='" + noninvsellingprice + "' onchange='CalculateItemWiseAmount(" + noninvrowid + ',' + '\"sellingprice\"' + ")' style='font-weight:normal; text-align:center;' placeholder='Sell Price' onkeypress='return AllowNumbers(event)' /></td>" +
+                        "<td style='text-align:center' class='col-lg-1 col-md-1'><input type='text' class='form-control' id='" + noninvmrp + "' name='" + noninvmrp + "' onchange='CalculateItemWiseAmount(" + noninvrowid + ',' + '\"mrp\"' + ")' style='font-weight:normal; text-align:center;' placeholder='MRP' onkeypress='return AllowNumbers(event)' /><input type='hidden' id='" + noninvcostprice + "' name='" + noninvcostprice + "'/></td>" +
+                        "<td style='text-align:center' class='col-lg-1 col-md-1'><input type='text' class='form-control' id='" + noninvdisper + "' name='" + noninvdisper + "' style='font-weight:normal; text-align:center' value='0' placeholder='0%' onchange='CalculateItemWiseAmount(" + noninvrowid + ',' + '\"percent\"' + ")' onkeypress='return AllowNumbers(event)' /></td>" +
+                        "<td style='text-align:center' class='col-lg-1 col-md-1'><input type='text' class='form-control' id='" + noninvdisrs + "' name='" + noninvdisrs + "' style='font-weight:normal; text-align:center' value='0.00' placeholder='0' onchange='CalculateItemWiseAmount(" + noninvrowid + ',' + '\"rps\"' + ")' onkeypress='return AllowNumbers(event)' /></td>" +
+                        "<td style='text-align:right'><label id='" + noninvitemtax + "' style='font-weight:normal'>0</label><input type='hidden' id='" + noninvitemtaxvalue + "' name='" + noninvitemtaxvalue + "' value='0'/><input type='hidden' id='" + noninvitemtaxamount + "' name='" + noninvitemtaxamount + "' value='0'/></td>" +
+                        "<td style='text-align:right'><label  id='" + noninvamount + "' style='font-weight:normal'>0</label><input type='hidden' id='" + noninvamountvalue + "' name='" + noninvamountvalue + "'/></td>" +
+                        "<td style='text-align:right'><label id='" + noninvproportionatetax + "'>0</label><input type='hidden' id='" + noninvproptaxvalue + "' name='" + noninvproptaxvalue + "' value='0' /><input type='hidden' id='" + noninvproptaxamount + "' name='" + noninvproptaxamount + "' value='0' /></td>" +
+                        "<td><div style='height:2px'></div><a href='#' onclick='DeleteRow(" + noninvrowid + ")' class='fa fa-trash fa-lg' style='color:red;' /></td>"
+                    );
+
+                    $.getJSON("/ProcessingQuotation/GetNonInventoryItemsForQuotation",
+                    function (data) {
+                        var select = $("#" + noninvitem);
+                        select.empty();
+                        select.append($('<option>', {
+                            text: "Select Item",
+                            value: "",
+                        }));
+                        $.each(data, function (index, itemdata) {
+                            select.append($('<option>', {
+                                text: itemdata.Text + " " + itemdata.Value,
+                                value: itemdata.Value,
+                            }));
+                        });
+                    });
+
+                    //GET ITEM TAX AND ITEM DETAILS ON ITEM DDL CHANGE EVENT
+                    var clientstate = document.getElementById("QuotationDetails_ClientState").value;
+                    var clienttype = document.getElementById("QuotationDetails_ClientType").value;
+                    var formtype = document.getElementById("ddlformtypes").value;
+                    var consumeresell = document.getElementById("QuotationDetails_ConsumeResell").value;
+
+                    if (document.getElementById("formtypeid").style.display == "none") {
+                        formtype = "";
+                    }
+                    else {
+                        if (document.getElementById("ddlformtypes").value == "") {
+                            formtype = "";
+                        }
+                        else {
+                            formtype = $("#ddlformtypes").val();
+                        }
+
+                    }
+
+                    //GET ITEM DETAILS FROM ITEMNAME
+                    $("#" + noninvitem).change(function () {
+                        var noninvitemcode = document.getElementById(noninvitem).value;
+                        if (noninvitemcode != "") {
+                            $("#Submit").attr("disabled", false);
+                            // EMPTY STOCK QUANTITY AND QUANTITY BECOZ IF WE CHANGE ITEM PREVIOUS ROWS STOCK QUANTITY AND QUANTITY IS EMPTY
+                            var qty = "quantity" + noninvrowid;
+                            var amt = "amount" + noninvrowid;
+                            //IF ROW IS DELETED THEN QUANTITY WON'T GET ENABLED
+                            if (document.getElementById(qty) != null) {
+                                document.getElementById(qty).value = "";
+                                document.getElementById(amt).innerHTML = "";
+                            }
+
+                            //IF PREVIOUS ROW IS ENABLED FOR CHANGE THE QUANTITY BUT WE SELECT AGAIN DDL THEN DISABLED THIS ENABLES QUANTITY
+                            var validationcount = 0;
+                            for (var i = 1; i < noninvrowid; i++) {
+                                var prevquantity = "quantity" + i;
+                                var prevsellingprice = "SellingPrice" + i;
+                                var prevmrp = "MRP" + i;
+                                if (document.getElementById(prevquantity) != null) {
+                                    if ((+$("#" + prevquantity).val()) == 0 || $("#" + prevquantity).val() == "") {
+                                        alertbox("Please Fill The Quantity");
+                                        validationcount++;
+                                    }
+                                    else if ($("#" + prevsellingprice).val() == "" || (+$("#" + prevsellingprice).val()) == 0) {
+                                        alertbox("Please Fill The SellingPrice");
+                                        validationcount++;
+                                    }
+                                    else if ($("#" + prevmrp).val() == "" || (+$("#" + prevmrp).val()) == 0) {
+                                        alertbox("Please Fill The MRP");
+                                        validationcount++;
+                                    }
+                                    else {
+                                        if (document.getElementById(prevquantity).disabled == false) {
+                                            document.getElementById(prevquantity).disabled = true;
+                                            document.getElementById("narration" + i).disabled = true;
+                                            document.getElementById(prevsellingprice).disabled = true;
+                                            document.getElementById(prevmrp).disabled = true;
+                                            document.getElementById("discountpercent" + i).disabled = true;
+                                            document.getElementById("discountrps" + i).disabled = true;
+                                        }
+                                    }
+                                }
+                            }
+                            if (validationcount == 0) {
+                                $.getJSON("/ProcessingQuotation/GetNonInvItemdetailsByItemCodeforQuot", { ItemCode: noninvitemcode, ClientState: clientstate, ClientType: clienttype, FormType: $("#ddlformtypes").val(), ConsumeResell: consumeresell },
+                                   function (data) {
+                                       $("#" + subcat).val(data.subcat);
+                                       $("#" + noninvitemname).val(data.itemName);
+                                       $("#" + nondescription).val(data.description);
+                                       $("#" + noninvcolorvalue).val(data.colorCode);
+                                       $("#" + noninvdesigncode).val(data.designCode);
+                                       $("#" + noninvdesignname).val(data.designName);
+                                       $("#" + noninvunit).text(data.unit);
+                                       $("#" + noninvunitvalue).val(data.unit);
+                                       $("#" + noninvnumbertype).val(data.NumberType);
+                                       $("#" + noninvcostprice).val(data.costprice);
+                                       $("#" + noninvsellingprice).val(data.sellingprice);
+                                       $("#" + noninvmrp).val(data.mrp);
+                                       $("#" + noninvmaterialvalue).val(data.typeOfMaterial);
+                                       $("#" + noninvitemtax).text(data.taxPercent);
+                                       $("#" + noninvitemtaxvalue).val(data.taxPercent);
+                                       $("#" + noninvbrand).val(data.brandName);
+                                       $("#" + noninvsize).val(data.size);
+                                       $("#" + noninvdisper).val(data.discount);
+                                       $("#Barcode" + noninvrowid).val("");
+                                       $("#discountrps" + noninvrowid).val(data.discountrps);
+
+                                       //if new tax arrived e.g. if 5% is there but 12.5% or something else arrived it has to be added as new taxnumber for calculating
+                                       //on each item which is applied
+                                       var tax = data.taxPercent;
+                                       if (tax != '0') {//if tax is '0' no need to add new taxnumber
+                                           var taxcount = document.getElementById("ItemTaxCount").value;
+                                           if ($("#ItemTaxNumber" + taxcount).val() == 0) { //if first row's tax is 0 then add the tax in taxnumber1
+                                               $("#ItemTaxNumber" + taxcount).val(tax);
+                                               document.getElementById("AddTaxes").style.display = "inline";
+                                               $("#AddedTax1").text(tax + "%");
+                                           }
+                                           else {//if first row tax is not 0 then make the taxnumber2 or 3 or more 
+                                               var taxpresent = 0;
+                                               for (var i = 1; i <= taxcount; i++) {
+                                                   var taxno = "ItemTaxNumber" + i;
+                                                   //if tax is already present then no need to make other taxnumbers
+                                                   if (tax == $("#" + taxno).val()) {
+                                                       taxpresent++;
+                                                   }
+                                               }
+                                               if (taxpresent == 0) {
+                                                   taxcount++;
+                                                   var taxno = "ItemTaxNumber" + taxcount;
+                                                   var data = "<input type='hidden' id='" + taxno + "' name='" + taxno + "' value='" + tax + "' />";
+                                                   $("#AllTaxesNumbersValue").append(data);
+                                                   var addedtaxno = "AddedTax" + taxcount;
+                                                   var addedtaxamount = "AddedTaxAmount" + taxcount;
+                                                   var addedtaxamounthdn = "AddedTaxAmounthdn" + taxcount;
+                                                   var addedamount = "AddedAmount" + taxcount;
+                                                   var addedamounthdn = "AddedAmounthdn" + taxcount;
+                                                   var newlabel = "<div class='row'><div class='col-md-3 col-lg-3'><label id='" + addedamount + "'>0</label><input type='hidden' id='" + addedamounthdn + "' name='" + addedamounthdn + "' value='0' /></div>";
+                                                   newlabel += "<div class='col-md-2 col-lg-2'><label id='" + addedtaxno + "'>" + tax + "%" + "</label></div>";
+                                                   newlabel += "<div class='col-md-7 col-lg-7'><label id='" + addedtaxamount + "'>0</label><input type='hidden' id='" + addedtaxamounthdn + "' name='" + addedtaxamounthdn + "' value='0' /></div></div>";
+                                                   $("#AddTaxes").append(newlabel);
+                                                   $("#ItemTaxCount").val(taxcount);
+                                               }
+                                           }
+                                       }
+                                       var CostPrice = +$("#" + noninvcostprice).val();
+                                       var Tax = +$("#" + noninvitemtaxvalue).val();
+                                       var MRP = +$("#" + noninvmrp).val();
+                                       taxoncostprice = (CostPrice * Tax) / 100;
+                                       var taxpercentoncostprice = CostPrice / (CostPrice + taxoncostprice) * Tax;
+                                       var Sellingprice = MRP - (MRP * +taxpercentoncostprice / 100);
+                                       $("#SellingPrice" + noninvrowid).val(Sellingprice.toFixed(2));
+                                   });
+                            } else {
+                                $("#itemCode" + noninvrowid).val("").attr("selected", true);
+                            }
+                        }
+                        else {
+                            alertbox("Please Select Item First");
+                            document.getElementById("quantity" + noninvrowid).value = 0;
+                            document.getElementById("amount" + noninvrowid).innerHTML = 0.00;
+                            document.getElementById("proportionatetax" + noninvrowid).innerHTML = 0;
+                            $("#narration" + noninvrowid).val("");
+                            $("#SellingPrice" + noninvrowid).val(0.00);
+                            $("#MRP" + noninvrowid).val(0.00);
+                            $("#discountrps" + noninvrowid).val(0.00)
+                            $("#discountpercent" + noninvrowid).val(0)
+                            $("#unit" + noninvrowid).text("---");
+                            $("#ItemTax" + noninvrowid).text("0");
+                            CalculateItemWiseAmount(noninvrowid, '');
+                        }
+                    });
+                    $("#hdnRowCount").val(noninvrowid);
+                }
+            }
+            else {
+                alertbox("Please Select The Client Name");
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    function AllowDecimal(key, rowid) {
+        var numbertype = $("#numberType" + rowid).val();
+        var quantity = $("#quantity" + rowid).val();
+
+        var pointFoundCount = 0;
+        for (var i = 0; i <= quantity.length; i++) {
+            if (quantity[i] == '.') {
+                pointFoundCount++;
+            }
+        }
+
+        var pointposition = quantity.indexOf(".");
+        var digitupto = 0;
+        if (pointposition != -1) {
+            digitupto = quantity.substr(pointposition, quantity.length).length;
+        }
+
+        var keycode = (key.which) ? key.which : key.keyCode;
+        //comparing pressed keycodes
+        if (numbertype == 'Whole') { //if unit type is whole number then don't allow point
+            if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+        }
+        else if (quantity.length == 0) {
+            if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                return false;
+            }
+        }
+        else if (keycode == 46) { //if decimal point is inserted
+            if (pointFoundCount > 0 && pointFoundCount < 2) { // more than one decimal point is inserted then don't allow to insert it
+                return false;
+            }
+        }
+        else if (digitupto != 0) { // if unit type is decimal then wait for decimal point to be insert then execute this condition 
+            if (numbertype == '2Digit') { // if unit type is 2 digit the then allow 2 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 3) {
+                    return false;
+                }
+            }
+            else { // if unit type is 2 digit the then allow 3 digits after decimal not the characters in between
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57) || digitupto >= 4) {
+                    return false;
+                }
+            }
+        }
+        else { //don't allow any decimal point or character until first digit occurs
+            if (quantity.length == 0) // if first digit is point in quantity field then don't allow it and characters too
+            {
+                if (!(keycode == 8) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+            else { //don't allow any character until the above else if condition meets
+                if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+                    return false;
+                }
+            }
+        }
+    }
+</script>
+
+@using (Html.BeginForm("GetQuotationEditList", "ProcessingQuotation", FormMethod.Post))
+{
+    <input type="hidden" id="hdnRowCount" name="hdnRowCount" value="@Model.QuotationItemList.Count()" />
+    <input type="hidden" id="discountType" />
+    <input type="hidden" id="AlreadyPresentItems" value="@Model.QuotationItemList.Count()" />
+    <div id="AllTaxesNumbersValue">
+        @if (Model.InventoryTaxList.Count() == 0)
+        {
+            <input type="hidden" id="ItemTaxCount" name="ItemTaxCount" value="1" />
+            <input type="hidden" id="ItemTaxNumber1" name="ItemTaxNumber1" value="0" />
+        }
+        else
+        {
+            <input type="hidden" id="ItemTaxCount" name="ItemTaxCount" value="@Model.InventoryTaxList.Count()" />
+        }
+    </div>
+    <input type="hidden" id="transportname" value="@Model.QuotationDetails.TransportName" />
+    @Html.HiddenFor(model => model.QuotationDetails.ShopCode)
+    @Html.HiddenFor(model => model.QuotationDetails.ShopAddress)
+    @Html.HiddenFor(model => model.QuotationDetails.ShopContactPerson)
+    @Html.HiddenFor(model => model.QuotationDetails.ShopEmail)
+    @Html.HiddenFor(model => model.QuotationDetails.ShopName)
+    @Html.HiddenFor(model => model.QuotationDetails.ClientAddress)
+    @Html.HiddenFor(model => model.QuotationDetails.ClientContactNo)
+    @Html.HiddenFor(model => model.QuotationDetails.ClientEmail)
+    @Html.HiddenFor(model => model.QuotationDetails.ClientState)
+    @Html.HiddenFor(model => model.QuotationDetails.ClientType)
+    @Html.HiddenFor(model => model.QuotationDetails.ConsumeResell)
+    @Html.HiddenFor(model => model.QuotationDetails.TransportContactNo)
+    @Html.HiddenFor(model => model.QuotationDetails.QuotNo)
+    @Html.HiddenFor(model => model.QuotationDetails.QuotDate)
+    @Html.HiddenFor(model => model.QuotationDetails.Id)
+    @Html.HiddenFor(model => model.QuotationDetails.PreparedContact)
+    @Html.HiddenFor(model => model.QuotationDetails.PreparedEmail)
+    @Html.HiddenFor(model => model.QuotationDetails.PreparedTime)
+    @Html.HiddenFor(model => model.QuotationDetails.SendingStatus)
+    @Html.HiddenFor(model => model.QuotationDetails.SalesPersonAddress)
+    @Html.HiddenFor(model => model.QuotationDetails.SalesPersonContact)
+    @Html.HiddenFor(model => model.QuotationDetails.SalesPersonEmail)
+    @Html.HiddenFor(model => model.QuotationDetails.SalesPersonDesignation)
+    @Html.HiddenFor(model => model.QuotationDetails.TotalDiscount)
+    @Html.HiddenFor(model => model.QuotationDetails.TotalTaxAmount)
+    @Html.HiddenFor(model => model.QuotationDetails.ProcessedIn)
+    @Html.HiddenFor(model => model.QuotationDetails.Editable)
+    @Html.HiddenFor(model => model.QuotationDetails.PreparedBy)
+    <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+        <source src="" type="audio/ogg" />
+    </audio>
+    <table style="border: 1px double; width: 100%">
+        <tr>
+            <td>
+                <div class="row">
+                    <div class="col-md-12 col-lg-12">
+                        <div class="row">
+                            <div class="form-group"></div>
+                            <div class="col-md-4 col-lg-4">
+                                <div class="col-md-12 col-lg-12">
+                                    <label>Client Name<i style="color: red">*</i></label>
+                                    @Html.TextBoxFor(model => model.QuotationDetails.ClientName, new { @placeholder = "Client Name", @class = "form-control" })
+                                    @Html.ValidationMessageFor(model => model.QuotationDetails.ClientName, null, new { style = "color:red" })
+
+                                    @if (Model.QuotationDetails.ClientState != "Maharashtra")
+                                    {
+                                        <script type="text/javascript">
+                                            document.getElementById("QuotationDetails_ClientName").disabled = true;
+                                        </script>
+                                    }
+                                    <div style="height: 10px"></div>
+                                    <div id="ClientDetails">
+                                        @{
+                                    if (@Model.QuotationDetails.ClientType == "Registered")
+                                    {
+                                            <script>
+                                                $("#Registered").attr("checked", true);
+                                            </script> 
+                                    }
+                                    else
+                                    {
+                                            <script>
+                                                $("#NonRegistered").attr("checked", true);
+                                            </script>
+                                    }
+
+                                    if (@Model.QuotationDetails.ConsumeResell == "Consumer")
+                                    {
+                                            <script>
+                                                $("#Consumer").attr("checked", true);
+                                            </script> 
+                                    }
+                                    else
+                                    {
+                                            <script>
+                                                $("#Reseller").attr("checked", true);
+                                            </script>
+                                    }
+                                    if (@Model.QuotationDetails.FormType != null)
+                                    {
+                                            <script>
+                                                $("#YesRadioButton").prop("checked", true);
+                                                $("#NoRadioButton").prop("checked", false);
+                                                document.getElementById("formtypeid").style.display = "inline";
+                                            </script> 
+                                    }
+                                    else
+                                    {
+                                            <script>
+                                                $("#YesRadioButton").prop("checked", false);
+                                                $("#NoRadioButton").prop("checked", true);
+                                                document.getElementById("formtypeid").style.display = "none";
+                                            </script>
+                                    }
+                                    if (Model.QuotationDetails.ClientState != "Maharashtra")
+                                    {
+                                        if (Model.QuotationDetails.ClientType == "Registered")
+                                        {
+                                            if (Model.QuotationDetails.ConsumeResell == "Reseller")
+                                            {
+                                            <script>
+                                                $("#YesRadioButton").prop("disabled", false);
+                                                $("#NoRadioButton").prop("disabled", false);
+                                            </script>
+                                            }
+                                            else
+                                            {
+                                            <script>
+                                                $("#YesRadioButton").prop("disabled", true);
+                                                $("#NoRadioButton").prop("disabled", true);
+                                                $("#NoRadioButton").prop("checked", true);
+                                                document.getElementById("formtypeid").style.display = "none";
+                                            </script>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            <script>
+                                                $("#YesRadioButton").prop("disabled", true);
+                                                $("#NoRadioButton").prop("disabled", true);
+                                                $("#NoRadioButton").prop("checked", true);
+                                                document.getElementById("formtypeid").style.display = "none";
+                                            </script>
+                                        }
+                                    }
+                                    else
+                                    {
+                                            <script>
+                                                $("#YesRadioButton").prop("disabled", true);
+                                                $("#NoRadioButton").prop("disabled", true);
+                                                $("#NoRadioButton").prop("checked", true);
+                                                document.getElementById("formtypeid").style.display = "none";
+                                            </script>
+                                    }
+
+                                        }
+
+                                        <label>State: &nbsp</label><label style="font-weight: normal" id="ClientState">@Html.DisplayFor(model => model.QuotationDetails.ClientState)</label><br />
+                                        <label>Client Type: &nbsp</label>
+                                        <input type="radio" id="Registered" name="Registered" onclick="CheckRegistered('yes')" />
+                                        Registered &nbsp
+                                        <input type="radio" id="NonRegistered" name="Registered" onclick="CheckRegistered('no')" />
+                                        Non-Registered
+                                        <br />
+                                        <input type="radio" id="Consumer" name="ConsumeResell" onclick="CheckRegistered('Consumer')" />
+                                        Consumer &nbsp
+                                        <input type="radio" id="Reseller" name="ConsumeResell" onclick="CheckRegistered('Reseller')" />
+                                        Reseller
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-4 col-lg-4" style="border-left: 1px solid #999; border-right: 1px solid #999; min-height: 150px;">
+                                <div class="col-md-12 col-lg-12">
+                                    <div id="FormTypeDetails">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="col-lg-6 col-md-6">
+                                                    <label for="exampleInputSalesTax">Form Applicable</label><br />
+                                                    <input type="radio" id="YesRadioButton" name="RadioButton" onclick="DisplayForm('yes')" />Yes &nbsp
+                                        <input type="radio" id="NoRadioButton" name="RadioButton" onclick="DisplayForm('no')" />No                                   
+                                                </div>
+                                                <div class="col-lg-6 col-md-6">
+                                                    <div id="formtypeid">
+                                                        <label for="exampleInputFormType">Form Type</label>
+                                                        @Html.DropDownListFor(model => model.QuotationDetails.FormType, new List<SelectListItem> { new SelectListItem { Text = "C-Form" }, new SelectListItem { Text = "E1-Form" }, new SelectListItem { Text = "E2-Form" } }, "Select Type", new { id = "ddlformtypes", @class = "form-control" })<br />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="row">
+                                            <div style="height: 1px; width: 100%; background-color: lightgray"></div>
+                                        </div>
+                                    </div>
+
+                                    <div class="row">
+                                        <div class="col-lg-12 col-md-12">
+                                            <div style="height: 8px"></div>
+                                            <div class="row" id="TransportDetails">
+                                                <div class="row">
+                                                    <div class="col-md-12 col-lg-12">
+                                                        <label>Transport Details</label>
+                                                    </div>
+                                                    <br />
+                                                    <div class="col-md-6 col-lg-6">
+                                                        <label>Mode <i style="color: red">*</i></label>
+                                                        @Html.DropDownListFor(model => model.QuotationDetails.TransportMode, new List<SelectListItem> { new SelectListItem { Text = "Road" }, new SelectListItem { Text = "Train" }, new SelectListItem { Text = "Air" } }, "Select Mode", new { id = "ddltypeofmode", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.QuotationDetails.TransportMode, null, new { style = "color:red" })
+                                                    </div>
+                                                    <div class="col-md-6 col-lg-6">
+                                                        <label>Name <i style="color: red">*</i></label>
+                                                        @Html.DropDownListFor(model => model.QuotationDetails.TransportName, Enumerable.Empty<SelectListItem>(), new { id = "ddltransportnames", @class = "form-control" })
+                                                        @Html.ValidationMessageFor(model => model.QuotationDetails.TransportName, null, new { style = "color:red" })
+                                                    </div>
+                                                </div>
+                                                <div style="height: 10px"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="form-group col-md-4 col-lg-4">
+                                <div class="row">
+                                    <div class="col-md-11 col-lg-11">
+                                        @{
+                                    string date = Convert.ToDateTime(Model.QuotationDetails.QuotDate).ToShortDateString();
+                                        }
+                                        <table>
+                                            <tr>
+                                                <td style="width: 43%">
+                                                    <div style="height: 2px"></div>
+                                                    <label>Date</label>
+                                                </td>
+                                                <td style="text-align: center">
+                                                    <label id="date" style="font-weight: normal">@date</label>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 10px"></tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                    <label>Quotation No.</label>
+                                                </td>
+                                                <td style="text-align: center">
+                                                    <label style="font-weight: normal">@Html.DisplayFor(model => model.QuotationDetails.QuotNo)</label>
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 10px"></tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                    <label>Salesman<i style="color: red">*</i></label>
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.QuotationDetails.SalesPersonName, new { id = "SalesPerson", @class = "form-control", @placeholder = "SalesPerson", @style = "text-align:center", @autocomplete = "off" })
+                                                    @Html.ValidationMessageFor(model => model.QuotationDetails.SalesPersonName, null, new { style = "color:red" })
+                                                </td>
+                                            </tr>
+                                            <tr style="height: 10px"></tr>
+                                            <tr>
+                                                <td>
+                                                    <div style="height: 2px"></div>
+                                                    <label>Ref No.</label>
+                                                </td>
+                                                <td>
+                                                    @Html.TextBoxFor(model => model.QuotationDetails.RefNo, new { @class = "form-control", @placeholder = "Ref No", @style = "text-align:center", @autocomplete = "off" })
+                                                </td>
+                                            </tr>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 col-lg-12">
+                            <div class="row">
+                                <table class="table" id="AddingRows" style="border-color: #d2d2d2; border: outset">
+                                    <thead>
+                                        <tr>
+                                            <th class="col-md-3 col-lg-3" style="text-align: center">
+                                                <label>Item<i style="color: red">*</i></label></th>
+                                            <th class="col-md-2 col-lg-2" style="text-align: center">
+                                                <label>Narration</label></th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>Qty<i style="color: red">*</i></label></th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>Unit</label></th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>
+                                                    Sell
+                                                    <br />
+                                                    Price<br />
+                                                    (<i class="fa fa-rupee"></i>)<i style="color: red">*</i></label></th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>
+                                                    MRP<br />
+                                                    (<i class="fa fa-rupee"></i>)<i style="color: red">*</i></label></th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>
+                                                    Disc<br />
+                                                    (%)</label>
+                                            </th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>
+                                                    Disc<br />
+                                                    (<i class="fa fa-rupee"></i>)</label>
+                                            </th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>
+                                                    Tax<br />
+                                                    (%)</label>
+                                            </th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>
+                                                    Amt<br />
+                                                    (<i class="fa fa-rupee"></i>)</label></th>
+                                            <th class="col-md-1 col-lg-1" style="text-align: center">
+                                                <label>
+                                                    PropTax<br />
+                                                    (%)</label></th>
+                                            <th class="col-md-1 col-lg-1"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+
+                                        @{
+                                    if (Model.QuotationItemList != null && Model.QuotationItemList.Any())
+                                    {
+                                        int count = 1;
+                                        foreach (var item in Model.QuotationItemList)
+                                        {
+
+                                            string row = "row" + count;
+                                            string ItemType = "ItemType" + count;
+                                            string itemcode = "itemCode" + count;
+                                            string itemname = "itemName" + count;
+                                            string barcode = "Barcode" + count;
+                                            string description = "description" + count;
+                                            string narration = "narration" + count;
+                                            string color = "color" + count;
+                                            string colorvalue = "colorvalue" + count;
+                                            string materialvalue = "materialvalue" + count;
+                                            string design = "design" + count;
+                                            string designname = "designName" + count;
+                                            string brand = "Brand" + count;
+                                            string size = "Size" + count;
+                                            string quantity = "quantity" + count;
+                                            string unit = "unit" + count;
+                                            string unitvalue = "unitvalue" + count;
+                                            string numberType = "numberType" + count;
+                                            string sellingprice = "SellingPrice" + count;
+                                            string mrp = "MRP" + count;
+                                            string costprice = "CostPrice" + count;
+                                            string discountrps = "discountrps" + count;
+                                            string discountpercent = "discountpercent" + count;
+                                            string amount = "amount" + count;
+                                            string amountvalue = "amountvalue" + count;
+                                            string itemtax = "ItemTax" + count;
+                                            string itemtaxvalue = "ItemTaxValue" + count;
+                                            string itemtaxamount = "ItemTaxAmount" + count;
+                                            string proportionatetax = "proportionatetax" + count;
+                                            string proportionatetaxvalue = "proportionatetaxvalue" + count;
+                                            string proportionatetaxamount = "proportionatetaxamount" + count;
+                                            string subcat = "SubCat" + count;
+                                            string processedIn = "ProcessedIn" + count;
+                                        
+                                            <tr id="@row">
+                                                <input type="hidden" id="@subcat" name="@subcat"value="@item.SubCategory" />
+                                                <td class="col-md-3 col-lg-3">
+                                                    <select onchange="GetItemDetails(@count)" id="@itemcode" name="@itemcode" class="form-control">
+                                                        <option value="">Select</option>
+                                                    </select>
+                                                    <script>
+                                                        GetSelectedItemsAndDesign("@item.SubCategory", "@count", "@item.ItemCode", "@item.DesignCode", "@item.ItemType");
+                                                    </script>
+                                                    <input type="hidden" id="@itemname" name="@itemname" value="@item.ItemName" />
+                                                    <input type="hidden" id="@ItemType" name="@ItemType" value="@item.ItemType" />
+                                                    <input type="hidden" id="@barcode" name="@barcode" value="@item.Barcode" />
+                                                    <input type="hidden" id="@brand" name="@brand" value="@item.Brand" />
+                                                    <input type="hidden" id="@size" name="@size" value="@item.Size" />
+                                                    <input type="hidden" id="@processedIn" name="@processedIn" value="@item.ProcessedIn" />
+                                                </td>
+                                                <td class="col-md-2 col-lg-2">
+                                                    <input type="hidden" id="@description" name="@description" value="@item.Description"/>
+                                                    <textarea id="@narration" name="@narration" style="text-align:center" class="form-control" rows="1">@item.Narration</textarea>
+                                                    <input type="hidden" id="@materialvalue" name="@materialvalue" value="@item.Material"/>
+                                                    <input type="hidden" id="@colorvalue" name="@colorvalue" value="@item.Color" />
+                                                    <input type="hidden" id="@design" name="@design" value="@item.DesignCode" />
+                                                    <input type="hidden" id="@designname" name="@designname" value="@item.DesignName"/>
+                                                </td>
+                                                <td class="col-md-1 col-lg-1">
+                                                    <input type="text" id="@quantity" value="@item.Quantity" name="@quantity" autocomplete="off" class="form-control" placeholder="Qty" style="text-align: center; width: 100%" onchange="CalculateItemWiseAmount(@count,'')" onkeypress="return AllowDecimal(event,@count)" /></td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: center">
+                                                    <label id="@unit" style="text-align:center;font-weight:normal">@item.Unit</label>
+                                                    <input type="hidden" name="@unitvalue" id="@unitvalue" value="@item.Unit" />
+                                                    <input type="hidden" name="@numberType" id="@numberType" value="@item.NumberType" />
+                                                </td>
+                                                <td class="col-md-1 col-lg-1">
+                                                    <input type="text" id="@sellingprice" name="@sellingprice" value="@item.SellingPrice" autocomplete="off" class="form-control" placeholder="Sell Price" style="text-align: center; width: 100%" onchange="CalculateItemWiseAmount(@count,'sellingprice')" onkeypress="return AllowNumbers(event)" />
+                                                </td>
+                                                <td class="col-md-1 col-lg-1">
+                                                    <input type="text" id="@mrp" name="@mrp" value="@item.MRP" autocomplete="off" class="form-control" placeholder="MRP" style="text-align: center; width: 100%" onchange="CalculateItemWiseAmount(@count,'mrp')" onkeypress="return AllowNumbers(event)" />
+                                                    <input type="hidden" id="@costprice" name="@costprice" />
+                                                    <script type="text/javascript">
+                                                        function GetItemsCostPrice(itemcode, itemtype) {
+                                                            $.getJSON("/ProcessingQuotation/GetItemsCostPrice", { itemcode: itemcode, itemtype: itemtype },
+                                                                function (data) {
+                                                                    document.getElementById("CostPrice" + "@count").value = data;
+                                                                });
+                                                            }
+                                                            GetItemsCostPrice("@item.ItemCode", "@item.ItemType");
+                                                    </script>
+                                                </td>
+                                                <td class="col-md-1 col-lg-1">
+                                                    <input type="text" id="@discountpercent" name="@discountpercent" autocomplete="off" class="form-control" value="@item.DiscountPercent" style="text-align: center; width: 100%" onchange="CalculateItemWiseAmount(@count,'percent')" onkeypress="return AllowNumbers(event)" />
+                                                </td>
+                                                <td class="col-md-1 col-lg-1">
+                                                    <input type="text" id="@discountrps" name="@discountrps" autocomplete="off" class="form-control" value="@item.DiscountRPS" style="text-align: center; width: 100%" onchange="CalculateItemWiseAmount(@count,'rps')" onkeypress="return AllowNumbers(event)" />
+                                                </td>
+                                                <td style="text-align: center">
+                                                    <label id="@itemtax" style="font-weight:normal">@item.ItemTax</label>
+                                                    <input type="hidden" id="@itemtaxvalue" name="@itemtaxvalue" value="@item.ItemTax" />
+                                                    <input type="hidden" id="@itemtaxamount" name="@itemtaxamount" value="@item.ItemTaxAmt" />
+                                                </td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                    <label id="@amount" style="font-weight:normal">@Convert.ToDouble(item.Amount).ToString("#,###.00##")</label>
+                                                    <input type="hidden" id="@amountvalue" name="@amountvalue" value="@item.Amount" />
+                                                </td>
+                                                <td class="col-md-1 col-lg-1" style="text-align: right">
+                                                    @{
+                                            string proptax = string.Empty;
+                                            if (item.ProportionateTax == null || item.ProportionateTax == "0")
+                                            {
+                                                proptax = "0";
+                                            }
+                                            else
+                                            {
+                                                proptax = Convert.ToDouble(item.ProportionateTax).ToString("#,###.00##");
+                                            }
+                                                    }
+                                                    <label id="@proportionatetax">@proptax</label>
+                                                    <input type="hidden" id="@proportionatetaxvalue" name="@proportionatetaxvalue" value="@item.ProportionateTax" />
+                                                    <input type="hidden" id="@proportionatetaxamount" name="@proportionatetaxamount" value="@item.ProportionateTaxAmt" />
+                                                </td>
+                                                <td><a href='#' onclick="DeleteRow(@count)" class="fa fa-trash fa-lg" style="color:red;" /></td>
+                                            </tr>
+                                            count++;
+                                        }
+                                    }
+                                        }
+
+                                    </tbody>
+                                </table>
+                                <button class="btn btn-link" id="NonInvButton" type="button" style="float: right; text-align: right; color: orangered; font-size: small;">Non-Inventory Item</button>
+                                <div style="height: 4px"></div>
+                            </div>
+
+                            <div class="row">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="row">
+                                            <div class="row">
+                                                <div class="col-md-4 col-lg-4">
+                                                    <label style="font-size: 14px;">Total Discount:</label>
+                                                </div>
+                                                <div class="col-md-8 col-lg-8">
+                                                    <i class="fa fa-inr" style="font-size: 14px"></i>
+                                                    @{
+                                    double Disc = Convert.ToDouble(@Model.QuotationDetails.TotalDiscount);
+                                    var disc = Disc.ToString("#,###.00##");
+                                                    }
+                                                    <label id="TotalDiscountValue" style="font-size: 14px">@disc</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7 col-lg-7">
+                                        <div class="col-md-4 col-lg-4" style="text-align: left">
+                                            <label style="font-size: 14px;">Total Amount</label>
+                                        </div>
+                                        <div class="col-md-4 col-lg-4"></div>
+                                        <div class="col-md-4 col-lg-4" style="text-align: right">
+                                            <div class="row">
+                                                <div class="row">
+                                                    @{ string totalamt = Convert.ToDouble(Model.QuotationDetails.TotalAmount).ToString("#,###.00##");}
+                                                    <label id="Total_Amount" style="font-size: medium">@totalamt</label>
+                                                    <input type="hidden" id="Total_Amount_Value" name="Total_Amount_Value" value="@totalamt" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                            <div style="height: 5px"></div>
+
+                            <div class="row">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="col-md-5 col-lg-5">
+                                        <div class="row">
+                                            <div id="AddTaxes">
+                                                <div class="row">
+                                                    <div class="col-lg-12 col-md-12">
+                                                        <label style="font-size: 14px">Tax Summary:</label>
+                                                    </div>
+                                                </div>
+                                                <div style="height: 10px"></div>
+                                                @{
+                                                       if (Model.InventoryTaxList.Count() == 0)
+                                                       {
+                                                    <div class="row">
+                                                        <div class="col-md-3 col-lg-3">
+                                                            <label id="AddedAmount1">0</label>
+                                                            <input type="hidden" id="AddedAmounthdn1" name="AddedAmounthdn1" value="0" />
+                                                        </div>
+                                                        <div class="col-md-2 col-lg-2">
+                                                            <label id="AddedTax1"></label>
+                                                        </div>
+                                                        <div class="col-md-7 col-lg-7">
+                                                            <label id="AddedTaxAmount1">0</label>
+                                                            <input type="hidden" id="AddedTaxAmounthdn1" name="AddedTaxAmounthdn1" value="0" />
+                                                        </div>
+                                                    </div>
+                                                    <script type="text/javascript">
+                                                        document.getElementById("AddTaxes").style.display = "none";
+                                                    </script>
+                                                       }
+                                                       else
+                                                       {
+                                                           int taxcount = 1;
+                                                           foreach (var tax in Model.InventoryTaxList)
+                                                           {
+                                                               string addedtax = "AddedTax" + taxcount;
+                                                               string taxnumber = "ItemTaxNumber" + taxcount;
+                                                               string addedtaxamount = "AddedTaxAmount" + taxcount;
+                                                               string addedtaxhdn = "AddedTaxAmounthdn" + taxcount;
+                                                               string addedamount = "AddedAmount" + taxcount;
+                                                               string addedamounthdn = "AddedAmounthdn" + taxcount;
+                                                               string itemtax = tax.Tax + "%";
+                                                    <div class="row">
+                                                        <div class="col-md-3 col-lg-3">
+                                                            <label id="@addedamount">@tax.Amount</label>
+                                                            <input type="hidden" id="@addedamounthdn" name="@addedamounthdn" value="@tax.Amount" />
+                                                        </div>
+                                                        <div class="col-md-2 col-lg-2">
+                                                            <label id="@addedtax">@itemtax</label>
+                                                            <input type="hidden" id="@taxnumber" name="@taxnumber" value="@tax.Tax" />
+                                                        </div>
+                                                        <div class="col-md-7 col-lg-7">
+                                                            <label id="@addedtaxamount"><i class="fa fa-inr"></i>@tax.TaxAmount</label>
+                                                            <input type="hidden" id="@addedtaxhdn" name="@addedtaxhdn" value="@tax.TaxAmount" />
+                                                        </div>
+                                                    </div>
+                                                               taxcount++;
+                                                           }
+                                                    <script type="text/javascript">
+                                                        document.getElementById("AddTaxes").style.display = "inline";
+                                                    </script>
+                                                       }
+                                                }
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-7 col-lg-7">
+                                        <div class=" form-goup row">
+                                            <div class="col-md-12 col-lg-12">
+                                                <div class="col-md-4 col-lg-4">
+                                                    <label style="font-size: 14px">Packing and Forwarding</label>
+                                                </div>
+                                                <div class="col-md-4 col-lg-4">
+                                                    <div class="input-group">
+                                                        <input type="text" id="QuotationDetails_PackAndForwd" name="QuotationDetails.PackAndForwd" autocomplete="off" value="@Model.QuotationDetails.PackAndForwd" style="text-align: center" class="form-control" onchange="CalculatePackAndForwd('Extra')" />
+                                                        <div class="input-group-addon"><i class="fa fa-inr"></i></div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-4 col-lg-4" style="text-align: right">
+                                                    <div class="row">
+                                                        <i class="fa fa-inr"></i>
+                                                        <label id="PackAndForwd">@Model.QuotationDetails.PackAndForwd</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row">
+                                            <div class="col-lg-12 col-md-12">
+                                                <div class="col-md-4 col-lg-4">
+                                                    <label style="font-size: 14px;">Tax Amount</label>
+                                                </div>
+                                                <div class="col-md-4 col-lg-4"></div>
+                                                <div class="col-md-4 col-lg-4" style="text-align: right">
+                                                    <div class="row">
+                                                        <label id="TotalTaxAmount" style="font-size: 14px;">@Model.QuotationDetails.TotalTaxAmount</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="row" id="AmountWithWords">
+                                <div class="col-md-12 col-lg-12">
+                                    <div class="col-md-5 col-lg-5"></div>
+                                    <div class="col-md-7 col-lg-7">
+                                        <div class="col-md-4 col-lg-4">
+                                            <label style="font-size: 14px;">Grand Total</label>
+                                        </div>
+                                        <div class="col-md-4 col-lg-4"></div>
+                                        <div class="col-md-4 col-lg-4" style="text-align: right">
+                                            <div class="row">
+                                                <div class="row">
+                                                    @{
+                                                       string grandtotal = Convert.ToDouble(Model.QuotationDetails.GrandTotal).ToString("#,###.00##");
+                                                    }
+                                                    <label id="Grand_Total" style="font-size: larger">@grandtotal</label>
+                                                    <input type="hidden" id="Grand_Total_Value" name="Grand_Total_Value" value="@grandtotal" />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div style="height: 4px"></div>
+
+                                <div class="row">
+                                    <div class="col-md-12 col-lg-12">
+                                        <div class="col-md-2 col-lg-2">
+                                            <label style="font-size: 14px">In Words</label>
+                                        </div>
+                                        <div class="col-md-5 col-lg-5">
+                                            <label id="In_Words"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="width: 100%; height: 1px; background-color: lightgrey;"></div>
+                            <div style="height: 5px"></div>
+                        </div>
+
+
+                        <div class="col-md-12 col-lg-12" id="acceptedid">
+                            <div style="height: 7px"></div>
+                            <div class="row">
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Prepared By<label style="color: red">*</label></label><br />
+                                    <label id="salesman" style="font-weight: normal">@Model.QuotationDetails.PreparedBy</label>
+                                </div>
+                                <div class="col-md-4 col-lg-4">
+                                    <label>Email-Id</label><br />
+                                    <label id="emailid" style="font-weight: normal">@Model.QuotationDetails.PreparedEmail</label>
+                                </div>
+                                <div class="col-md-3 col-lg-3">
+                                    <label>Contact No.</label><br />
+                                    <label id="contactnoid" style="font-weight: normal">@Model.QuotationDetails.PreparedContact</label>
+                                </div>
+                                <div class="col-md-2 col-lg-2">
+                                    <label>Prepare Time</label><br />
+                                    <label style="font-weight: normal" id="preparetime">@Convert.ToDateTime(Model.QuotationDetails.PreparedTime).ToShortTimeString()</label>
+                                </div>
+                                <div style="height: 70px"></div>
+                            </div>
+                        </div>
+                        <div style="height: 5px"></div>
+                    </div>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <div style="height: 5px"></div>
+    <input type="submit" id="Submit" value="Update" class="col-md-offset-6 col-lg-offset-6 btn btn-success" />
+}
+

@@ -1,0 +1,56 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MvcRetailApp", "MvcRetailApp\MvcRetailApp.csproj", "{26648E80-CF26-4CE8-8074-8D17117513F8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeFirstServices", "CodeFirstServices\CodeFirstServices.csproj", "{8106270C-E812-44BD-85A3-F2549404591A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeFirstEntities", "CodeFirstEntities\CodeFirstEntities.csproj", "{584BA352-0884-4AC5-99B1-EEAB55EDFD16}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CodeFirstData", "CodeFirstData\CodeFirstData.csproj", "{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 5
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://180.149.243.22:8080/tfs/defaultcollection
+		SccProjectUniqueName0 = CodeFirstEntities\\CodeFirstEntities.csproj
+		SccProjectName0 = CodeFirstEntities
+		SccLocalPath0 = CodeFirstEntities
+		SccProjectUniqueName1 = CodeFirstServices\\CodeFirstServices.csproj
+		SccProjectName1 = CodeFirstServices
+		SccLocalPath1 = CodeFirstServices
+		SccProjectUniqueName2 = MvcRetailApp\\MvcRetailApp.csproj
+		SccProjectName2 = MvcRetailApp
+		SccLocalPath2 = MvcRetailApp
+		SccProjectUniqueName3 = CodeFirstData\\CodeFirstData.csproj
+		SccProjectName3 = CodeFirstData
+		SccLocalPath3 = CodeFirstData
+		SccLocalPath4 = .
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{26648E80-CF26-4CE8-8074-8D17117513F8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{26648E80-CF26-4CE8-8074-8D17117513F8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{26648E80-CF26-4CE8-8074-8D17117513F8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{26648E80-CF26-4CE8-8074-8D17117513F8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8106270C-E812-44BD-85A3-F2549404591A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8106270C-E812-44BD-85A3-F2549404591A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8106270C-E812-44BD-85A3-F2549404591A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8106270C-E812-44BD-85A3-F2549404591A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{584BA352-0884-4AC5-99B1-EEAB55EDFD16}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{584BA352-0884-4AC5-99B1-EEAB55EDFD16}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{584BA352-0884-4AC5-99B1-EEAB55EDFD16}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{584BA352-0884-4AC5-99B1-EEAB55EDFD16}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA3E7EB9-D011-4C16-A0D2-1BCB9415D43B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

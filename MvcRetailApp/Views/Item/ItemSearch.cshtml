@@ -1,0 +1,80 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "ItemSearch";
+}
+
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery.tablesorter.pager.js")" type="text/javascript"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("table.tablesorter").tablesorter({ widthFixed: true, sortList: [[0, 0]] })
+       .tablesorterPager({ container: $("#pager"), size: $(".pagesize option:selected").val() });
+    });
+</script>
+@Html.HiddenFor(model => model.ItemDetails.itemCode)
+@Html.HiddenFor(model => model.ItemDetails.itemCategory)
+@Html.HiddenFor(model => model.ItemDetails.itemSubCategory)
+
+<div class="col-lg-11 col-md-11">
+    <div class="row">
+        <div class="row">
+            <div class="row">
+
+                <table class="tablesorter table">
+                    <thead>
+                        <tr>
+                            <th class="col-lg-1 col-md-1">
+                                <label style="color: royalblue">Code</label>
+                            </th>
+                            <th class="col-lg-6 col-md-6">
+                                <label style="color: royalblue">Item Name</label>
+                            </th>
+                            <th class="col-lg-5 col-md-5">
+                                <label style="color: royalblue">Option</label>
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+
+                        @{
+                            int rowcount = Model.ItemList.Count();
+                            int count = 1;
+                            foreach (var item in Model.ItemList)
+                            {
+                                var edit = "Edit" + count;
+                                var row = "Row" + count;
+                                var Item = "Item" + count;
+                            <tr id="@row">
+                                <td>@item.itemCode</td>
+                                <td id="@Item">@item.itemName</td>
+                                <td>
+                                    <button type="button" id="@edit" onclick="EditRow(@rowcount,@item.itemId,@count)" style="color: dodgerblue; width: 40px; padding-left: 10px;" class="btn btn-link">Edit</button>
+                            </tr>
+                                count++;
+                            }                            
+                        }
+                    </tbody>
+                </table>
+                <br />
+                <div id="pager">
+                    <form>
+                        <img src="../Images/first.png" class="first" />
+                        <img src="../Images/prev.png" class="prev" />
+                        <input type="text" class="pagedisplay" id="pagertextbox" style="width: 170px" />
+                        <img src="../Images/next.png" class="next" />
+                        <img src="../Images/last.png" class="last" />
+                        <select class="pagesize" id="pagerdropdown">
+                            <option selected="selected" value="5">5</option>
+                            <option value="10">10</option>
+                            <option value="20">20</option>
+                            <option value="30">30</option>
+                            <option value="40">40</option>
+                        </select>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<input type="hidden" id="getrows" value="@rowcount">

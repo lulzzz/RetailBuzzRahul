@@ -1,0 +1,223 @@
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\MvcRetailApp.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\MvcRetailApp.pdb
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstData.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstEntities.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstServices.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\EntityFramework.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\EPPlus.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Practices.Unity.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Infrastructure.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.WebPages.OAuth.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Net.Http.Formatting.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Helpers.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.WebHost.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Mvc.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Razor.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Deployment.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Razor.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.Data.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.WebData.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstEntities.pdb
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstServices.pdb
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstData.pdb
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\EntityFramework.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Infrastructure.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Net.Http.Formatting.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Helpers.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.WebHost.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Mvc.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Razor.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Deployment.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Razor.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.Data.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.WebPages.OAuth.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.WebData.xml
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.csprojResolveAssemblyReference.cache
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.dll
+D:\TFS Projets\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.pdb
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\MvcRetailApp.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\MvcRetailApp.pdb
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Antlr3.Runtime.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstData.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstEntities.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstServices.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.AspNet.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.Core.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.Consumer.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.RelyingParty.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\EPPlus.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.Edm.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.OData.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Practices.Unity.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Infrastructure.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.WebPages.OAuth.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Newtonsoft.Json.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Net.Http.Formatting.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Spatial.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Helpers.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.OData.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.WebHost.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Mvc.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Optimization.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Razor.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Deployment.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Razor.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebGrease.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.Data.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.WebData.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstEntities.pdb
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstServices.pdb
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstData.pdb
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Newtonsoft.Json.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Infrastructure.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Net.Http.Formatting.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Helpers.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.WebHost.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Mvc.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Razor.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Deployment.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Razor.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.Data.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.WebPages.OAuth.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.WebData.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.AspNet.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.Core.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.Consumer.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.RelyingParty.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.OData.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.Edm.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.OData.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Spatial.xml
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\de\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\es\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\fr\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\it\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ja\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ko\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ru\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hans\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hant\Microsoft.Data.Edm.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\de\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\es\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\fr\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\it\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ja\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ko\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ru\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hans\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hant\Microsoft.Data.OData.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\de\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\es\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\fr\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\it\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ja\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ko\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ru\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hans\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hant\System.Spatial.resources.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.csprojResolveAssemblyReference.cache
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.dll
+W:\RetailApp\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\MvcRetailApp.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\MvcRetailApp.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Antlr3.Runtime.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstData.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstEntities.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstServices.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.AspNet.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.Core.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.Consumer.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.RelyingParty.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\EPPlus.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.Edm.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.OData.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Practices.Unity.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Infrastructure.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Mvc.FixedDisplayModes.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.WebPages.OAuth.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Newtonsoft.Json.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Net.Http.Formatting.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Spatial.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Helpers.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.WebHost.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Mvc.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Optimization.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Razor.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Deployment.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Razor.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebGrease.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.Data.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.WebData.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstEntities.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstServices.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\CodeFirstData.pdb
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Newtonsoft.Json.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.Infrastructure.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Net.Http.Formatting.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Helpers.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Http.WebHost.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Mvc.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.Razor.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Deployment.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Web.WebPages.Razor.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.Data.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Web.WebPages.OAuth.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\WebMatrix.WebData.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.AspNet.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.Core.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.Consumer.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OAuth.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\DotNetOpenAuth.OpenId.RelyingParty.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.Edm.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\Microsoft.Data.OData.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\System.Spatial.xml
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\de\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\es\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\fr\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\it\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ja\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ko\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ru\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hans\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hant\Microsoft.Data.Edm.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\de\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\es\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\fr\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\it\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ja\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ko\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ru\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hans\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hant\Microsoft.Data.OData.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\de\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\es\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\fr\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\it\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ja\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ko\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\ru\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hans\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\bin\zh-Hant\System.Spatial.resources.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.csprojResolveAssemblyReference.cache
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.dll
+D:\rahul raj\RetailApp\RetailApp\ATOZ\MvcRetailApp\obj\Release\MvcRetailApp.pdb

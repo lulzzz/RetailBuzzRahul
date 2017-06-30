@@ -1,0 +1,24 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ShopRequisitionLoginCreate";
+}
+
+<script type="text/javascript">
+    $(document).ready( function(){
+       
+        window.resizeTo(300, 300);
+        
+    });
+</script>
+
+<h1 style="text-align:center;margin-top:35%; font-size:30px;">Requisition Sent</h1>
+@{
+    if (ViewData["PreviousDataRetailBillViewdata"] != null)
+    {
+        string prevshopoutwardno = ViewData["PreviousDataRetailBillViewdata"].ToString();
+    <input type="hidden" id="ShopOutwardNoChanged" value="@prevshopoutwardno" />
+    <script type="text/javascript">
+        alert(document.getElementById("PreviousDataRetailBillViewdata").value);
+    </script>
+    }
+}

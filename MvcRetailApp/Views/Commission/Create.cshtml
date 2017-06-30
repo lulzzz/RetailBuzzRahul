@@ -1,0 +1,780 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "Create";
+}
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+<link href="~/Content/style.default.css" rel="stylesheet" />
+<link href="~/Content/style.default.blue.css" rel="stylesheet" />
+<!-- Core CSS  -->
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/sb-admin-2.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/metisMenu.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+<script type="text/javascript" src="~/Scripts/sb-admin-2.js"></script>
+<script type="text/javascript" src="~/vendor/plugins/metisMenu/metisMenu.min.js"></script>
+
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+<link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+
+<link href="~/Content/customAlerts.css" rel="stylesheet" />
+<script src="~/Scripts/bootbox.js"></script>
+
+<script type="text/javascript">
+    function alertbox(message) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone1.ogg';
+
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('alertClass');
+        bootbox.alert('<i class="fa fa-2x fa-warning"></i><br>' + message + '<hr>');
+    }
+
+    function confirmbox(message, obj) {
+        var sample = document.getElementById("audio");
+        sample.src = '../../Audio/tone2.ogg';
+        sample.load();
+        sample.muted = false;
+        sample.play();
+
+        bootbox.classes('confirmClass');
+        bootbox.confirm('<i class="fa fa-2x fa-question-circle"></i><br>' + message + '<hr>',
+		 function (result) {
+		     if (result) {
+		         $("#" + obj).remove();
+		     }
+		 });
+    }
+</script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script>
+    $(function () {
+
+        var data = new JsDatePick({
+            useMode: 2,
+            target: "fromdate",
+            dateFormat: "%d/%M/%Y",
+        });
+
+        data.addOnSelectedDelegate(function () {
+            var empname = document.getElementById("CommissionMasterDetails_EmployeeName").value;
+            var fromdate = $("#fromdate").val();
+            var todate = $("#todate").val();
+
+            var selectedfromdate = new Date(fromdate).getTime();
+            var selectedtodate = new Date(todate).getTime();
+
+            if (selectedfromdate > selectedtodate) {
+                alertbox("Cannot Select The Date After 'To Date'")
+                $("#fromdate").val("");
+                return false;
+            }
+
+            if (todate != "") {
+                $.getJSON('/Commission/CheckDate', { FromDate: fromdate, ToDate: todate, EmpName: empname }, function (newdata) {
+                    if (newdata == "Error") {
+                        alertbox("Commission Has Already Been Assigned For This Date & Employee");
+                        $("#fromdate").val("");
+                        $("#todate").val("");
+                        return false;
+                    }
+                });
+            }
+        });
+
+        var newdata = new JsDatePick({
+            useMode: 2,
+            target: "todate",
+            dateFormat: "%d/%M/%Y",
+        });
+
+        newdata.addOnSelectedDelegate(function () {
+            var empname = document.getElementById("CommissionMasterDetails_EmployeeName").value;
+            var todate = $("#todate").val();
+            var fromdate = $("#fromdate").val();
+
+            var selectedfromdate = new Date(fromdate).getTime();
+            var selectedtodate = new Date(todate).getTime();
+
+            if (selectedfromdate > selectedtodate) {
+                alertbox("Cannot Select The Date Before 'From Date'")
+                $("#todate").val("");
+                return false;
+            }
+
+            if (fromdate != "") {
+                $.getJSON('/Commission/CheckDate', { FromDate: fromdate, ToDate: todate, EmpName: empname }, function (data) {
+                    if (data == "Error") {
+                        alertbox("Commission Has Already Been Assigned For This Date & Employee");
+                        $("#fromdate").val("");
+                        $("#todate").val("");
+                        return false;
+                    }
+                });
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function DeleteRow(id) {
+        var row = "row" + id;
+        confirmbox("Do You Want To Delete This Row?", row);
+    }
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#addrows").click(function () {
+            var row = +document.getElementById("rowcount").value;
+            row = +row;
+
+            for (var i = 1; i <= row; i++) {
+                var product = "product" + i;
+                var productamount = "productamount" + i;
+                var productpercent = "productpercent" + i;
+
+                if (document.getElementById(product) != null) {
+                    if (document.getElementById(product).value == "" || document.getElementById(productamount).value == "" || document.getElementById(productpercent).value == "") {
+                        alertbox("Enter All The Unit Wise Fields")
+                        return false;
+                    }
+                    else {
+                        $("#" + product).attr("disabled", true);
+                    }
+                }
+            }
+
+            row = +row + 1;
+
+            var product = "product" + row;
+            var productamount = "productamount" + row;
+            var productpercent = "productpercent" + row;
+            var list = $("#dynamicrow");
+
+            var datalist = "<div id='row" + row + "'><div class='row'><div class='col-lg-12 col-md-12'><div style='height:9px'></div><div class='col-lg-2 col-md-2'><div class='row'></div></div><div class='col-lg-2 col-md-2'><div class='row'><select id='" + product + "' name='" + product + "' class='form-control'></select></div></div>";
+            datalist += "<div class='col-lg-2 col-md-2'><input type='text' id='" + productamount + "' class='form-control' name='" + productamount + "' placeholder='Target' onkeypress='return AllowNumbers(event)' autocomplete = 'off' /></div>";
+            datalist += "<div class='col-lg-2 col-md-2'><input type='text' id='" + productpercent + "' class='form-control' name='" + productpercent + "' placeholder='Comm Percent' onkeypress='return AllowNumbers(event)' autocomplete = 'off' /></div>";
+            datalist += "<div class='col-lg-1 col-md-1'><div class='row'><label style='font-size:18px'>%</label> </div></div>"
+            datalist += "<div style='height:2px'></div><a href='#' onclick='DeleteRow(" + row + ")' class='fa fa-trash fa-lg' style='color:red;' /></div></div></div>";
+
+            list.append(datalist);
+
+            $("#rowcount").val(row);
+
+            $.getJSON("/Commission/GetUnits", function (data) {
+
+                var dropdown = $("#" + product);
+                dropdown.empty();
+                dropdown.append($('<option>', {
+                    text: "Select Unit",
+                    value: ""
+                }));
+
+                $.each(data, function (index, item) {
+                    dropdown.append($('<option>', {
+                        value: item.Value,
+                        text: item.Text,
+                    }));
+                });
+            });
+
+            $("#" + product).change(function () {
+                var value = $(this).val();
+
+                if (value == "Meter" || value == "Meters" || value == "meter" || value == "meters") {
+                    $("#" + product).val("").attr("selected", true);
+                }
+
+                for (var i = 1; i < row ; i++) {
+                    var productname = "product" + i;
+                    if (document.getElementById(productname) != null) {
+                        if (document.getElementById(productname).value == value) {
+                            alertbox("This Unit Has Already Been Selected Above");
+                            $("#" + product).val("").attr("selected", true);
+                            $("#" + productamount).val("");
+                            $("#" + productpercent).val("");
+                            return false;
+                        }
+                    }
+                }
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+    $(document).ready(function () {
+
+        $("#item").change(function () {
+            var item = $(this).val();
+
+            $.getJSON('/Commission/GetSellingPrice', { item: item }, function (data) {
+                $("#CommissionMasterDetails_ItemSellingPrice").val(data.sellingprice);
+            });
+        });
+
+
+        $("#empname").change(function () {
+            var name = $(this).val();
+
+            if (name != "") {
+                document.getElementById("comm").style.display = "inline";
+                document.getElementById("CommissionMasterDetails_EmployeeName").value = name;
+            }
+            else {
+                document.getElementById("comm").style.display = "none";
+                document.getElementById("CommissionMasterDetails_EmployeeName").value = "";
+            }
+        });
+
+        $("#CommissionMasterDetails_TotalSale").change(function () {
+            var data = $(this).val();
+            if (data != "") {
+                document.getElementById("salepercent").style.display = "inline";
+            }
+        });
+
+        $("#CommissionMasterDetails_TotalSaleCommPercent").change(function () {
+            var data = $(this).val();
+            if (data >= 100) {
+                alertbox("Commission Percent Cannot Be Equal Or Greater Than 100");
+                $("#CommissionMasterDetails_TotalSaleCommPercent").val(" ");
+                return false;
+            }
+        });
+
+        $("#CommissionMasterDetails_ProductwiseCommPercent").change(function () {
+            var data = $(this).val();
+            if (data >= 100) {
+                alertbox("Commission Percent Cannot Be Equal Or Greater Than 100");
+                $("#CommissionMasterDetails_ProductwiseCommPercent").val(" ");
+                return false;
+            }
+        });
+
+
+        $("#CommissionMasterDetails_Meter").change(function () {
+            var data = $(this).val();
+            if (data != "") {
+                document.getElementById("meterpercent").style.display = "inline";
+            }
+        });
+
+        $("#product1").change(function () {
+            var data = $(this).val();
+
+            if (data == "Meter" || data == "meter" || data == "Meters" || data == "meters") {
+                $("#product1").val("").attr("selected", true);
+                document.getElementById("productpercent").style.display = "none";
+                document.getElementById("addrow").style.display = "none";
+            }
+
+            if (data != "" && data != "Meter") {
+                document.getElementById("productpercent").style.display = "inline";
+                document.getElementById("addrow").style.display = "inline";
+            }
+        });
+
+        $("#submit").click(function () {
+
+            var no_of_rows = document.getElementById("rowcount").value;
+            no_of_rows = +no_of_rows;
+
+            var counter = 0;
+            if (document.getElementById("productpercent").style.display == "inline") {
+                for (var i = 1; i <= no_of_rows; i++) {
+                    var product = "product" + i;
+                    var productamount = "productamount" + i;
+                    var productpercent = "productpercent" + i;
+
+                    if (document.getElementById(product) != null) {
+                        if (document.getElementById(product).value == "" || document.getElementById(productamount).value == "" || document.getElementById(productpercent).value == "") {
+                            alertbox("Please Fill All Unit Wise Fields");
+                            counter++;
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            if (counter == 0) {
+                for (var i = 1; i <= no_of_rows; i++) {
+                    var product = "product" + i;
+
+                    if (document.getElementById(product) != null) {
+                        document.getElementById(product).disabled = false;
+                    }
+                }
+            }
+
+            if ($("#CommissionMasterDetails_TotalSale").val() == "" && $("#CommissionMasterDetails_Meter").val() == "" && $("#product1").val() == "" && $("#fromdate").val() != "") {
+                alertbox("Enter Atleast One Value(Sale or Meter or Unit Wise)");
+                return false;
+            }
+            if (document.getElementById("salepercent").style.display == "inline") {
+                if (document.getElementById("CommissionMasterDetails_TotalSaleCommPercent").value == "") {
+                    alertbox("Enter The Total Sale Commission");
+                    return false;
+                }
+            }
+
+            if (document.getElementById("meterpercent").style.display == "inline") {
+                if (document.getElementById("CommissionMasterDetails_MeterCommPercent").value == "") {
+                    alertbox("Enter The Meter Commission");
+                    return false;
+                }
+            }
+
+            if (document.getElementById("productpercent").style.display == "inline") {
+                if (document.getElementById("productpercent1").value == "" || document.getElementById("productamount1").value == "") {
+                    alertbox("Enter The Details For Unit Field");
+                    return false;
+                }
+            }
+
+            if ($("#subcategory").val() != "") {
+                if ($("#item").val() == "") {
+                    alertbox("Please Select The Item");
+                    return false;
+                }
+            }
+
+            if ($("#subcategory").val() != "" && $("#item").val() != "")
+            {
+                if ($("#CommissionMasterDetails_ItemCommissionPercent").val() == 0 && $("#CommissionMasterDetails_ItemCommissionRupees").val() == 0)
+                {
+                    alertbox("Enter Either Comm in Percent Or Comm in Rupees");
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#subcategory").change(function () {
+            var subcat = $(this).val();
+            $.getJSON('/Requisition/LoadItemsBySubCategory', { subcat: subcat }, function (data) {
+                var select = $("#item");
+                select.empty();
+                select.append($('<option>', {
+                    text: "Select",
+                    value:"",
+                }));
+                $.each(data, function (index, item) {
+                    select.append($('<option>', {
+                        text: item.Text,
+                        value: item.Value,
+                    }));
+                });
+            });
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#submit").click(function () {
+            setTimeout(function () {
+
+                var no_of_rows = document.getElementById("rowcount").value;
+                no_of_rows = +no_of_rows;
+                var errorcount = 0;
+
+                if (document.getElementById("fromdateval").innerHTML != "" || document.getElementById("todateval").innerHTML != "") {
+                    errorcount++;
+                }
+                else if (document.getElementById("CommissionMasterDetails_TotalSale").value == "" && document.getElementById("CommissionMasterDetails_Meter").value == "" &&
+                    document.getElementById("product1").value == "") {
+                    errorcount++;
+                }
+                else {
+                    for (var i = 1; i <= no_of_rows; i++) {
+                        var product = "product" + i;
+                        var productpercent = "productpercent" + i;
+                        var productamount = "productamount" + i;
+
+                        if (document.getElementById(product) != null) {
+                            if (document.getElementById("productpercent").style.display == "inline") {
+                                if (document.getElementById(product).value == "" || document.getElementById(productpercent).value == "" || document.getElementById(productamount).value == "")
+                                    errorcount++;
+                            }
+                        }
+                    }
+                }
+            }, 500);
+        });
+    });
+</script>
+
+@Html.Partial("../Shared/Header")
+<section>
+    <div class="mainwrapper">
+        @Html.Partial("../Shared/LeftMenu")
+
+        @using (Html.BeginForm())
+        {
+            @Html.ValidationSummary(true)
+            <div class="mainpanel">
+
+                @Html.HiddenFor(model => model.CommissionMasterDetails.CommissionCode)
+                @Html.HiddenFor(model => model.CommissionMasterDetails.EmployeeName)
+                @Html.HiddenFor(model => model.CommissionMasterDetails.ItemSellingPrice)
+                <input type="hidden" name="rowcount" id="rowcount" value="1" />
+
+                <audio id="audio" muted="true" preload="auto" style="display: none" controls="controls" autoplay="false">
+                    <source src="" type="audio/ogg" />
+                </audio>
+
+                <div style="height: 10px"></div>
+                <div class="col-lg-12 col-md-12">
+                    <h2>Commission</h2>
+                    <div style="height: 5px"></div>
+
+                    <div class="col-lg-3 col-md-3">
+                        <div style="height: 9px"></div>
+                        <label style="font-size: 14px">Employee Name</label>
+                        @Html.DropDownListFor(model => model.EmployeeDetails.Name, new SelectList(Model.EmpList, "Name", "Name"), "Select", new { @class = "form-control", id = "empname" })
+                    </div>
+                </div>
+
+                <div id="comm" style="display: none">
+                    <div class="col-lg-12 col-md-12">
+                        <div style="height: 30px"></div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 20px"></div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    <label style="font-size: 14px">From Date<i style="color: red">*</i></label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    @Html.TextBoxFor(model => model.CommissionMasterDetails.FromDate, new { @class = "form-control", placeholder = "From Date", id = "fromdate", autocomplete = "off" })
+                                    @Html.ValidationMessageFor(model => model.CommissionMasterDetails.FromDate, null, new { @style = "color:red", @id = "fromdateval" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-1 col-md-1"></div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    <label style="font-size: 14px">To Date<i style="color: red">*</i></label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    @Html.TextBoxFor(model => model.CommissionMasterDetails.ToDate, new { @class = "form-control", placeholder = "To Date", id = "todate", autocomplete = "off" })
+                                    @Html.ValidationMessageFor(model => model.CommissionMasterDetails.ToDate, null, new { @style = "color:red", @id = "todateval" })
+                                </div>
+                            </div>
+
+                        </div>
+
+                        <div class="col=lg-12 col-md-12">
+                            <div style="height: 8px"></div>
+                            <div style="height: 1px; background-color: lightgray"></div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 20px"></div>
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    <label style="font-size: 14px">Sub Category</label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    @Html.DropDownListFor(model => model.CommissionMasterDetails.SubCategory, new SelectList(Model.ItemSubCategoryList,"subCategoryName","subCategoryName"),"Select Sub Category",new { @class = "form-control" , @id="subcategory" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-1 col-md-1"></div>
+
+                            <div id="itemdetails">
+
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        <label>Item</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        @Html.DropDownListFor(model => model.CommissionMasterDetails.ItemCode,Enumerable.Empty<SelectListItem>(), "Select" ,new { @class = "form-control" , @id="item" })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 8px"></div>
+                            <div style="height: 1px; background-color: lightgray"></div>
+                        </div>
+
+                         <div class="col-lg-12 col-md-12">
+                            <div style="height: 20px"></div>
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    <label style="font-size: 14px">Comm in Percent</label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    @Html.TextBoxFor(model => model.CommissionMasterDetails.ItemCommissionPercent, new { @class = "form-control" , @placeholder = "Commission in Percent" , @Value = 0 })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-1 col-md-1"></div>
+
+                            <div id="s">
+
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        <label>Comm in Rupees</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        @Html.TextBoxFor(model => model.CommissionMasterDetails.ItemCommissionRupees, new { @class = "form-control", @placeholder = "Commission in Percent" , @Value = 0 })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col=lg-12 col-md-12">
+                            <div style="height: 8px"></div>
+                            <div style="height: 1px; background-color: lightgray"></div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 20px"></div>
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    <label style="font-size: 14px">Total Sale Target</label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    @Html.TextBoxFor(model => model.CommissionMasterDetails.TotalSale, new { @class = "form-control", placeholder = "Enter Amount In Rupees", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-1 col-md-1"></div>
+
+                            <div id="salepercent" style="display: none">
+
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        <label>Comm. Percent</label>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        @Html.TextBoxFor(model => model.CommissionMasterDetails.TotalSaleCommPercent, new { @class = "form-control", placeholder = "Enter Percent", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col=lg-12 col-md-12">
+                            <div style="height: 8px"></div>
+                            <div style="height: 1px; background-color: lightgray"></div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 20px"></div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    <label style="font-size: 14px">Meter Target</label>
+                                </div>
+                            </div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    @Html.TextBoxFor(model => model.CommissionMasterDetails.Meter, new { @class = "form-control", placeholder = "Enter Target", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                                </div>
+                            </div>
+
+                            <div class="col-lg-1 col-md-1"></div>
+
+                            <div id="meterpercent" style="display: none">
+                                
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        <label>Comm. Amount</label>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        @Html.TextBoxFor(model => model.CommissionMasterDetails.MeterCommPercent, new { @class = "form-control", placeholder = "Enter Amount", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 8px"></div>
+                            <div style="height: 1px; background-color: lightgray"></div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="height: 20px"></div>
+
+                            <div class="col-lg-2 col-md-2">
+                                <div class="row">
+                                    <label style="font-size: 14px">Unit Wise</label>
+                                </div>
+                            </div>
+
+                            <div id="dynamicrow">
+
+                                <div class="col-lg-2 col-md-2">
+                                    <div class="row">
+                                        @Html.DropDownListFor(model => model.CommissionProductDetails.UnitName, new SelectList(Model.UnitList, "UnitName", "UnitName"), "Select Unit", new { @class = "form-control", id = "product1", Name = "product1" })
+                                    </div>
+                                </div>
+
+                                <div id="productpercent" style="display: none">
+                                    <div class="col-lg-2 col-md-2">
+                                        @Html.TextBoxFor(model => model.CommissionProductDetails.UnitAmount, new { @class = "form-control", placeholder = "Target", id = "productamount1", Name = "productamount1", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                                    </div>
+
+                                    <div class="col-lg-2 col-md-2">
+                                        @Html.TextBoxFor(model => model.CommissionProductDetails.UnitPercent, new { @class = "form-control", id = "productpercent1", placeholder = "Comm Percent", Name = "productpercent1", onkeypress = "return AllowNumbers(event)", autocomplete = "off" })
+                                    </div>
+
+                                    <div class="col-lg-1 col-md-1" style="text-align: left">
+                                        <div class="row">
+                                            <label style="font-size: 18px">%</label>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div id="addrow" style="display: none">
+                                    <div class="col-lg-2 col-md-2">
+                                        <div class="row">
+                                            <button type="button" class="btn btn-primary btn-sm" id="addrows"><i class="fa fa-plus-square"></i></button>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 col-md-12">
+                            <div style="text-align: center">
+                                <div style="height: 15px"></div>
+                                <input type="submit" id="submit" class="btn btn-success" value="Save" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</section>

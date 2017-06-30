@@ -1,0 +1,56 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "InwardPrinting";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+
+@*INWARD NO AUTO COMPLETE*@
+<script type="text/javascript">
+        $("#InwardNo").autocomplete({
+            source: function (request, response) {
+                $.getJSON("/BarcodePrinting/GetInwardNos", { SearchTerm: request.term },
+                    function (data) {
+                        response(data);
+                    });
+            },
+            minLength: 1,
+            select: function (event, ui) {
+                if (ui.item) {
+                    $("#InwardNo").val(ui.item.value);
+                    @*DISPLAY PARTIAL VIEW BY INWARD NO CHANGE EVENT*@
+                    var InwardNumber = $("#InwardNo").val();
+                    $.ajax({
+                        url: "/BarcodePrinting/GetDetailsByInwardNo",
+                        data: { InwardNo: InwardNumber },
+                        type: "GET",
+                        success: function (data) {
+                            document.getElementById("InwardNo").disabled = "true";
+                            $("#LoadItemView").html(data);
+                        }
+                    });
+                }
+            }
+        });
+</script>
+
+<div class="col-d-12 col-lg-12">
+    <div class="col-d-2 col-lg-2">
+        <label>Inward No.</label><i style="color: red">*</i>
+    </div>
+    <div class="col-d-3 col-lg-3">
+        @Html.TextBoxFor(model => model.InwardFromSupplierDetails.InwardNo, new { id = "InwardNo", @class = "form-control", @placeholder = "Inward No" })
+    </div>
+</div>
+
+<div style="height: 60px"></div>
+
+<div class="col-md-12 col-lg-12">
+    <div class="row">
+            <div id="LoadItemView"></div>
+    </div>
+</div>

@@ -1,0 +1,92 @@
+﻿@model CodeFirstEntities.MainApplication
+
+@{
+    ViewBag.Title = "GetItemsFromStockDistribtn";
+}
+
+<script>
+    function CalcStkQtyForTanstr(count) {
+        var quantity = "TotalQuantity" + count;
+        var intertransfer = "InterTransfer" + count;
+        var balance = "Balance" + count;
+        var balancevalue = "BalanceValue" + count;
+        var quant = (+document.getElementById(quantity).innerHTML);
+        var trans = (+document.getElementById(intertransfer).value);
+
+        if (quant < trans) {
+            alertbox("Transfer cannot exceed Quantity");
+            document.getElementById(intertransfer).value = document.getElementById(quantity).innerHTML;
+        }
+
+        var bal = (document.getElementById(quantity).innerHTML) - (document.getElementById(intertransfer).value);
+        document.getElementById(balance).innerHTML = bal.toFixed(3);
+        document.getElementById(balancevalue).value = bal.toFixed(3);
+    }
+
+    function AllowNumbers(key) {
+        var keycode = (key.which) ? key.which : key.keyCode;
+        if (!(keycode == 8 || keycode == 46) && (keycode < 48 || keycode > 57)) {
+            return false;
+        }
+    }
+
+</script>
+
+
+<div class="row">
+    <div style="height: 30px"></div>
+
+    <div class="col-md-12 col-lg-12">
+        <table style="border: 1px double; width: 100%" class="table">
+            <thead>
+                <tr>
+                    <th style="text-align: center">Sr.No.</th>
+                    <th style="text-align: center">Item Code</th>
+                    <th style="text-align: center">Item Name</th>
+                    <th style="text-align: center">Description</th>
+                    <th style="text-align: center">Quantity</th>
+                    <th style="text-align: center" class="col-lg-2 col-md-2">Inter Transfer<i style="color:red">*</i></th>
+                    <th style="text-align: center">Balance</th>
+                </tr>
+            </thead>
+            <tbody>
+
+                @{
+                    int rowid = 1;
+                    //display opening stock item list..
+                    if (Model.ShopStockList != null && Model.ShopStockList.Any())
+                    {
+                        foreach (var item in Model.ShopStockList)
+                        {
+                            string intertransfer = "InterTransfer" + rowid;
+                            string totalquantity = "TotalQuantity" + rowid;
+                            string balance = "Balance" + rowid;
+                            string balancevalue = "BalanceValue" + rowid;
+                    <tr>
+                        <td style="text-align: center">@rowid</td>
+                        <td style="text-align: center">@item.ItemCode</td>
+                        <td style="text-align: center">@item.ItemName</td>
+                        <td style="text-align: center">@item.Description</td>
+                        <td style="text-align: center">
+                            <label id="@totalquantity" style="font-weight:normal">@item.Quantity</label></td>
+                        <td class="col-lg-2 col-md-2">
+                            <input type="text" id="@intertransfer" name="@intertransfer" class="form-control" placeholder="0.00" onchange="CalcStkQtyForTanstr(@rowid)"  style="text-align:center" onkeypress="return AllowNumbers(event)" autocomplete="off" /></td>
+                        <td style="text-align: center">
+                            <label id="@balance" style="font-weight:normal"></label>
+                            <input type="hidden" id="@balancevalue" name="@balancevalue" value="0" />
+                            <input type="hidden" id="TotalItems" name="TotalItems" value="@Model.ShopStockList.Count()" />
+                        </td>
+                    </tr>
+                            rowid++;
+
+                        }
+                    }
+                    
+                }
+            </tbody>
+        </table>
+    </div>
+
+    <div style="height: 10px"></div>
+
+</div>

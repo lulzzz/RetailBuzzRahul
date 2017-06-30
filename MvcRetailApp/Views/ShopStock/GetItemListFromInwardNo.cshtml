@@ -1,0 +1,66 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "GetItemListFromInwardNo";
+}
+
+<div class="col-md-12 col-lg-12">
+    <div class="col-md-12 col-lg-12">
+        <div style="width: 100%; height: 2px; background-color: gray;"></div>
+    </div>
+    <br />
+    <div class="col-md-12 col-lg-12">
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>S.N.</th>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Material</th>
+                    <th>Color</th>
+                    <th>Design</th>
+                    <th>Unit</th>
+                    <th>Quantity</th>
+                    <th>Rate</th>
+                    @*<th>Barcode</th>*@
+                </tr>
+            </thead>
+            <tbody>
+                 @{
+                     int row = 1;
+                 }
+                @{
+                    if (Model.ShopStockItemList != null && Model.ShopStockItemList.Any())
+                    {
+                       
+                        foreach (var data in Model.ShopStockItemList)
+                        {
+                            <tr>
+                                <td>@row</td>
+                                <td>@data.ItemName</td>
+                                <td>@data.Description</td>
+                                <td>@data.Material</td>
+                                <td>@data.Color</td>
+                                <td>@data.DesignName</td>
+                                <td>@data.Unit</td>
+                                <td>@data.Quantity</td>
+                                <td>@data.Rate</td>
+                                @*<td>
+                                    @{
+                                        string barcode = string.Empty;
+                                        barcode = data.Barcode;
+                                        <img src="@barcode" title="" width="135" height="30"/>
+                                    }
+                                </td>*@
+                                @{  
+                                    row += 1;
+                                }
+                            </tr>
+                        }
+                    }
+                 }
+
+            </tbody>
+        </table>
+    </div>
+    
+</div>

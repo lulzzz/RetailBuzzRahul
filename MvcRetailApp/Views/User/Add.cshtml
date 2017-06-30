@@ -1,0 +1,853 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "Home";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    function MasterValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'inline';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function CashierValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'inline';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function PurchaseValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'inline';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function InventoryValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'inline';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function POSValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'inline';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function RequisitionValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'inline';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function MISValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'inline';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function JobWorkValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'inline';
+        document.getElementById("ShopGodownModules").style.display = 'none';
+    }
+
+    function ShopGodownValidation() {
+        document.getElementById("Submit").style.display = 'inline';
+        document.getElementById("MasterModules").style.display = 'none';
+        document.getElementById("CashierModules").style.display = 'none';
+        document.getElementById("PurchaseModules").style.display = 'none';
+        document.getElementById("InventoryModules").style.display = 'none';
+        document.getElementById("PointOfSaleModules").style.display = 'none';
+        document.getElementById("RequisitionModules").style.display = 'none';
+        document.getElementById("MISReportsModules").style.display = 'none';
+        document.getElementById("JobWorkModules").style.display = 'none';
+        document.getElementById("ShopGodownModules").style.display = 'inline';
+    }
+</script>
+
+<script type="text/javascript">
+    function savePermissions() {
+        var moduleName = "";
+        var finalRights = "";
+        var moduleStatus = "";
+        var finalStatus = "";
+        var iconname = "";
+        var assignrightcode = "";
+        var email = document.getElementById("ddlEmpNames").value;
+        var modulelistcount = (+document.getElementById("Modulelist").value);
+        for (var i = 1; i <= modulelistcount; i++) {
+            var module = "module" + i;
+            var moduleRights = "moduleRights" + i;
+            var icons = "icons" + i;
+            var shopgodowncode = "AssignRightCode" + i;
+            var moduleTempName = document.getElementById(module).value;
+            var moduleRightsTemp = document.getElementById(moduleRights).value;
+            var iconTemp = document.getElementById(icons).value;
+            var assignrightcodetemp = document.getElementById(shopgodowncode).value;
+
+            moduleName = moduleName + moduleTempName + "$";
+            finalRights = finalRights + moduleRightsTemp + "$";
+            iconname = iconname + iconTemp + "$";
+            assignrightcode = assignrightcode + assignrightcodetemp + "$";
+            var status = moduleTempName + i;
+            var tempStatus = document.getElementsByName(status);
+
+            for (var j = 0; j < tempStatus.length; j++) {
+                if (tempStatus[j].checked) {
+                    finalStatus = finalStatus + tempStatus[j].value + ",";
+                }
+            }
+            moduleStatus = moduleStatus + finalStatus + "$";
+            finalStatus = "";
+        }
+
+        $.ajax({
+            url: '/User/AddPermission',
+            type: "POST",
+            data: {
+                moduleName: moduleName,
+                moduleStatus: moduleStatus,
+                email: email,
+                finalRights: finalRights,
+                iconname: iconname,
+                assignrightcode: assignrightcode
+            },
+            success: function (data) {
+                window.open("/User/UserRights", "_self");
+            }
+        });
+    }
+</script>
+
+
+@Html.HiddenFor(model => model.EmployeeDetails.Designation)
+<input type="hidden" id="Modulelist" value="@Model.modulelist.Count()" />
+
+<div class="col-lg-12 col-md-12">
+    <div class="row">
+        <button data-toggle="collapse" data-target="#MasterModules" class="btn btn-danger btn-sm" onclick="MasterValidation()">Masters</button>
+        <button data-toggle="collapse" data-target="#CashierModules" class="btn btn-danger btn-sm" onclick="CashierValidation()">Cashier</button>
+        <button data-toggle="collapse" data-target="#PurchaseModules" class="btn btn-danger btn-sm" onclick="PurchaseValidation()">Purchase</button>
+        <button data-toggle="collapse" data-target="#InventoryModules" class="btn btn-danger btn-sm" onclick="InventoryValidation()">Inventory</button>
+        <button data-toggle="collapse" data-target="#PointOfSaleModules" class="btn btn-danger btn-sm" onclick="POSValidation()">Point Of Sale</button>
+        <button data-toggle="collapse" data-target="#RequisitionModules" class="btn btn-danger btn-sm" onclick="RequisitionValidation()">Requisition</button>
+        <button data-toggle="collapse" data-target="#MISReportsModules" class="btn btn-danger btn-sm" onclick="MISValidation()">MIS Reports</button>
+        <button data-toggle="collapse" data-target="#JobWorkModules" class="btn btn-danger btn-sm" onclick="JobWorkValidation()">Job Work</button>
+        <button data-toggle="collapse" data-target="#ShopGodownModules" class="btn btn-danger btn-sm" onclick="ShopGodownValidation()">Shop/Godown</button>
+    </div>
+</div>
+
+<div class="col-lg-12 col-md-12">
+    <div style="height: 10px"></div>
+</div>
+
+<div id="MasterModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id <= 20)
+            {
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+<div id="CashierModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 21 && item1.Id <= 26)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+<div id="PurchaseModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 27 && item1.Id <= 29)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+
+<div id="InventoryModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 30 && item1.Id <= 45)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+<div id="PointOfSaleModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 46 && item1.Id <= 53)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+
+<div id="RequisitionModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 54 && item1.Id <= 57)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+<div id="MISReportsModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 58 && item1.Id <= 87)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+<div id="JobWorkModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 88 && item1.Id <= 95)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+
+<div id="ShopGodownModules" class="collapse">
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            if (item1.Id >= 96)
+            {
+
+                int id = item1.Id;
+                string AddId = item1.ModuleName + "Add" + id;
+                string EditId = item1.ModuleName + " Edit" + id;
+                string DeleteId = item1.ModuleName + "Delete" + id;
+                string name = item1.ModuleName + id;
+                string namevalue = "name" + id;
+                string module = "module" + id;
+                string moduleRights = "moduleRights" + id;
+                string icons = "icons" + id;
+                string AssignRightCode = "AssignRightCode" + id;
+                string AssignDashboardId = "DashboardId" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                    <input type="hidden" id="@AssignDashboardId" value="@item1.DashboardId" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+            }
+        }
+    </table>
+</div>
+
+<div class="col-lg-12 col-md-12">
+    <div style="height: 10px"></div>
+</div>
+
+<div class="row">
+    <button type="button" class="btn btn-success col-lg-offset-6 col-md-offset-6" id="Submit" onclick="savePermissions();" style="display:none">Create</button>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@*@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "Home";
+}
+
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    function savePermissions() {
+        var moduleName = "";
+        var finalRights = "";
+        var moduleStatus = "";
+        var finalStatus = "";
+        var iconname = "";
+        var assignrightcode = "";
+        var email = document.getElementById("ddlEmpNames").value;
+        var modulelistcount = (+document.getElementById("Modulelist").value);
+        for (var i = 1; i <= modulelistcount; i++) {
+            var module = "module" + i;
+            var moduleRights = "moduleRights" + i;
+            var icons = "icons" + i;
+            var shopgodowncode = "AssignRightCode" + i;
+            var moduleTempName = document.getElementById(module).value;
+            var moduleRightsTemp = document.getElementById(moduleRights).value;
+            var iconTemp = document.getElementById(icons).value;
+            var assignrightcodetemp = document.getElementById(shopgodowncode).value;
+
+            moduleName = moduleName + moduleTempName + "$";
+            finalRights = finalRights + moduleRightsTemp + "$";
+            iconname = iconname + iconTemp + "$";
+            assignrightcode = assignrightcode + assignrightcodetemp + "$";
+            var status = moduleTempName + i;
+            var tempStatus = document.getElementsByName(status);
+
+            for (var j = 0; j < tempStatus.length; j++) {
+                if (tempStatus[j].checked) {
+                    finalStatus = finalStatus + tempStatus[j].value + ",";
+                }
+            }
+            moduleStatus = moduleStatus + finalStatus + "$";
+            finalStatus = "";
+        }
+
+        $.ajax({
+            url: '/User/AddPermission',
+            type: "POST",
+            data: {
+                moduleName: moduleName,
+                moduleStatus: moduleStatus,
+                email: email,
+                finalRights: finalRights,
+                iconname: iconname,
+                assignrightcode: assignrightcode
+            },
+            success: function (data) {
+                window.open("/User/UserRights", "_self");
+            }
+        });
+    }
+</script>
+
+@if (Model.modulelist != null && Model.modulelist.Any())
+{
+    <input type="hidden" id="Modulelist" value="@Model.modulelist.Count()" />
+    @Html.HiddenFor(model=>model.EmployeeDetails.Designation)
+    <table border="1">
+        @foreach (var item1 in Model.modulelist)
+        {
+            int id = item1.Id;
+            string AddId = item1.ModuleName + "Add" + id;
+            string EditId = item1.ModuleName + " Edit" + id;
+            string DeleteId = item1.ModuleName + "Delete" + id;
+            string name = item1.ModuleName + id;
+            string namevalue = "name" + id;
+            string module = "module" + id;
+            string moduleRights = "moduleRights" + id;
+            string icons = "icons" + id;
+            string AssignRightCode = "AssignRightCode" + id;
+            <tr>
+                <td class="col-lg-1">
+                    <label id="">@item1.ModuleName</label>
+                    <input type="hidden" id="@module" value="@item1.ModuleName" />
+                    <input type="hidden" id="@moduleRights" value="@item1.ModuleRights" />
+                    <input type="hidden" id="@icons" value="@item1.Icon" />
+                    <input type="hidden" id="@AssignRightCode" value="@item1.AssignRightsCode" />
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Add"))
+                    {
+                        <input type="checkbox" name="@name" value="add" id="@AddId" /><label>Add</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Edit"))
+                    {
+                        <input type="checkbox" name="@name" value="edit" id="@EditId" /><label>Edit</label>
+                    }
+                </td>
+
+                <td class="col-lg-1">
+                    @if (item1.ModuleRights.Contains("Delete"))
+                    {
+                        <input type="checkbox" name="@name" value="delete" id="@DeleteId" /><label>Delete</label><br />
+                    }
+                </td>
+            </tr>
+        }
+    </table>
+}
+<br />
+<div class="row">
+    <button type="button" class="btn btn-success col-lg-offset-6 col-md-offset-6" id="Submit" onclick="savePermissions();">Create</button>
+</div>*@

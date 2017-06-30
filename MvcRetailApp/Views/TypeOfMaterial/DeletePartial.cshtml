@@ -1,0 +1,62 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "DeletePartial";
+}
+
+@Html.ValidationSummary(true)
+@Html.HiddenFor(model => model.MaterialDetails.MaterialId)
+@Html.HiddenFor(model => model.MaterialDetails.MaterialName)
+@Html.HiddenFor(model => model.MaterialDetails.MaterialShortName)
+@Html.HiddenFor(model => model.MaterialDetails.MaterialDescription)
+@Html.HiddenFor(model => model.MaterialDetails.MaterialCode)
+
+
+<div class="row">
+    <h2>Material Details</h2>
+
+    <div class="form-group col-md-12 col-lg-12">
+        <div class="col-md-12 col-lg-12">
+            <div class="row">
+                <div class="form-group col-md-4 col-lg-4">
+                    <label>Material Code</label>
+                </div>
+                <div class="form-group col-md-5 col-lg-5">
+                    @Html.DisplayFor(model => model.MaterialDetails.MaterialCode)
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4 col-lg-4">
+                    <label>Material Name</label>
+                </div>
+                <div class="form-group col-md-5 col-lg-5">
+                    @Html.DisplayFor(model => model.MaterialDetails.MaterialName, new { @class = "form-control", @placeholder = "Material Name" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4 col-lg-4">
+                    <label>Material Short Name</label>
+                </div>
+                <div class="form-group col-md-5 col-lg-5">
+                    @Html.DisplayFor(model => model.MaterialDetails.MaterialShortName, new { @class = "form-control", @placeholder = "MaterialShortName" })
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="form-group col-md-4 col-lg-4">
+                    <label>Material Description</label>
+                </div>
+                <div class="form-group col-md-5 col-lg-5">
+                    @Html.DisplayFor(model => model.MaterialDetails.MaterialDescription, new { @class = "form-control", @placeholder = "Material Description" })
+                </div>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-lg-offset-3">
+                <button type="submit" class="btn btn-success" onclick="DeleteMaterialPartial()">Delete</button>
+            </div>
+        </div>
+    </div>
+</div>

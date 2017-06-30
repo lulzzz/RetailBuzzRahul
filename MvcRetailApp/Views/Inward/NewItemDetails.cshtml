@@ -1,0 +1,173 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "NewItemDetails";
+}
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css" />
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css" />
+<!-- Plugins - Via CDN -->
+<script type ="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")" type="text/javascript"></script>
+<script src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")" type="text/javascript"></script>
+
+<script type="text/javascript">
+    function AppendItemCode(count, itemcode) {
+        count = +count;
+        window.opener.parent.document.getElementById("itemCode" + count).value = itemcode;
+    }
+    function CloseWindow() {
+        window.close();
+    }
+</script>
+@{
+    var itemcodelist = TempData["ItemCodeList"] as List<string>;
+    int count = Convert.ToInt32(TempData["MainPageRowCount"]);
+    TempData["ItemCodeList"] = itemcodelist;
+    TempData["MainPageRowCount"] = count;
+    foreach (string itemcode in itemcodelist)
+    {
+    <script type="text/javascript">
+        AppendItemCode("@count", "@itemcode");
+    </script>
+        count++;
+    }
+}
+<div class="col-md-12 col-lg-12">
+    <div class="row">
+        <div class="col-md-12 col-lg-12">
+            <div style="height: 10px"></div>
+            <div class="row">
+                <div class="col-lg-12 col-md-12">
+                    @{
+                        if (Model.ItemDetails != null)
+                        {
+                        <div class="col-md-4 col-lg-4">
+                            <label>Item Category:&nbsp;</label>
+                            @Html.DisplayFor(model => model.ItemDetails.itemCategory)
+                        </div>
+                        <div class="col-md-4 col-lg-4">
+                            <label>Item Sub Category:&nbsp;</label>
+                            @Html.DisplayFor(model => model.ItemDetails.itemSubCategory)
+                        </div>
+                        <div class="col-md-4 col-lg-4">
+                            <label>Item Name:&nbsp;</label>
+                            @Html.DisplayFor(model => model.ItemDetails.itemName)
+                        </div>
+                        }
+                        else
+                        {
+                        <div class="col-md-4 col-lg-4">
+                            <label>Item Category:&nbsp;</label>
+                            @Html.DisplayFor(model => model.NonInventoryItemDetails.itemCategory)
+                        </div>
+                        <div class="col-md-4 col-lg-4">
+                            <label>Item Sub Category:&nbsp;</label>
+                            @Html.DisplayFor(model => model.NonInventoryItemDetails.itemSubCategory)
+                        </div>
+                        <div class="col-md-4 col-lg-4">
+                            <label>Item Name:&nbsp;</label>
+                            @Html.DisplayFor(model => model.NonInventoryItemDetails.itemName)
+                        </div>}
+                    }
+                </div>
+            </div>
+            <br />
+            <div class="col-md-12 col-lg-12">
+                <table class="table" style="border-color: #d2d2d2; border: outset">
+                    <thead>
+                        <tr>
+                            <th style="text-align: center">Type</th>
+                            <th style="text-align: center">Item Description</th>
+                            <th style="text-align: center">Type Of Material</th>
+                            <th style="text-align: center">Color Code</th>
+                            <th style="text-align: center">Size</th>
+                            <th style="text-align: center">Design Name</th>
+                            <th style="text-align: center">Brand Name</th>
+                            <th style="text-align: center">Unit</th>
+                            <th style="text-align: center">Cost Price</th>
+                            <th style="text-align: center">Selling Price</th>
+                            <th style="text-align: center">M.R.P.</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            foreach (var item in Model.ItemList)
+                            {
+                            <tr>
+                                @{
+                                double cost = Convert.ToDouble(@item.costprice);
+                                var costprice = cost.ToString("#,###.00##");
+                                double selling = Convert.ToDouble(@item.sellingprice);
+                                var sellingprice = selling.ToString("#,###.00##");
+                                double mrp = Convert.ToDouble(@item.mrp);
+                                var MRP = mrp.ToString("#,###.00##");
+                                }
+                                <td style="text-align: left">@item.itemtype</td>
+                                <td style="text-align: left">@item.description</td>
+                                <td style="text-align: left">@item.typeOfMaterial</td>
+                                <td style="text-align: left">@item.colorCode</td>
+                                <td style="text-align: left">@item.size</td>
+                                <td style="text-align: left">@item.designName</td>
+                                <td style="text-align: left">@item.brandName</td>
+                                <td style="text-align: left">@item.unit</td>
+                                <td style="text-align: right">@costprice</td>
+                                <td style="text-align: right">@sellingprice</td>
+                                <td style="text-align: right">@MRP</td>
+                            </tr>
+                            }
+                            // GET NON-INVENTORY ITEMS FROM NONINVENTORYITEM MASTERS
+                            foreach (var item in Model.NonInventoryItemList)
+                            {
+                            <tr>
+                                @{
+                                double cost = 0;
+                                if (!string.IsNullOrEmpty(item.costprice))
+                                {
+                                    cost = Convert.ToDouble(item.costprice);
+                                }
+                                var costprice = cost.ToString("#,###.00##");
+
+                                double selling = 0;
+                                if (!string.IsNullOrEmpty(item.sellingprice))
+                                {
+                                    selling = Convert.ToDouble(item.sellingprice);
+                                }
+                                var sellingprice = selling.ToString("#,###.00##");
+
+                                double mrp = 0;
+                                if (!string.IsNullOrEmpty(item.mrp))
+                                {
+                                    mrp = Convert.ToDouble(item.mrp);
+                                }
+                                var MRP = mrp.ToString("#,###.00##");
+                                }
+                                <td style="text-align: left">@item.itemtype</td>
+                                <td style="text-align: left">@item.description</td>
+                                <td style="text-align: left">@item.typeOfMaterial</td>
+                                <td style="text-align: left">@item.colorCode</td>
+                                <td style="text-align: left">@item.size</td>
+                                <td style="text-align: left">@item.designName</td>
+                                <td style="text-align: left">@item.brandName</td>
+                                <td style="text-align: left">@item.unit</td>
+                                <td style="text-align: right">@costprice</td>
+                                <td style="text-align: right">@sellingprice</td>
+                                <td style="text-align: right">@MRP</td>
+                            </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+                <div class="row">
+                    <div class="col-lg-6 col-md-6"></div>
+                    <div class="col-lg-1 col-md-1">
+                        <input type="button" id="Close" value="Close" class="btn btn-success" onclick="CloseWindow()" />
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,243 @@
+﻿@model CodeFirstEntities.MainApplication
+@{
+    ViewBag.Title = "ViewDetailsForDynamicPage";
+}
+
+<!-- 
+
+  NOTE: This index page is primarily for demonstrative purposes. 
+  dashboard.html is more suitable for use as it has 
+  been stripped of added animations 
+-->
+
+<!-- Meta, title, CSS, favicons, etc. -->
+<!-- Meta, title, CSS, favicons, etc. -->
+<meta charset="utf-8" />
+
+<title>Retail Managment Software</title>
+<meta name="keywords" content="Retail Software"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.css")" />
+    <link rel="stylesheet" type="text/css" href="@Url.Content("~/Content/themes/base/jsDatePick_ltr.min.css")" />
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.min.1.3.js")"></script>
+    <script type="text/javascript" src="@Url.Content("~/Scripts/jsDatePick.jquery.min.1.3.js")"></script>
+    <script src="/Scripts/jquery-1.8.2.min.js"></script>
+
+<!-- Font CSS  -->
+<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Open+Sans:400,600,700" />
+
+<!-- Core CSS  -->
+<link href="~/Content/bootstrap.css" rel="stylesheet" type="text/css" />
+<link rel="stylesheet" type="text/css" href="~/Content/bootstrap.min.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/font-awesome.css"/>
+<link rel="stylesheet" type="text/css" href="~/fonts/glyphicons.min.css" />
+
+<!-- Plugin CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/fullcalendar.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/datatables.min.css" />
+@*<link rel="stylesheet" type="text/css" href="~/Content/animate.css" />*@
+
+<!-- Theme CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/theme.css"/>
+<link rel="stylesheet" type="text/css" href="~/Content/pages.css"/>
+<link rel="stylesheet" type="text/css" href="~/Content/plugins.css" />
+<link rel="stylesheet" type="text/css" href="~/Content/responsive.css" />
+
+<!-- Demonstration CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/demo.css" />
+
+<!-- Your Custom CSS -->
+<link rel="stylesheet" type="text/css" href="~/Content/custom.css" />
+
+<!-- Favicon -->
+<link rel="shortcut icon" href="~/Images/favicon.ico" />
+
+<!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+<!--[if lt IE 9]>
+  <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+  <script src="https://oss.maxcdn.com/libs/respond.js/1.3.0/respond.min.js"></script>
+<![endif]-->
+
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<!-- Begin: Front Page Loading Animation --> 
+<div id="page-loader"><span class="glyphicon glyphicon-cog fa-spin cog-1"></span></div>
+<!-- End: Front Page Loading Animation --> 
+
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-1.9.1.min.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.js")"></script>
+<script type="text/javascript" src="@Url.Content("~/Scripts/jquery-ui-1.8.24.min.js")"></script>
+
+
+@*<script src="~/Scripts/bootstrap.min.js"></script>*@
+
+<!-- Plugins - Via CDN -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.sparkline.min.js"></script>
+<script type="text/javascript" src="~/Scripts/jquery.dataTables.min.js"></script>
+<script type="text/javascript" src="~/Scripts/fullcalendar.min.js"></script>
+<script type="text/javascript" src="~/Scripts/bootstrap.js"></script>
+
+
+<!-- Plugins -->
+<script type="text/javascript" src="~/Scripts/gcal.js"></script><!-- Calendar Addon -->
+<script type="text/javascript" src="~/Scripts/jquery.flot.resize.min.js"></script><!-- Flot Charts Addon -->
+<script type="text/javascript" src="~/Scripts/datatables.js"></script><!-- Datatable Bootstrap Addon -->
+<script type="text/javascript" src="~/Scripts/jquery.scrollTo-1.4.3.1-min.js"></script>
+
+<!-- Theme Javascript -->
+<script type="text/javascript" src="~/Scripts/uniform.min.js"></script>
+<script type="text/javascript" src="~/Scripts/main.js"></script>
+<script type="text/javascript" src="~/Scripts/custom.js"></script>
+
+<script type="text/javascript">
+    jQuery(document).ready(function () {
+
+        // Init Theme Core 	  
+        Core.init();
+
+        $("input").not($(":button")).keypress(function (evt) {
+            if (evt.keyCode == 13) {
+                iname = $(this).val();
+                if (iname !== 'Submit') {
+                    var fields = $(this).parents('form:eq(0),body').find('button,input,textarea,select');
+                    var index = fields.index(this);
+                    if (index > -1 && (index + 1) < fields.length) {
+                        fields.eq(index + 1).focus();
+                    }
+                    return false;
+                }
+            }
+        });
+    });
+</script>
+
+<script type="text/javascript">
+    function closewindow() {
+        // document.getElementById("dropdownlist").style.display = "inline";
+        var idmodel = document.getElementById("MainTaxMasters_State").value;
+        //  alert(idmodel);
+        var taxtype = document.getElementById("SubTaxMasters_TaxType").value;
+      //  alert(taxtype);
+        if (taxtype == "VAT") {
+
+            $.getJSON("/Tax/LoadVatInCitiesByState", { id: idmodel },
+
+                  function (statedata) {
+                      var select = window.opener.document.getElementById("ddlvat");
+                      select.options.length = 0;
+                      var option = document.createElement("option");
+                      option.value = 0;
+                      option.text = "Select District";
+                      select.appendChild(option);
+                      $.each(statedata, function (index, itemData) {
+                          var option1 = document.createElement("option");
+                          option1.value = itemData.Value;
+                          option1.text = itemData.Text;
+                          select.appendChild(option1);
+
+                      });
+                      window.close();
+                  });
+
+        }
+        else
+        if (taxtype == "SalesTax") {
+            $.getJSON("/Tax/LoadSTInCitiesByState", { id: idmodel },
+
+                function (statedata) {
+                    var select = window.opener.document.getElementById("ddlst");
+                    select.options.length = 0;
+                    var option = document.createElement("option");
+                    option.value = 0;
+                    option.text = "Select District";
+                    select.appendChild(option);
+                    $.each(statedata, function (index, itemData) {
+                        var option1 = document.createElement("option");
+                        option1.value = itemData.Value;
+                        option1.text = itemData.Text;
+                        select.appendChild(option1);
+
+                    });
+                    window.close();
+                });
+
+        }
+        else
+            {
+            $.getJSON("/Tax/LoadOTInCitiesByState", { id: idmodel },
+
+                function (statedata) {
+                    var select = window.opener.document.getElementById("ddlot");
+                    select.options.length = 0;
+                    var option = document.createElement("option");
+                    option.value = 0;
+                    option.text = "Select District";
+                    select.appendChild(option);
+                    $.each(statedata, function (index, itemData) {
+                        var option1 = document.createElement("option");
+                        option1.value = itemData.Value;
+                        option1.text = itemData.Text;
+                        select.appendChild(option1);
+
+                    });
+                    window.close();
+                });
+
+        }
+
+    }
+</script>
+
+@Html.HiddenFor(model=>model.MainTaxMasters.State)
+@Html.HiddenFor(model=>model.SubTaxMasters.TaxType)
+
+@{
+    if (Model.DynamicList != null && Model.DynamicList.Any())
+    {
+        <div class="col-md-12" "col-lg-12">
+        <div class="row">
+            <div id="title1" style="position: absolute; font-family: Arial; font-size: 16px; text-decoration: underline; text-align: left;">
+                <label for="exampleInputname">Tax Details</label>
+            </div>
+            <br />
+            <br />
+        </div>
+          <div class="row">
+            <div class="col-md-12 col-lg-12">
+                <table class="table-bordered col-md-12 col-lg-12" style="border-width: medium; border-color: grey;">
+                    <tr>
+                        <th class="col-md-2 col-lg-2">Tax Type
+                        </th>
+                        <th class="col-md-2 col-lg-2">FromDate
+                        </th>
+                        <th class="col-md-2 col-lg-2">ToDate
+                        </th>
+                        <th class="col-md-2 col-lg-2">Percentage
+                        </th>
+                    </tr>
+                    @foreach (var item in Model.DynamicList)
+                    {
+                        <tr>
+                           <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => item.TaxType)</td>
+                            <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => item.FromDate)</td>
+                            <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => item.ToDate)</td>
+                            <td class="col-md-2 col-lg-2">@Html.DisplayFor(model => item.Percentage)</td>
+                        </tr>
+                    }
+                      </table>
+            </div>
+        </div>
+   <br />
+     <div class="row">
+ <div class="col-sm-offset-5">
+     <button type="button" class="btn btn-success" onclick="closewindow()">Close</button>
+         </div>
+         </div>            
+        </div>
+     
+           
+    }
+    }
+
